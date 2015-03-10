@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>今さらな感じはするけど Hubot を導入してみた | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="社内の HipChat に Hubot を導入してみた弊社では社内のコミュニケーションツールとして、HipChat を使用している。仕様の確認とか業務上で必要なことやどうでもいい雑談など、頻繁に HipChat 上でやり取りがあり、Github とか Bitbucket とか PivotalTracker とかいろいろ連携をしていて、通知が飛んで来たりもするので、非常に重要なツールとなっている。そ">
+<meta property="og:type" content="website">
+<meta property="og:title" content="今さらな感じはするけど Hubot を導入してみた">
+<meta property="og:url" content="http://blog.mmmcorp.co.jp/blog/2015/02/11/hubot-hipchat/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="社内の HipChat に Hubot を導入してみた弊社では社内のコミュニケーションツールとして、HipChat を使用している。仕様の確認とか業務上で必要なことやどうでもいい雑談など、頻繁に HipChat 上でやり取りがあり、Github とか Bitbucket とか PivotalTracker とかいろいろ連携をしていて、通知が飛んで来たりもするので、非常に重要なツールとなっている。そ">
+<meta property="og:image" content="/images/hubot_hipchat/hubot.jpg =300x300">
+<meta property="og:image" content="/images/hubot_hipchat/hubot_hipchat.png">
+<meta property="og:image" content="/images/hubot_hipchat/hubot_pug.png">
+<meta property="og:image" content="/images/hubot_hipchat/hubot_ramen.png">
+<meta property="og:image" content="/images/hubot_hipchat/hubot_youtube.png">
+<meta property="og:image" content="/images/hubot_hipchat/hubot_github.png">
+<meta property="og:image" content="/images/hubot_hipchat/hubot_unk.png">
+<meta property="og:image" content="/images/hubot_hipchat/hubot_janken.png">
+<meta property="og:image" content="/images/hubot_hipchat/hubot_hello.png">
+<meta property="og:image" content="/images/hubot_hipchat/hubot_stock.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="今さらな感じはするけど Hubot を導入してみた">
+<meta name="twitter:description" content="社内の HipChat に Hubot を導入してみた弊社では社内のコミュニケーションツールとして、HipChat を使用している。仕様の確認とか業務上で必要なことやどうでもいい雑談など、頻繁に HipChat 上でやり取りがあり、Github とか Bitbucket とか PivotalTracker とかいろいろ連携をしていて、通知が飛んで来たりもするので、非常に重要なツールとなっている。そ">
+  
+    <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css" type="text/css">
+  
+
+</head>
+
+<header id="header" class="inner">
+  <h1>
+    <a href="/" id="logo">MMMブログ</a>
+  </h1>
+  
+</div>
+</header>
+<body>
+  <div id="content" class="inner">
+        <article id="post-hubot-hipchat" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2015-02-10T21:54:25.000Z" itemprop="datePublished">2015-02-11</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2015/02/11/hubot-hipchat/">今さらな感じはするけど Hubot を導入してみた</a>
+    </h3>
+  
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="社内の_HipChat_に_Hubot_を導入してみた">社内の <a href="https://www.hipchat.com/" target="_blank" rel="external">HipChat</a> に <a href="https://hubot.github.com/" target="_blank" rel="external">Hubot</a> を導入してみた</h3><p>弊社では社内のコミュニケーションツールとして、HipChat を使用している。<br>仕様の確認とか業務上で必要なことやどうでもいい雑談など、頻繁に HipChat 上でやり取りがあり、Github とか Bitbucket とか PivotalTracker とかいろいろ連携をしていて、通知が飛んで来たりもするので、非常に重要なツールとなっている。<br>その HipChat からオペレーションが出来るといいなぁ、と思っていて、前から導入してみたかった Hubot を導入してみた。  </p>
+<h3 id="Hubot_とは">Hubot とは</h3><p><img src="/images/hubot_hipchat/hubot.jpg =300x300" alt="hubot"><br>Hubot とは、Github 社が作っている、チャットのボットのフレームワーク。オープンソースで、Node.js と CoffeeScript が使われている。<br>Hubot を使うことで、チャットツールから様々なオペレーションが出来るようになる。ChatOps というやつである。<br>何となく響きがかっこいいね…。<br>今回は導入方法など、簡単ではあるがまとめてみた。</p>
+<hr>
+<h3 id="導入の方法">導入の方法</h3><h5 id="今回の導入環境">今回の導入環境</h5><ul>
+<li>Amazon Linux AMI release 2014.09</li>
+</ul>
+<h5 id="Node-js_をインストール">Node.js をインストール</h5><p>今回は、<a href="https://github.com/creationix/nvm" target="_blank" rel="external">nvm(node version manager)</a> を利用して、Node.js をインストールした。<br>インストール方法は、下記のとおり。nvm で Node.js の stable バージョンをインストール。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl https://raw.githubusercontent.com/creationix/nvm/v0.<span class="number">23.3</span>/install.sh | bash</span><br><span class="line">$ nvm install stable</span><br></pre></td></tr></table></figure></p>
+<h5 id="Redis_をインストール">Redis をインストール</h5><p>また、データの永続化に Redis を使用しているので、Redis もインストール。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># EPEL リポジトリを有効に</span></span><br><span class="line">$ sudo yum -y install redis --enablerepo=epel</span><br><span class="line"></span><br><span class="line"><span class="comment"># Redis 起動</span></span><br><span class="line">$ sudo service redis start</span><br><span class="line"></span><br><span class="line"><span class="comment"># Redis 自動起動設定</span></span><br><span class="line">$ sudo chkconfig redis on</span><br></pre></td></tr></table></figure></p>
+<h5 id="CoffeeScript_をインストール">CoffeeScript をインストール</h5><p>各種スクリプトなど CoffeeScript で書かれているので、CoffeeScript もインストールが必要。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install -g coffee-script</span><br></pre></td></tr></table></figure></p>
+<h5 id="yo_と_generator-hubot_インストール">yo と generator-hubot インストール</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install -g yo generator-hubot</span><br></pre></td></tr></table></figure>
+<h5 id="yo_hubot_で必要なファイルのひな形やディレクトリ等を作成する"><code>yo hubot</code> で必要なファイルのひな形やディレクトリ等を作成する</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir myhubot</span><br><span class="line">$ <span class="built_in">cd</span> myhubot</span><br><span class="line">$ yo hubot</span><br></pre></td></tr></table></figure>
+<h5 id="HipChat_連携に必要な環境変数を記述する">HipChat 連携に必要な環境変数を記述する</h5><p>HUBOT_HIPCHAT_JID、HUBOT_HIPCHAT_PASSWORD、HUBOT_HIPCHAT_ROOMS、HUBOT_LOG_LEVEL などの環境変数を <code>bin/hubot</code> に下記のような感じで記述する。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi bin/hubot</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="shebang">#!/bin/sh</span><br><span class="line"></span></span><br><span class="line"><span class="built_in">set</span> <span class="operator">-e</span></span><br><span class="line"></span><br><span class="line">npm install</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="string">"node_modules/.bin:node_modules/hubot/node_modules/.bin:<span class="variable">$PATH</span>"</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> HUBOT_HIPCHAT_JID=<span class="string">"12345_6789@chat.hipchat.com"</span></span><br><span class="line"><span class="built_in">export</span> HUBOT_HIPCHAT_PASSWORD=<span class="string">"HipChatのパスワード"</span></span><br><span class="line"><span class="built_in">export</span> HUBOT_HIPCHAT_ROOMS=<span class="string">"12345_XXXプロジェクト@conf.hipchat.com"</span></span><br><span class="line"><span class="built_in">export</span> HUBOT_LOG_LEVEL=<span class="string">"debug"</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">exec</span> node_modules/.bin/hubot <span class="string">"<span class="variable">$@</span>"</span></span><br></pre></td></tr></table></figure>
+<p>HUBOT_HIPCHAT_JID は、下記画像のように<a href="https://www.hipchat.com/account/xmpp" target="_blank" rel="external">XMPP/Jabber account settings</a>の Jabber ID を、HUBOT_HIPCHAT_ROOMS には、ルーム JID を記述する。<br><img src="/images/hubot_hipchat/hubot_hipchat.png" alt="hubot_hipchat"></p>
+<h5 id="libicu-devel_インストール">libicu-devel インストール</h5><p>起動したらエラーが出たので(<code>no icu-config</code> ってエラーだったはず。メモするの忘れてしまった…)、<code>libicu-devel</code> をインストール。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo yum install -y libicu-devel</span><br></pre></td></tr></table></figure></p>
+<h5 id="HipChat_用のアダプタをインストール">HipChat 用のアダプタをインストール</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save hubot-hipchat</span><br></pre></td></tr></table></figure>
+<h5 id="起動">起動</h5><p>下記コマンドで起動する。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bin/hubot <span class="operator">-a</span> hipchat</span><br></pre></td></tr></table></figure></p>
+<p>ローカル環境で起動するには、<code>-a hipchat</code> なしで起動すればOK。動作確認は、<code>hubot ping</code> と打つ。すると、<code>PONG</code> と返してくれる。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bin/hubot</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Hubot&gt; hubot <span class="built_in">ping</span></span><br><span class="line">PONG</span><br></pre></td></tr></table></figure>
+<hr>
+<h5 id="ファイル、ディレクトリ構造について">ファイル、ディレクトリ構造について</h5><p><code>yo hubot</code> を実行すると下記のようなファイル、ディレクトリが生成される。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ ls <span class="operator">-l</span></span><br><span class="line">合計 <span class="number">36</span></span><br><span class="line">-rw-rw-r--  <span class="number">1</span> mmm mmm   <span class="number">35</span>  <span class="number">2</span>月  <span class="number">2</span> <span class="number">10</span>:<span class="number">16</span> Procfile</span><br><span class="line">-rw-rw-r--  <span class="number">1</span> mmm mmm <span class="number">5848</span>  <span class="number">2</span>月  <span class="number">2</span> <span class="number">10</span>:<span class="number">16</span> README.md</span><br><span class="line">drwxrwxr-x  <span class="number">2</span> mmm mmm <span class="number">4096</span>  <span class="number">2</span>月  <span class="number">4</span> <span class="number">07</span>:<span class="number">38</span> bin</span><br><span class="line">-rw-rw-r--  <span class="number">1</span> mmm mmm  <span class="number">232</span>  <span class="number">2</span>月  <span class="number">2</span> <span class="number">10</span>:<span class="number">16</span> external-scripts.json</span><br><span class="line">-rw-rw-r--  <span class="number">1</span> mmm mmm   <span class="number">25</span>  <span class="number">2</span>月  <span class="number">3</span> <span class="number">08</span>:<span class="number">24</span> hubot-scripts.json</span><br><span class="line">drwxrwxr-x <span class="number">18</span> mmm mmm <span class="number">4096</span>  <span class="number">2</span>月  <span class="number">2</span> <span class="number">10</span>:<span class="number">31</span> node_modules</span><br><span class="line">-rw-rw-r--  <span class="number">1</span> mmm mmm  <span class="number">641</span>  <span class="number">2</span>月  <span class="number">2</span> <span class="number">10</span>:<span class="number">31</span> package.json</span><br><span class="line">drwxrwxr-x  <span class="number">2</span> mmm mmm <span class="number">4096</span>  <span class="number">2</span>月  <span class="number">3</span> <span class="number">08</span>:<span class="number">34</span> scripts</span><br></pre></td></tr></table></figure></p>
+<h6 id="scripts_ディレクトリ">scripts ディレクトリ</h6><p><code>scripts</code>ディレクトリ配下に、ファイルを置くとそれが実行できる。<code>example.coffee</code> があるので、それを参考に独自にスクリプトを書くとよい。  </p>
+<h6 id="hubot-scripts-json">hubot-scripts.json</h6><p><code>hubot-scripts.json</code> には、<code>node_modules/hubot-scripts/src/scripts/</code>配下のファイル名を記述すると、使えるようになる。詳細については、こちらのリポジトリを参考。<br><a href="https://github.com/github/hubot-scripts" target="_blank" rel="external">https://github.com/github/hubot-scripts</a>  </p>
+<p>例えば下記のように、<code>github-status.coffee</code>を書くと、github の status が確認できるコマンドが使えるようになる。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi hubot-scripts.json</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">"github-status.coffee"</span>]</span><br></pre></td></tr></table></figure>
+<h6 id="external-scripts-json">external-scripts.json</h6><p><code>external-scripts.json</code>も基本的には<code>hubot-scripts.json</code>と同じ。ここには、<code>package.json</code>に記述した、npm で公開されている外部のパッケージを記述する。そうすることで、npm パッケージのスクリプトも利用できるようになる。</p>
+<hr>
+<h3 id="デフォルトのスクリプトで使えそうなもの">デフォルトのスクリプトで使えそうなもの</h3><h5 id="パグの画像を表示する">パグの画像を表示する</h5><p>HipChat で、hubot へ下記のようにメンションを送ると、パグの画像をランダムで表示してくれる。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@bot pug me</span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/hubot_hipchat/hubot_pug.png" alt="hubot_pug"><br>仕事に疲れたときに癒される…かもしれない。</p>
+<h5 id="画像検索してランダムで表示する">画像検索してランダムで表示する</h5><p>画像検索をして、結果をランダムで返してくれる。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@bot img &lt;検索するキーワード&gt;</span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/hubot_hipchat/hubot_ramen.png" alt="hubot_ramen"><br>日本語での検索もOK。(ラーメン食べたくなってきた…)</p>
+<h5 id="YouTube検索">YouTube検索</h5><p>YouTub から検索した結果を返してくれる。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@bot youtube &lt;曲名など検索ワード&gt;</span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/hubot_hipchat/hubot_youtube.png" alt="hubot_youtube">  </p>
+<ul>
+<li>上記の曲は、去年の夏の開発合宿の思い出の曲。</li>
+</ul>
+<h5 id="Github_Status">Github Status</h5><p>前述の <code>hubot-scripts.json</code> に、<code>[&quot;github-status.coffee&quot;]</code> を記述することで、Github の Status を確認できる。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@bot github status</span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/hubot_hipchat/hubot_github.png" alt="hubot_github"><br>「あれ？もしかして、Github 落ちてる？」っていうときに、サクッと確認できて便利。</p>
+<hr>
+<h3 id="カスタムスクリプトを書いてみた">カスタムスクリプトを書いてみた</h3><p>せっかくなので、自分でスクリプトを書いてみようかと思う。  </p>
+<h5 id="ドキュメント">ドキュメント</h5><p>こちらのドキュメントを参考にした。<br><a href="https://github.com/github/hubot/blob/master/docs/scripting.md" target="_blank" rel="external">https://github.com/github/hubot/blob/master/docs/scripting.md</a>  </p>
+<p>スクリプトの構造としては下記のとおり。<br><figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">(robot)</span> -&gt;</span></span><br><span class="line">  robot.hear <span class="regexp">/badger/i</span>, <span class="function"><span class="params">(msg)</span> -&gt;</span></span><br><span class="line">    <span class="comment"># your code here</span></span><br><span class="line"></span><br><span class="line">  robot.respond <span class="regexp">/open the pod bay doors/i</span>, <span class="function"><span class="params">(msg)</span> -&gt;</span></span><br><span class="line">    <span class="comment"># your code here</span></span><br></pre></td></tr></table></figure></p>
+<h5 id="hear_と_respond"><code>hear</code> と <code>respond</code></h5><p>Hubot のメソッドとして、<code>hear</code> と <code>respond</code> がある。<br>どちらも、正規表現で一致した場合にいろいろな動作をさせることができる。  </p>
+<h6 id="hear">hear</h6><p><code>hear</code> はそのルーム内の発言を見て、その単語があれば反応するようにするもの。<br>上記の例で行くと、下記のようなメッセージに反応する。  </p>
+<ul>
+<li>Stop badgering the witness</li>
+<li>badger me</li>
+<li>what exactly is a badger anyways</li>
+</ul>
+<h6 id="respond">respond</h6><p><code>respond</code> は hubot に対してメッセージを送信した場合に、反応するようにするもの。<br>上記の例で行くと、下記のようなメッセージに反応する。<br>(<code>HAL</code> が Hubot の名前。<code>/</code> が alias となっている場合)</p>
+<ul>
+<li>hal open the pod bay doors</li>
+<li>HAL: open the pod bay doors</li>
+<li>@HAL open the pod bay doors</li>
+<li>/open the pod bay doors</li>
+</ul>
+<h5 id="send_と_reply"><code>send</code> と <code>reply</code></h5><p>レスポンスとしては、何種類かあるが、その中でも <code>send</code> と <code>reply</code> の使用頻度が高そう。  </p>
+<h6 id="send">send</h6><p><code>send</code> はルームで通常の発言をするもの。</p>
+<h6 id="reply">reply</h6><p><code>reply</code> は、正規表現で一致する発言をした人に対して、メンションを付けて発言をするもの。</p>
+<h5 id="サンプルスクリプトを書いてみる">サンプルスクリプトを書いてみる</h5><p>試しにまったく需要がないと思われるスクリプトを書いてみた。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">module.exports = (robot) -&gt;</span><br><span class="line">  robot.hear /unk/i, (msg) -&gt;</span><br><span class="line">    msg.reply <span class="string">"(poo)"</span></span><br></pre></td></tr></table></figure></p>
+<p>HipChat のルーム内で、<code>unk</code> という文字列があったら、発言した人に対して HipChat の絵文字の <code>(poo)</code> で返してくれるスクリプト。  </p>
+<p>試してみた。<br><img src="/images/hubot_hipchat/hubot_unk.png" alt="hubot_unk"><br>ちゃんと動いた！ ╭( ･ㅂ･)و ̑̑ ｸﾞｯ !  </p>
+<h6 id="random">random</h6><p>ランダムでレスポンスを返したいときには、<code>msg.random</code> というメソッドもある。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ans = [<span class="string">'グー'</span>, <span class="string">'チョキ'</span>, <span class="string">'パー'</span>]</span><br><span class="line"></span><br><span class="line">module.exports = (robot) -&gt;</span><br><span class="line">  robot.respond /janken/i, (msg) -&gt;</span><br><span class="line">    msg.reply msg.random ans</span><br></pre></td></tr></table></figure></p>
+<p>janken という文字列を見て、グー、チョキ、パーをランダムで返してくれるスクリプト。じゃんけんの勝ち負けの判別までは入れてない。<br><img src="/images/hubot_hipchat/hubot_janken.png" alt="hubot_janken"><br>ま、負けた。やるな、Hubot。レスポンスに若干時間がかかるので、後出しっぽく見えるけど(笑)</p>
+<h6 id="環境変数">環境変数</h6><p>環境変数を使いたい場合は、<code>process.env</code> を使う。prefix として、<code>HUBOT_</code> を使うのが慣習みたいだ。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hello = process<span class="class">.env</span><span class="class">.HUBOT_HELLO</span></span><br><span class="line"></span><br><span class="line">module<span class="class">.exports</span> = (robot) -&gt;</span><br><span class="line">  robot<span class="class">.hear</span> /hello/<span class="tag">i</span>, (msg) -&gt;</span><br><span class="line">    msg<span class="class">.send</span> <span class="string">"#&#123;hello&#125;, #&#123;msg.message.user.name&#125;"</span></span><br></pre></td></tr></table></figure></p>
+<p><code>hello</code> という文字列をみて、環境変数 <code>HUBOT_HELLO</code> で設定した値を返してくれる。今回は、環境変数 <code>HUBOT_HELLO</code> に <code>Hey YO</code> を設定している。<br><img src="/images/hubot_hipchat/hubot_hello.png" alt="hubot_hello">  </p>
+<h5 id="もうちょっとだけ実用的なスクリプトを書いてみた">もうちょっとだけ実用的なスクリプトを書いてみた</h5><p>もっとちょっとマシなスクリプトを書いてみないと、Hubot を導入するメリットとか分かりづらいので、<code>stock &lt;証券コード&gt;</code> で Hubot にメッセージを送ると、Yahoo!ファイナンスから株価を取得するスクリプトを書いてみた。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">request = <span class="built_in">require</span> <span class="string">'request'</span></span><br><span class="line">cheerio = <span class="built_in">require</span> <span class="string">'cheerio'</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = (robot) -&gt;</span><br><span class="line">  robot.respond /stock (.*)/i, (msg) -&gt;</span><br><span class="line">    code = msg.match[<span class="number">1</span>]</span><br><span class="line">    options =</span><br><span class="line">      url: <span class="string">'http://stocks.finance.yahoo.co.jp/stocks/detail/?code='</span> + code</span><br><span class="line">      timeout: <span class="number">2000</span></span><br><span class="line"></span><br><span class="line">    request options, (err, res, body) -&gt;</span><br><span class="line">      $ = cheerio.load body</span><br><span class="line">      company_name = $(<span class="string">'th.symbol h1'</span>).text()</span><br><span class="line">      current_price = $(<span class="string">'td.stoksPrice'</span>).eq(<span class="number">1</span>).text()</span><br><span class="line">      msg.send <span class="string">"#&#123;company_name&#125;: #&#123;current_price&#125;円"</span></span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/hubot_hipchat/hubot_stock.png" alt="hubot_stock"><br>ちゃんと取得できた。サクッと株価が確認できていい感じ。<br><a href="https://github.com/request/request" target="_blank" rel="external">request</a> と <a href="https://github.com/cheeriojs/cheerio" target="_blank" rel="external">cheerio</a> を使ってみた。(実際に動かす場合は、<code>request</code> と <code>cheerio</code> のインストールが必要なので注意)<br>今回はサンプルスクリプトなので、エラーハンドルとか実装はしていない。</p>
+<hr>
+<h3 id="今後の取り組みとして">今後の取り組みとして</h3><p>Hubot を触ってみて、デフォルトでもいろいろなことが出来るが、独自でスクリプトも書いて使えるので、うまく利用できればかなり業務の効率もアップしそうな印象を受けた。<br>いちいちブラウザで確認しないといけない定形作業とか、HipChat 上でサッとできれば良さそう。<br>Hubot の使い方について、もっと調べて業務効率化を進めたい。<br>また、他の企業がどのような使い方をしているのか参考にさせていただいて、良さそうな使い方があればどんどん使っていきたいと思っている。  </p>
+<p>「うちはこんな風に使っている」「このスクリプトが便利」等の情報があれば、教えていただけると助かります。<br>情報お待ちしておりますm(<em> </em>)m</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HipChat/">HipChat</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hubot/">Hubot</a></li></ul>
+
+
+      <p class="article-footer__author">by 佐々木 悠人</p>
+    </footer>
+  </div>
+</article>
+
+
+
+        <hr class="footer-line">
+  </div>
+<footer id="footer" class="inner">
+  <div id="footer-info">
+    &copy;2015 <a href="http://mmmcorp.co.jp/" target="_blank" class="footer_info__author">株式会社MMM</a>
+  </div>
+</footer>
+
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+</body>
+</html>

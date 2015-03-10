@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>AndroidのライブラリDraggablePanelを使ってみる | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="最近Googleさんが社内の福利厚生でブラジリアン柔術を始めたらしく、大変盛況らしい。 → Googleが福利厚生に採用した「ブラジリアン柔術」が日本のビジネスマンにも人気な理由
+やっとGoogleさんも柔術の良さが分かってきたんだな、と何故か上から目線なひよっこ柔術エンジニアの前田です。
+本日はそんなGoogleさんの出したAndroidについてです。
+社内はもちろん、周囲でもスマートフォンはi">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AndroidのライブラリDraggablePanelを使ってみる">
+<meta property="og:url" content="http://blog.mmmcorp.co.jp/blog/2014/12/05/android-draggable-panel/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="最近Googleさんが社内の福利厚生でブラジリアン柔術を始めたらしく、大変盛況らしい。 → Googleが福利厚生に採用した「ブラジリアン柔術」が日本のビジネスマンにも人気な理由
+やっとGoogleさんも柔術の良さが分かってきたんだな、と何故か上から目線なひよっこ柔術エンジニアの前田です。
+本日はそんなGoogleさんの出したAndroidについてです。
+社内はもちろん、周囲でもスマートフォンはi">
+<meta property="og:image" content="/images/draggable_panel_images/draggable_panel_demo.gif">
+<meta property="og:image" content="https://qiita-image-store.s3.amazonaws.com/0/57353/f2252b41-7d09-5cb7-f4a5-1888b264ec3d.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AndroidのライブラリDraggablePanelを使ってみる">
+<meta name="twitter:description" content="最近Googleさんが社内の福利厚生でブラジリアン柔術を始めたらしく、大変盛況らしい。 → Googleが福利厚生に採用した「ブラジリアン柔術」が日本のビジネスマンにも人気な理由
+やっとGoogleさんも柔術の良さが分かってきたんだな、と何故か上から目線なひよっこ柔術エンジニアの前田です。
+本日はそんなGoogleさんの出したAndroidについてです。
+社内はもちろん、周囲でもスマートフォンはi">
+  
+    <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css" type="text/css">
+  
+
+</head>
+
+<header id="header" class="inner">
+  <h1>
+    <a href="/" id="logo">MMMブログ</a>
+  </h1>
+  
+</div>
+</header>
+<body>
+  <div id="content" class="inner">
+        <article id="post-android-draggable-panel" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2014-12-05T06:41:29.000Z" itemprop="datePublished">2014-12-05</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2014/12/05/android-draggable-panel/">AndroidのライブラリDraggablePanelを使ってみる</a>
+    </h3>
+  
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近Googleさんが社内の福利厚生でブラジリアン柔術を始めたらしく、大変盛況らしい。 → <a href="http://www.excite.co.jp/News/economy_clm/20141101/Harbor_business_11545.html" target="_blank" rel="external">Googleが福利厚生に採用した「ブラジリアン柔術」が日本のビジネスマンにも人気な理由</a></p>
+<p>やっとGoogleさんも柔術の良さが分かってきたんだな、と何故か上から目線なひよっこ柔術エンジニアの前田です。</p>
+<p>本日はそんなGoogleさんの出したAndroidについてです。</p>
+<p>社内はもちろん、周囲でもスマートフォンはiPhoneがほとんどですが、逆風にめげずに書いていきたいと思います。</p>
+<p>私の持っているスマートフォンはAndroidなのですが、プライベートで少しアプリを作っておりまして、YouTubeのようなUIを簡単に作ることが出来るライブラリ「DraggablePanel」が個人的に興味があったので触ってみました。</p>
+<p>ライブラリをアプリ内に組み込むだけで、下記のようなYouTubeっぽいUIが実現出来ます。</p>
+<hr>
+<p><img src="/images/draggable_panel_images/draggable_panel_demo.gif" alt="Demo Screenshot 3"></p>
+<hr>
+<p>日本のアプリでは使っているアプリをあまり見たことが無いので、積極的に使ってみたら目立てるのではないかと思います。</p>
+<p>では早速実装してみます。</p>
+<p>環境:Android Studio</p>
+<p>まずは適当にプロジェクトを作ります。<br>プロジェクト名はDraggablePanelSampleとしました。</p>
+<p>次に、ライブラリを組み込みます。</p>
+<p>app/build.gradle</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">〜　略　〜</span><br><span class="line"></span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        applicationId <span class="string">"sample.draggablepanelsample"</span></span><br><span class="line">        minSdkVersion <span class="number">10</span></span><br><span class="line">        <span class="comment">// targetSdkVersionを19以下にしないとビルド出来ないのでご注意を。</span></span><br><span class="line">        targetSdkVersion <span class="number">19</span></span><br><span class="line">        versionCode <span class="number">1</span></span><br><span class="line">        versionName <span class="string">"1.0"</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">〜　略　〜</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    <span class="function">compile <span class="title">fileTree</span><span class="params">(dir: <span class="string">'libs'</span>, include: [<span class="string">'*.jar'</span>])</span></span><br><span class="line">    <span class="comment">// 下記の３行を加える</span></span><br><span class="line">    compile 'com.github.pedrovgs:draggablepanel:1.3@aar'</span><br><span class="line">    compile 'com.Android.support:support-v4:19.1.+'</span><br><span class="line">    compile 'com.nineoldAndroids:library:2.4.+'</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>そしてAndroid Studioのgradle syncボタンをポチっと押すだけ！</p>
+<p><img src="https://qiita-image-store.s3.amazonaws.com/0/57353/f2252b41-7d09-5cb7-f4a5-1888b264ec3d.png" alt="app_build_gradle_-__app__-_DraggablePanelSample_-____AndroidStudioProjects_DraggablePanelSample__-_Android_Studio__Beta__0_8_6.png" title="app_build_gradle_-__app__-_DraggablePanelSample_-____AndroidStudioProjects_DraggablePanelSample__-_Android_Studio__Beta__0_8_6.png"></p>
+<p>以上です。</p>
+<hr>
+<p>とここで終わったら怒られると思いますので、もう少し。<br>それではプロジェクトの中で使ってみます。</p>
+<p>app/src/main/res/layout/activity_my.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">〜　略</span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="title">com.github.pedrovgs.DraggableView</span></span><br><span class="line">        <span class="attribute">xmlns:android</span>=<span class="value">"http://schemas.android.com/apk/res/Android"</span></span><br><span class="line">        <span class="attribute">xmlns:draggable_view</span>=<span class="value">"http://schemas.android.com/apk/res-auto"</span></span><br><span class="line">        <span class="attribute">android:id</span>=<span class="value">"@+id/draggable_view"</span></span><br><span class="line">        <span class="attribute">android:layout_width</span>=<span class="value">"fill_parent"</span></span><br><span class="line">        <span class="attribute">android:layout_height</span>=<span class="value">"fill_parent"</span></span><br><span class="line">        <span class="attribute">draggable_view:top_view_id</span>=<span class="value">"@+id/top_view"</span></span><br><span class="line">        <span class="attribute">draggable_view:bottom_view_id</span>=<span class="value">"@+id/bottom_view"</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="title">LinearLayout</span></span><br><span class="line">            <span class="attribute">android:id</span>=<span class="value">"@+id/bottom_view"</span></span><br><span class="line">            <span class="attribute">android:orientation</span>=<span class="value">"vertical"</span></span><br><span class="line">            <span class="attribute">android:background</span>=<span class="value">"#2980b9"</span></span><br><span class="line">            <span class="attribute">android:layout_width</span>=<span class="value">"fill_parent"</span></span><br><span class="line">            <span class="attribute">android:layout_height</span>=<span class="value">"fill_parent"</span></span><br><span class="line">            <span class="attribute">android:gravity</span>=<span class="value">"center"</span></span><br><span class="line">            &gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="title">TextView</span></span><br><span class="line">                <span class="attribute">android:layout_width</span>=<span class="value">"wrap_content"</span></span><br><span class="line">                <span class="attribute">android:layout_height</span>=<span class="value">"wrap_content"</span></span><br><span class="line">                <span class="attribute">android:text</span>=<span class="value">"bottom view"</span></span><br><span class="line">                <span class="attribute">android:textSize</span>=<span class="value">"50px"</span></span><br><span class="line">                <span class="attribute">android:textColor</span>=<span class="value">"#ffffff"</span></span><br><span class="line">                <span class="attribute">android:textStyle</span>=<span class="value">"bold"</span></span><br><span class="line">                /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;/<span class="title">LinearLayout</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="title">LinearLayout</span></span><br><span class="line">            <span class="attribute">android:id</span>=<span class="value">"@+id/top_view"</span></span><br><span class="line">            <span class="attribute">android:layout_width</span>=<span class="value">"fill_parent"</span></span><br><span class="line">            <span class="attribute">android:layout_height</span>=<span class="value">"300dip"</span></span><br><span class="line">            <span class="attribute">android:orientation</span>=<span class="value">"vertical"</span></span><br><span class="line">            <span class="attribute">android:background</span>=<span class="value">"#16a085"</span></span><br><span class="line">            <span class="attribute">android:gravity</span>=<span class="value">"center"</span></span><br><span class="line">            &gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="title">TextView</span></span><br><span class="line">                <span class="attribute">android:layout_width</span>=<span class="value">"wrap_content"</span></span><br><span class="line">                <span class="attribute">android:layout_height</span>=<span class="value">"wrap_content"</span></span><br><span class="line">                <span class="attribute">android:text</span>=<span class="value">"top view"</span></span><br><span class="line">                <span class="attribute">android:textSize</span>=<span class="value">"50px"</span></span><br><span class="line">                <span class="attribute">android:textColor</span>=<span class="value">"#ffffff"</span></span><br><span class="line">                <span class="attribute">android:textStyle</span>=<span class="value">"bold"</span></span><br><span class="line">                /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;/<span class="title">LinearLayout</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="title">com.github.pedrovgs.DraggableView</span>&gt;</span></span><br><span class="line"></span><br><span class="line">　〜　略</span><br></pre></td></tr></table></figure>
+<p>ポイントは@+id/top_viewを@+id/bottom_viewの下に配置することです。<br>これを逆にすると上手く動きません。</p>
+<p>ソースコードは下記レポジトリに上げております。</p>
+<p><a href="https://github.com/maeda11131/DraggablePanelSample" target="_blank" rel="external">DraggablePanelSample</a></p>
+<p>Javadocも生成済です。<br>git cloneしてお試しください。</p>
+<hr>
+<p>弊社は主にRuby on RailsやAngularJSなどのwebアプリケーションサービスがメインですが、iPhoneやAndroidのスマートフォンアプリもやっていきたいと思っておりますのでどうぞ宜しくお願いします！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+
+
+      <p class="article-footer__author">by 前田　正樹</p>
+    </footer>
+  </div>
+</article>
+
+
+
+        <hr class="footer-line">
+  </div>
+<footer id="footer" class="inner">
+  <div id="footer-info">
+    &copy;2015 <a href="http://mmmcorp.co.jp/" target="_blank" class="footer_info__author">株式会社MMM</a>
+  </div>
+</footer>
+
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+</body>
+</html>

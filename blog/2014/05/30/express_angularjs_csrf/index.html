@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>express + AngularJS でCSRFの設定 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="最近カップラーメンに納豆を入れるのが好きで、カップラーメンに納豆3パックとかドバっと入れて、そこに卵を入れて食べたりする。見た目は悪いけど意外といけるので、興味ある方はお試しあれ。
+ところで最近は Node.js とか express とか mongodb とか AngularJS を勉強中。こちら のデモアプリをベースにいろいろといじって変更しながら、挙動を確認しつつ勉強してるけど、どれも勉強し">
+<meta property="og:type" content="website">
+<meta property="og:title" content="express + AngularJS でCSRFの設定">
+<meta property="og:url" content="http://blog.mmmcorp.co.jp/blog/2014/05/30/express_angularjs_csrf/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="最近カップラーメンに納豆を入れるのが好きで、カップラーメンに納豆3パックとかドバっと入れて、そこに卵を入れて食べたりする。見た目は悪いけど意外といけるので、興味ある方はお試しあれ。
+ところで最近は Node.js とか express とか mongodb とか AngularJS を勉強中。こちら のデモアプリをベースにいろいろといじって変更しながら、挙動を確認しつつ勉強してるけど、どれも勉強し">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="express + AngularJS でCSRFの設定">
+<meta name="twitter:description" content="最近カップラーメンに納豆を入れるのが好きで、カップラーメンに納豆3パックとかドバっと入れて、そこに卵を入れて食べたりする。見た目は悪いけど意外といけるので、興味ある方はお試しあれ。
+ところで最近は Node.js とか express とか mongodb とか AngularJS を勉強中。こちら のデモアプリをベースにいろいろといじって変更しながら、挙動を確認しつつ勉強してるけど、どれも勉強し">
+  
+    <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css" type="text/css">
+  
+
+</head>
+
+<header id="header" class="inner">
+  <h1>
+    <a href="/" id="logo">MMMブログ</a>
+  </h1>
+  
+</div>
+</header>
+<body>
+  <div id="content" class="inner">
+        <article id="post-express_angularjs_csrf" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2014-05-30T01:10:55.000Z" itemprop="datePublished">2014-05-30</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2014/05/30/express_angularjs_csrf/">express + AngularJS でCSRFの設定</a>
+    </h3>
+  
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近カップラーメンに納豆を入れるのが好きで、カップラーメンに納豆3パックとかドバっと入れて、そこに卵を入れて食べたりする。<br>見た目は悪いけど意外といけるので、興味ある方はお試しあれ。</p>
+<p>ところで最近は <a href="http://nodejs.org/" target="_blank" rel="external">Node.js</a> とか <a href="http://expressjs.com/" target="_blank" rel="external">express</a> とか <a href="http://www.mongodb.org/" target="_blank" rel="external">mongodb</a> とか <a href="https://angularjs.org/" target="_blank" rel="external">AngularJS</a> を勉強中。<br><a href="https://github.com/madhums/node-express-mongoose-demo" target="_blank" rel="external">こちら</a> のデモアプリをベースにいろいろといじって変更しながら、挙動を確認しつつ勉強してるけど、どれも勉強し始めでつまずくことが多い。<br>今回は、AngularJS でデータの更新をしようとしたときに、express 側で CSRF エラーが出たので、その内容と対処方法をまとめてみた。</p>
+<h2 id="CSRF_エラー">CSRF エラー</h2><p>AngularJS でデータ更新をしようとしたところ、express 側で下記のようなエラーが出た。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">Error:</span> Forbidden</span><br><span class="line">    at Object.exports.error (<span class="regexp">/home/</span>nodejs<span class="regexp">/em_test/</span>node_modules<span class="regexp">/express/</span>node_modules<span class="regexp">/connect/</span>lib/utils.<span class="string">js:</span><span class="number">63</span>:<span class="number">13</span>)</span><br><span class="line">    at createToken (<span class="regexp">/home/</span>nodejs<span class="regexp">/em_test/</span>node_modules<span class="regexp">/express/</span>node_modules<span class="regexp">/connect/</span>lib<span class="regexp">/middleware/</span>csrf.<span class="string">js:</span><span class="number">82</span>:<span class="number">55</span>)</span><br><span class="line">    at Object.handle (<span class="regexp">/home/</span>nodejs<span class="regexp">/em_test/</span>node_modules<span class="regexp">/express/</span>node_modules<span class="regexp">/connect/</span>lib<span class="regexp">/middleware/</span>csrf.<span class="string">js:</span><span class="number">48</span>:<span class="number">24</span>)</span><br><span class="line">    at next (<span class="regexp">/home/</span>nodejs<span class="regexp">/em_test/</span>node_modules<span class="regexp">/express/</span>node_modules<span class="regexp">/connect/</span>lib/proto.<span class="string">js:</span><span class="number">193</span>:<span class="number">15</span>)</span><br><span class="line">    at Object.handle (<span class="regexp">/home/</span>nodejs<span class="regexp">/em_test/</span>node_modules<span class="regexp">/view-helpers/</span>index.<span class="string">js:</span><span class="number">65</span>:<span class="number">5</span>)</span><br><span class="line">    at next (<span class="regexp">/home/</span>nodejs<span class="regexp">/em_test/</span>node_modules<span class="regexp">/express/</span>node_modules<span class="regexp">/connect/</span>lib/proto.<span class="string">js:</span><span class="number">193</span>:<span class="number">15</span>)</span><br><span class="line">    at Object.handle (<span class="regexp">/home/</span>nodejs<span class="regexp">/em_test/</span>node_modules<span class="regexp">/connect-flash/</span>lib/flash.<span class="string">js:</span><span class="number">21</span>:<span class="number">5</span>)</span><br><span class="line">    at next (<span class="regexp">/home/</span>nodejs<span class="regexp">/em_test/</span>node_modules<span class="regexp">/express/</span>node_modules<span class="regexp">/connect/</span>lib/proto.<span class="string">js:</span><span class="number">193</span>:<span class="number">15</span>)</span><br><span class="line">    at SessionStrategy.strategy.pass (<span class="regexp">/home/</span>nodejs<span class="regexp">/em_test/</span>node_modules<span class="regexp">/passport/</span>lib<span class="regexp">/middleware/</span>authenticate.<span class="string">js:</span><span class="number">314</span>:<span class="number">9</span>)</span><br><span class="line">    at <span class="regexp">/home/</span>nodejs<span class="regexp">/em_test/</span>node_modules<span class="regexp">/passport/</span>lib<span class="regexp">/strategies/</span>session.<span class="string">js:</span><span class="number">61</span>:<span class="number">12</span></span><br><span class="line">PUT <span class="regexp">/admin/</span>expenses/<span class="number">537</span>bfa12db0460ff19812b80 <span class="number">500</span> <span class="number">490</span>ms</span><br></pre></td></tr></table></figure>
+<p><a href="http://ja.wikipedia.org/wiki/%E3%82%AF%E3%83%AD%E3%82%B9%E3%82%B5%E3%82%A4%E3%83%88%E3%83%AA%E3%82%AF%E3%82%A8%E3%82%B9%E3%83%88%E3%83%95%E3%82%A9%E3%83%BC%E3%82%B8%E3%82%A7%E3%83%AA" target="_blank" rel="external">CSRF</a> のエラー。<br>express では、確かに CSRF の設定して、フォームに下記の行を書いており、</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">input(<span class="variable">type=</span><span class="string">"hidden"</span>, <span class="variable">name=</span><span class="string">"_csrf"</span>, <span class="variable">value=</span><span class="string">"#&#123;csrf_token&#125;"</span>)</span><br></pre></td></tr></table></figure>
+<p>こんな感じで値が入っていたなーと。</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;input <span class="variable">type=</span><span class="string">"hidden"</span> <span class="variable">name=</span><span class="string">"_csrf"</span> <span class="variable">value=</span><span class="string">"hSPcdgooM3t461mJRl98Zx6o9KeNLU18ncXEA="</span>&gt;</span><br></pre></td></tr></table></figure>
+<p>AngularJS ではそういう設定してないし、エラーが出るのも納得。<br>ということで、express + AngularJS での CSRF の設定方法を調べてやってみた。<br>参考URL：<br><a href="http://www.mircozeiss.com/using-csrf-with-express-and-angular/" target="_blank" rel="external">Using CSRF protection with Express and AngularJS</a><br><a href="http://jb.demonte.fr/blog/expressjs-angularjs-csrf/" target="_blank" rel="external">ExpressJS, AngularJS and Cross-site request forgery (csrf) protection</a></p>
+<h2 id="対応方法">対応方法</h2><h5 id="1-_express_アプリに_CSRF_middleware_を設定">1. express アプリに CSRF middleware を設定</h5><p>まず、CSRF middleware を追加。<br>セッションを扱えないとダメなので、session() の後に追加すること。<br>今回のデモアプリには既に設定済みだったけど。</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">app</span>.<span class="keyword">use</span>(express.csrf());</span><br></pre></td></tr></table></figure>
+<h5 id="2-_AngularJS_用に_cookie_設定">2. AngularJS 用に cookie 設定</h5><p><a href="https://docs.angularjs.org/api/ng/service/$http" target="_blank" rel="external">Cross Site Request Forgery (XSRF) Protection</a></p>
+<blockquote>
+<p> Angular provides a mechanism to counter XSRF. When performing XHR requests, the $http service reads a token from a cookie (by default, XSRF-TOKEN) and sets it as an HTTP header (X-XSRF-TOKEN).  </p>
+</blockquote>
+<p>AngularJS の $http サービスでは、cookie の XSRF-TOKEN を読んで、HTTP ヘッダーに X-XSRF-TOKEN としてセットするので、express 側で cookie の XSRF-TOKEN として値を入れてやる必要がある。</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">app.<span class="keyword">use</span>(<span class="function"><span class="keyword">function</span><span class="params">(req, res, next)</span></span>&#123;</span><br><span class="line">  res.locals.csrf_token = req.csrfToken();</span><br><span class="line">  res.cookie(<span class="string">'XSRF-TOKEN'</span>, req.csrfToken()); <span class="comment">// この行を追加</span></span><br><span class="line">  next();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h5 id="3-_CSRF_middleware_の_token_設定_*1">3. CSRF middleware の token 設定 *1</h5><p><a href="http://expressjs.com/3x/api.html#csrf" target="_blank" rel="external">express 3.x docs - csrf()</a></p>
+<blockquote>
+<p>The default value function checks req.body generated by the bodyParser() middleware, req.query generated by query(), and the “X-CSRF-Token” header field.  </p>
+</blockquote>
+<p>CSRF middleware はデフォルトでは、req.body や req.query やヘッダーの X-CSRF-Token を見に行く。<br>AngularJS は X-XSRF-TOKEN を使うので、express 側でヘッダーの X-XSRF-TOKEN を見に行くように設定してやる必要がある。<br>既存の処理に、Angular に必要な req.headers[‘x-xsrf-token’] を追加で見に行くファンクション作成。  </p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> csrfValue = function(req) &#123;</span><br><span class="line">  <span class="keyword">var</span> <span class="keyword">token</span> = (req.body &amp;&amp; req.body._csrf)</span><br><span class="line">    || (req.<span class="keyword">query</span> &amp;&amp; req.<span class="keyword">query</span>._csrf)</span><br><span class="line">    || (req.headers['x-csrf-<span class="keyword">token</span>'])</span><br><span class="line">    || (req.headers['x-xsrf-<span class="keyword">token</span>']); <span class="comment">// この行を追加。</span></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">token</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>で追加した、csrf() に value として設定する。</li>
+</ol>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">app</span><span class="class">.use</span>(express.<span class="function">csrf</span>(&#123;<span class="attribute">value</span>: csrfValue&#125;));</span><br></pre></td></tr></table></figure>
+<p>*1 express の 4.x では、デフォルトで x-xsrf-token も見るようになっていて、この設定が必要ないようなので注意。<br><a href="https://github.com/expressjs/csurf#csrfoptions" target="_blank" rel="external">csrf(options)</a></p>
+<blockquote>
+<p>The default function checks four possible token locations:<br>_csrf parameter in req.body generated by the body-parser middleware.<br>_csrf parameter in req.query generated by query().<br>x-csrf-token and x-xsrf-token header fields.</p>
+</blockquote>
+<p>と、ここまで書いて実際にデモアプリで使っている csrf.js を見てみたらちゃんと</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">|| (req.headers[<span class="symbol">'x</span>-xsrf-token']);</span><br></pre></td></tr></table></figure>
+<p>が入っていた！<br>使っている express のバージョンは、3.4.8なんだけど。<br>2013年の7月に対応されているっぽい…。<br><a href="https://github.com/senchalabs/connect/commit/b236bc3d81dba62195902e021e73ba1590217eaf#diff-0810b6afbd5a12aa90b786a7ecb0ceab" target="_blank" rel="external">Update csrf.js · b236bc3 · senchalabs/connect</a>  </p>
+<p><a href="http://expressjs.com/3x/api.html#csrf" target="_blank" rel="external">express 3.x docs - csrf()</a> が最新の情報に更新されてないのかな…。<br>せっかくなので、古いバージョンの express をお使いの方に参考になれば、とここまで書いた内容は残しておこう…。  </p>
+<h5 id="4-_AngularJS_でデータ更新">4. AngularJS でデータ更新</h5><p>express 側で設定ができたら、後は AngularJS 側では通常通り、データ更新処理を行えばOK。<br>例えばこんな感じで、データ更新。  </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">app.controller(<span class="string">'EditCtrl'</span>, [<span class="string">'$scope'</span>, <span class="string">'$location'</span>, <span class="string">'expense'</span>,</span><br><span class="line">  <span class="function"><span class="keyword">function</span><span class="params">(<span class="variable">$scope</span>, <span class="variable">$location</span>, expense)</span> </span>&#123;</span><br><span class="line">    <span class="variable">$scope</span>.expense = expense;</span><br><span class="line"></span><br><span class="line">    <span class="variable">$scope</span>.save = <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="variable">$scope</span>.expense.<span class="variable">$update</span>(<span class="function"><span class="keyword">function</span><span class="params">(expense)</span> </span>&#123;</span><br><span class="line">        <span class="variable">$location</span>.path(<span class="string">'/admin/#/expenses/'</span> + expense.id);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+<h2 id="まとめ">まとめ</h2><p>express + AngularJS の CSRF 設定は意外と簡単にできちゃうんだな、という印象。<br>それと、ブログにまとめるっていうのは自分の理解を深める上でいいことだな、と。<br>今回もこれを書きながら、実は不要な処理があったのに気づけたので…。  </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AngularJS/">AngularJS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node-js/">Node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/express/">express</a></li></ul>
+
+
+      <p class="article-footer__author">by 佐々木 悠人</p>
+    </footer>
+  </div>
+</article>
+
+
+
+        <hr class="footer-line">
+  </div>
+<footer id="footer" class="inner">
+  <div id="footer-info">
+    &copy;2015 <a href="http://mmmcorp.co.jp/" target="_blank" class="footer_info__author">株式会社MMM</a>
+  </div>
+</footer>
+
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>AngularJS の E2E テスト Protractor を CirlceCI で実行する | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="日曜日から月曜日にかけて上陸した台風18号、雨がすごかったですね。台風とか大雨の日に、無理して出社しなくていいのはリモートワークの1番のメリットかもなぁ…なんてTLとか台風に備えて今から出社する人たち - Togetterまとめを見て実感していた佐々木です。現在フィリピンの東海上にある台風19合は、”特別警戒級”だとか。台風19号、900ヘクトパスカル。”特別警報級”の強さに。(崎濱綾子) - 個">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AngularJS の E2E テスト Protractor を CirlceCI で実行する">
+<meta property="og:url" content="http://blog.mmmcorp.co.jp/blog/2014/10/08/protractor-circleci/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="日曜日から月曜日にかけて上陸した台風18号、雨がすごかったですね。台風とか大雨の日に、無理して出社しなくていいのはリモートワークの1番のメリットかもなぁ…なんてTLとか台風に備えて今から出社する人たち - Togetterまとめを見て実感していた佐々木です。現在フィリピンの東海上にある台風19合は、”特別警戒級”だとか。台風19号、900ヘクトパスカル。”特別警報級”の強さに。(崎濱綾子) - 個">
+<meta property="og:image" content="/images/protractor/protractor.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AngularJS の E2E テスト Protractor を CirlceCI で実行する">
+<meta name="twitter:description" content="日曜日から月曜日にかけて上陸した台風18号、雨がすごかったですね。台風とか大雨の日に、無理して出社しなくていいのはリモートワークの1番のメリットかもなぁ…なんてTLとか台風に備えて今から出社する人たち - Togetterまとめを見て実感していた佐々木です。現在フィリピンの東海上にある台風19合は、”特別警戒級”だとか。台風19号、900ヘクトパスカル。”特別警報級”の強さに。(崎濱綾子) - 個">
+  
+    <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css" type="text/css">
+  
+
+</head>
+
+<header id="header" class="inner">
+  <h1>
+    <a href="/" id="logo">MMMブログ</a>
+  </h1>
+  
+</div>
+</header>
+<body>
+  <div id="content" class="inner">
+        <article id="post-protractor-circleci" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2014-10-07T21:27:54.000Z" itemprop="datePublished">2014-10-08</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2014/10/08/protractor-circleci/">AngularJS の E2E テスト Protractor を CirlceCI で実行する</a>
+    </h3>
+  
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>日曜日から月曜日にかけて上陸した台風18号、雨がすごかったですね。<br>台風とか大雨の日に、無理して出社しなくていいのはリモートワークの1番のメリットかもなぁ…なんてTLとか<a href="http://togetter.com/li/727986" target="_blank" rel="external">台風に備えて今から出社する人たち - Togetterまとめ</a>を見て実感していた佐々木です。<br>現在フィリピンの東海上にある台風19合は、”特別警戒級”だとか。<br><a href="http://bylines.news.yahoo.co.jp/sakihamaayako/20141008-00039795/" target="_blank" rel="external">台風19号、900ヘクトパスカル。”特別警報級”の強さに。(崎濱綾子) - 個人 - Yahoo!ニュース</a><br>今後の動きに注意が必要ですね。  </p>
+<p>さて今回は AngularJS で、E2E テストフレームワークの <a href="http://angular.github.io/protractor/#/" target="_blank" rel="external">Protractor</a> の導入方法、<a href="https://circleci.com/" target="_blank" rel="external">CircleCI</a> で使う際の設定を簡単にまとめてみました。<br>参考にさせていただいたのは下記URL。</p>
+<p>参考URL<br><a href="http://dev.classmethod.jp/client-side/javascript/angularjs_e2e_test_protractor_introduce/" target="_blank" rel="external">AngularJSにE2Eテスト環境としてProtractorを導入する。</a></p>
+<hr>
+<h2 id="事前準備として">事前準備として</h2><p>サンプルアプリを Yeoman で作成します。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir protractor_<span class="built_in">test</span></span><br><span class="line">$ <span class="built_in">cd</span> protractor_<span class="built_in">test</span></span><br><span class="line">$ yo angular --coffee</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><a href="https://github.com/mmmsasaki/protractor_test" target="_blank" rel="external">https://github.com/mmmsasaki/protractor_test</a></li>
+</ul>
+<hr>
+<p>まずはローカルの開発環境で、Protractor を実行する方法です。  </p>
+<h2 id="protractor_と_grunt-protractor-runner_をインストール">protractor と grunt-protractor-runner をインストール</h2><p>protractor と grunt-protractor-runner をインストールします。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save-dev protractor grunt-protractor-runner</span><br></pre></td></tr></table></figure></p>
+<h2 id="webdriver-manager_update">webdriver-manager update</h2><p>npm でインストールされたディレクトリに webdriver-manager という実行ファイルがあるので、それを使って Selenium Server や WebDriver をローカル環境にインストールします。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ./node_modules/protractor/bin/webdriver-manager update</span><br></pre></td></tr></table></figure></p>
+<h2 id="Protractor_設定ファイル作成">Protractor 設定ファイル作成</h2><p>Protractor の設定ファイルを作成します。<br>下記の referenceConf.js をベースに必要な設定を行うと良いかと思います。<br><a href="https://github.com/angular/protractor/blob/master/docs/referenceConf.js" target="_blank" rel="external">https://github.com/angular/protractor/blob/master/docs/referenceConf.js</a><br>今回は最低限の設定のみです。<br>baseUrl にバックグラウンドで、<code>grunt serve</code> で実行する localhost:9000 を設定しております。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi <span class="built_in">test</span>/protractor-conf.coffee</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">exports.config =</span><br><span class="line"></span><br><span class="line">  capabilities:</span><br><span class="line">    browserName: <span class="string">"chrome"</span></span><br><span class="line"></span><br><span class="line">  baseUrl: <span class="string">"http://localhost:9000"</span></span><br><span class="line"></span><br><span class="line">  specs: [<span class="string">"e2e/**/*.coffee"</span>]</span><br><span class="line"></span><br><span class="line">  jasmineNodeOpts:</span><br><span class="line">    isVerbose: <span class="literal">true</span></span><br><span class="line">    showColors: <span class="literal">true</span></span><br><span class="line">    defaultTimeoutInterval: <span class="number">30000</span></span><br></pre></td></tr></table></figure>
+<h2 id="Gruntfile-js_にGruntタスク追加">Gruntfile.js にGruntタスク追加</h2><p>Gruntfile.js を編集して、タスクを追加します。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi Gruntfile.js</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">protractor: &#123;</span><br><span class="line">  options: &#123;</span><br><span class="line">    configFile: <span class="string">'node_modules/protractor/referenceConf.js'</span>, <span class="comment">// Default config file</span></span><br><span class="line">    keepAlive: <span class="literal">false</span>,</span><br><span class="line">    noColor: <span class="literal">false</span>,</span><br><span class="line">    args: &#123;&#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  E2E_local: &#123;</span><br><span class="line">    options: &#123;</span><br><span class="line">      configFile: <span class="string">'test/protractor-conf.coffee'</span>, <span class="comment">// 先ほど作成したファイル</span></span><br><span class="line">      args: &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>テストのタスクに上記で設定した protractor:E2E_local を追加設定します。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">grunt.registerTask(<span class="string">'test'</span>, [</span><br><span class="line">  <span class="string">'clean:server'</span>,</span><br><span class="line">  <span class="string">'concurrent:test'</span>,</span><br><span class="line">  <span class="string">'autoprefixer'</span>,</span><br><span class="line">  <span class="string">'connect:test'</span>,</span><br><span class="line">  <span class="string">'karma'</span>,</span><br><span class="line">  <span class="string">'protractor:E2E_local'</span> <span class="comment">// ここに追記</span></span><br><span class="line">]);</span><br></pre></td></tr></table></figure></p>
+<h2 id="E2Eテストコードの作成">E2Eテストコードの作成</h2><p>e2e のテストコードを test ディレクトリ配下に作成して、テストコードを作成します。<br>今回のサンプルのテストの内容としては、単純に h4 のテキストを確認するだけです。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir <span class="built_in">test</span>/e2e</span><br><span class="line">$ vi <span class="built_in">test</span>/e2e/mainE2Etest.coffee</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="pi">"use strict"</span></span><br><span class="line">describe <span class="string">"mainE2ETest"</span>, -&gt;</span><br><span class="line">  beforeEach -&gt;</span><br><span class="line">    browser.get <span class="string">"/#/"</span></span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">  it <span class="string">"first h4 text should be 'HTML5 Boilerplate'"</span>, -&gt;</span><br><span class="line">    element.all(By.css(<span class="string">'.marketing h4'</span>)).then (item) -&gt;</span><br><span class="line">      expect(item[<span class="number">0</span>].isDisplayed()).toBe <span class="literal">true</span></span><br><span class="line">      expect(item[<span class="number">0</span>].getText()).toBe(<span class="string">'HTML5 Boilerplate'</span>)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">  it <span class="string">"second h4 text should be 'Angular'"</span>, -&gt;</span><br><span class="line">    element.all(By.css(<span class="string">'.marketing h4'</span>)).then (item) -&gt;</span><br><span class="line">      expect(item[<span class="number">1</span>].isDisplayed()).toBe <span class="literal">true</span></span><br><span class="line">      expect(item[<span class="number">1</span>].getText()).toBe(<span class="string">'Angular'</span>)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">  it <span class="string">"third h4 text should be 'Karma'"</span>, -&gt;</span><br><span class="line">    element.all(By.css(<span class="string">'.marketing h4'</span>)).then (item) -&gt;</span><br><span class="line">      expect(item[<span class="number">2</span>].isDisplayed()).toBe <span class="literal">true</span></span><br><span class="line">      expect(item[<span class="number">2</span>].getText()).toBe(<span class="string">'Karma'</span>)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  <span class="keyword">return</span></span><br></pre></td></tr></table></figure>
+<p>Protractor の API については、下記のドキュメントを参考にしていただけるとわかりやすいかと思います。  </p>
+<ul>
+<li><a href="http://angular.github.io/protractor/#/api" target="_blank" rel="external">Protractor API Docs</a>  </li>
+</ul>
+<p>また、CoffeeScript で Protractor のテストを記述する際には、<code>by</code> が CoffeeScript で予約語になっているらしく、エラーが出てしまうので、<code>By</code> を使うようにすると回避できるそうです。要注意です。  </p>
+<ul>
+<li><a href="http://stackoverflow.com/questions/24098434/protractor-tests-in-coffeescript-producing-syntaxerror-unexpected-by" target="_blank" rel="external">javascript - Protractor tests in CoffeeScript producing “SyntaxError: unexpected by”? - Stack Overflow </a></li>
+</ul>
+<h2 id="バックグラウンドで_grunt_serve">バックグラウンドで grunt serve</h2><p>テストを実行するのとは違うコンソールウィンドウで、<code>grunt serve</code> を実行してサーバーを起動しておきます。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ grunt serve</span><br></pre></td></tr></table></figure></p>
+<h2 id="テストを実行">テストを実行</h2><p><code>grunt test</code> を実行すると、通常のユニットテストを実行した後に、ブラウザが起動して Protractor の E2E テストが実行されます。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ grunt <span class="built_in">test</span></span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Running <span class="string">"protractor:E2E_local"</span> (protractor) task</span><br><span class="line">Starting selenium standalone server...</span><br><span class="line">Selenium standalone server started at http://<span class="number">192.168</span>.<span class="number">11.7</span>:<span class="number">55807</span>/wd/hub</span><br><span class="line">mainE2ETest</span><br><span class="line">  first h4 text should be <span class="string">'HTML5 Boilerplate'</span> - pass</span><br><span class="line">  second h4 text should be <span class="string">'Angular'</span> - pass</span><br><span class="line">  third h4 text should be <span class="string">'Karma'</span> - pass</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Finished <span class="keyword">in</span> <span class="number">6.11</span> seconds</span><br><span class="line"><span class="number">3</span> tests, <span class="number">6</span> assertions, <span class="number">0</span> failures</span><br><span class="line"></span><br><span class="line">Shutting down selenium standalone server.</span><br><span class="line"></span><br><span class="line">Done, without errors.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Execution Time (<span class="number">2014</span>-<span class="number">10</span>-<span class="number">06</span> <span class="number">04</span>:<span class="number">37</span>:<span class="number">42</span> UTC)</span><br><span class="line">concurrent:<span class="built_in">test</span>       <span class="number">2.7</span>s  ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ <span class="number">20</span>%</span><br><span class="line">karma:unit            <span class="number">1.9</span>s  ▇▇▇▇▇▇▇▇▇▇▇▇ <span class="number">15</span>%</span><br><span class="line">protractor:E2E_<span class="built_in">local</span>  <span class="number">8.5</span>s  ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ <span class="number">64</span>%</span><br><span class="line">Total <span class="number">13.2</span>s</span><br></pre></td></tr></table></figure>
+<hr>
+<p>ここからはローカルの開発環境で実行した Protractor を CircleCI で実行する際の設定です。  </p>
+<h2 id="CircleCI_用の設定ファイル作成">CircleCI 用の設定ファイル作成</h2><p>circle.yml というファイルを下記のように作成します。<br>ポイントは、バックグラウンドで、<code>grunt serve</code> を実行しておくことです。<br><figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">machine:</span><br><span class="line">  node:</span><br><span class="line">    version: v0.10.28</span><br><span class="line">dependencies:</span><br><span class="line">  pre:</span><br><span class="line">    -<span class="ruby"> npm install -g bower</span><br><span class="line"></span>    -<span class="ruby"> npm install</span><br><span class="line"></span>    -<span class="ruby"> bower install</span><br><span class="line"></span>    -<span class="ruby"> node_modules/protractor/bin/webdriver-manager update</span><br><span class="line"></span>  cache_directories:</span><br><span class="line">    -<span class="ruby"> ~<span class="regexp">/nvm</span><br><span class="line"></span></span>test:</span><br><span class="line">  pre:</span><br><span class="line">    -<span class="ruby"> grunt <span class="symbol">serve:</span></span><br><span class="line"></span>        background: true</span><br><span class="line">    -<span class="ruby"> sleep <span class="number">5</span></span></span><br></pre></td></tr></table></figure></p>
+<p>Github に push すると、CircleCI でテストが下記のように実行されます。<br><img src="/images/protractor/protractor.png" alt="protractor">  </p>
+<h2 id="まとめ">まとめ</h2><p>E2E テストは、ブラウザでの操作がしっかりとテスト出来て、ユニットテストだけではテスト出来ない部分もカバー出来るため、非常に重要なテストであると思ってます。<br>ブラウザが立ち上がって画面遷移やらフォームの入力やらが実行されるので、「自動でテストしている感」もあって楽しいですしね（笑）<br>Protractor や CirlcleCI など、自動でテスト出来るツールや環境を大いに活用して、どんどん無駄な手間などを省いて楽していきましょう ╭( ･ㅂ･)و ̑̑</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AngularJS/">AngularJS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CI/">CI</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CircleCI/">CircleCI</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Protractor/">Protractor</a></li></ul>
+
+
+      <p class="article-footer__author">by 佐々木 悠人</p>
+    </footer>
+  </div>
+</article>
+
+
+
+        <hr class="footer-line">
+  </div>
+<footer id="footer" class="inner">
+  <div id="footer-info">
+    &copy;2015 <a href="http://mmmcorp.co.jp/" target="_blank" class="footer_info__author">株式会社MMM</a>
+  </div>
+</footer>
+
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+</body>
+</html>

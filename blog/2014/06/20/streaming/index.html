@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>転送量が多いWebサービスをクラウド上で展開する際のお金の話 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="一昨日から突如、左手の甲の外側近辺に謎の痛みが発生し、コードを書くのにも支障をきたして半べそかきながら仕事してる代表の国本です。
+今回は当社が携わった有料制の音楽配信サービスプロジェクトを題材に、音楽や動画など転送量が多いWebサービスをAWSなどのクラウドで配信する際に気をつける点についてお話しようと思います。
+といいましても。本エントリーではCloudFrontやElastic Transco">
+<meta property="og:type" content="website">
+<meta property="og:title" content="転送量が多いWebサービスをクラウド上で展開する際のお金の話">
+<meta property="og:url" content="http://blog.mmmcorp.co.jp/blog/2014/06/20/streaming/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="一昨日から突如、左手の甲の外側近辺に謎の痛みが発生し、コードを書くのにも支障をきたして半べそかきながら仕事してる代表の国本です。
+今回は当社が携わった有料制の音楽配信サービスプロジェクトを題材に、音楽や動画など転送量が多いWebサービスをAWSなどのクラウドで配信する際に気をつける点についてお話しようと思います。
+といいましても。本エントリーではCloudFrontやElastic Transco">
+<meta property="og:image" content="/images/streaming/s3_cost.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="転送量が多いWebサービスをクラウド上で展開する際のお金の話">
+<meta name="twitter:description" content="一昨日から突如、左手の甲の外側近辺に謎の痛みが発生し、コードを書くのにも支障をきたして半べそかきながら仕事してる代表の国本です。
+今回は当社が携わった有料制の音楽配信サービスプロジェクトを題材に、音楽や動画など転送量が多いWebサービスをAWSなどのクラウドで配信する際に気をつける点についてお話しようと思います。
+といいましても。本エントリーではCloudFrontやElastic Transco">
+  
+    <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css" type="text/css">
+  
+
+</head>
+
+<header id="header" class="inner">
+  <h1>
+    <a href="/" id="logo">MMMブログ</a>
+  </h1>
+  
+</div>
+</header>
+<body>
+  <div id="content" class="inner">
+        <article id="post-streaming" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2014-06-19T22:48:56.000Z" itemprop="datePublished">2014-06-20</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2014/06/20/streaming/">転送量が多いWebサービスをクラウド上で展開する際のお金の話</a>
+    </h3>
+  
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一昨日から突如、左手の甲の外側近辺に謎の痛みが発生し、コードを書くのにも支障をきたして半べそかきながら仕事してる代表の国本です。</p>
+<p>今回は当社が携わった有料制の音楽配信サービスプロジェクトを題材に、音楽や動画など転送量が多いWebサービスをAWSなどのクラウドで配信する際に気をつける点についてお話しようと思います。</p>
+<p>といいましても。本エントリーではCloudFrontやElastic Transcoderなどの技術要素ではなく<strong>動画や音楽配信にかかる費用</strong>にフォーカスをあててお話をします。</p>
+<h2 id="題材となるプロジェクトの概要">題材となるプロジェクトの概要</h2><ul>
+<li>法人をターゲットとした有料会員制音楽配信サービス</li>
+<li>現行アプリがFlashを用いて開発された古いアプリのため、iPadやスマホで利用できない</li>
+<li>インフラとアプリケーションをリプレースし、iPadやスマートフォン対応を行いたい</li>
+<li>有料会員数500名〜1000名で24時間のサービス稼働前提だが<strong>インフラ費用は極限まで抑えたい</strong></li>
+</ul>
+<h2 id="クラウドストレージで配信するコンテンツのざっくり条件">クラウドストレージで配信するコンテンツのざっくり条件</h2><p>ワールドワイドでの実績とイレブンナインの可用性、運用保守等を考慮し、配信用のストレージにAmazon S3を検討。</p>
+<p>配信コンテンツ想定は下記の通りとします。</p>
+<ul>
+<li>配信する楽曲は平均5MBのファイルが合計2,200曲</li>
+<li>楽曲はチャンネルに区分し、1チャンネルあたり約70曲(350MB/1チャンネル)</li>
+<li>利用者は1,000名で、1ユーザあたり2チャンネル/日を月20日間利用</li>
+<li>一度取得したチャンネルの再生はクライアント内のキャッシュデータで行う</li>
+</ul>
+<h2 id="どのくらいの費用がかかるのか？">どのくらいの費用がかかるのか？</h2><p>ということでざっくりとした費用算出を行ってみましょう。</p>
+<ul>
+<li>ストレージ：11GB (2,200曲 × 5MB)</li>
+<li>リクエスト：20,000 (1,000ユーザ × 20日)</li>
+<li>データ送信：13.3TB/月 (350MB/1チャンネル × 2本 × 20日 × 1,000ユーザ)</li>
+</ul>
+<p><img src="/images/streaming/s3_cost.png" alt="s3_cost"></p>
+<p>話を分かりやすくするため色々省略していますが、S3の費用が<strong>月額2848ドル前後</strong>です。</p>
+<p>他のクラウドストレージ参考例として、Google社のCloud Storageで同じ条件で費用算出を行った所、ざっくりと<strong>月額2300ドル前後</strong>となりました。<br>※<a href="https://cloud.google.com/products/cloud-storage/?hl=ja" target="_blank" rel="external">Google Cloud Storage料金表</a></p>
+<p>注目すべき点は両クラウドストレージ共に、<strong>費用の大部分がデータ送信(下り)に掛かる</strong>という所で、ユーザへ大容量のコンテンツを配信するサービスを展開する場合は、単純に費用だけを考えると割高になる可能性もあります。</p>
+<p>無論、クラウドの特徴である弾性に富んだインフラを構成できるメリットや、コスト感についてもメンテナンスビリティを考慮したトータルな視点で考える必要はありますが、展開するシステムの特性を考えた上で、適材適所なサービスを選定しシステムを構成することが大切です。</p>
+<h2 id="動画配信・音楽配信サービスでお困りの方">動画配信・音楽配信サービスでお困りの方</h2><p>コンテンツ配信用のクラウド基盤、インフラ選定から、アプリケーション開発までコスト感に合わせた最適な構成をご提案しますので、ぜひ<a href="https://contact.mmmcorp.co.jp/" target="_blank" rel="external">こちらから</a>お気軽にご相談下さいませー。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/クラウド/">クラウド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/動画配信/">動画配信</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/音楽配信/">音楽配信</a></li></ul>
+
+
+      <p class="article-footer__author">by 国本 廷宣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+        <hr class="footer-line">
+  </div>
+<footer id="footer" class="inner">
+  <div id="footer-info">
+    &copy;2015 <a href="http://mmmcorp.co.jp/" target="_blank" class="footer_info__author">株式会社MMM</a>
+  </div>
+</footer>
+
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+</body>
+</html>

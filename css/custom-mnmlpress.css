@@ -1,0 +1,69 @@
+/* 汎用 */
+a {
+  color: #428bca;
+}
+
+a:hover {
+  color: #444;
+}
+
+hr {
+  width: 50%;
+  margin: 3em auto;
+  border: 0;
+  border-bottom: 5px solid #34495e;
+}
+
+/* ロゴ */
+#header a {
+  font-size: 40px;
+}
+
+#header a:hover {
+  color: #34495e;
+}
+
+/* アーカイブの日付見出し（2015など） */
+.archives h2 {
+  color: #444;
+}
+
+/* アーカイブのタイトル */
+.list h3 a.archive-article-title {
+  color: #428bca;
+  font-weight: normal;
+}
+
+.list h3 a.archive-article-title:hover {
+  color: #444;
+}
+
+/* ページネーション */
+#page-nav .page-number {
+  margin-right: 8px;
+  color: #444;
+}
+
+#page-nav .page-number.current {
+  color: #428bca;
+}
+
+#page-nav .space {
+  margin-right: 8px;
+}
+
+#page-nav .extend {
+  color: #428bca;
+  margin-right: 8px;
+}
+
+/* 記事を書いた人 */
+.article-footer__author {
+  color: #444;
+  font-size: 16px;
+}
+
+/* まるc MMMの箇所 */
+.footer_info__author {
+  color: #428bca;
+}

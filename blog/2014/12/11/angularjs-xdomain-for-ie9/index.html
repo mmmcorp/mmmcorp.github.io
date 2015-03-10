@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>xdomain.jsを活用してAngularJSでIE9のCORS対応を行う | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="今年に入ってから書類のやり取りで封筒の宛名書きが大幅に増え、手書きに限界を感じ、テプラGrand WR1000を導入したのは良かったものの、ドライバーがYosemite対応されておらず、ラベルを作成するためだけに、都度VirtualBoxでWindowsを立ち上げている代表の国本です。
+Internet Explorer(通称IE)。Web業界に携わる人間であれば、このIEに悩まされることは度々あ">
+<meta property="og:type" content="website">
+<meta property="og:title" content="xdomain.jsを活用してAngularJSでIE9のCORS対応を行う">
+<meta property="og:url" content="http://blog.mmmcorp.co.jp/blog/2014/12/11/angularjs-xdomain-for-ie9/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="今年に入ってから書類のやり取りで封筒の宛名書きが大幅に増え、手書きに限界を感じ、テプラGrand WR1000を導入したのは良かったものの、ドライバーがYosemite対応されておらず、ラベルを作成するためだけに、都度VirtualBoxでWindowsを立ち上げている代表の国本です。
+Internet Explorer(通称IE)。Web業界に携わる人間であれば、このIEに悩まされることは度々あ">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="xdomain.jsを活用してAngularJSでIE9のCORS対応を行う">
+<meta name="twitter:description" content="今年に入ってから書類のやり取りで封筒の宛名書きが大幅に増え、手書きに限界を感じ、テプラGrand WR1000を導入したのは良かったものの、ドライバーがYosemite対応されておらず、ラベルを作成するためだけに、都度VirtualBoxでWindowsを立ち上げている代表の国本です。
+Internet Explorer(通称IE)。Web業界に携わる人間であれば、このIEに悩まされることは度々あ">
+  
+    <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css" type="text/css">
+  
+
+</head>
+
+<header id="header" class="inner">
+  <h1>
+    <a href="/" id="logo">MMMブログ</a>
+  </h1>
+  
+</div>
+</header>
+<body>
+  <div id="content" class="inner">
+        <article id="post-angularjs-xdomain-for-ie9" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2014-12-10T22:41:27.000Z" itemprop="datePublished">2014-12-11</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2014/12/11/angularjs-xdomain-for-ie9/">xdomain.jsを活用してAngularJSでIE9のCORS対応を行う</a>
+    </h3>
+  
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今年に入ってから書類のやり取りで封筒の宛名書きが大幅に増え、手書きに限界を感じ、テプラGrand WR1000を導入したのは良かったものの、ドライバーがYosemite対応されておらず、ラベルを作成するためだけに、都度VirtualBoxでWindowsを立ち上げている代表の国本です。</p>
+<p>Internet Explorer(通称IE)。Web業界に携わる人間であれば、このIEに悩まされることは度々あるかと思いますが。今回はAngularJSでIE9のCORS(Cross-Origin Resource Sharing)対応を行う方法を簡単に紹介しようと思います。</p>
+<h2 id="IE9でのCORSについて">IE9でのCORSについて</h2><p>周知の通り、IE9ではXMLHttpRequestによるCORSをサポートしておらず、IE9でAjax通信を行い、かつ異なるドメインのリソースにアクセスしたい場合(いわゆるクロスドメイン通信)、IE独自のXDomainRequestオブジェクトを利用する必要があります。</p>
+<p>しかしAngularJSでは、IE独自のXDomainRequestオブジェクトをサポートしておらず、resourceオブジェクトなどでRESTfulなサーバサイドAPIとの通信を定義しても、残念なことにIE9では利用できません。</p>
+<h2 id="xdomain-jsの活用">xdomain.jsの活用</h2><p>上述の通り、素の状態ではIE9でのクロスドメイン通信が行えないため、今回は <strong><a href="https://github.com/jpillora/xdomain" target="_blank" rel="external">xdomain.js</a></strong>ライブラリを活用して、クロスドメイン通信を実現します。</p>
+<p><strong><a href="https://github.com/jpillora/xdomain" target="_blank" rel="external">xdomain.js</a></strong>を利用することで、<strong>AngularJSやAPIサーバサイドのコードに手を加えること無く</strong>、IE9でのシームレスなクロスドメイン通信を実現することが可能です。</p>
+<p>xdomain.jsでは<strong>Masterドメイン</strong>と<strong>Slaveドメイン</strong>という概念があり</p>
+<ul>
+<li>Ajax通信を行うリクエスト元 → Masterドメイン</li>
+<li>Ajax通信の受け手となるサーバサイドAPI → Slaveドメイン</li>
+</ul>
+<p>となります。(ここらへんの定義が感覚的に微妙にわかりづらい….)</p>
+<h2 id="実装前提">実装前提</h2><p>下記バージョンで動作確認を行っています。</p>
+<ul>
+<li>AngularJS 1.3.6</li>
+<li>xdomain.js 0.6.15</li>
+</ul>
+<p>Ajaxの通信先となるREST APIサーバサイドではCORSに必要なAllowedOriginヘッダーなどの設定は既に完了している前提とします。</p>
+<h2 id="導入手順">導入手順</h2><p>導入は簡単で下記2ステップのみとなります。</p>
+<ol>
+<li>APIサーバサイドのWebサーバに専用の<code>proxy.html</code>というファイルを配置</li>
+<li>AngularJS側でIE9の時にxdomain.jsを読み込みAPI通信を定義</li>
+</ol>
+<h4 id="1-_サーバサイドAPIへproxy-htmlを配置">1. サーバサイドAPIへproxy.htmlを配置</h4><p>まず最初に、SlaveドメインとなるサーバサイドAPIに<code>proxy.html</code>というファイル名で、xdomain.jsを読み込むHTMLファイルを配備します。</p>
+<p>配備させる<code>proxy.html</code>の内容はこれだけ。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="doctype">&lt;!DOCTYPE HTML&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"//cdn.rawgit.com/jpillora/xdomain/0.6.15/dist/0.6/xdomain.min.js"</span> <span class="attribute">data-master</span>=<span class="value">"*"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>CDNからxdomain.jsを読み込み、<code>data-master</code>にてリクエストを許可するドメイン、アクセスパスをセットします。(今回は、とりあえず全アクセスを許可)</p>
+<p>data-masterは正規表現の利用が可能で、詳細は<a href="https://github.com/jpillora/xdomain/blob/gh-pages/README.md" target="_blank" rel="external">こちらのREADME</a>をご確認下さい。</p>
+<p>ファイル配備が完了後に、proxy.htmlにブラウザでアクセスを行い正常にロードできていることを確認します。</p>
+<h4 id="2-_AngularJSでのxdomain-jsの読み込み">2. AngularJSでのxdomain.jsの読み込み</h4><p>次に、MasterドメインとなるAngularJS側で、IE9でアクセスしてきたクライアントのみxdomain.jsをロードし、接続先のSlaveドメイン(つまり接続したいクロスドメインのAPI群)を定義します。</p>
+<p>今回はサンプルとして、app/index.htmlに下記記述を行いロードします。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--[if IE 9]&gt;</span><br><span class="line">&lt;script src="//cdn.rawgit.com/jpillora/xdomain/0.6.15/dist/0.6/xdomain.min.js"&gt;&lt;/script&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">  xdomain.slaves(&#123;</span><br><span class="line">    'http://qpi01.example.local': '/xdomain/proxy.html',</span><br><span class="line">    'http://qpi02.example.local': '/xdomain/proxy.html'</span><br><span class="line">  &#125;);</span><br><span class="line">&lt;/script&gt;</span><br><span class="line">&lt;![endif]--&gt;</span></span><br></pre></td></tr></table></figure>
+<p>IE9でのアクセス時にCDNからxdomain.jsをロードし、接続を行いたいAPIに対し、手順1.で配置したproxy.htmlへのアクセスパスをセットします。</p>
+<p>以上で導入作業は完了となり、AngularJSやサーバサイドのコード変更なく、IE9でもクロスドメイン通信が行えるようになります。</p>
+<h2 id="まとめ">まとめ</h2><p>サービスサイドで、<strong>IE9はサポートしません！！( ｰ`дｰ´)ｷﾘｯ</strong> とぶった斬りできればシンプルで一番良いとは思いますが、IE9のシェアや様々な政治的背景で現時点ではそれはなかなか難しい状況かと思います。</p>
+<p>IE9が根絶するその日まで、頑張っていきましょう╭( ･ㅂ･)و ̑̑</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AngularJS/">AngularJS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/IE/">IE</a></li></ul>
+
+
+      <p class="article-footer__author">by 国本 廷宣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+        <hr class="footer-line">
+  </div>
+<footer id="footer" class="inner">
+  <div id="footer-info">
+    &copy;2015 <a href="http://mmmcorp.co.jp/" target="_blank" class="footer_info__author">株式会社MMM</a>
+  </div>
+</footer>
+
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+</body>
+</html>

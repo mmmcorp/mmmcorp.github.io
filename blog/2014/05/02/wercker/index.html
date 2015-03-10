@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>wercker | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="Github、Bitbucket のプライベートリポジトリも無料でCIできるサービス Wercker を使ってみたはじめに今年のGWはたまっている本を読まないと、と思っている佐々木です。
+テスト、してますか？弊社では、これまで Jenkins サーバーを構築してそこでテストを実行していたのですが、Github や Bitbucket のプライベートリポジトリでも無料でCIできるとのことで、Werc">
+<meta property="og:type" content="website">
+<meta property="og:title" content="wercker">
+<meta property="og:url" content="http://blog.mmmcorp.co.jp/blog/2014/05/02/wercker/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="Github、Bitbucket のプライベートリポジトリも無料でCIできるサービス Wercker を使ってみたはじめに今年のGWはたまっている本を読まないと、と思っている佐々木です。
+テスト、してますか？弊社では、これまで Jenkins サーバーを構築してそこでテストを実行していたのですが、Github や Bitbucket のプライベートリポジトリでも無料でCIできるとのことで、Werc">
+<meta property="og:image" content="/images//wercker/register1.png">
+<meta property="og:image" content="/images//wercker/register2.png">
+<meta property="og:image" content="/images//wercker/add_app1.png">
+<meta property="og:image" content="/images//wercker/add_app2.png">
+<meta property="og:image" content="/images//wercker/add_app3.png">
+<meta property="og:image" content="/images//wercker/add_app4.png">
+<meta property="og:image" content="/images//wercker/add_app5.png">
+<meta property="og:image" content="/images//wercker/add_app6.png">
+<meta property="og:image" content="/images//wercker/add_app7.png">
+<meta property="og:image" content="/images//wercker/build1.png">
+<meta property="og:image" content="/images//wercker/build2.png">
+<meta property="og:image" content="/images//wercker/build3.png">
+<meta property="og:image" content="/images//wercker/rspec.png">
+<meta property="og:image" content="/images//wercker/5min.png">
+<meta property="og:image" content="/images//wercker/25min.png">
+<meta property="og:image" content="/images//wercker/script_name.png">
+<meta property="og:image" content="/images//wercker/pipeline.png">
+<meta property="og:image" content="/images//wercker/env.png">
+<meta property="og:image" content="/images//wercker/protected.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="wercker">
+<meta name="twitter:description" content="Github、Bitbucket のプライベートリポジトリも無料でCIできるサービス Wercker を使ってみたはじめに今年のGWはたまっている本を読まないと、と思っている佐々木です。
+テスト、してますか？弊社では、これまで Jenkins サーバーを構築してそこでテストを実行していたのですが、Github や Bitbucket のプライベートリポジトリでも無料でCIできるとのことで、Werc">
+  
+    <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css" type="text/css">
+  
+
+</head>
+
+<header id="header" class="inner">
+  <h1>
+    <a href="/" id="logo">MMMブログ</a>
+  </h1>
+  
+</div>
+</header>
+<body>
+  <div id="content" class="inner">
+        <article id="post-wercker" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2014-05-02T00:19:02.000Z" itemprop="datePublished">2014-05-02</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2014/05/02/wercker/">wercker</a>
+    </h3>
+  
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Github、Bitbucket_のプライベートリポジトリも無料でCIできるサービス_Wercker_を使ってみた">Github、Bitbucket のプライベートリポジトリも無料でCIできるサービス Wercker を使ってみた</h1><h2 id="はじめに">はじめに</h2><p>今年のGWはたまっている本を読まないと、と思っている佐々木です。</p>
+<p>テスト、してますか？<br>弊社では、これまで Jenkins サーバーを構築してそこでテストを実行していたのですが、<br>Github や Bitbucket のプライベートリポジトリでも無料でCIできるとのことで、<a href="http://wercker.com/" target="_blank" rel="external">Wercker</a> を使い始めました。<br>今回は、Wercker についてご紹介します。</p>
+<h2 id="現在ベータ期間中の_Wercker">現在ベータ期間中の Wercker</h2><p>Wercker は現在ベータ期間中。 <em>（2014/05/02現在）</em></p>
+<p>ベータ期間中は、下記条件で登録・使用できます。</p>
+<ul>
+<li>リポジトリ数 無制限</li>
+<li>同時でビルド 2つまで</li>
+<li>1ビルド 25分まで</li>
+<li>コラボレーター 無制限</li>
+<li>クレジットカード不要で登録可能</li>
+</ul>
+<p>ところで、Wercker ってどう発音するのが正しいんだろう…と思いググってみたところ、Wercker 公式の twitter で中の人が、下記のように発言していました。<br><a href="https://twitter.com/Wercker/status/449204933481746432" target="_blank" rel="external">https://twitter.com/Wercker/status/449204933481746432</a></p>
+<blockquote>
+<p>we pronounce it as “worker”</p>
+</blockquote>
+<p>“worker”と発音しているとのこと。カタカナで表すとすれば、「ワーカー」ですかね。</p>
+<p>Wercker の新規登録からCI実行まで、こちらの記事を参考に、今回は Bitbucket を使って実際にやってみました。<br><a href="http://blog.mah-lab.com/2014/01/08/rails-wercker-heroku-deploy/" target="_blank" rel="external">Githubのプライベートリポジトリでも無料で使えるCI、Werckerを使ってrails newからHerokuのデプロイまでやってみる</a></p>
+<hr>
+<h2 id="新規登録">新規登録</h2><p><a href="http://wercker.com/" target="_blank" rel="external">Wercker</a> のトップページ右上の「REGISTER」から新規登録画面に行きます。</p>
+<p><img src="/images//wercker/register1.png" alt="register1"></p>
+<p>ユーザー名、メールアドレス、パスワードを入力。</p>
+<p><img src="/images//wercker/register2.png" alt="register2"></p>
+<p>「REGISTER NOW」を押します。Github 連携する場合は、「REGISTER WITH GITHUB」から。今回は、Bitbucket のプライベートリポジトリを使う予定なので、上の方の「REGISTER NOW」を押します。  </p>
+<p>登録すると、メールが届くので、「ACTIVATE YOUR ACCOUNT NOW」と書かれているリンクをクリックして、登録完了です。</p>
+<hr>
+<h2 id="アプリケーション追加">アプリケーション追加</h2><p>次に、アプリケーションの追加を行います。「+ Add an Application」をクリックします。</p>
+<p><img src="/images//wercker/add_app1.png" alt="add_app1"></p>
+<h3 id="1-_Choose_a_Git_provider">1. Choose a Git provider</h3><p>次に、Github か Bitbucket を選択します。今回は Bitbucket を利用するので、右の「Connect」をクリック。</p>
+<p><img src="/images//wercker/add_app2.png" alt="add_app2"></p>
+<p>Bitbucket のログイン画面に切り替わるので、ログインし、「アクセスを許可する」で、Wercker にアクセスを許可します。</p>
+<p><img src="/images//wercker/add_app3.png" alt="add_app3"></p>
+<h3 id="2-_Select_a_repository">2. Select a repository</h3><p>どのリポジトリを使うかを選択します。今回はサンプル用に作成した app_sample を選んで、「Use selected repo」をクリック。</p>
+<p><img src="/images//wercker/add_app4.png" alt="add_app4"></p>
+<h3 id="3-_Add_werckerbot">3. Add werckerbot</h3><p>ビルドを実行するために、app_sample に werckerbot をコラボレーターとして「読み出し」(READ権限) で追加する必要があるので、「Add werckerbot」をクリックして、Bitbucket 側で werckerbot を追加します。追加できたら、Wercker の画面の方の「Next」をクリックします。</p>
+<p><img src="/images//wercker/add_app5.png" alt="add_app5"></p>
+<h3 id="4-_Setup_your_wercker-yml">4. Setup your wercker.yml</h3><p>wercker.yml がリポジトリのソースコードを基に自動で表示されるので、これを基にwercker.ymlを作成します。wercker.yml の詳しい内容については後ほど。とりあえず内容をコピペして wercker.yml を作成して、「Next」で次へ。<br><img src="/images//wercker/add_app6.png" alt="add_app6"></p>
+<h3 id="5-_Let’s_finish_up">5. Let’s finish up</h3><p>最後に、「Create Application」をクリックして完了です。<br><img src="/images//wercker/add_app7.png" alt="add_app7"></p>
+<hr>
+<h2 id="ビルド実行">ビルド実行</h2><p>アプリケーションの追加が完了すると、下記の画面に行きます。</p>
+<p><img src="/images//wercker/build1.png" alt="build1"></p>
+<p>先ほど作成した wercker.yml に必要な手順を適切に追記して、さっそく「Build now」をクリックしてビルドを実行してみます。<br>environment variables やら bundle install やらが実行されて…。</p>
+<p><img src="/images//wercker/build2.png" alt="build2"></p>
+<p><img src="/images//wercker/build3.png" alt="build3"></p>
+<p>無事テストが通りました！<br>rspec もこんな感じで実行されているのがわかります。<br><img src="/images//wercker/rspec.png" alt="rspec"></p>
+<p>ちなみに、デフォルト設定だと5分以上応答がない場合エラーになります。<br>こんな感じ。</p>
+<p><img src="/images//wercker/5min.png" alt="5min"></p>
+<p>これは、wercker.yml で no-response-timeout を指定すると変更可能です。<br>また、25分以上処理に時間がかかってしまうと、下記のようなエラーになります。処理が25分以内に収まるようにテストコードなどを見直して修正しましょう。</p>
+<p><img src="/images//wercker/25min.png" alt="25min"></p>
+<hr>
+<h2 id="wercker-yml">wercker.yml</h2><p>上記で見てきた通り、Wercker を実行するために、wercker.yml ファイルが必要になります。これを作成して、リポジトリに push してやる必要があります。</p>
+<p>アプリケーションを追加する際に、「4. Setup your wercker.yml」で、自動的に wercker.yml を作成してくれて表示してくれるので、それを基に必要な処理を追加していきます。</p>
+<p>今回作成した wercker.yml は下記の通り。</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">box</span>: wercker/rvm</span><br><span class="line"><span class="attribute">services</span>:</span><br><span class="line">    - wercker/mysql</span><br><span class="line"><span class="attribute">build</span>:</span><br><span class="line">    <span class="attribute">steps</span>:</span><br><span class="line">        - <span class="attribute">rvm-use</span>:</span><br><span class="line">            <span class="attribute">version</span>: <span class="number">2.0</span>.<span class="number">0</span></span><br><span class="line">        - bundle-install</span><br><span class="line">        - rails-database-yml</span><br><span class="line">        - <span class="attribute">script</span>:</span><br><span class="line">            <span class="attribute">name</span>: echo ruby information</span><br><span class="line">            <span class="attribute">code</span>: |</span><br><span class="line">                echo <span class="string">"ruby version $(ruby --version) running"</span></span><br><span class="line">                echo <span class="string">"from location $(which ruby)"</span></span><br><span class="line">                echo -p <span class="string">"gem list: $(gem list)"</span></span><br><span class="line">        - <span class="attribute">script</span>:</span><br><span class="line">            <span class="attribute">name</span>: setup DB</span><br><span class="line">            <span class="attribute">code</span>: bundle exec rake <span class="attribute">db</span>:migrate</span><br><span class="line">        - <span class="attribute">script</span>:</span><br><span class="line">            <span class="attribute">name</span>: rspec</span><br><span class="line">            <span class="attribute">code</span>: bundle exec rake spec</span><br></pre></td></tr></table></figure>
+<p>内容について1つずつ見ていきます。</p>
+<h3 id="box">box</h3><p>ビルドやデプロイが実行される環境。今回は wercker/rvm が入っていたのでそのまま変更せずに使用します。他にも、wercker/nodejs とか wercker/python などが使えます。カスタムで作成した box を公開している人もいるので、そういったものは<a href="https://app.wercker.com/#explore/boxes/search/main" target="_blank" rel="external">こちら</a>で使用可能な box を検索することができます。</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">box</span>: <span class="string">wercker/rvm</span></span><br></pre></td></tr></table></figure>
+<h3 id="services">services</h3><p>どのデータベースを使用するかなど設定できます。今回は mysql のサービスを使っています。他にも、wercker/postgresql、wercker/mongodb、wercker/rabbitmq なども使えるようです。<a href="https://app.wercker.com/#explore/boxes/search/service" target="_blank" rel="external">こちら</a>から使用可能なものが検索できます。</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="label">services:</span></span><br><span class="line">    - wercker/mysql</span><br></pre></td></tr></table></figure>
+<h3 id="build">build</h3><p>ビルドに必要な処理を記述します。steps の下に処理を列挙していく形になります。<a href="https://app.wercker.com/#explore/steps/search/" target="_blank" rel="external">こちら</a>から使用可能なものが検索できます。</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">build</span>:</span><br><span class="line">    <span class="attribute">steps</span>:</span><br></pre></td></tr></table></figure>
+<h4 id="rvm-use">rvm-use</h4><p>rvm で使用する ruby のバージョンを指定します。ここでは 2.0.0 が指定されています。</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby"> rvm-<span class="symbol">use:</span></span><br><span class="line"></span>    version: 2.0.0</span><br></pre></td></tr></table></figure>
+<h4 id="bundle-install">bundle-install</h4><p>bundle install を実行。</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">- </span>bundle-install</span><br></pre></td></tr></table></figure>
+<h4 id="rails-database-yml">rails-database-yml</h4><p>services で記載してある情報を基に、wercker の box 上で実行する rails に必要な config/database.yml を適切に自動的に作成してくれます。</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">- </span>rails-database-yml</span><br></pre></td></tr></table></figure>
+<h4 id="script">script</h4><p>実行したいコマンドを記述できます。name の部分には、処理の名前を記述します。ここに書かれた名前が、下記のようにビルド実行時に表示されます。</p>
+<p><img src="/images//wercker/script_name.png" alt="script_name"></p>
+<p>ここでは、bundle exec rake db:migrate を実行している例です。</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- <span class="keyword">script</span>:</span><br><span class="line">    <span class="property">name</span>: setup DB</span><br><span class="line">    code: bundle exec rake db:migrate</span><br></pre></td></tr></table></figure>
+<p>rspec は下記のとおり。</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- <span class="keyword">script</span>:</span><br><span class="line">    <span class="property">name</span>: rspec</span><br><span class="line">    code: bundle exec rake spec</span><br></pre></td></tr></table></figure>
+<h4 id="after-steps">after-steps</h4><p>after-steps に下記のように記述することで、ビルド結果を hipchat に表示させることも可能です。</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">after-steps</span>:</span><br><span class="line">    - <span class="attribute">hipchat-notify</span>:</span><br><span class="line">        <span class="attribute">token</span>: hipchat のトークン</span><br><span class="line">        <span class="attribute">room-id</span>: ルームID</span><br><span class="line">        <span class="attribute">from-name</span>: hipchat で表示する名前</span><br></pre></td></tr></table></figure>
+<h3 id="deploy">deploy</h3><p>テスト実行後に、デプロイする場合は、deploy 以下に処理を書きます。heroku にデプロイする場合の例。 (HEROKU_DEPLOY_KEY は環境変数)</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">deploy</span>:</span><br><span class="line">    <span class="attribute">steps</span>:</span><br><span class="line">        - <span class="attribute">heroku-deploy</span>:</span><br><span class="line">            <span class="attribute">run</span>: rake <span class="attribute">db</span>:migrate</span><br><span class="line">            <span class="attribute">key-name</span>: HEROKU_DEPLOY_KEY</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="環境変数について">環境変数について</h2><p>例えば config 関連のファイルに、AWS のアクセスキーなど直接書いたものをリポジトリにアップロードしたりはしたくないものです。そういう場合、環境変数を使って書いている場合もあるかと思います。<br>config/assets.yml の例。</p>
+<figure class="highlight mel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">（中略）</span><br><span class="line"></span><br><span class="line">  aws_access_key_id: &lt;<span class="variable">%=</span> ENV[<span class="string">'AWS_ACCESS_KEY_ID'</span>] <span class="variable">%&gt;</span></span><br><span class="line">  aws_secret_access_key: &lt;<span class="variable">%=</span> ENV[<span class="string">'AWS_SECRET_ACCESS_KEY'</span>] <span class="variable">%&gt;</span></span><br><span class="line"></span><br><span class="line">（中略）</span><br></pre></td></tr></table></figure>
+<p>そういった環境変数についても、設定できます。アプリ画面の Settings タブから、Pipeline の項目の、「Add new variable」をクリック。</p>
+<p><img src="/images//wercker/pipeline.png" alt="pipeline"></p>
+<p>Environment variable に環境変数名、Textに変数値を入れて「Save」で設定完了です。<br>設定した環境変数は下記のように値が確認できます。</p>
+<p><img src="/images//wercker/env.png" alt="env"></p>
+<p>Protected にチェックを入れて保存すると、鍵マークがついて値が表示されません。</p>
+<p><img src="/images//wercker/protected.png" alt="protected"></p>
+<p>パスワードなどは、Protected にチェック入れた方がいいですね。</p>
+<hr>
+<h2 id="まとめ">まとめ</h2><p>いかがだったでしょうか。<br>現在 Wercker はベータ中ではありますが、使ってみたらとてもわかりやすくて、機能としてはまったく問題ないと感じました。<br>今回は、テスト実行までを中心にまとめてみましたが、テスト実行してテストが通ったら、heroku に自動的にデプロイする、ということも非常に簡単にできます。<br>また、box や step など、他の人が公開しているカスタムしたものも利用可能なようなので、かなり柔軟性があるのではないかと思います。<br>プライベートリポジトリで使うには、<a href="https://travis-ci.com/" target="_blank" rel="external">Travis CI</a>や<a href="https://circleci.com/" target="_blank" rel="external">CircleCI</a>は有料だからなーっていう方、是非試してみてはいかがでしょうか。  </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CI/">CI</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/開発ツール/">開発ツール</a></li></ul>
+
+
+      <p class="article-footer__author">by 佐々木 悠人</p>
+    </footer>
+  </div>
+</article>
+
+
+
+        <hr class="footer-line">
+  </div>
+<footer id="footer" class="inner">
+  <div id="footer-info">
+    &copy;2015 <a href="http://mmmcorp.co.jp/" target="_blank" class="footer_info__author">株式会社MMM</a>
+  </div>
+</footer>
+
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>AngularJSとGruntで稼働環境によって接続先APIを切り替える | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="今年の夏は、家族旅行で行った海ではしゃぎ過ぎ、温泉宿に付いた瞬間に疲れ果ててしまい肝心の温泉にあまり浸かれず、翌日全身筋肉痛となって帰宅したのがハイライトだった…..代表の国本です。
+Webサービスやスマホ・アプリ開発では実際にサービスが稼働する本番環境の他に、同等のステージングや開発環境をセットで構築することが多々あるかと思います。
+現在弊社のプロジェクトではクライアントサイドのフレームワークと">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AngularJSとGruntで稼働環境によって接続先APIを切り替える">
+<meta property="og:url" content="http://blog.mmmcorp.co.jp/blog/2014/08/26/enviroments-specific-configuration-in-angular/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="今年の夏は、家族旅行で行った海ではしゃぎ過ぎ、温泉宿に付いた瞬間に疲れ果ててしまい肝心の温泉にあまり浸かれず、翌日全身筋肉痛となって帰宅したのがハイライトだった…..代表の国本です。
+Webサービスやスマホ・アプリ開発では実際にサービスが稼働する本番環境の他に、同等のステージングや開発環境をセットで構築することが多々あるかと思います。
+現在弊社のプロジェクトではクライアントサイドのフレームワークと">
+<meta property="og:image" content="/images/angularJS/angularJS_alert.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AngularJSとGruntで稼働環境によって接続先APIを切り替える">
+<meta name="twitter:description" content="今年の夏は、家族旅行で行った海ではしゃぎ過ぎ、温泉宿に付いた瞬間に疲れ果ててしまい肝心の温泉にあまり浸かれず、翌日全身筋肉痛となって帰宅したのがハイライトだった…..代表の国本です。
+Webサービスやスマホ・アプリ開発では実際にサービスが稼働する本番環境の他に、同等のステージングや開発環境をセットで構築することが多々あるかと思います。
+現在弊社のプロジェクトではクライアントサイドのフレームワークと">
+  
+    <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css" type="text/css">
+  
+
+</head>
+
+<header id="header" class="inner">
+  <h1>
+    <a href="/" id="logo">MMMブログ</a>
+  </h1>
+  
+</div>
+</header>
+<body>
+  <div id="content" class="inner">
+        <article id="post-enviroments-specific-configuration-in-angular" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2014-08-25T22:21:15.000Z" itemprop="datePublished">2014-08-26</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2014/08/26/enviroments-specific-configuration-in-angular/">AngularJSとGruntで稼働環境によって接続先APIを切り替える</a>
+    </h3>
+  
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今年の夏は、家族旅行で行った海ではしゃぎ過ぎ、温泉宿に付いた瞬間に疲れ果ててしまい肝心の温泉にあまり浸かれず、翌日全身筋肉痛となって帰宅したのがハイライトだった…..代表の国本です。</p>
+<p>Webサービスやスマホ・アプリ開発では実際にサービスが稼働する本番環境の他に、同等のステージングや開発環境をセットで構築することが多々あるかと思います。</p>
+<p>現在弊社のプロジェクトではクライアントサイドのフレームワークとしてAngularJSを積極的に採用しており、今回は<a href="http://newtriks.com/2013/11/29/environment-specific-configuration-in-angularjs-using-grunt/" target="_blank" rel="external">Environment Specific Configuration in AngularJS Using Grunt</a><br>を参考に、Gruntを使用してAngularJSでステージングや本番環境など、稼働環境に応じて接続するAPIを切り替える方法について書いてみようと思います。</p>
+<h2 id="事前準備">事前準備</h2><p>今回は、<a href="http://yeoman.io/" target="_blank" rel="external">Yeoman</a>を使い、本ブログエントリーのために専用のenviromentsAppというアプリを作成します。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">% yo angular enviromentsApp --coffee</span><br></pre></td></tr></table></figure>
+<p>アプリのサービスで利用するAPIの接続先が開発環境、ステージング、本番それぞれで異なるという想定で以下手順を進めて行きたいと思います。</p>
+<h2 id="generator-env-configの導入">generator-env-configの導入</h2><p>それぞれの環境で区分したいAPIのURLを設定ファイル化するための、Yeomanのジェネレーターである<a href="https://www.npmjs.org/package/generator-env-config" target="_blank" rel="external">generator-env-config</a>をnpm経由でインストールします。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">% npm install generator-env-config</span><br></pre></td></tr></table></figure>
+<p>インストールが完了後、下記コマンドを実行し、まずは開発環境用の設定ファイルを生成します。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">% yo env-config</span><br></pre></td></tr></table></figure>
+<p>実行後、<code>config/environments/development.json</code>が生成されます。</p>
+<p>アプリ直下に生成された<code>config/enviroments</code>配下のJSONファイルで、実行環境毎の設定値を管理します。(Railsにおけるconfig/enviromentsのイメージですね)</p>
+<p>同じように、ステージング用、本番用のJSONファイルも生成しておきましょう。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">% yo env-config staging</span><br><span class="line">% yo env-config production</span><br><span class="line"></span><br><span class="line">% ll config/environments/</span><br><span class="line">total <span class="number">24</span></span><br><span class="line">drwxr-xr-x  <span class="number">5</span> kuninori  wheel  <span class="number">170</span>  <span class="number">8</span> <span class="number">26</span> <span class="number">21</span>:<span class="number">09</span> .</span><br><span class="line">drwxr-xr-x  <span class="number">4</span> kuninori  wheel  <span class="number">136</span>  <span class="number">8</span> <span class="number">26</span> <span class="number">20</span>:<span class="number">50</span> ..</span><br><span class="line">-rw-r--r--  <span class="number">1</span> kuninori  wheel   <span class="number">40</span>  <span class="number">8</span> <span class="number">26</span> <span class="number">20</span>:<span class="number">50</span> development.json</span><br><span class="line">-rw-r--r--  <span class="number">1</span> kuninori  wheel   <span class="number">19</span>  <span class="number">8</span> <span class="number">26</span> <span class="number">21</span>:<span class="number">09</span> production.json</span><br><span class="line">-rw-r--r--  <span class="number">1</span> kuninori  wheel   <span class="number">19</span>  <span class="number">8</span> <span class="number">26</span> <span class="number">21</span>:<span class="number">09</span> staging.json</span><br></pre></td></tr></table></figure>
+<p>今回はAPIの接続URLを実行環境毎に区分する。という想定なので<code>config/environments/</code>配下のそれぞれの環境設定JSONファイルに下記設定を行います。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// development.json</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"apiUrl"</span>: <span class="string">"http://localhost:9000"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// staging.json</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"apiUrl"</span>: <span class="string">"http://staging.local"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// production.json</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"apiUrl"</span>: <span class="string">"http://production.local"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="AngularJSモジュールの生成">AngularJSモジュールの生成</h2><p>次に、env-configを使用してAngularJS上で実行環境毎の設定値を管理する<code>services.config</code>というモジュールを作成します。<br>先程JSONファイルに設定されたそれぞれの環境用の設定値は、この<code>services.config</code>モジュールをロードすることで利用できるようになります。</p>
+<p>まず、下記コマンドを実行します。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">% yo env-config:angular config</span><br></pre></td></tr></table></figure>
+<p>コマンド実行後、<code>config/config.js</code>というファイルが生成されており、その中で<code>services.config</code>モジュールが定義されています。</p>
+<p><code>services.config</code>モジュールで、JSON設定ファイル内に定義されているAPIのURL(apiUrl)を扱えるようにします。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="pi">'use strict'</span>;</span><br><span class="line"></span><br><span class="line">angular.module(<span class="string">'services.config'</span>, [])</span><br><span class="line">  .constant(<span class="string">'configuration'</span>, &#123;</span><br><span class="line">    <span class="comment">// apiUrl変数を定義する</span></span><br><span class="line">    apiUrl: <span class="string">'@@apiUrl'</span></span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="grunt-replaceの導入とタスクの定義">grunt-replaceの導入とタスクの定義</h2><p>次にGruntを使用しそれぞれの環境用の設定値を動的に生成できるように<code>grunt-replace</code>をnpmで導入し、ビルド用タスクを定義します。</p>
+<p>まずは<code>grunt-replace</code>をインストール</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">% npm install grunt-replace --save-dev</span><br></pre></td></tr></table></figure>
+<p>インストール後、<code>grunt-replace</code>をロードするように<code>Gruntfile.js</code>の編集を行います。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span> <span class="params">(grunt)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// module.exports内に下記設定を追記する</span></span><br><span class="line">  grunt.loadNpmTasks(<span class="string">'grunt-replace'</span>);</span><br></pre></td></tr></table></figure>
+<p>併せて<code>grunt-replace</code>用のタスクを<code>grunt.initConfig</code>配下に定義します。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">grunt.initConfig(&#123;</span><br><span class="line">  replace: &#123;</span><br><span class="line">    development: &#123;</span><br><span class="line">      options: &#123;</span><br><span class="line">        patterns: [&#123;</span><br><span class="line">          json: grunt.file.readJSON(<span class="string">'./config/environments/development.json'</span>)</span><br><span class="line">        &#125;]</span><br><span class="line">      &#125;,</span><br><span class="line">      files: [&#123;</span><br><span class="line">        expand: <span class="literal">true</span>,</span><br><span class="line">        flatten: <span class="literal">true</span>,</span><br><span class="line">        src: [<span class="string">'./config/config.js'</span>],</span><br><span class="line">        dest: <span class="string">'&lt;%= yeoman.app %&gt;/scripts/services/'</span></span><br><span class="line">      &#125;]</span><br><span class="line">    &#125;,</span><br><span class="line">    staging: &#123;</span><br><span class="line">      options: &#123;</span><br><span class="line">        patterns: [&#123;</span><br><span class="line">          json: grunt.file.readJSON(<span class="string">'./config/environments/staging.json'</span>)</span><br><span class="line">        &#125;]</span><br><span class="line">      &#125;,</span><br><span class="line">      files: [&#123;</span><br><span class="line">        expand: <span class="literal">true</span>,</span><br><span class="line">        flatten: <span class="literal">true</span>,</span><br><span class="line">        src: [<span class="string">'./config/config.js'</span>],</span><br><span class="line">        dest: <span class="string">'&lt;%= yeoman.app %&gt;/scripts/services/'</span></span><br><span class="line">      &#125;]</span><br><span class="line">    &#125;,</span><br><span class="line">    production: &#123;</span><br><span class="line">      options: &#123;</span><br><span class="line">        patterns: [&#123;</span><br><span class="line">          json: grunt.file.readJSON(<span class="string">'./config/environments/production.json'</span>)</span><br><span class="line">        &#125;]</span><br><span class="line">      &#125;,</span><br><span class="line">      files: [&#123;</span><br><span class="line">        expand: <span class="literal">true</span>,</span><br><span class="line">        flatten: <span class="literal">true</span>,</span><br><span class="line">        src: [<span class="string">'./config/config.js'</span>],</span><br><span class="line">        dest: <span class="string">'&lt;%= yeoman.app %&gt;/scripts/services/'</span></span><br><span class="line">      &#125;]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>タスクが定義できたら、早速開発環境用のタスクを走らせてみましょう</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">% grunt replace:development</span><br><span class="line">Running <span class="string">"replace:development"</span> (replace) task</span><br><span class="line">Replace ./config/config.js → app/scripts/services/config.js</span><br><span class="line"></span><br><span class="line">Done, without errors.</span><br></pre></td></tr></table></figure>
+<p>タスクが正常終了後、<code>app/scripts/services/config.js</code>ファイルが生成されます。<br><code>config/environments/development.json</code>で定義した、開発環境向けのAPIのURLがモジュールとして定義されているのが確認できます。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="pi">'use strict'</span>;</span><br><span class="line"></span><br><span class="line">angular.module(<span class="string">'services.config'</span>, [])</span><br><span class="line">  .constant(<span class="string">'configuration'</span>, &#123;</span><br><span class="line">    apiUrl: <span class="string">'http://localhost:9000'</span></span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="AngularJSアプリでservices-configモジュールをロード">AngularJSアプリでservices.configモジュールをロード</h2><p>これまでの手順で、それぞれの稼働環境用の変数が定義された<code>services.config</code>モジュールが生成できる環境が整ったため、生成された<code>services.config</code>モジュールをAngularJSアプリケーションからロードし利用できるようにしましょう。</p>
+<p>まずは<code>app/index.html</code>で<code>services.config</code>モジュール用のJavaScriptを読み込みます。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># config.jsをindex.htmlに追加</span></span><br><span class="line">&lt;script src=<span class="string">"scripts/services/config.js"</span>&gt;&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>次に、<code>app/scripts/app.coffee</code>からモジュールをロード。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="pi">'use strict'</span></span><br><span class="line"></span><br><span class="line">###*</span><br><span class="line"> # @ngdoc overview</span><br><span class="line"> # @name enviromentsAppApp</span><br><span class="line"> # @description</span><br><span class="line"> # # enviromentsAppApp</span><br><span class="line"> #</span><br><span class="line"> # Main <span class="built_in">module</span> of the application.</span><br><span class="line">###</span><br><span class="line">angular</span><br><span class="line">  .module(<span class="string">'enviromentsAppApp'</span>, [</span><br><span class="line">    <span class="string">'ngAnimate'</span>,</span><br><span class="line">    <span class="string">'ngCookies'</span>,</span><br><span class="line">    <span class="string">'ngResource'</span>,</span><br><span class="line">    <span class="string">'ngRoute'</span>,</span><br><span class="line">    <span class="string">'ngSanitize'</span>,</span><br><span class="line">    <span class="string">'ngTouch'</span>,</span><br><span class="line">    <span class="comment">// services.configをロードするように追加</span></span><br><span class="line">    <span class="string">'services.config'</span></span><br><span class="line">  ])</span><br></pre></td></tr></table></figure>
+<p>これでモジュールが呼び出せるので、早速コントローラーから定義されているAPI用のURLを確認してみましょう。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">'use strict'</span><br><span class="line"></span><br><span class="line">###*</span><br><span class="line"> # @ngdoc function</span><br><span class="line"> # @name enviromentsAppApp.controller:MainCtrl</span><br><span class="line"> # @description</span><br><span class="line"> # # MainCtrl</span><br><span class="line"> # Controller of the enviromentsAppApp</span><br><span class="line">###</span><br><span class="line">angular.module('enviromentsAppApp')</span><br><span class="line">  // configurationをセット</span><br><span class="line">  .controller 'MainCtrl', ($scope, configuration) -&gt;</span><br><span class="line">    // configuration.apiUrlで定義しているAPIのURLをアラート表示してみる</span><br><span class="line">    alert configuration.apiUrl</span><br></pre></td></tr></table></figure>
+<p>起動してみると……。</p>
+<p><img src="/images/angularJS/angularJS_alert.png" alt="alert"></p>
+<p>定義しているAPIのURLが表示されましたね。</p>
+<p>後は、実際にS3やWebサーバへAngularJSアプリケーションをデプロイする際に実行するGruntのビルド処理の中で<br><code>grunt replace:staging</code>や<code>grunt replace:production</code>を実行するように仕込めば、デプロイ環境に併せて<br>フレキシブルに環境変数が準備できます。</p>
+<h2 id="まとめ">まとめ</h2><p>いかがでしたでしょうか？ 今回活用した<code>generator-env-config</code>以外にも環境ごとの設定値を良い感じに定義する手法は数多くあるかと思いますので<br>ご教示いただければ幸いです。</p>
+<p>ではでは、良きAngularJSライフを‎╭( ･ㅂ･)و ̑̑</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AngularJS/">AngularJS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Grunt/">Grunt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/開発/">開発</a></li></ul>
+
+
+      <p class="article-footer__author">by 国本 廷宣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+        <hr class="footer-line">
+  </div>
+<footer id="footer" class="inner">
+  <div id="footer-info">
+    &copy;2015 <a href="http://mmmcorp.co.jp/" target="_blank" class="footer_info__author">株式会社MMM</a>
+  </div>
+</footer>
+
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+</body>
+</html>

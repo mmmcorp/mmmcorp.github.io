@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>ActiveResourceでGET送信時に配列で渡す | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="先日社内の「業務効率化周辺グッズ購入補助」制度を利用して、mac用にモバイル充電器HyperJuiceを購入し、配線地獄になっている前田です。  
+本日はRuby On RailsのGem、AcitiveResourceを触ってみたので、そのお話をします。  
+環境Rails 4.1.5、ruby 2.1.2、activeresource-4.0.0  
+ActiveResorceとは「Web上の">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ActiveResourceでGET送信時に配列で渡す">
+<meta property="og:url" content="http://blog.mmmcorp.co.jp/blog/2014/10/30/active-resourrce-patch/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="先日社内の「業務効率化周辺グッズ購入補助」制度を利用して、mac用にモバイル充電器HyperJuiceを購入し、配線地獄になっている前田です。  
+本日はRuby On RailsのGem、AcitiveResourceを触ってみたので、そのお話をします。  
+環境Rails 4.1.5、ruby 2.1.2、activeresource-4.0.0  
+ActiveResorceとは「Web上の">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ActiveResourceでGET送信時に配列で渡す">
+<meta name="twitter:description" content="先日社内の「業務効率化周辺グッズ購入補助」制度を利用して、mac用にモバイル充電器HyperJuiceを購入し、配線地獄になっている前田です。  
+本日はRuby On RailsのGem、AcitiveResourceを触ってみたので、そのお話をします。  
+環境Rails 4.1.5、ruby 2.1.2、activeresource-4.0.0  
+ActiveResorceとは「Web上の">
+  
+    <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css" type="text/css">
+  
+
+</head>
+
+<header id="header" class="inner">
+  <h1>
+    <a href="/" id="logo">MMMブログ</a>
+  </h1>
+  
+</div>
+</header>
+<body>
+  <div id="content" class="inner">
+        <article id="post-active-resourrce-patch" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2014-10-30T01:59:38.000Z" itemprop="datePublished">2014-10-30</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2014/10/30/active-resourrce-patch/">ActiveResourceでGET送信時に配列で渡す</a>
+    </h3>
+  
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>先日社内の「業務効率化周辺グッズ購入補助」制度を利用して、mac用にモバイル充電器HyperJuiceを購入し、配線地獄になっている前田です。  </p>
+<p>本日はRuby On RailsのGem、AcitiveResourceを触ってみたので、そのお話をします。  </p>
+<p>環境<br>Rails 4.1.5、ruby 2.1.2、activeresource-4.0.0  </p>
+<p>ActiveResorceとは「Web上のRESTfulAPIをActiveRecordのモデルと同じようなインターフェースで利用可能にする」というGemライブラリです。<br>webAPIをActiveResourceと同じように操作出来たら便利ですね。　　</p>
+<p>今回やりたいと思ったのは、下記のようにGETで叩く時に、パラメータを配列で渡したいと思ったからです。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://hoge/api/foo?piyo[]=hoge1&amp;piyo[]=hoge2</span><br></pre></td></tr></table></figure>
+<p>active_resourceでパラメータを渡す時は、下記のように設定すると思います。  </p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="constant">Foo</span>.find(<span class="symbol">:all</span>, <span class="symbol">from:</span><span class="string">'api/foo'</span>, <span class="symbol">params:</span> &#123; <span class="symbol">piyo1:</span> <span class="symbol">:hoge1</span>, <span class="symbol">piyo2:</span> <span class="symbol">:hoge2</span> &#125; )</span><br></pre></td></tr></table></figure>
+<p>これで実行すると、  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">api/foo?piyo1=hoge1&amp;piyo2=hoge2</span><br></pre></td></tr></table></figure>
+<p>というGETパラメータが出来上がります。<br>しかし、配列形式で渡したいからといって下記のように渡すと、</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="constant">Foo</span>.find(<span class="symbol">:all</span>, <span class="symbol">from:</span><span class="string">'api/foo'</span>, <span class="symbol">params:</span> &#123; piyo[]<span class="symbol">:</span> <span class="symbol">:hoge1</span>, piyo[]<span class="symbol">:</span> <span class="symbol">:hoge2</span> &#125; )</span><br></pre></td></tr></table></figure>
+<p>エラーになってしまいます。<br>今回はこれを解決していきたいと思います。</p>
+<p>では、ActiveResourceの中の処理を順番に見ていきます。<br>findメソッドを定義しているのはactive_resource/base.rbです。  </p>
+<p>active_resource/base.rb<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> </span>find(*arguments)</span><br><span class="line">  scope   = arguments.slice!(<span class="number">0</span>)</span><br><span class="line">  options = arguments.slice!(<span class="number">0</span>) || &#123;&#125;</span><br><span class="line">   <span class="keyword">case</span> scope</span><br><span class="line">    <span class="keyword">when</span> <span class="symbol">:all</span>   <span class="keyword">then</span> find_every(options)</span><br><span class="line">    <span class="keyword">when</span> <span class="symbol">:first</span> <span class="keyword">then</span> find_every(options).first</span><br><span class="line">    <span class="keyword">when</span> <span class="symbol">:last</span>  <span class="keyword">then</span> find_every(options).last</span><br><span class="line">    <span class="keyword">when</span> <span class="symbol">:one</span>   <span class="keyword">then</span> find_one(options)</span><br><span class="line">    <span class="keyword">else</span>             find_single(scope, options)</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure></p>
+<p>858行目ですね。<br>検索はここが起点になります。  </p>
+<p>第一引数を:allで渡すので、<br>when :all   then find_every(options)<br>の処理になります。  </p>
+<p>そしてfind_everyメソッドは以下です。<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Find every resource</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> </span>find_every(options)</span><br><span class="line">  <span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">case</span> from = options[<span class="symbol">:from</span>]</span><br><span class="line">    <span class="keyword">when</span> <span class="constant">Symbol</span></span><br><span class="line">      instantiate_collection(get(from, options[<span class="symbol">:params</span>]), options[<span class="symbol">:params</span>])</span><br><span class="line">    <span class="keyword">when</span> <span class="constant">String</span></span><br><span class="line">      path = <span class="string">"<span class="subst">#&#123;from&#125;</span><span class="subst">#&#123;query_string(options[<span class="symbol">:params</span>])&#125;</span>"</span></span><br><span class="line">      instantiate_collection(format.decode(connection.get(path, headers).body) || [], options[<span class="symbol">:params</span>])</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      prefix_options, query_options = split_options(options[<span class="symbol">:params</span>])</span><br><span class="line">      path = collection_path(prefix_options, query_options)</span><br><span class="line">      instantiate_collection( (format.decode(connection.get(path, headers).body) || []), query_options, prefix_options )</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">  <span class="keyword">rescue</span> <span class="constant">ActiveResource::ResourceNotFound</span></span><br><span class="line">    <span class="comment"># Swallowing ResourceNotFound exceptions and return nil - as per</span></span><br><span class="line">    <span class="comment"># ActiveRecord.</span></span><br><span class="line">    <span class="keyword">nil</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure></p>
+<p>今回は<br>find(:all, from:’api/com’, params: params )<br>とfromをStringで渡しているので、</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">when</span> <span class="constant">String</span></span><br><span class="line">  path = <span class="string">"<span class="subst">#&#123;from&#125;</span><span class="subst">#&#123;query_string(options[<span class="symbol">:params</span>])&#125;</span>"</span></span><br><span class="line">  instantiate_collection(format.decode(connection.get(path, headers).body) || [], options[<span class="symbol">:params</span>])</span><br><span class="line"><span class="keyword">else</span></span><br></pre></td></tr></table></figure>
+<p>の中の処理になります。  </p>
+<p>ここでpathを生成しますが、先ほど渡した from:’api/foo’, params: params からpathを生成しています。<br>fromのほうはいいですが、:params　のほうですね。  </p>
+<p>query_string()メソッドが何をしているか見ます。  </p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Builds the query string for the request.</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> </span>query_string(options)</span><br><span class="line">  <span class="string">"?<span class="subst">#&#123;options.to_query&#125;</span>"</span> <span class="keyword">unless</span> options.<span class="keyword">nil</span>? || options.empty?</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>渡したoptionsに、to_queryをしているだけですね。<br>ここがエラーの原因です。<br>rails consoleで試してみます。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Hashで渡す</span></span><br><span class="line"><span class="number">2.1</span>.<span class="number">2</span> :<span class="number">021</span> &gt; &#123;piyo1: :hoge1, piyo2: :hoge2&#125;.to_query</span><br><span class="line"> =&gt; <span class="string">"piyo1=hoge1&amp;piyo2=hoge2"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Hashに[]を付けて渡す</span></span><br><span class="line"><span class="number">2.1</span>.<span class="number">2</span> :<span class="number">055</span> &gt; &#123;piyo1[]: :hoge1, piyo2[]: :hoge2&#125;.to_query</span><br><span class="line">SyntaxError: (irb):<span class="number">55</span>: syntax error, unexpected <span class="string">':'</span>, expecting =&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># エスケープできないか試す</span></span><br><span class="line"><span class="number">2.1</span>.<span class="number">2</span> :<span class="number">057</span> &gt;   &#123;piyo1\[\]: :hoge1, piyo2\[\]: :hoge2&#125;.to_query</span><br><span class="line">SyntaxError: (irb):<span class="number">57</span>: syntax error, unexpected <span class="variable">$undefined</span>, expecting keyword_<span class="keyword">do</span> or <span class="string">'&#123;'</span> or <span class="string">'('</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Arrayの場合</span></span><br><span class="line"><span class="number">2.1</span>.<span class="number">2</span> :<span class="number">003</span> &gt;   [<span class="string">'hoge1'</span>, <span class="string">'hoge2'</span>].to_query</span><br><span class="line">ArgumentError: wrong number of arguments (<span class="number">0</span> <span class="keyword">for</span> <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Stringの場合</span></span><br><span class="line"><span class="number">2.1</span>.<span class="number">2</span> :<span class="number">001</span> &gt; <span class="string">'hoge1, hoge2'</span>.to_query</span><br><span class="line">ArgumentError: wrong number of arguments (<span class="number">0</span> <span class="keyword">for</span> <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>なので、ここの処理にパッチをあてます。  </p>
+<p>実はto_queryは便利なメソッドで引数を渡してあげると配列からクエリ形式に組み立ててくれます。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2.1</span>.<span class="number">2</span> :<span class="number">006</span> &gt; [<span class="string">'hoge1'</span>, <span class="string">'hoge2'</span>].to_query(<span class="string">'piyo'</span>)</span><br><span class="line"> =&gt; <span class="string">"piyo%5B%5D=hoge1&amp;piyo%5B%5D=hoge2"</span></span><br></pre></td></tr></table></figure>
+<p>%5B%5Dは[]のエスケープです。<br>実際のURLを叩く時にはpiyo[]=hoge1&amp;piyo[]=hoge2　　<br>と同じ動作をします。  </p>
+<p>なので、結論としては下記のようにオーバーライドします。  </p>
+<p>/app/model/foo.rb  </p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span> <span class="string">'active_resource'</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span> <span class="inheritance">&lt; <span class="parent">ActiveResource::Base</span></span></span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">self</span>.site = <span class="string">'http://hoge'</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> </span><span class="keyword">self</span>.query_string(options)</span><br><span class="line">    <span class="string">"?<span class="subst">#&#123;options.to_query(<span class="string">'piyo'</span>)&#125;</span>"</span> <span class="keyword">unless</span> options.<span class="keyword">nil</span>? || options.empty?</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>このままだとこのクラスのみのオーバーライドで、これでも良いと思いますが、もう少し凡庸化してプロジェクト全体で使えるようにパッチをあててみます。  </p>
+<p>/config/initializers/active_resource_pach.rb</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span> <span class="string">'active_resource'</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ActiveResource::Base</span></span></span><br><span class="line">  <span class="class"><span class="keyword">class</span> <span class="inheritance">&lt;</span><span class="inheritance">&lt; <span class="parent">self</span></span></span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> </span>query_string(options)</span><br><span class="line">      <span class="keyword">if</span> tag &amp;&amp; options.instance_of?(<span class="constant">Array</span>)</span><br><span class="line">        <span class="string">"?<span class="subst">#&#123;options.to_query(tag)&#125;</span>"</span> <span class="keyword">unless</span> options.<span class="keyword">nil</span>? || options.empty?</span><br><span class="line">      <span class="keyword">elsif</span> options.instance_of?(<span class="constant">Hash</span>)</span><br><span class="line">        <span class="string">"?<span class="subst">#&#123;options.to_query&#125;</span>"</span> <span class="keyword">unless</span> options.<span class="keyword">nil</span>? || options.empty?</span><br><span class="line">      <span class="keyword">elsif</span> options.instance_of?(<span class="constant">String</span>)</span><br><span class="line">        <span class="string">"?<span class="subst">#&#123;options&#125;</span>"</span> <span class="keyword">unless</span> options.blank?</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">        raise <span class="constant">ArgumentError</span></span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> </span>tag</span><br><span class="line">      <span class="keyword">return</span> <span class="variable">@tag</span> <span class="keyword">if</span> <span class="keyword">defined</span>?(<span class="variable">@tag</span>)</span><br><span class="line">      <span class="keyword">nil</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> </span>tag=(tag)</span><br><span class="line">      <span class="variable">@tag</span> = tag</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>Hashでの処理は今までどおりにしています。<br>query_stringメソッドはbase.rbのプライベートメソッドで、base.rbの中で使用されている別の箇所を見てみましたが、上記の実装で影響は無いと思います。  </p>
+<p>/app/models/foo.rb<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span> <span class="string">'active_resource'</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span> <span class="inheritance">&lt; <span class="parent">ActiveResource::Base</span></span></span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">self</span>.site = <span class="string">'http://hoge'</span></span><br><span class="line">  <span class="keyword">self</span>.tag = <span class="string">'piyo'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure></p>
+<p>/app/controllers/foo_controller.rb<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FooController</span> <span class="inheritance">&lt; <span class="parent">ApplicationController</span></span></span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> </span>index</span><br><span class="line">    <span class="variable">@foo</span> = <span class="constant">Foo</span>.find(<span class="symbol">:all</span>, <span class="symbol">from:</span> <span class="string">'/api/foo'</span>, <span class="symbol">params:</span> [<span class="string">'hoge1'</span>, <span class="string">'hoge2'</span>])</span><br><span class="line">    render <span class="symbol">:template</span> =&gt; <span class="string">"foo/index"</span></span><br><span class="line">  <span class="keyword">rescue</span> =&gt; e</span><br><span class="line">    render <span class="symbol">:text</span> =&gt; e.message</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure></p>
+<p>こんな感じで外のメソッドにもパッチを当てていけますね。<br>パッチだらけだと、ActiveResourceを使う意味があまり無くなりそうですが。  </p>
+<p>今回取り上げたActiveResourceのソースの内訳は以下のようになっています。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">$ activeresource-<span class="number">4.0</span>.<span class="number">0</span></span><br><span class="line">├── README.rdoc</span><br><span class="line">└── lib</span><br><span class="line">    ├── active_resource</span><br><span class="line">    │   ├── associations</span><br><span class="line">    │   │   └── builder</span><br><span class="line">    │   │       ├── association.rb</span><br><span class="line">    │   │       ├── belongs_to.rb</span><br><span class="line">    │   │       ├── has_many.rb</span><br><span class="line">    │   │       └── has_one.rb</span><br><span class="line">    │   ├── associations.rb</span><br><span class="line">    │   ├── base.rb</span><br><span class="line">    │   ├── callbacks.rb</span><br><span class="line">    │   ├── collection.rb</span><br><span class="line">    │   ├── connection.rb</span><br><span class="line">    │   ├── custom_methods.rb</span><br><span class="line">    │   ├── exceptions.rb</span><br><span class="line">    │   ├── formats</span><br><span class="line">    │   │   ├── json_format.rb</span><br><span class="line">    │   │   └── xml_format.rb</span><br><span class="line">    │   ├── formats.rb</span><br><span class="line">    │   ├── http_mock.rb</span><br><span class="line">    │   ├── <span class="built_in">log</span>_subscriber.rb</span><br><span class="line">    │   ├── observing.rb</span><br><span class="line">    │   ├── railtie.rb</span><br><span class="line">    │   ├── reflection.rb</span><br><span class="line">    │   ├── schema.rb</span><br><span class="line">    │   ├── singleton.rb</span><br><span class="line">    │   ├── validations.rb</span><br><span class="line">    │   └── version.rb</span><br><span class="line">    └── active_resource.rb</span><br></pre></td></tr></table></figure>
+<p>ActiveResourceはファイルが少ないのですごく見やすく、rails初心者の勉強にはちょうど良さそうですね！  </p>
+<h2 id="PS">PS</h2><p>ブログを書いてしまった後で気付いたのですが、<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2.1</span>.<span class="number">2</span> :<span class="number">060</span> &gt; &#123;<span class="string">'piyo1[]'</span> =&gt; <span class="string">'hoge1'</span>, <span class="string">'piyo[]'</span> =&gt; <span class="string">'hoge2'</span>&#125;.to_query</span><br><span class="line"> =&gt; <span class="string">"piyo%5B%5D=hoge2&amp;piyo1%5B%5D=hoge1"</span></span><br></pre></td></tr></table></figure></p>
+<p>こうすると渡せました…<br>まぁでもちょっと使いやすくなったと思いますので良しとして下さい…</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby-on-Rails/">Ruby on Rails</a></li></ul>
+
+
+      <p class="article-footer__author">by 前田　正樹</p>
+    </footer>
+  </div>
+</article>
+
+
+
+        <hr class="footer-line">
+  </div>
+<footer id="footer" class="inner">
+  <div id="footer-info">
+    &copy;2015 <a href="http://mmmcorp.co.jp/" target="_blank" class="footer_info__author">株式会社MMM</a>
+  </div>
+</footer>
+
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+</body>
+</html>

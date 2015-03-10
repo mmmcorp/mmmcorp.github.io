@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Gitのブランチ運用でちょっと試行錯誤した話 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="先日の健康診断で即メタボ認定を受けて危機感を覚え、酒量と食事量を減らしつつありますが、まだ効果が表れていない下條です。このブログで定期的に体重を公開すればさらに意識が変わるかなと思いましたが、皆さんそんなものは見たくないと思いますので書きません。
+さて、私は以前の会社ではソースコードのバージョン管理にSubversion的なものを使っており、弊社に入社してから本格的にGitを使い出しました。そこで">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Gitのブランチ運用でちょっと試行錯誤した話">
+<meta property="og:url" content="http://blog.mmmcorp.co.jp/blog/2014/06/04/git-branch-model/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="先日の健康診断で即メタボ認定を受けて危機感を覚え、酒量と食事量を減らしつつありますが、まだ効果が表れていない下條です。このブログで定期的に体重を公開すればさらに意識が変わるかなと思いましたが、皆さんそんなものは見たくないと思いますので書きません。
+さて、私は以前の会社ではソースコードのバージョン管理にSubversion的なものを使っており、弊社に入社してから本格的にGitを使い出しました。そこで">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Gitのブランチ運用でちょっと試行錯誤した話">
+<meta name="twitter:description" content="先日の健康診断で即メタボ認定を受けて危機感を覚え、酒量と食事量を減らしつつありますが、まだ効果が表れていない下條です。このブログで定期的に体重を公開すればさらに意識が変わるかなと思いましたが、皆さんそんなものは見たくないと思いますので書きません。
+さて、私は以前の会社ではソースコードのバージョン管理にSubversion的なものを使っており、弊社に入社してから本格的にGitを使い出しました。そこで">
+  
+    <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css" type="text/css">
+  
+
+</head>
+
+<header id="header" class="inner">
+  <h1>
+    <a href="/" id="logo">MMMブログ</a>
+  </h1>
+  
+</div>
+</header>
+<body>
+  <div id="content" class="inner">
+        <article id="post-git-branch-model" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2014-06-03T23:25:20.000Z" itemprop="datePublished">2014-06-04</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2014/06/04/git-branch-model/">Gitのブランチ運用でちょっと試行錯誤した話</a>
+    </h3>
+  
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>先日の健康診断で即メタボ認定を受けて危機感を覚え、酒量と食事量を減らしつつありますが、まだ効果が表れていない下條です。このブログで定期的に体重を公開すればさらに意識が変わるかなと思いましたが、皆さんそんなものは見たくないと思いますので書きません。</p>
+<p>さて、私は以前の会社ではソースコードのバージョン管理にSubversion的なものを使っており、弊社に入社してから本格的にGitを使い出しました。そこで最初に参加した受託Webサービス開発のプロジェクトにおいて、Gitを使ったブランチ運用についてちょっと試行錯誤した経緯をご紹介します。</p>
+<h2 id="GitHub_Flowとの出会い">GitHub Flowとの出会い</h2><p>Gitのブランチ運用の方法として有名なものとして、<a href="https://gist.github.com/Gab-km/3705015" target="_blank" rel="external">GitHub Flow</a>と<a href="http://nvie.com/posts/a-successful-git-branching-model/" target="_blank" rel="external">A successful Git branching model</a> (<a href="http://keijinsonyaban.blogspot.jp/2010/10/successful-git-branching-model.html" target="_blank" rel="external">O-Show 氏による日本語訳</a>) （以後git-flowと記述）の2つがあります。私が弊社に入社してGitを使い始めたときは、受託Webサービス新規開発のまっただ中で、ほぼGitHub Flowに準じたフローとなっていました。<br>一応GitHub Flowの概要を書いておきます。</p>
+<blockquote>
+<ul>
+<li>masterブランチのものは何であれデプロイ可能である</li>
+<li>新しい何かに取り組む際は、説明的な名前のブランチをmasterから作成する（例: new-oauth2-scopes）</li>
+<li>作成したブランチにローカルでコミットし、サーバー上の同じ名前のブランチにも定期的に作業内容をpushする</li>
+<li>フィードバックや助言が欲しい時、ブランチをマージしてもよいと思ったときは、 プルリクエスト を作成する</li>
+<li>他の誰かがレビューをして機能にOKを出してくれたら、あなたはコードをmasterへマージすることができる</li>
+<li>マージをしてmasterへpushしたら、直ちにデプロイをする</li>
+</ul>
+</blockquote>
+<p>（<a href="https://gist.github.com/Gab-km/3705015" target="_blank" rel="external">https://gist.github.com/Gab-km/3705015</a> から引用。）</p>
+<p>このフローはシンプルで分かりやすいです。そして、Pull Requestを利用してレビューをプロセスの中に組み込んだ開発フローってなかなかいいなと思っていました。（実際にはソースレビューがきちんとされないプロジェクトをこれまでたくさん見てきたので。）<br>このフローは、開発段階では基本的にはうまくいくと思いますし、実際にうまくいっていました。</p>
+<h2 id="GitHub_Flowとの別れ">GitHub Flowとの別れ</h2><p>リリース後に運用・保守開発フェーズに入り、機能追加・バグフィックスをするにあたって、ブランチをどう取り扱うかというところでGitHub Flowではうまくいかなくなりました。<br>まず、そのプロジェクトでは、リリースについて以下の前提条件がありました。このルールは特に受託開発においては例外的なものではないと思います。  </p>
+<ul>
+<li>ステージング環境と本番環境があり、機能追加・修正はお客様のOKが出たものからステージング環境で動作確認する。</li>
+<li>どの機能追加・修正を本番リリースするかは最終的にお客様が決める。</li>
+</ul>
+<p>この場合、GitHub Flowのように随時masterブランチにPull Requestしてマージしていくと、masterブランチは本番環境と乖離していってしまいます。即本番リリースができるブランチがないというのはいろいろと困ります。緊急のバグフィックスをしたいというときなどに困ります。また、後からこれこれの修正はリリースしないなどと言われた場合にmasterブランチからコミットをrevertしたりするのは嫌なものです。特にrevertでコンフリクトしたりすると非常に嫌です。<br>結局、上述したURLの中にも記載されている通り、GitHub Flowではきちんとしたリリースというものがないことを前提としています。やはり、リリースが存在する受託開発での運用・保守開発フェーズや、自社の場合でもリリースには誰かの承認がいるといった場合にはGitHub Flowはなかなかマッチしません。<br>というわけで、今回の事情に合わせた、新たなGitのブランチ運用を検討することにしました。</p>
+<h2 id="新たな運用を模索してgit-flowを調査">新たな運用を模索してgit-flowを調査</h2><p>GitHub Flowがダメだったらgit-flowかなということでgit-flowを調べてみました。  </p>
+<p>git-flowでは5種類のブランチを使用します。</p>
+<blockquote>
+<ol>
+<li>developブランチ<br>開発を行うためのブランチ。開発者は、主にこのブランチ上で作業を行う。次に紹介するfeatureブランチなど、他のブランチで行った作業は、ここにマージされる</li>
+<li>featureブランチ<br>主要な機能を実装するためのブランチ。機能の実装やバグフィックスなど、タスクごとにfeatureブランチを作成し、作業を行う</li>
+<li>releaseブランチ<br>リリースの準備を行うためのブランチ。プロダクトをリリースする前に、このブランチを作成し、微調整を行う。releaseブランチを作成することで、リリース準備と次のバージョンに向けた開発のコードを分けることができる</li>
+<li>masterブランチ<br>リリースしたソースコードを管理するためのブランチ。リリース作業を行うと、releaseブランチはmasterブランチへマージされて、リリースタグが打たれる。開発者は、このブランチへのコミットは行わない</li>
+<li>hotfixブランチ<br>リリースされたソフトウェアに緊急の修正を行うためのブランチ。このブランチでの修正内容は、すぐにリリースされるので、hotfixブランチはリリースを管理するmasterブランチへマージされる</li>
+</ol>
+</blockquote>
+<p>（<a href="http://www.atmarkit.co.jp/ait/articles/1311/18/news017.html" target="_blank" rel="external">http://www.atmarkit.co.jp/ait/articles/1311/18/news017.html</a> から引用。）</p>
+<p>GitHub Flowに比べるとかなりややこしい運用となります。今回のプロジェクトの場合、開発者も少ないし、機能追加・修正がそこまでたくさんあったわけではなかったので、git-flowほどがんばってやる必要はないのではないかと思いました。git-flowほどがんばりたくはないけれどもGitHub Flowでは要件を満たさないといった場合にどういった運用にするかということで検討し、何回かの試行錯誤の末、以下の運用にすることにしました。</p>
+<h2 id="採用したブランチ運用">採用したブランチ運用</h2><p>masterブランチ、stagingブランチという2つのメインブランチを保持。</p>
+<ul>
+<li>masterブランチ: サービスをリリースするためのブランチ。常に本番環境で動いているブランチとなる。リリースしたらタグを付ける。</li>
+<li>stagingブランチ: お客様からステージングでの検証許可が出た修正のみが入っているステージング検証用ブランチ。本番リリースの許可が出たらmasterへマージする。</li>
+</ul>
+<p>各開発者は機能追加・バグフィックスにおいては全てtopicブランチを作成して開発する。</p>
+<ul>
+<li>topicブランチ：機能の追加、バグフィックスなど全ての作業はmasterからブランチを切って行う。stagingにプルリクエスト、レビューする。レビューで全員のOKが出た後、お客様からステージング環境での検証許可が出た時点でstagingにマージする。<br>topicブランチはmasterマージ後破棄する。</li>
+</ul>
+<p>→おおざっぱに言うと、git-flowのhotfixブランチおよびdevelopブランチがない簡易バージョンのような感じです。</p>
+<h4 id="hotfixブランチがない理由">hotfixブランチがない理由</h4><p>masterから分岐し、masterにマージする、hotfixブランチは作成しません。どんな修正でも、ステージング環境でお客様が確認した後に本番リリースというルールがあるため、必ずまずstagingブランチにマージすることになります。</p>
+<h4 id="developブランチがない理由">developブランチがない理由</h4><p>ここはちょっと微妙なのですが、修正の数、開発者の数が少なかったため、リリースの前にtopicブランチをstagingブランチにマージすればよいと考えました。そのため、git-flowでdevelopブランチにあたるブランチは作成しませんでした。  </p>
+<p>ただし、この運用の問題点として、リリース許可が出た段階でstagingブランチに一気に多くのtopicブランチをマージしなければいけない状況が発生する場合があります。一概には言えませんが、お客様には修正自体にかかるコストはそれなりに理解していただけるものですが、リリース準備の際に修正をマージするコスト、リスクはなかなか理解していただけないものです。リリース許可が出たtopicブランチを一気にstagingブランチにマージをすると、修正同士の影響がどれだけ発生するか分からず、リスクが見えないのはよろしくありません。<br>それを考えると、レビューが済んだtopicブランチは、いったんなんらかのブランチにマージしておき、修正同士の影響を予め把握しておく方がよいとも思います。<a href="http://daretoku-unix.blogspot.jp/2014/01/git-flowgithub-flowgit.html" target="_blank" rel="external">git本家が推奨するワークフロー</a>の中でも「使い捨ての統合ブランチ」を作成することが推奨されています。そして、リリースが近くなったらtopicブランチをstagingブランチにマージしてリリースに向けた調整をすると。<br>ただし、今回のプロジェクトは小さくてメンバーも少なく、あまり大量の修正が入ることもなかったため、各修正同士の影響が見えることがほとんどだったために、使い捨ての統合ブランチは作りませんでした。<br>結果、git-flowよりもだいぶ簡易な運用となり、現状はまあうまくいっています。</p>
+<h2 id="まとめ">まとめ</h2><p>当然ではありますが、必ずしもGitHub Flowやgit-flowが現実とマッチするとは限りません。GitHub Flowやgit-flowはおそらくベストプラクティスのようなものですが、Gitのブランチ運用は、ある意味汚い現実の開発・リリースプロセスと密接に絡んでいるので、開発・リリースプロセスを含めながら、その都度良い運用を考えていくのがよいと思います。デザインパターン的なものがあればうれしい気はしていますが。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Git/">Git</a></li></ul>
+
+
+      <p class="article-footer__author">by 下條 真嗣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+        <hr class="footer-line">
+  </div>
+<footer id="footer" class="inner">
+  <div id="footer-info">
+    &copy;2015 <a href="http://mmmcorp.co.jp/" target="_blank" class="footer_info__author">株式会社MMM</a>
+  </div>
+</footer>
+
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+</body>
+</html>
