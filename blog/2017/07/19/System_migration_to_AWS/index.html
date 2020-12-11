@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>実体験に基づくAWSへのシステム移行時のあれこれ・雑感 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="本格的な夏の始まりと共に、プール開き当日に6時間水遊びを楽しんだ結果、毎年恒例の日焼けによる肌の強烈なヒリヒリ感に苦しんでいる、MMM代表の国本です。 昨年よりAmazon Web Services(AWS)へのシステム移行(AWSマイグレーション)に関して、お問い合わせ・ご相談頂く機会が増加傾向にあります。 「100超のシステムを移行」三菱東京UFJがAWS活用策明かす で、MUFJがAWSへ">
+<meta name="keywords" content="ビジネス,クラウド,AWS,マイグレーション,システム,AWS移行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="実体験に基づくAWSへのシステム移行時のあれこれ・雑感">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2017/07/19/System_migration_to_AWS/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="本格的な夏の始まりと共に、プール開き当日に6時間水遊びを楽しんだ結果、毎年恒例の日焼けによる肌の強烈なヒリヒリ感に苦しんでいる、MMM代表の国本です。 昨年よりAmazon Web Services(AWS)へのシステム移行(AWSマイグレーション)に関して、お問い合わせ・ご相談頂く機会が増加傾向にあります。 「100超のシステムを移行」三菱東京UFJがAWS活用策明かす で、MUFJがAWSへ">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/System_migration_to_AWS/study.jpg">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.146Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="実体験に基づくAWSへのシステム移行時のあれこれ・雑感">
+<meta name="twitter:description" content="本格的な夏の始まりと共に、プール開き当日に6時間水遊びを楽しんだ結果、毎年恒例の日焼けによる肌の強烈なヒリヒリ感に苦しんでいる、MMM代表の国本です。 昨年よりAmazon Web Services(AWS)へのシステム移行(AWSマイグレーション)に関して、お問い合わせ・ご相談頂く機会が増加傾向にあります。 「100超のシステムを移行」三菱東京UFJがAWS活用策明かす で、MUFJがAWSへ">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/System_migration_to_AWS/study.jpg">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-System-migration-to-AWS" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2017-07-19T07:41:00.000Z" itemprop="datePublished">2017-07-19</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2017/07/19/System_migration_to_AWS/">実体験に基づくAWSへのシステム移行時のあれこれ・雑感</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/07/19/System_migration_to_AWS/" data-text="実体験に基づくAWSへのシステム移行時のあれこれ・雑感" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/07/19/System_migration_to_AWS/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/07/19/System_migration_to_AWS/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/07/19/System_migration_to_AWS/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/07/19/System_migration_to_AWS/" class="hatena-bookmark-button" data-hatena-bookmark-title="実体験に基づくAWSへのシステム移行時のあれこれ・雑感" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/System_migration_to_AWS/study.jpg" alt=""></p>
+<p>本格的な夏の始まりと共に、プール開き当日に6時間水遊びを楽しんだ結果、毎年恒例の日焼けによる肌の強烈なヒリヒリ感に苦しんでいる、MMM代表の国本です。</p>
+<p>昨年よりAmazon Web Services(AWS)へのシステム移行(AWSマイグレーション)に関して、お問い合わせ・ご相談頂く機会が増加傾向にあります。</p>
+<p><a href="http://itpro.nikkeibp.co.jp/atcl/column/17/052600214/053100002/" target="_blank" rel="noopener">「100超のシステムを移行」三菱東京UFJがAWS活用策明かす</a> で、MUFJがAWSへの移行を決断された事が大きく取り上げられたこともあり、このような大きな動きに追従する形で業種・システム種別を問わず、AWSへの移行をご検討されている企業が増えたというのが背景にあると見ています。</p>
+<p>我々MMMは、AWSへの移行をソリューションとして提供し、これまで多くのシステムをAWSへ移行しており、これまでの実体験をベースにAWSへのシステム移行時に検討すべき事項や、よくご相談・ご質問いただく内容について、雑感として書いてみようと思います。</p>
+<h2 id="1aws移行でよくご相談いただくシステムの種別"><a href="#1．AWS移行でよくご相談いただくシステムの種別" class="headerlink" title="1．AWS移行でよくご相談いただくシステムの種別"></a>1．AWS移行でよくご相談いただくシステムの種別</h2><p>AWSは多くのマネージドサービスが存在し、非常に裾野が広い(and 深い)クラウドサービスであり、ビジネス業種・形態を問わず移行可能ですが、よくご相談いただくシステムは下記のとおりです。</p>
+<h3 id="webサービスモバイルアプリのバックエンド"><a href="#Webサービス・モバイルアプリ-のバックエンド" class="headerlink" title="Webサービス・モバイルアプリ(のバックエンド)"></a>Webサービス・モバイルアプリ(のバックエンド)</h3><p>コンシューマー/ビジネスユースのWebサービスやEコマース(ECサイト)、またモバイルアプリケーション向けのバックエンドサービス(API)など、Webやモバイルアプリそのものでビジネスを提供しているサービス。</p>
+<p>多くは現状、オンプレミス(自社保有設備)やハウジング、またはレンタルサーバー上で稼働しているというケースです。</p>
+<h3 id="企業のいわゆる情報系"><a href="#企業のいわゆる「情報系」" class="headerlink" title="企業のいわゆる「情報系」"></a>企業のいわゆる「情報系」</h3><p>ファイルサーバーやグループウェア、スケジュール管理、ActiveDirectory(AD)など、社内外とのコミュニケーション機能がメインで、企業のビジネス活動を間接的に支援するような情報系と呼ばれるシステム群。</p>
+<p>多くは現状、オンプレミス(自社保有設備)やハウジング、レンタルサーバーなどで稼働しています。</p>
+<h3 id="企業の基幹業務系"><a href="#企業の「基幹・業務系」" class="headerlink" title="企業の「基幹・業務系」"></a>企業の「基幹・業務系」</h3><p>ERPや生産/販売管理/受発注システムなど、ビジネス活動のベースとなり、非常に高い可用性や冗長性が求められ、OracleやSAP、JP1など商用ソフトウェアプロダクトが多数投入されているシステム。</p>
+<p>多くは現状、オンプレミス(自社保有設備)やハウジングで稼働しています。</p>
+<h2 id="2aws移行検討に至る経緯背景"><a href="#2．AWS移行検討に至る経緯・背景" class="headerlink" title="2．AWS移行検討に至る経緯・背景"></a>2．AWS移行検討に至る経緯・背景</h2><p>AWS移行を検討されている企業毎に様々な経緯や背景は存在するものの、概ね下記3つに集約できます。</p>
+<h3 id="運用コストを削減したい"><a href="#運用コストを削減したい" class="headerlink" title="運用コストを削減したい"></a>運用コストを削減したい</h3><p>オンプレミス(自社)で運用しているサーバーやストレージ機器は、通常一定期間(3年や5年)の保守サービスと共に購入され、契約保守の期限切れに併せて、保守会社から機器のリプレースを打診されるため、そのタイミングでコストを抑えるためにAWSへの移行を検討される。というケースが多くあります。</p>
+<p>このように最初は『コスト削減』というキーワードでAWS移行のご検討を開始されるというケースが現状では一番多いように実感しています。</p>
+<h3 id="顧客先上層部からの移行要請"><a href="#顧客先・上層部からの移行要請" class="headerlink" title="顧客先・上層部からの移行要請"></a>顧客先・上層部からの移行要請</h3><p>次に多いケースとして『サービス提供先の顧客からインフラをAWSへ移行したいという要請が来た』『上司からAWSクラウドへの移行検討を指示された』などの「外的要因での移行検討」もかなり存在します。</p>
+<p>大規模なシステムから小規模サービスまで、AWSへのシステム移行事例は昨今、枚挙にいとまがなく、そのような事例をWebや雑誌で見て「是非とも我が社も！」と考えられるようなケースです。</p>
+<h3 id="ビジネススピードに追従できる俊敏性柔軟性を得たい"><a href="#ビジネススピードに追従できる俊敏性・柔軟性を得たい" class="headerlink" title="ビジネススピードに追従できる俊敏性・柔軟性を得たい"></a>ビジネススピードに追従できる俊敏性・柔軟性を得たい</h3><p>AWSへのシステム移行の本質的な価値は、デジタルビジネスに必須となる「俊敏性(アジリティ)」「柔軟性(フレキシビリティ)」「拡張性(スケーラビリティ)」を得られるという点だとMMMでは捉えています。</p>
+<p>ビジネススピードに追従できるような俊敏性、柔軟性や拡張性を得たいという理由で、AWSを選択されるという企業は、現時点ではそこまで多くはないように感じていますが、最終的にはこのようなクラウドの本質的な価値を得たいという理由に至ると考えます。</p>
+<h2 id="3aws移行検討時によくいただくご質問"><a href="#3．AWS移行検討時によくいただくご質問" class="headerlink" title="3．AWS移行検討時によくいただくご質問"></a>3．AWS移行検討時によくいただくご質問</h2><h3 id="awsのサービスが多すぎて-何を使ったらよいかわからない"><a href="#AWSのサービスが多すぎて、何を使ったらよいかわからない" class="headerlink" title="AWSのサービスが多すぎて、何を使ったらよいかわからない"></a>AWSのサービスが多すぎて、何を使ったらよいかわからない</h3><p>AWSが提供するクラウドサービスが数多く、移行時に具体的にどのサービスを採用し、システムを構成したら良いのか難しい。といった声をよく聞きます。</p>
+<p>我々MMMでは、現行システムを単純にEC2などの仮想サーバーにそのまま置き換えるだけではなく、移行対象となるシステムについて入念にアセスメントを実施し、AWSクラウドのメリットを十二分に享受できる形でクラウド志向のアーキテクチャをご提案しています。</p>
+<h3 id="awsで商用ソフトウェアライセンスの見積りがわからない"><a href="#AWSで商用ソフトウェアライセンスの見積りがわからない" class="headerlink" title="AWSで商用ソフトウェアライセンスの見積りがわからない"></a>AWSで商用ソフトウェアライセンスの見積りがわからない</h3><p>AWSへ移行した場合に、現在導入している商用ソフトウェアのライセンス形態に変更があるのか？という点ですが、我々MMMでは、ソフトウェアプロダクトの開発元ベンダーもしくは公式な販売代理店と連携し、AWS上での稼働における公式なサポート状況、及び推奨される構成を調査した上で、ライセンス含めたお見積を提示しています。</p>
+<h3 id="awsへのデータ移行をどう進めたらよいか"><a href="#AWSへのデータ移行をどう進めたらよいか" class="headerlink" title="AWSへのデータ移行をどう進めたらよいか"></a>AWSへのデータ移行をどう進めたらよいか</h3><p>現システムのダウンタイムを抑えて移行を進めたいが、具体的にどのような手順を踏めばよいのか？という点について、我々MMMでは、AWSが提供しているDatabase Migration Service(DMS)などを活用したデータ移行を初め、ダウンタイムを最小化できる移行を設計し、移行の具体的な手順をご提示した上で、リハーサルを実施しています。</p>
+<h3 id="awsの月額利用料の見積りができない"><a href="#AWSの月額利用料の見積りができない" class="headerlink" title="AWSの月額利用料の見積りができない"></a>AWSの月額利用料の見積りができない</h3><p>従量課金とはいえ社内稟議で必要になるので、大体の月額利用料金は把握したいが、見積りはどのように行えばよいのか？という質問もよく受けますが。</p>
+<p>我々MMMでは、移行対象システムを事前にアセスメントした上で、見込みベースのネットワークトラフィック含めて、必要なAWSリソースを「月額利用想定額」という形で提示しています。</p>
+<h3 id="awsに移行後の監視をどうすればよいか"><a href="#AWSに移行後の監視をどうすればよいか" class="headerlink" title="AWSに移行後の監視をどうすればよいか"></a>AWSに移行後の監視をどうすればよいか</h3><p>システムの運用監視はどのように構成したら良いのか？また費用はどの程度発生するのか？という点も多く質問を受けますが、我々MMMではAWSへの移行前に運用監視のご要件をヒアリングし、DatadogというSaaS型のモニタリングサービスを用いて、監視サーバーを別途準備せず、24時間365日の監視サービスを提供しております。</p>
+<p>また、オンプレミスでご利用されている監視サービスをそのまま踏襲したいという場合も、オンプレミスとAWSとのネットワーク設計含めてサポートしています。</p>
+<h2 id="4awsへの移行におけるポイント"><a href="#4．AWSへの移行におけるポイント" class="headerlink" title="4．AWSへの移行におけるポイント"></a>4．AWSへの移行におけるポイント</h2><p>システムの全面移行は新規構築と比較し、考慮すべき点が多数あり、比較的難易度が高いプロジェクトとなりますが、加えてAWSへの移行の場合、クラウドならではの検討すべきポイントを忘れてはなりません。</p>
+<h3 id="awsの旨味を活かすクラウドアーキテクチャを検討する"><a href="#AWSの旨味を活かすクラウドアーキテクチャを検討する" class="headerlink" title="AWSの旨味を活かすクラウドアーキテクチャを検討する"></a>AWSの旨味を活かすクラウドアーキテクチャを検討する</h3><p>以前、 <a href="http://blog.mmmcorp.co.jp/blog/2016/05/19/failure_pattern_of_enterprise_cloud_introduction/">オンプレミス(自社運用)環境をクラウドへ移行するときにありがちな失敗パターン</a> でも書きましたが、オンプレミスの設計方式をそのままAWSに持ち込み、適用することが運用上好ましくないケースも存在し、場合によってはインフラのみならずアプリケーションレイヤーまで含めて最適化したほうが良いという場合もあります。</p>
+<p>よって、事前に移行対象のシステム構成をアセスメントし、AWSへ移行した後にクラウドの良さを享受できるアーキテクチャを入念に設計することが重要となります。</p>
+<h3 id="awsの特徴をうまく活かしてコストを圧縮する"><a href="#AWSの特徴をうまく活かしてコストを圧縮する" class="headerlink" title="AWSの特徴をうまく活かしてコストを圧縮する"></a>AWSの特徴をうまく活かしてコストを圧縮する</h3><p>こちらも、 <a href="http://blog.mmmcorp.co.jp/blog/2016/05/19/failure_pattern_of_enterprise_cloud_introduction/">オンプレミス(自社運用)環境をクラウドへ移行するときにありがちな失敗パターン</a> で以前書きましたが、オンプレミスのように数年先を見越した形で極度にオーバースペックなサイジングを行うと、コストが跳ね上がってしまいます。</p>
+<p>よって、AWSクラウドの弾性を上手く活かし、サービス稼働に必要な最小限のスペックでの構成配備や、従量課金を活かして開発・検証環境を営業時間のみ稼働させる仕組みを作りなど、AWSの月額利用料を最適化してコストを圧縮することがポイントです。</p>
+<h3 id="移行元システムとaws間のデータ同期の仕組み作り"><a href="#移行元システムとAWS間のデータ同期の仕組み作り" class="headerlink" title="移行元システムとAWS間のデータ同期の仕組み作り"></a>移行元システムとAWS間のデータ同期の仕組み作り</h3><p>AWSへの移行時に対象システムを長期間サービス全停止できるレアなケースを除き、ビジネスの機会損失を抑えるために、移行時にはシステムのダウンタイムは最小化することが求められる場合がほとんどだと思います。</p>
+<p>リレーショナル・データベースに格納されているデータはもちろん、日々システム上で更新される画像やテキストベースなどの静的ファイル群も含め、差分で日々データを移行先となるAWSに同期できるような仕組みづくりを設計し実装することが、移行時のダウンタイムを最小化するためには必須となります。</p>
+<h3 id="awsの進化に追従できる運用保守体制の整備"><a href="#AWSの進化に追従できる運用・保守体制の整備" class="headerlink" title="AWSの進化に追従できる運用・保守体制の整備"></a>AWSの進化に追従できる運用・保守体制の整備</h3><p>AWSはクラウドサービスの中でも特に進化が早く、顧客の声に答えるべく新しいサービスや機能改良が、かなりのハイペースで実施されていきます。</p>
+<p>よってオンプレミスのような前提で、システムを一度開発・構築後、塩漬けで何年もひたすら放置するという形ではなく、日々クラウドの真価をキャッチアップし、自社のビジネスに貪欲に取り入れていける運用・保守体制を整備する覚悟が必要となります。</p>
+<h2 id="5aws移行のざっくりとしたステップ"><a href="#5．AWS移行のざっくりとしたステップ" class="headerlink" title="5．AWS移行のざっくりとしたステップ"></a>5．AWS移行のざっくりとしたステップ</h2><p>MMMでは、AWSへのシステム移行について、下記のようなフローで進めています。</p>
+<h3 id="step1aws移行のビジネスゴールを定義"><a href="#STEP1．AWS移行のビジネスゴールを定義" class="headerlink" title="STEP1．AWS移行のビジネスゴールを定義"></a>STEP1．AWS移行のビジネスゴールを定義</h3><p>最初期のフェーズとしてAWSへ移行する具体的な目的と達成したいビジネスゴールを明確に定義します。</p>
+<p>AWS移行検討に至る経緯・背景は企業によりそれぞれ異なり、運用コストの削減、ビジネスの俊敏性向上、セキュリティ・拡張性の強化、災害対策の実現など、AWS移行において実現したいゴールを明確に定義することで、最適と考えられるアプローチを行います。</p>
+<p>特に <code>2．AWS移行検討に至る経緯・背景</code> 外部要因による移行検討の場合、顧客や上層部の考えているゴールと、担当者レベルでのゴールに対する認識が乖離しているケースもあり、このビジネスゴールをプロジェクト関係者間で正確に把握・共有することがプロジェクトを成功へ導く前提条件だと考えています。</p>
+<h3 id="step2移行対象システムのアセスメント"><a href="#STEP2．移行対象システムのアセスメント" class="headerlink" title="STEP2．移行対象システムのアセスメント"></a>STEP2．移行対象システムのアセスメント</h3><p>移行を検討しているシステムに対するアセスメントとして</p>
+<ul>
+<li>システムアーキテクチャ</li>
+<li>データ量(DBや静的ファイル含め)</li>
+<li>利用ユーザ数</li>
+<li>システム開発及び運用フロー</li>
+<li>システムに関係する部署・ベンダー</li>
+<li>バックアップ・リストア状況</li>
+<li>連携システム有無</li>
+<li>パフォーマンス要件</li>
+<li>求められるサービスレベル(SLA)</li>
+</ul>
+<p>を対象に、構成や現状の関係部署を含めた開発・運用フローを洗い出し、AWSへの移行時に改善・検討が必要と考えられるポイントを可視化・提案します。</p>
+<h3 id="step3移行計画とaws上のアーキテクチャ立案"><a href="#STEP3．移行計画とAWS上のアーキテクチャ立案" class="headerlink" title="STEP3．移行計画とAWS上のアーキテクチャ立案"></a>STEP3．移行計画とAWS上のアーキテクチャ立案</h3><p>STEP2の事前アセスメントの結果をベースに、具体的なAWSへのシステム移行計画と、AWSに適したクラウドアーキテクチャを提案いたします。</p>
+<p>この際、インフラ見直しはもちろん、必要と考えられる場合はアプリケーションレイヤーや移行後の開発フローの仕組み作りまで含めた総合的な提案を行うことで、移行後のシステム運用コスト削減と、AWSクラウドならではの俊敏性を享受できるよう努めます。</p>
+<p>また、移行までの対象システムデータ同期方式や、切替時に発生するダウンタイムなど、移行時に運用側でサポートが必要なアクションも認識合わせを行いながら、最終的な移行計画としてまとめていきます。</p>
+<h3 id="step4aws移行後の運用保守要件の定義"><a href="#STEP4．AWS移行後の運用・保守要件の定義" class="headerlink" title="STEP4．AWS移行後の運用・保守要件の定義"></a>STEP4．AWS移行後の運用・保守要件の定義</h3><p>移行計画が立案された段階で、AWSへの移行後のシステム運用・保守のついて定義していきます。</p>
+<p>AWSへ移行後、どこまでを自社運用として、どこからを運用会社へ委託されるか、また、求められるサービス運用レベルに準じた監視や運用体制の整備をキッチリとこの段階で合意しておくことで、システム運用後も、AWSのサービス進化に追従し、ビジネスメリットを享受できる運用体制を確立することが狙いです。</p>
+<h3 id="step5aws移行の開始"><a href="#STEP5．AWS移行の開始" class="headerlink" title="STEP5．AWS移行の開始"></a>STEP5．AWS移行の開始</h3><p>具体的に立案されたAWSへの移行計画そして移行後の運用・保守に準じて、AWSへの移行作業を両社が協力し進めていきます。</p>
+<h2 id="雑感まとめ"><a href="#雑感まとめ" class="headerlink" title="雑感まとめ"></a>雑感まとめ</h2><p>AWSへのシステム移行は、実現したいビジネスゴールに向けて、クラウドならではのメリットと特徴を十分に把握・理解した上で、AWSへの移行後の運用まで踏まえた形で、慎重にプロジェクトを進める必要があります。</p>
+<p>我々MMMは、AWSへのシステム移行をお考えのお客様に対して、単なるサーバー移行ではなく、その先にある <a href="https://mmmcorp.co.jp/services/aws/" target="_blank" rel="noopener">ビジネス価値の最大化をフルサポートするAWS移行ソリューション</a> を提供しておりますので、AWSへの移行をご検討されている方は、お気軽に <a href="https://mmmcorp.co.jp/contacts/new/" target="_blank" rel="noopener">MMMにご相談</a> 下さいませ。</p>
+<p>ではでは╭( ･ㅂ･)و ̑̑</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/07/19/System_migration_to_AWS/" data-text="実体験に基づくAWSへのシステム移行時のあれこれ・雑感" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/07/19/System_migration_to_AWS/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/07/19/System_migration_to_AWS/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/07/19/System_migration_to_AWS/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/07/19/System_migration_to_AWS/" class="hatena-bookmark-button" data-hatena-bookmark-title="実体験に基づくAWSへのシステム移行時のあれこれ・雑感" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS移行/">AWS移行</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/クラウド/">クラウド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/システム/">システム</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ビジネス/">ビジネス</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/マイグレーション/">マイグレーション</a></li></ul>
+
+
+      <p class="article-footer__author">by 国本 廷宣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

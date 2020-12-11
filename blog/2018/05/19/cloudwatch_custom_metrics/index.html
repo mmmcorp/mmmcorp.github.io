@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AWS CloudWatch カスタムメトリクスでメモリ使用率を取得する | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="ここ最近できていなかった社内のAWS勉強会だったが、今週からまた再開している。過去の勉強会についてのブログ記事は下記のとおり。 社内AWS認定試験対策勉強会 | MMMブログ社内のAWS勉強会のまとめ | MMMブログAWS放課後勉強会 | MMMブログ   今回は、AWSを普段業務で触っているメンバーと、AWSにそれほど馴染みがないメンバー（主にフロントエンドチーム）と2人1組になり、カリキュラ">
+<meta name="keywords" content="AWS,運用・監視,インフラ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWS CloudWatch カスタムメトリクスでメモリ使用率を取得する">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2018/05/19/cloudwatch_custom_metrics/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="ここ最近できていなかった社内のAWS勉強会だったが、今週からまた再開している。過去の勉強会についてのブログ記事は下記のとおり。 社内AWS認定試験対策勉強会 | MMMブログ社内のAWS勉強会のまとめ | MMMブログAWS放課後勉強会 | MMMブログ   今回は、AWSを普段業務で触っているメンバーと、AWSにそれほど馴染みがないメンバー（主にフロントエンドチーム）と2人1組になり、カリキュラ">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/cloudwatch-custom-metrics/create_policy2.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/cloudwatch-custom-metrics/create_policy1.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/cloudwatch-custom-metrics/custom.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/cloudwatch-custom-metrics/mem_disk_metrics.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/cloudwatch-custom-metrics/dashboard_memory.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/cloudwatch-custom-metrics/dashboard_disk.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.154Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AWS CloudWatch カスタムメトリクスでメモリ使用率を取得する">
+<meta name="twitter:description" content="ここ最近できていなかった社内のAWS勉強会だったが、今週からまた再開している。過去の勉強会についてのブログ記事は下記のとおり。 社内AWS認定試験対策勉強会 | MMMブログ社内のAWS勉強会のまとめ | MMMブログAWS放課後勉強会 | MMMブログ   今回は、AWSを普段業務で触っているメンバーと、AWSにそれほど馴染みがないメンバー（主にフロントエンドチーム）と2人1組になり、カリキュラ">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/cloudwatch-custom-metrics/create_policy2.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-cloudwatch-custom-metrics" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2018-05-19T10:52:51.000Z" itemprop="datePublished">2018-05-19</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2018/05/19/cloudwatch_custom_metrics/">AWS CloudWatch カスタムメトリクスでメモリ使用率を取得する</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2018/05/19/cloudwatch_custom_metrics/" data-text="AWS CloudWatch カスタムメトリクスでメモリ使用率を取得する" data-counturl="https://blog.mmmcorp.co.jp/blog/2018/05/19/cloudwatch_custom_metrics/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2018/05/19/cloudwatch_custom_metrics/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2018/05/19/cloudwatch_custom_metrics/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2018/05/19/cloudwatch_custom_metrics/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS CloudWatch カスタムメトリクスでメモリ使用率を取得する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>ここ最近できていなかった社内のAWS勉強会だったが、今週からまた再開している。<br>過去の勉強会についてのブログ記事は下記のとおり。</p>
+<p><a href="https://blog.mmmcorp.co.jp/blog/2017/02/17/study-for-aws-exam/">社内AWS認定試験対策勉強会 | MMMブログ</a><br><a href="https://blog.mmmcorp.co.jp/blog/2017/05/27/aws_study_group_2017-05-27/">社内のAWS勉強会のまとめ | MMMブログ</a><br><a href="https://blog.mmmcorp.co.jp/blog/2017/09/27/study_group_after_work/">AWS放課後勉強会 | MMMブログ</a>  </p>
+<p>今回は、AWSを普段業務で触っているメンバーと、AWSにそれほど馴染みがないメンバー（主にフロントエンドチーム）と2人1組になり、カリキュラムに沿って、IAM、VPC、EC2などの基本的なマネージドサービスを実際に触ってみて理解しよう、という試みを行っている。  </p>
+<p>フロントエンドチームもAWSの知識があった方が業務をする上で良いので、AWS勉強会を通じてAWSの知識を深めてもらって、できればAWSの認定試験に合格してくれると嬉しいなーと思っている。  </p>
+<p>今回は、その社内AWS勉強会で、EC2のコンソールを触っているところでチラッとだけ話題にした、 <code>CloudWatch</code> のデフォルトのメトリクスとカスタムメトリクスについて、少し踏み込んでみる。  </p>
+<h2 id="ec2でデフォルトで利用可能な-cloudwatch-メトリクス"><a href="#EC2でデフォルトで利用可能な-CloudWatch-メトリクス" class="headerlink" title="EC2でデフォルトで利用可能な CloudWatch メトリクス"></a>EC2でデフォルトで利用可能な <code>CloudWatch</code> メトリクス</h2><p>EC2でデフォルトで利用可能な主な <code>CloudWatch</code> メトリクスは、</p>
+<ul>
+<li>CPU使用率</li>
+<li>ディスクの読み取り/書き込み操作</li>
+<li>ネットワークトラフィックの量</li>
+<li>インスタンス/システム ステータスチェック</li>
+</ul>
+<p>などがある。<br>注意が必要なのは、 <strong>メモリ使用率やディスク使用率は、デフォルトのメトリクスでは取得できない</strong> ということ。  </p>
+<p>【参考URL】<br><a href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/viewing_metrics_with_cloudwatch.html" target="_blank" rel="noopener">インスタンスの利用可能な CloudWatch メトリクスのリスト表示</a>  </p>
+<p>メモリ使用率、ディスク使用率を取得したい場合は、カスタムメトリクスを利用しないといけない。</p>
+<h2 id="カスタムメトリクスでメモリ使用率-ディスク使用率を取得する"><a href="#カスタムメトリクスでメモリ使用率、ディスク使用率を取得する" class="headerlink" title="カスタムメトリクスでメモリ使用率、ディスク使用率を取得する"></a>カスタムメトリクスでメモリ使用率、ディスク使用率を取得する</h2><p>下記の公式のドキュメントで、 <code>CloudWatch</code> モニタリングスクリプトを使用して、メモリ使用率やディスク使用率を取得する方法が紹介されている。</p>
+<p><a href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/mon-scripts.html" target="_blank" rel="noopener">Amazon EC2 Linux インスタンスのメモリとディスクのメトリクスのモニタリング - Amazon Elastic Compute Cloud</a></p>
+<p>こちらを参考に、手順通り実行すれば、比較的簡単にメモリ使用率やディスク使用率を取得することは可能だ。<br>ただ、 <code>Perl</code> スクリプトになっており、監視するために <code>Perl</code> をインストールするのはちょっと気持ち悪い。  </p>
+<p>もっと簡単に使えるものはないかなーと探してみたところ、 <code>Golang</code> で書かれている <a href="https://github.com/mlabouardy/mon-put-instance-data" target="_blank" rel="noopener">mlabouardy/mon-put-instance-data</a> が良さそうだったので、試してみた。<br>Linux 用にコンパイル済みのバイナリファイルをS3においておけば、ダウンロードして、そのまま実行できるので Perl スクリプトを利用するよりはお手軽そうだ。</p>
+<h3 id="policy-role-作成"><a href="#Policy、Role-作成" class="headerlink" title="Policy、Role 作成"></a>Policy、Role 作成</h3><p>まず、EC2インスタンスから、 CloudWatch へメトリックのデータを送れるように、 IAM にてポリシーを下記のように作成する。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"Version"</span>: <span class="string">"2012-10-17"</span>,</span><br><span class="line">    <span class="attr">"Statement"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"Sid"</span>: <span class="string">"1"</span>,</span><br><span class="line">            <span class="attr">"Effect"</span>: <span class="string">"Allow"</span>,</span><br><span class="line">            <span class="attr">"Action"</span>: <span class="string">"cloudwatch:PutMetricData"</span>,</span><br><span class="line">            <span class="attr">"Resource"</span>: <span class="string">"*"</span></span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/images/cloudwatch-custom-metrics/create_policy2.png" alt=""><br><img src="/images/cloudwatch-custom-metrics/create_policy1.png" alt=""></p>
+<p>さらに、EC2インスタンスに関連付けする Role を作成して、上記で作成したポリシーをアタッチする。</p>
+<h3 id="ec2インスタンス作成"><a href="#EC2インスタンス作成" class="headerlink" title="EC2インスタンス作成"></a>EC2インスタンス作成</h3><p>EC2インスタンスを作成する際に、先ほど作成した Role を設定する。<br>ユーザーデータにて、OS起動時に <code>mon-put-instance-data</code> をダウンロードして実行できるようにパーミッション設定。　　</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">curl -L https://s3.us-east-1.amazonaws.com/mon-put-instance-data/1.0.0/linux/mon-put-instance-data -o /usr/<span class="built_in">local</span>/bin/mon-put-instance-data</span><br><span class="line"></span><br><span class="line">chmod +x /usr/<span class="built_in">local</span>/bin/mon-put-instance-data</span><br></pre></td></tr></table></figure>
+<h3 id="mon-put-instance-data-実行"><a href="#mon-put-instance-data-実行" class="headerlink" title="mon-put-instance-data 実行"></a>mon-put-instance-data 実行</h3><p>作成した EC2インスタンスに接続して、 <code>mon-put-instance-data</code> を実行してみる。  </p>
+<p><code>--memory</code> <code>--disk</code> オプションで、今回取得したいメモリとディスクを指定する。<br><code>--region</code> で <code>ap-northeast-1</code> にする。<br><code>--interval</code> で <code>1</code> を指定(1分間隔で実行)した。<br>※ README には <code>--duration 1</code> と書かれているところもあるが、 <code>--duration</code> だとエラーとなる。 <code>--interval</code> が正しい。</p>
+<p>実行してみたところ、下記のように1分間隔で、リソースの状況が送信されていることが見て取れた。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@ip-10-0-0-136 ~]<span class="comment"># mon-put-instance-data --memory --disk --interval 1 --region ap-northeast-1</span></span><br><span class="line">Interval: 1 minutes - Features enabled: memory, disk</span><br><span class="line">2018/05/19 01:50:11 Memory - Utilization:14.872979580211556% Used:154001408 Available:881442816</span><br><span class="line">2018/05/19 01:50:11 Disk - Utilization:38.71704564310449% Used:3220787200 Free:4995342336</span><br><span class="line">2018/05/19 01:51:11 Memory - Utilization:15.20526594776775% Used:157442048 Available:878002176</span><br><span class="line">2018/05/19 01:51:11 Disk - Utilization:38.71714411904165% Used:3220795392 Free:4995334144</span><br></pre></td></tr></table></figure>
+<p>※ 実際に運用で使用する際には、バックグラウンドで実行すると良いと思う。</p>
+<h3 id="ダッシュボード"><a href="#ダッシュボード" class="headerlink" title="ダッシュボード"></a>ダッシュボード</h3><p><code>CloudWatch</code> でダッシュボードを作成する。　　</p>
+<p>メトリクス選択画面で、 <code>CustomMetrics</code> が出ていることが確認できた。  </p>
+<p><img src="/images/cloudwatch-custom-metrics/custom.png" alt=""></p>
+<p>クリックすると、下記のようにメモリ、ディスクについてのメトリクスが出てくるので、</p>
+<p><img src="/images/cloudwatch-custom-metrics/mem_disk_metrics.png" alt=""></p>
+<p>グラフを作成したいメトリクスを選択して、グラフを作成する。</p>
+<p>何も実行されていないと、グラフとして面白くないので、</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/dev/null &lt; $(yes)</span><br></pre></td></tr></table></figure>
+<p>でメモリに対して負荷をかけてみたり、</p>
+<p><img src="/images/cloudwatch-custom-metrics/dashboard_memory.png" alt=""></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dd <span class="keyword">if</span>=/dev/zero of=ddtest bs=500M count=1</span><br></pre></td></tr></table></figure>
+<p>で、いくつか適当にファイルを作成して、ディスク使用率を上げてみた。</p>
+<p><img src="/images/cloudwatch-custom-metrics/dashboard_disk.png" alt=""></p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p><code>mon-put-instance-data</code> でかなりお手軽にカスタムメトリクスが取得できた。<br><code>--docker</code> オプションで、コンテナごとのメモリ使用率やCPU使用率なども取得できるみたいだ。<br>弊社では監視に、 <a href="https://www.datadoghq.com/" target="_blank" rel="noopener">Datadog</a> を使うことが多いが、今後使える機会があったら使ってみても良さそうだと感じた。  </p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://hackernoon.com/publish-custom-metrics-to-aws-cloudwatch-18cb3bbff17c" target="_blank" rel="noopener">Publish Custom Metrics to AWS CloudWatch – Hacker Noon</a><br><a href="https://github.com/mlabouardy/mon-put-instance-data" target="_blank" rel="noopener">mlabouardy/mon-put-instance-data: Publish Custom CloudWatch Metrics 📈</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2018/05/19/cloudwatch_custom_metrics/" data-text="AWS CloudWatch カスタムメトリクスでメモリ使用率を取得する" data-counturl="https://blog.mmmcorp.co.jp/blog/2018/05/19/cloudwatch_custom_metrics/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2018/05/19/cloudwatch_custom_metrics/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2018/05/19/cloudwatch_custom_metrics/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2018/05/19/cloudwatch_custom_metrics/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS CloudWatch カスタムメトリクスでメモリ使用率を取得する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/インフラ/">インフラ</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/運用・監視/">運用・監視</a></li></ul>
+
+
+      <p class="article-footer__author">by 佐々木 悠人</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

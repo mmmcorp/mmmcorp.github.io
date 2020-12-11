@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Amazon WorkSpaces（ワークスペース）を活用したセキュアで堅牢なテレワーク(在宅勤務)環境 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="新型コロナウイルスの感染防止対策としてテレワーク(リモートワーク、在宅勤務)の導入についてご相談をいただく機会が増えています。 MMMではAWSが展開する 仮想デスクトップ基盤（DaaS） サービスのAmazon WorkSpaces(ワークスペース)を活用したソリューションを提供しております。 本記事では『早期にテレワーク環境を構築したい！』という皆様へ、WorkSpacesの特徴とテレワーク">
+<meta name="keywords" content="リモートワーク,テレワーク,クラウド,AWS,WorkSpaces,在宅勤務">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Amazon WorkSpaces（ワークスペース）を活用したセキュアで堅牢なテレワーク(在宅勤務)環境">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/03/16/Secure_telework_with_Amazon_WorkSpaces/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="新型コロナウイルスの感染防止対策としてテレワーク(リモートワーク、在宅勤務)の導入についてご相談をいただく機会が増えています。 MMMではAWSが展開する 仮想デスクトップ基盤（DaaS） サービスのAmazon WorkSpaces(ワークスペース)を活用したソリューションを提供しております。 本記事では『早期にテレワーク環境を構築したい！』という皆様へ、WorkSpacesの特徴とテレワーク">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/Secure_telework_with_Amazon_WorkSpaces/working-remotely-by-the-pool.jpg">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/Secure_telework_with_Amazon_WorkSpaces/VDI_Image.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/Secure_telework_with_Amazon_WorkSpaces/WorkSpaces_Price.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/Secure_telework_with_Amazon_WorkSpaces/custom_image.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/Secure_telework_with_Amazon_WorkSpaces/workspaces_mfa_solutions.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Amazon WorkSpaces（ワークスペース）を活用したセキュアで堅牢なテレワーク(在宅勤務)環境">
+<meta name="twitter:description" content="新型コロナウイルスの感染防止対策としてテレワーク(リモートワーク、在宅勤務)の導入についてご相談をいただく機会が増えています。 MMMではAWSが展開する 仮想デスクトップ基盤（DaaS） サービスのAmazon WorkSpaces(ワークスペース)を活用したソリューションを提供しております。 本記事では『早期にテレワーク環境を構築したい！』という皆様へ、WorkSpacesの特徴とテレワーク">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/Secure_telework_with_Amazon_WorkSpaces/working-remotely-by-the-pool.jpg">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-Secure-telework-with-Amazon-WorkSpaces" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-03-16T23:12:09.000Z" itemprop="datePublished">2020-03-16</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/03/16/Secure_telework_with_Amazon_WorkSpaces/">Amazon WorkSpaces（ワークスペース）を活用したセキュアで堅牢なテレワーク(在宅勤務)環境</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/03/16/Secure_telework_with_Amazon_WorkSpaces/" data-text="Amazon WorkSpaces（ワークスペース）を活用したセキュアで堅牢なテレワーク(在宅勤務)環境" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/03/16/Secure_telework_with_Amazon_WorkSpaces/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/03/16/Secure_telework_with_Amazon_WorkSpaces/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/03/16/Secure_telework_with_Amazon_WorkSpaces/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/03/16/Secure_telework_with_Amazon_WorkSpaces/" class="hatena-bookmark-button" data-hatena-bookmark-title="Amazon WorkSpaces（ワークスペース）を活用したセキュアで堅牢なテレワーク(在宅勤務)環境" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/Secure_telework_with_Amazon_WorkSpaces/working-remotely-by-the-pool.jpg" alt=""></p>
+<p>新型コロナウイルスの感染防止対策としてテレワーク(リモートワーク、在宅勤務)の導入についてご相談をいただく機会が増えています。</p>
+<p>MMMではAWSが展開する <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank" rel="noopener">仮想デスクトップ基盤（DaaS）</a> サービスのAmazon WorkSpaces(ワークスペース)を活用したソリューションを提供しております。</p>
+<p>本記事では『早期にテレワーク環境を構築したい！』という皆様へ、WorkSpacesの特徴とテレワーク導入の構成案をご紹介いたします。</p>
+<h2 id="目次"><a href="#目次" class="headerlink" title="目次"></a>目次</h2><!-- toc -->
+<ul>
+<li><a href="#amazon-workspacesアマゾン-ワークスペースとは">Amazon WorkSpaces（アマゾン ワークスペース）とは？</a></li>
+<li><a href="#用途">用途</a></li>
+<li><a href="#利用環境workspacesへの接続">利用環境(WorkSpacesへの接続)</a><ul>
+<li><a href="#1-1-専用クライアントアプリケーションサポート環境">1-1. 専用クライアントアプリケーションサポート環境</a></li>
+<li><a href="#1-2-webブラウザサポートバージョン">1-2. Webブラウザサポートバージョン</a></li>
+<li><a href="#2-通信要件">2. 通信要件</a></li>
+</ul>
+</li>
+<li><a href="#workspacesのスペックと価格ライセンス">WorkSpacesのスペックと価格/ライセンス</a><ul>
+<li><a href="#1-課金オプション">1. 課金オプション</a></li>
+<li><a href="#2-サポートos">2. サポートOS</a></li>
+<li><a href="#3-windowsライセンス形態">3. Windowsライセンス形態</a></li>
+</ul>
+</li>
+<li><a href="#利用できるアプリケーション">利用できるアプリケーション</a></li>
+<li><a href="#イメージ配布">イメージ配布</a></li>
+<li><a href="#ユーザー認証active-directory">ユーザー認証(Active Directory)</a><ul>
+<li><a href="#1-オンプレミス-既存active-directoryを利用ad-connector">1. オンプレミス / 既存Active Directoryを利用(AD Connector)</a></li>
+<li><a href="#2-専用directory-serviceを利用aws-directory-service">2. 専用Directory Serviceを利用(AWS Directory Service)</a></li>
+</ul>
+</li>
+<li><a href="#セキュリティ対策">セキュリティ対策</a><ul>
+<li><a href="#多要素認証mfa-multi-factor-authentication">多要素認証(MFA: Multi-Factor Authentication)</a></li>
+<li><a href="#ipアドレス制御">IPアドレス制御</a></li>
+<li><a href="#デバイス制御">デバイス制御</a></li>
+</ul>
+</li>
+<li><a href="#テレワーク遠隔勤務ソリューション例">テレワーク(遠隔勤務)ソリューション例</a><ul>
+<li><a href="#テレワークの要件例">テレワークの要件例</a></li>
+<li><a href="#サンプルアーキテクチャテレワーク構成案">サンプル・アーキテクチャ(テレワーク構成案)</a><ul>
+<li><a href="#構成ポイント">構成ポイント</a></li>
+</ul>
+</li>
+<li><a href="#aws月額利用料試算">AWS月額利用料試算</a></li>
+</ul>
+</li>
+<li><a href="#仮想デスクトップテレワーク環境導入に関してお気軽にご相談ください">仮想デスクトップ・テレワーク環境導入に関してお気軽にご相談ください</a></li>
+</ul>
+<!-- tocstop -->
+<h2 id="amazon-workspacesアマゾン-ワークスペースとは"><a href="#Amazon-WorkSpaces（アマゾン-ワークスペース）とは？" class="headerlink" title="Amazon WorkSpaces（アマゾン ワークスペース）とは？"></a>Amazon WorkSpaces（アマゾン ワークスペース）とは？</h2><p><img src="/images/Secure_telework_with_Amazon_WorkSpaces/VDI_Image.png" alt=""></p>
+<p>AWSがマネージドサービスとして提供している仮想型のデスクトップコンピューティングサービス(VDI: Virtual Desktop Initiative)となります。</p>
+<ul>
+<li>Windows/MacやiPadのモバイルアプリからクラウドに配備された専用デスクトップパソコンにアクセスして業務で利用可能</li>
+<li>必要なタイミングでデスクトップを即時に立ち上げ、不要になれば破棄できる「いつでも・どこでも」といったクラウド弾性を持つ</li>
+</ul>
+<p>このような特徴を持ち、従量課金で1台あたり月額$30/から利用可能です。</p>
+<h2 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h2><ul>
+<li>セキュリティを維持しながら必要数を即時に準備したいテレワーク(在宅勤務)環境</li>
+<li>コールセンターやキャンペーンといった一定期間のみ専用のPC環境が必要なケース</li>
+<li>持ち出しPCや重要データの消失を防ぐ社内セキュリティ対策</li>
+<li>PC購入・運用や災害対策向けのトータルコスト(TCO)最適化</li>
+</ul>
+<p>主に「テレワーク（働き方改革）」「セキュリティ対策」そして「コスト最適化」」用途で導入されるケースが多く、AWSが持つ高い弾性と、堅牢なデスクトップ環境が数多くの企業で評価されています。</p>
+<h2 id="利用環境workspacesへの接続"><a href="#利用環境-WorkSpacesへの接続" class="headerlink" title="利用環境(WorkSpacesへの接続)"></a>利用環境(WorkSpacesへの接続)</h2><p>WorkSpacesが提供する仮想デスクトップを利用するには</p>
+<ol>
+<li>専用クライアントアプリケーションもしくはウェブブラウザの準備</li>
+<li>ブロードバンドネットワークの環境</li>
+</ol>
+<p>という2つの要件があり、接続元のサポート環境詳細ついては <a href="https://docs.aws.amazon.com/ja_jp/workspaces/latest/adminguide/amazon-workspaces.html#devices" target="_blank" rel="noopener">AWS公式サイト</a> をご確認ください。</p>
+<h3 id="1-1-専用クライアントアプリケーションサポート環境"><a href="#1-1-専用クライアントアプリケーションサポート環境" class="headerlink" title="1-1. 専用クライアントアプリケーションサポート環境"></a>1-1. 専用クライアントアプリケーションサポート環境</h3><p>専用のクライアントアプリケーションは、下記OS・機器をサポートしています。</p>
+<ul>
+<li>Windows</li>
+<li>macOS</li>
+<li>Ubuntu Linux 18.04</li>
+<li>Chromebook</li>
+<li>iPad</li>
+<li>Android</li>
+<li>Fireタブレット</li>
+</ul>
+<h3 id="1-2-webブラウザサポートバージョン"><a href="#1-2-Webブラウザサポートバージョン" class="headerlink" title="1-2. Webブラウザサポートバージョン"></a>1-2. Webブラウザサポートバージョン</h3><p>ChromeもしくはFirefoxの下記バージョンが必要です。</p>
+<ul>
+<li>Chrome 53以降のバージョン</li>
+<li>Firefox 49以降のバージョン</li>
+</ul>
+<h3 id="2-通信要件"><a href="#2-通信要件" class="headerlink" title="2. 通信要件"></a>2. 通信要件</h3><p>接続元(専用クライアントアプリ or Webブラウザ)の環境から下記通信の開放が必要です。</p>
+<table>
+<thead>
+<tr>
+<th>ポート番号</th>
+<th>プロトコル</th>
+<th>方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>443</td>
+<td>TCP</td>
+<td>アウトバウンド(外向き)</td>
+</tr>
+<tr>
+<td>4172</td>
+<td>TCP</td>
+<td>アウトバウンド(外向き)</td>
+</tr>
+<tr>
+<td>4172</td>
+<td>UDP</td>
+<td>アウトバウンド(外向き)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="workspacesのスペックと価格ライセンス"><a href="#WorkSpacesのスペックと価格-ライセンス" class="headerlink" title="WorkSpacesのスペックと価格/ライセンス"></a>WorkSpacesのスペックと価格/ライセンス</h2><p>業務や用途に応じてスペック、タイプ、OSが選択でき、参考価格(2020年3月時点)を記載いたします。</p>
+<p><img src="/images/Secure_telework_with_Amazon_WorkSpaces/WorkSpaces_Price.png" alt=""></p>
+<p>最新の価格については<a href="https://aws.amazon.com/jp/workspaces/pricing/?nc=sn&amp;loc=3" target="_blank" rel="noopener">AWS社公式サイト</a>をご確認ください。</p>
+<h3 id="1-課金オプション"><a href="#1-課金オプション" class="headerlink" title="1. 課金オプション"></a>1. 課金オプション</h3><p>月額料金 or 時間料金の2種類の課金オプションを選択可能です。</p>
+<p>“一日2時間、週3日程度の利用”のような低頻度の場合、時間料金での契約がお得になりますが、最も安いバリュープランの例では”月次80時間以上利用するケース”では、月額料金のほうがお得になります。</p>
+<p>よって、契約前に、月間で想定している利用時間を算出した上で、お得なプランを選択しましょう。</p>
+<h3 id="2-サポートos"><a href="#2-サポートOS" class="headerlink" title="2. サポートOS"></a>2. サポートOS</h3><p>仮想デスクトップで利用可能なオペレーティング・システム(OS)は下記2種類です。</p>
+<ul>
+<li>Amazon Linux 2 LTS </li>
+<li>Windows 10 </li>
+</ul>
+<h3 id="3-windowsライセンス形態"><a href="#3-Windowsライセンス形態" class="headerlink" title="3. Windowsライセンス形態"></a>3. Windowsライセンス形態</h3><p>WorkSpacesで利用できるWindowsライセンスは下記2種類です。</p>
+<ol>
+<li>バンドル(WorkSpaces契約時に付随)</li>
+<li>Bring Your Own License(BYOL)</li>
+</ol>
+<p>BYOLについては、マイクロソフト社のライセンス要件を満たす場合、企業で保有しているWindows 7 or Windows 10 のWindowsライセンスを持ち込みWorkSpacesで利用することが可能です。</p>
+<p>BYOLのメリットとしては</p>
+<ul>
+<li>WorkSpacesコスト削減($4/月ディスカウント)</li>
+<li>企業で利用している同バージョン・エディションが利用可能</li>
+</ul>
+<p>となりますが、BYOL適用時の要件として「毎月200台以上のWorkSpaces実行の確約」が必須となりますので、注意が必要です。</p>
+<h2 id="利用できるアプリケーション"><a href="#利用できるアプリケーション" class="headerlink" title="利用できるアプリケーション"></a>利用できるアプリケーション</h2><p>WorkSpacesでは、Internet ExplorerやFirefoxが標準提供されますが『プラスアプリケーションバンドル』を追加($15/月)契約することで</p>
+<ul>
+<li>Microsoft Office Professional</li>
+<li>Trend Micro Worry-Free Business Security Services</li>
+</ul>
+<p>を追加で利用可能です。</p>
+<p>その他のアプリケーションについても、独自にカスタムイメージを作成・配布することで利用可能ですが、ソフトウェア毎にライセンス確認が必須となりますので、ご注意ください。</p>
+<h2 id="イメージ配布"><a href="#イメージ配布" class="headerlink" title="イメージ配布"></a>イメージ配布</h2><p>WorkSpacesではカスタムイメージを活用することで、同一構成のデスクトップを素早くクラウドに展開(複製)できます。</p>
+<p><img src="/images/Secure_telework_with_Amazon_WorkSpaces/custom_image.png" alt=""></p>
+<p>バックオフィス、開発者、コールセンターなど、用途別イメージを作成することで、仮想デスクトップの配布・管理コストを削減できますが <a href="https://aws.amazon.com/jp/premiumsupport/knowledge-center/workspaces-image-creation-issue/" target="_blank" rel="noopener">カスタムイメージはリージョン毎に5つ</a> という上限が設けられています。</p>
+<h2 id="ユーザー認証active-directory"><a href="#ユーザー認証-Active-Directory" class="headerlink" title="ユーザー認証(Active Directory)"></a>ユーザー認証(Active Directory)</h2><p>WorkSpacesでは仮想デスクトップ接続のユーザー認証にディレクトリサービス(Active Directory)を準備する必要があり、下記2つの方式から選択できます。</p>
+<h3 id="1-オンプレミス-既存active-directoryを利用ad-connector"><a href="#1-オンプレミス-既存Active-Directoryを利用-AD-Connector" class="headerlink" title="1. オンプレミス / 既存Active Directoryを利用(AD Connector)"></a>1. オンプレミス / 既存Active Directoryを利用(AD Connector)</h3><p>Active Directory Connector(AD Connector)を利用し、オンプレミス(自社保有)や既にAWS上に構築しているActive Directoryと連携します。</p>
+<p>既存のActive Directoryと連携することにより、既に登録済みのユーザー情報をそのままWorkSpacesへの接続ユーザーとして利用することができます。</p>
+<h3 id="2-専用directory-serviceを利用aws-directory-service"><a href="#2-専用Directory-Serviceを利用-AWS-Directory-Service" class="headerlink" title="2. 専用Directory Serviceを利用(AWS Directory Service)"></a>2. 専用Directory Serviceを利用(AWS Directory Service)</h3><p>新規にユーザー認証用のディレクトリを設ける場合は、AWS Directory ServiceをWorkSpacesと併せて導入します。</p>
+<p>AWS Directory Serviceでは</p>
+<ul>
+<li>Simple AD</li>
+<li>Microsoft AD</li>
+</ul>
+<p>の2つのタイプがあり、Microsoft ADと比較して、Simple ADではいくつかの制約が存在します。制約の詳細は <a href="https://aws.amazon.com/jp/directoryservice/other-directories/" target="_blank" rel="noopener">AWSドキュメント</a> をご確認ください。</p>
+<p>また、<a href="https://docs.aws.amazon.com/ja_jp/directoryservice/latest/admin-guide/ms_ad_mfa.html" target="_blank" rel="noopener">Simple ADを選択時は多要素認証(MFA)を使用できない</a> ため、MFAを活用したセキュリティ施策を検討している場合は注意が必要です。</p>
+<h2 id="セキュリティ対策"><a href="#セキュリティ対策" class="headerlink" title="セキュリティ対策"></a>セキュリティ対策</h2><p>WorkSpacesでは複数のレイヤーでセキュリティ強化を実施可能です。</p>
+<h3 id="多要素認証mfa-multi-factor-authentication"><a href="#多要素認証-MFA-Multi-Factor-Authentication" class="headerlink" title="多要素認証(MFA: Multi-Factor Authentication)"></a>多要素認証(MFA: Multi-Factor Authentication)</h3><p>Active Directoryによるユーザー認証(ユーザー名とパスワード)に加え、ハードウェアやソフトウェアによって生成されたワンタイムパスワード(OTP)を用いた多要素認証(MFA)を加えることで、確実な本人確認を実現します。</p>
+<p>WorkSpacesでMFAを有効化する際はRADIUSサーバーが必要となりますが、独自にサーバーを構築する他、OneLogin,DuoなどのSaaS(Software as a Service)が提供するRADIUS機能と連携することも可能です。</p>
+<h3 id="ipアドレス制御"><a href="#IPアドレス制御" class="headerlink" title="IPアドレス制御"></a>IPアドレス制御</h3><p>標準で全トラフィックが許可となっているWorkSpacesへのアクセスを、信頼できるネットワークからのみに制限することが可能です。</p>
+<h3 id="デバイス制御"><a href="#デバイス制御" class="headerlink" title="デバイス制御"></a>デバイス制御</h3><p>標準では全デバイスからWorkSpaceへアクセス可能ですが、<a href="https://docs.aws.amazon.com/ja_jp/workspaces/latest/adminguide/trusted-devices.html" target="_blank" rel="noopener">クライアント証明書を使用した厳密なデバイス制御</a>が可能です。</p>
+<p>証明書ベースでのデバイス制御では、許可するデバイス毎にクライアント証明書をインストールする必要があるためSCCM（System Center Configuration Manager）や MDM（Mobile Device Management）など証明書を配布・管理できるサービスを併せて導入することが一般的です。</p>
+<p>また、証明書ベースでの制御の他に、デバイスタイプ(ブラウザ、iOS、Android)毎にアクセス制御を実装可能です。</p>
+<hr>
+<h2 id="テレワーク遠隔勤務ソリューション例"><a href="#テレワーク-遠隔勤務-ソリューション例" class="headerlink" title="テレワーク(遠隔勤務)ソリューション例"></a>テレワーク(遠隔勤務)ソリューション例</h2><p>WorkSpacesの主要機能を簡単に紹介しましたが、より具体的に「企業でテレワーク(遠隔勤務)環境をAmazon WorkSpacesを用いて導入する」ケースを想定した構成案と、AWSの想定月額利用料についてご紹介いたします。</p>
+<h3 id="テレワークの要件例"><a href="#テレワークの要件例" class="headerlink" title="テレワークの要件例"></a>テレワークの要件例</h3><ul>
+<li>新型コロナウイルスの感染防止対策のため、従業員向けに早期にテレワーク(在宅勤務)環境を提供したい(2週間以内に立ち上げる)</li>
+<li>対象となる従業員は50名で、業務上、Windows 10 + Microsoft Officeの利用が必要</li>
+<li>オンプレミス(自社保有)にあるファイルサーバーとメールサーバーへのアクセスが必要</li>
+<li>私用PCによる社内リソースへのアクセスは情報漏えいの対策上、許可させない(直接接続NG)</li>
+<li>テレワーク環境への接続は社内Active Directory認証の他に、多要素認証を必須としてセキュリティを向上</li>
+</ul>
+<h3 id="サンプルアーキテクチャテレワーク構成案"><a href="#サンプル・アーキテクチャ-テレワーク構成案" class="headerlink" title="サンプル・アーキテクチャ(テレワーク構成案)"></a>サンプル・アーキテクチャ(テレワーク構成案)</h3><p><img src="/images/Secure_telework_with_Amazon_WorkSpaces/workspaces_mfa_solutions.png" alt=""></p>
+<h4 id="構成ポイント"><a href="#構成ポイント" class="headerlink" title="構成ポイント"></a>構成ポイント</h4><ul>
+<li>従業員向けの仮想デスクトップ環境をWorkSpaces x 50台で準備(平均利用4時間/日を想定)</li>
+<li>全仮想デスクトップはスタンダードWindows(vCPUx2, メモリ4G, ディスク80GB/50GB)+アプリケーションバンドルプランを想定</li>
+<li>同一構成のWorkSpace環境を迅速に配備できるようにカスタムイメージを利用</li>
+<li>WorkSpacesは自宅・別拠点など場所を問わず利用できるようにインターネットから接続(接続元制限を設けない)</li>
+<li>WorkSpacesの認証は既存Active Directoryによるユーザー認証 + OneLoginによるMFAで確実な本人確認を担保</li>
+<li>2つのAD Connector(社内AD/OneLogin)を導入し、ユーザー認証とMFAを実現</li>
+<li>AWS(VPC)とオンプレミスはDirect Connectを用いて閉域網接続(既設回線を流用)</li>
+</ul>
+<h3 id="aws月額利用料試算"><a href="#AWS月額利用料試算" class="headerlink" title="AWS月額利用料試算"></a>AWS月額利用料試算</h3><p>上記50台の仮想デスクトップを利用する構成で、概算$1,800/月前後のAWS月額利用料となります。</p>
+<p><em>※AWS(VPC)とオンプレミスを接続するDirect Connect(データ転送含)及び回線費用は含まれておりません</em><br><em>※OneLoginの利用料は含まれておりません</em></p>
+<h2 id="仮想デスクトップテレワーク環境導入に関してお気軽にご相談ください"><a href="#仮想デスクトップ・テレワーク環境導入に関してお気軽にご相談ください" class="headerlink" title="仮想デスクトップ・テレワーク環境導入に関してお気軽にご相談ください"></a>仮想デスクトップ・テレワーク環境導入に関してお気軽にご相談ください</h2><p>Amazon WorkSpacesはテレワーク(在宅勤務)の他、ローカルPCへのデータコピーの禁止や不要なアプリケーションの利用制限など、社内セキュリティ向上にもご利用いただけます。</p>
+<p>また、クラウドならではの「必要なときに、必要な台数だけ、利用」不要になったら「即廃棄」という俊敏性・弾性を活用して、貴社のデスクトップ運用のトータルコスト(TCO)最適化が可能です。</p>
+<p><a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure/" target="_blank" rel="noopener">Amazon WorkSpacesを活用した仮想デスクトップ基盤（DaaS）</a> に関しては、MMMへお気軽に <a href="https://mmmcorp.co.jp/inquiry" target="_blank" rel="noopener">ご相談</a> くださいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/03/16/Secure_telework_with_Amazon_WorkSpaces/" data-text="Amazon WorkSpaces（ワークスペース）を活用したセキュアで堅牢なテレワーク(在宅勤務)環境" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/03/16/Secure_telework_with_Amazon_WorkSpaces/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/03/16/Secure_telework_with_Amazon_WorkSpaces/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/03/16/Secure_telework_with_Amazon_WorkSpaces/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/03/16/Secure_telework_with_Amazon_WorkSpaces/" class="hatena-bookmark-button" data-hatena-bookmark-title="Amazon WorkSpaces（ワークスペース）を活用したセキュアで堅牢なテレワーク(在宅勤務)環境" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WorkSpaces/">WorkSpaces</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/クラウド/">クラウド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/テレワーク/">テレワーク</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/リモートワーク/">リモートワーク</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/在宅勤務/">在宅勤務</a></li></ul>
+
+
+      <p class="article-footer__author">by 国本 廷宣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

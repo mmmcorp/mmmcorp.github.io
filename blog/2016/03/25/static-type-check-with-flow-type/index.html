@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Flowtypeに入門してJavaScriptコードで静的型付けの恩恵をうけるところまで | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="ハウス・オブ・カードで寝不足の小飼です。どうなるんですか、あのアレは…  さて、最近個人的にGolangでアプリケーションを作ったり、Haskellを勉強したりしています。いずれも静的型付けにより、実行前に型エラーを検出可能な言語です。私は普段、動的型付け言語であるJavaScriptを主に書いていますので、初めこそビルド時のエラーにヤキモキしたりしましたが、慣れてくると非常に快適に感じるようにな">
+<meta name="keywords" content="フロントエンド,JavaScript,React,静的型付け,Flow,TypeScript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flowtypeに入門してJavaScriptコードで静的型付けの恩恵をうけるところまで">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2016/03/25/static-type-check-with-flow-type/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="ハウス・オブ・カードで寝不足の小飼です。どうなるんですか、あのアレは…  さて、最近個人的にGolangでアプリケーションを作ったり、Haskellを勉強したりしています。いずれも静的型付けにより、実行前に型エラーを検出可能な言語です。私は普段、動的型付け言語であるJavaScriptを主に書いていますので、初めこそビルド時のエラーにヤキモキしたりしましたが、慣れてくると非常に快適に感じるようにな">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/static-type-check-with-flow-type/flow-hero-logo.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/static-type-check-with-flow-type/sample.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.138Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Flowtypeに入門してJavaScriptコードで静的型付けの恩恵をうけるところまで">
+<meta name="twitter:description" content="ハウス・オブ・カードで寝不足の小飼です。どうなるんですか、あのアレは…  さて、最近個人的にGolangでアプリケーションを作ったり、Haskellを勉強したりしています。いずれも静的型付けにより、実行前に型エラーを検出可能な言語です。私は普段、動的型付け言語であるJavaScriptを主に書いていますので、初めこそビルド時のエラーにヤキモキしたりしましたが、慣れてくると非常に快適に感じるようにな">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/static-type-check-with-flow-type/flow-hero-logo.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-static-type-check-with-flow-type" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2016-03-25T18:00:00.000Z" itemprop="datePublished">2016-03-25</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2016/03/25/static-type-check-with-flow-type/">Flowtypeに入門してJavaScriptコードで静的型付けの恩恵をうけるところまで</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/03/25/static-type-check-with-flow-type/" data-text="Flowtypeに入門してJavaScriptコードで静的型付けの恩恵をうけるところまで" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/03/25/static-type-check-with-flow-type/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/03/25/static-type-check-with-flow-type/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/03/25/static-type-check-with-flow-type/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/03/25/static-type-check-with-flow-type/" class="hatena-bookmark-button" data-hatena-bookmark-title="Flowtypeに入門してJavaScriptコードで静的型付けの恩恵をうけるところまで" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="http://house-of-cards.jp/" target="_blank" rel="noopener">ハウス・オブ・カード</a>で寝不足の小飼です。<br>どうなるんですか、あのアレは…</p>
+<p><img src="/images/static-type-check-with-flow-type/flow-hero-logo.png" alt=""></p>
+<p>さて、最近個人的に<code>Golang</code>でアプリケーションを作ったり、<code>Haskell</code>を勉強したりしています。<br>いずれも<a href="https://ja.wikipedia.org/wiki/%E9%9D%99%E7%9A%84%E5%9E%8B%E4%BB%98%E3%81%91" target="_blank" rel="noopener">静的型付け</a>により、実行前に型エラーを検出可能な言語です。<br>私は普段、動的型付け言語である<code>JavaScript</code>を主に書いていますので、初めこそビルド時のエラーにヤキモキしたりしましたが、慣れてくると非常に快適に感じるようになりました。</p>
+<p>実行時に検出されるつまらない間違いや、間違った型が渡ってきた時の防御コード(<code>if typeof variable !== &#39;string&#39; console.warn(&#39;型が違う&#39;)</code>のようなコード)が不要になること以外に、アプリケーション固有のデータ構造を型として宣言することで、<code>何をするか</code>よりも<code>何であるか</code>に注目した読みやすいコードを書くことが可能になるからです。</p>
+<p><code>React.js</code>には<code>PropType</code>という型システムを匂わせるような仕組みが用意されていますが、実行時の型エラー検出ですし、カスタム型(のようなもの)は独自の型検証関数を用意するようなものでアプリケーションの登場人物を宣言するよな使い方は難しく、上記のようなメリットは受けにくい印象です。</p>
+<p>現在<code>JavaScript</code>界隈で静的型付けを導入するとしたら、以下の2つのライブラリ(トランスコンパイラ)がメジャーな選択肢なのではないでしょうか<br>(<code>elm</code>にも静的型付けはあるようですが、メジャーな選択肢として取り得るか?というと…)</p>
+<ul>
+<li>TypeScript</li>
+<li>Flow</li>
+</ul>
+<p><code>Angular2.x~</code>の基盤となっている<code>TypeScript</code>も気になるところではありますが、本稿では軽めに始められると噂の<code>Flow</code>を扱ってみたいと思います。</p>
+<p>今回は<code>Github-API</code>からユーザのリストを取ってきて、ユーザのサムネイルと名前を描画する、簡単なアプリケーションを作成します。<br>次にこのアプリケーションへ実際に<code>Flow</code>を適用することで、静的型付けのメリットが得られるかを検証してみたいと思います。</p>
+<p>こんな感じの簡単なものです<br><img src="/images/static-type-check-with-flow-type/sample.png" alt="サンプルアプリケーション"></p>
+<h2 id="動的型付けのサンプル"><a href="#動的型付けのサンプル" class="headerlink" title="動的型付けのサンプル"></a>動的型付けのサンプル</h2><p>まず<code>Flow</code>を導入しない状態のアプリケーションを作成します。<br>話を簡単にするために、<code>Flux</code>系の何やかやは使わずに、実直な<code>Props</code>バケツリレーによりデータを伝播させます。<br>(実行時の型エラー検出による恩恵は、本稿の主題から外れるため<code>PropType</code>の宣言もしません)</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React, &#123; Component &#125; <span class="keyword">from</span> <span class="string">'react'</span>;</span><br><span class="line"><span class="keyword">import</span> ReactDOM <span class="keyword">from</span> <span class="string">'react-dom'</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">'whatwg-fetch'</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Root</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;</span><br><span class="line">    <span class="keyword">super</span>()</span><br><span class="line">    <span class="keyword">this</span>.state = &#123;</span><br><span class="line">      users: []</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  componentWillMount() &#123;</span><br><span class="line">    fetch(<span class="string">'https://api.github.com/users'</span>)</span><br><span class="line">    .then(<span class="function"><span class="params">r</span>=&gt;</span> r.json())</span><br><span class="line">    .then(<span class="function"><span class="params">r</span>=&gt;</span> <span class="keyword">this</span>.setState(&#123;</span><br><span class="line">      users: j.map(<span class="function"><span class="params">u</span>=&gt;</span> (&#123;</span><br><span class="line">        name: u.login,</span><br><span class="line">        img: u.avatar_url,</span><br><span class="line">      &#125;)),</span><br><span class="line">    &#125;))</span><br><span class="line">    .catch(<span class="function"><span class="params">e</span>=&gt;</span> <span class="built_in">console</span>.log(e))</span><br><span class="line">  &#125;</span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">Users</span> <span class="attr">users</span>=<span class="string">&#123;this.state.users&#125;/</span>&gt;</span></span></span><br><span class="line"><span class="xml">  &#125;</span></span><br><span class="line"><span class="xml">&#125;</span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml">class Users extends Component &#123;</span></span><br><span class="line"><span class="xml">  constructor() &#123;</span></span><br><span class="line"><span class="xml">    super()</span></span><br><span class="line"><span class="xml">  &#125;</span></span><br><span class="line"><span class="xml">  render() &#123;</span></span><br><span class="line">    return &lt;ul&gt;&#123;this.props.users.map((user, i)=&gt; &lt;User key=&#123;i&#125; user=&#123;user&#125;/&gt;)&#125;&lt;/ul&gt;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class User extends Component &#123;</span><br><span class="line">  constructor() &#123;</span><br><span class="line">    super()</span><br><span class="line">  &#125;</span><br><span class="line">  render() &#123;</span><br><span class="line">    const &#123; user &#125; = this.props;</span><br><span class="line">    return (</span><br><span class="line">      &lt;li&gt;</span><br><span class="line">        &lt;a href=&#123;`https://github.com/$&#123;user.name&#125;`&#125;&gt;&lt;img src=&#123;user.img&#125; alt=&#123;user.name&#125; /&gt;&lt;/a&gt;</span><br><span class="line">        &#123;user.name&#125;</span><br><span class="line">      &lt;/li&gt;</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ReactDOM.render(&lt;Root /&gt;, document.querySelector('#root'))</span><br></pre></td></tr></table></figure>
+<p>特に難しいことはしていないと思います。<br><code>Root</code>コンポーネントにユーザ一覧のコンポーネントを渡して、描画するアプリケーションです。<br>ここに<code>Flow</code>による静的型付けを導入していきたいと思います。</p>
+<h2 id="導入準備"><a href="#導入準備" class="headerlink" title="導入準備"></a>導入準備</h2><p><a href="http://flowtype.org/docs/getting-started.html" target="_blank" rel="noopener">公式の手順</a>を参考に導入します。<br><code>Flow</code>の特徴として<code>CLIツールによる型検査</code>と<code>ビルド時の型宣言除去</code>によって、静的な型検査をしつつアプリケーション実行時には型宣言の影響を持たないことが挙げられます。<br>これによって、アプリケーションの任意の箇所から段階的に型宣言の恩恵を導入することができる、というコンセプトのようです。</p>
+<blockquote>
+<p>Flow is a static type checker, designed to quickly find errors in JavaScript applications:<br>Flow is a gradual type system. Any parts of your program that are dynamic in nature can easily bypass the type checker, so you can mix statically typed code with dynamic code.</p>
+</blockquote>
+<p>従って、<code>型検査のためのモジュール</code>と<code>型宣言除去のためのモジュール</code>の2種類のモジュールをインストールする必要があります。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 型検査のためのモジュール(Flowの本体とコマンドラインインターフェース)</span></span><br><span class="line">npm install --save flowtype flow-bin</span><br><span class="line"></span><br><span class="line"><span class="comment"># babelによるビルド時に型宣言を除去するためのプラグイン</span></span><br><span class="line">npm install --save babel-plugin-transform-flow-strip-types</span><br></pre></td></tr></table></figure>
+<p>シンプルに<code>babel</code>+<code>browserify</code>でビルドする想定で、依存モジュールはこんな感じにしました。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"babel"</span>: <span class="string">"^6.5.2"</span>,</span><br><span class="line">  <span class="attr">"babel-plugin-transform-flow-strip-types"</span>: <span class="string">"^6.7.0"</span>,</span><br><span class="line">  <span class="attr">"babel-plugin-transform-react-jsx"</span>: <span class="string">"^6.7.4"</span>,</span><br><span class="line">  <span class="attr">"babel-plugin-transform-class-properties"</span>: <span class="string">"^6.6.0"</span>,</span><br><span class="line">  <span class="attr">"babel-preset-es2015"</span>: <span class="string">"^6.6.0"</span>,</span><br><span class="line">  <span class="attr">"babelify"</span>: <span class="string">"^7.2.0"</span>,</span><br><span class="line">  <span class="attr">"browserify"</span>: <span class="string">"^13.0.0"</span>,</span><br><span class="line">  <span class="attr">"flow-bin"</span>: <span class="string">"^0.22.1"</span>,</span><br><span class="line">  <span class="attr">"flowtype"</span>: <span class="string">"^1.0.0"</span>,</span><br><span class="line">  <span class="attr">"react"</span>: <span class="string">"^0.14.7"</span>,</span><br><span class="line">  <span class="attr">"react-dom"</span>: <span class="string">"^0.14.7"</span>,</span><br><span class="line">  <span class="attr">"whatwg-fetch"</span>: <span class="string">"^0.11.0"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>.babelrc</code>の設定はこんな感じです</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"presets"</span>: [</span><br><span class="line">    <span class="string">"es2015"</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">"plugins"</span>: [</span><br><span class="line">    <span class="string">"transform-react-jsx"</span>,</span><br><span class="line">    <span class="string">"transform-class-properties"</span>,</span><br><span class="line">    <span class="string">"transform-flow-strip-types"</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>※ <a href="https://github.com/jeffmo/es-class-fields-and-static-properties" target="_blank" rel="noopener">ES Class Fields</a>で<code>props/state</code>の型検査を行いたいので、<code>[babel-plugin-transform-class-properties](https://www.npmjs.com/package/babel-plugin-transform-class-properties)</code>をインストールしています。</p>
+<p>各種スクリプトはこんな感じで、<code>npm run flow</code>で型検査を、<code>npm run browserify</code>でビルドをそれぞれ実行します。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"flow"</span>: <span class="string">"$(npm bin)/flow"</span>,</span><br><span class="line">  <span class="attr">"browserify"</span>: <span class="string">"$(npm bin)/browserify app.js -t babelify -o bundle.js"</span>,</span><br><span class="line">  <span class="attr">"build"</span>: <span class="string">"npm run flow &amp;&amp; npm run browserify"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Flow</code>用の設定ファイル<code>.flowconfig</code>を、<a href="http://flowtype.org/docs/new-project.html" target="_blank" rel="noopener">公式ドキュメントの手順</a>を参考に生成して、型検査の対象ファイルに<code>@flow</code>をコメントアウトして記述します。<br>デフォルトだと<code>node_modules</code>も検査しに行ってしまうので、設定ファイルの<code>[ignore]</code>に書いておいた方がいいでしょう。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[ignore]</span><br><span class="line">bundle.js</span><br><span class="line">.*/node_modules/fbjs/*</span><br><span class="line">[include]</span><br><span class="line"></span><br><span class="line">[libs]</span><br><span class="line">declare.js</span><br><span class="line">[options]</span><br><span class="line">esproposal.class_instance_fields=enable</span><br><span class="line">esproposal.class_static_fields=enable</span><br></pre></td></tr></table></figure>
+<h2 id="独自型のデザイン"><a href="#独自型のデザイン" class="headerlink" title="独自型のデザイン"></a>独自型のデザイン</h2><p>準備が整ったので、サンプルアプリケーションを静的型付けっぽくデザインしなおしてみます。<br>このアプリケーションで登場する主なデータ型には<code>ユーザの名前と画像を持ったデータ</code>と<code>ユーザの配列</code>があるようですので、こんな感じで宣言してみます。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ユーザの名前と画像を持ったデータ型</span></span><br><span class="line">type TypeUser = &#123;</span><br><span class="line">  name: string;</span><br><span class="line">  img: string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ユーザの配列</span></span><br><span class="line">type TypeUsers = <span class="built_in">Array</span>&lt;TypeUser&gt;;</span><br></pre></td></tr></table></figure>
+<p>次に実際に型検査をしてみます。<br>TypeUser型はUserコンポーネントの<code>props</code>として使われますので、Userコンポーネントの<code>props</code>プロパティに型指定をします。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">  props: &#123;</span><br><span class="line">    user: TypeUser;</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="keyword">static</span> defaultProps = &#123;</span><br><span class="line">    user: &#123; <span class="attr">name</span>: <span class="string">''</span>, <span class="attr">img</span>: <span class="string">''</span> &#125;,</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="comment">/*... */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>これでUserコンポーネントに渡せるデータは、TypeUser型だけになったはずです。<br><code>npm run flow</code>で型検査をしてみると、<code>No errors!</code>と表示されるはずです。</p>
+<p>確認のため、間違ったデータ型を渡してみましょう。<br><code>TypeUser型</code>が持っているはずの<code>name/img</code>プロパティをいずれも持っていないオブジェクトを渡してみます</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Users</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="comment">/*... */</span></span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="comment">// return &lt;ul&gt;&#123;this.props.users.map((user, i)=&gt; &lt;User key=&#123;i&#125; id=&#123;i&#125; user=&#123;user&#125;/&gt;)&#125;&lt;/ul&gt;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">ul</span>&gt;</span>&#123;[&#123;noname: '', noimg: ''&#125;].map((user, i)=&gt; <span class="tag">&lt;<span class="name">User</span> <span class="attr">key</span>=<span class="string">&#123;i&#125;</span> <span class="attr">user</span>=<span class="string">&#123;user&#125;/</span>&gt;</span>)&#125;<span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span></span><br><span class="line"><span class="xml">  &#125;</span></span><br><span class="line"><span class="xml">&#125;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">app.js:57</span><br><span class="line"> 57:   user: TypeUser;</span><br><span class="line">             ^^^^^^^^ property `img`. Property not found in</span><br><span class="line"> 53:   render = ()=&gt; (&lt;ul&gt;&#123;[&#123;noname: &apos;&apos;, noimg: &apos;&apos;&#125;].map((u, i)=&gt; &lt;User key=&#123;i&#125; user=&#123;u&#125;/&gt;)&#125;&lt;/ul&gt;);</span><br><span class="line">                                                                                      ^ object literal</span><br><span class="line"></span><br><span class="line">app.js:57</span><br><span class="line"> 57:   user: TypeUser;</span><br><span class="line">             ^^^^^^^^ property `name`. Property not found in</span><br><span class="line"> 53:   render = ()=&gt; (&lt;ul&gt;&#123;[&#123;noname: &apos;&apos;, noimg: &apos;&apos;&#125;].map((u, i)=&gt; &lt;User key=&#123;i&#125; user=&#123;u&#125;/&gt;)&#125;&lt;/ul&gt;);</span><br><span class="line">                                                                                      ^ object literal</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Found 2 errors</span><br></pre></td></tr></table></figure>
+<p>あるべきプロパティが無いことを警告してくれました！<br>ブラウザで実行する前に型エラーを検出してくれるので、安心して開発ができそうです</p>
+<p>同じように、コンポーネントの各所で必要な型を書いていき、最終形はこんな感じになりました。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// @flow</span></span><br><span class="line"><span class="keyword">import</span> React, &#123; Component &#125; <span class="keyword">from</span> <span class="string">'react'</span>;</span><br><span class="line"><span class="keyword">import</span> ReactDOM <span class="keyword">from</span> <span class="string">'react-dom'</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">'whatwg-fetch'</span>;</span><br><span class="line"></span><br><span class="line">type TypeUser = &#123;</span><br><span class="line">  name: string;</span><br><span class="line">  img: string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type UsersType = <span class="built_in">Array</span>&lt;TypeUser&gt;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Root</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">  state: &#123;</span><br><span class="line">    users: UsersType</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;</span><br><span class="line">    <span class="keyword">super</span>()</span><br><span class="line">    <span class="keyword">this</span>.state = &#123;</span><br><span class="line">      users: [],</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  componentWillMount() &#123;</span><br><span class="line">    fetch(<span class="string">'https://api.github.com/users'</span>)</span><br><span class="line">    .then(<span class="function"><span class="params">r</span>=&gt;</span> r.json())</span><br><span class="line">    .then(<span class="function"><span class="params">j</span>=&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">this</span>.setState(&#123;</span><br><span class="line">        users: j.map((u): <span class="function"><span class="params">TypeUser</span> =&gt;</span> (&#123;</span><br><span class="line">          name: u.login,</span><br><span class="line">          img: u.avatar_url,</span><br><span class="line">        &#125;)),</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">    .catch(<span class="function"><span class="params">e</span>=&gt;</span> <span class="built_in">console</span>.log(e))</span><br><span class="line">  &#125;</span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">Users</span> <span class="attr">users</span>=<span class="string">&#123;this.state.users&#125;/</span>&gt;</span></span></span><br><span class="line"><span class="xml">  &#125;</span></span><br><span class="line"><span class="xml">&#125;</span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml">class Users extends Component &#123;</span></span><br><span class="line"><span class="xml">  props: &#123;</span></span><br><span class="line"><span class="xml">    users: UsersType;</span></span><br><span class="line"><span class="xml">  &#125;;</span></span><br><span class="line"><span class="xml">  static defaultProps = &#123;</span></span><br><span class="line"><span class="xml">    users: []</span></span><br><span class="line"><span class="xml">  &#125;;</span></span><br><span class="line"><span class="xml">  constructor() &#123;</span></span><br><span class="line"><span class="xml">    super()</span></span><br><span class="line"><span class="xml">  &#125;</span></span><br><span class="line"><span class="xml">  render() &#123;</span></span><br><span class="line">    return &lt;ul&gt;&#123;this.props.users.map((user, i)=&gt; &lt;User key=&#123;i&#125; user=&#123;user&#125;/&gt;)&#125;&lt;/ul&gt;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class User extends Component &#123;</span><br><span class="line">  props: &#123;</span><br><span class="line">    user: TypeUser;</span><br><span class="line">  &#125;;</span><br><span class="line">  static defaultProps = &#123;</span><br><span class="line">    user: &#123; name: '', img: '' &#125;,</span><br><span class="line">  &#125;;</span><br><span class="line">  constructor() &#123;</span><br><span class="line">    super()</span><br><span class="line">  &#125;</span><br><span class="line">  render() &#123;</span><br><span class="line">    const &#123; user &#125; = this.props;</span><br><span class="line">    return (</span><br><span class="line">      &lt;li&gt;</span><br><span class="line">        &lt;a href=&#123;`https://github.com/$&#123;user.name&#125;`&#125;&gt;&lt;img src=&#123;user.img&#125; alt=&#123;user.name&#125; /&gt;&lt;/a&gt;</span><br><span class="line">        &#123;user.name&#125;</span><br><span class="line">      &lt;/li&gt;</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ReactDOM.render(&lt;Root /&gt;, document.querySelector('#root'))</span><br></pre></td></tr></table></figure>
+<p>この状態で<code>npm run browserify</code>コマンドを打つと、<code>transform-flow-strip-types</code>が型宣言を除去してから<code>bundle</code>ファイルを生成できます。<br>静的型付けの恩恵を受けつつ、実行コードには影響が無いのが良いですね。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>静的型付け最高という思いから<code>Flow</code>を試してみましたがいかがだったでしょうか。<br>既存のアプリケーションの任意の箇所から、<code>lint</code>ツールのように小さく気軽に使い始められるのが良いですね。</p>
+<p>個人的には、独自の型を作るところから発想した方が合理的な構造のアプリケーションを設計しやすいように感じているので、業務コードでも積極的に取り入れて行きたいと思っています。<br>ダメそうだったらすぐ離れられる軽さもうれしいところです。</p>
+<p>以上、参考になれば幸いです</p>
+<p>今回ご紹介したような、<a href="https://mmmcorp.co.jp/services/entrusted_development/" target="_blank" rel="noopener">合理的な構造のビジネス・アプリケーション開発</a>を御希望の企業様は、是非MMMにご相談下さいませ！</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="http://flowtype.org/" target="_blank" rel="noopener">Flow | A static type checker for JavaScript</a></li>
+<li><a href="http://qiita.com/joe-re/items/3dd0d4941da014acf768" target="_blank" rel="noopener">Flowtypeを使ってReactComponentで型安全を手に入れる</a></li>
+<li><a href="http://qiita.com/mizchi/items/95ee0101ac22e4b7b662" target="_blank" rel="noopener">型なき世界のためのflowtype入門</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/03/25/static-type-check-with-flow-type/" data-text="Flowtypeに入門してJavaScriptコードで静的型付けの恩恵をうけるところまで" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/03/25/static-type-check-with-flow-type/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/03/25/static-type-check-with-flow-type/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/03/25/static-type-check-with-flow-type/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/03/25/static-type-check-with-flow-type/" class="hatena-bookmark-button" data-hatena-bookmark-title="Flowtypeに入門してJavaScriptコードで静的型付けの恩恵をうけるところまで" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Flow/">Flow</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/React/">React</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TypeScript/">TypeScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/静的型付け/">静的型付け</a></li></ul>
+
+
+      <p class="article-footer__author">by 小飼慎一</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

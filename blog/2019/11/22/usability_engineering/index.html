@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>「ユーザビリティエンジニアリング(第2版)―ユーザエクスペリエンスのための調査、設計、評価手法―」を読んで学んだこと | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="こんにちは、ミッキーです。 MMMでは毎週、「読書会」を開催しています。全メンバーが同じ本を読んで、感想を言いあったり、議論したりすることで、様々な分野の学習や研鑽をする時間です。 今秋、読書会で読んだ書籍は、「ユーザビリティエンジニアリング(第2版)―ユーザエクスペリエンスのための調査、設計、評価手法―」です。 もともとメンバー内に、UXやユーザビリティに関わる本を読んでみたいという声がありまし">
+<meta name="keywords" content="社内制度,読書会,ユーザビリティ,UX">
+<meta property="og:type" content="article">
+<meta property="og:title" content="「ユーザビリティエンジニアリング(第2版)―ユーザエクスペリエンスのための調査、設計、評価手法―」を読んで学んだこと">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2019/11/22/usability_engineering/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="こんにちは、ミッキーです。 MMMでは毎週、「読書会」を開催しています。全メンバーが同じ本を読んで、感想を言いあったり、議論したりすることで、様々な分野の学習や研鑽をする時間です。 今秋、読書会で読んだ書籍は、「ユーザビリティエンジニアリング(第2版)―ユーザエクスペリエンスのための調査、設計、評価手法―」です。 もともとメンバー内に、UXやユーザビリティに関わる本を読んでみたいという声がありまし">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/usability_engineering/usability.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.162Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="「ユーザビリティエンジニアリング(第2版)―ユーザエクスペリエンスのための調査、設計、評価手法―」を読んで学んだこと">
+<meta name="twitter:description" content="こんにちは、ミッキーです。 MMMでは毎週、「読書会」を開催しています。全メンバーが同じ本を読んで、感想を言いあったり、議論したりすることで、様々な分野の学習や研鑽をする時間です。 今秋、読書会で読んだ書籍は、「ユーザビリティエンジニアリング(第2版)―ユーザエクスペリエンスのための調査、設計、評価手法―」です。 もともとメンバー内に、UXやユーザビリティに関わる本を読んでみたいという声がありまし">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/usability_engineering/usability.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-usability-engineering" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2019-11-22T15:07:54.000Z" itemprop="datePublished">2019-11-22</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2019/11/22/usability_engineering/">「ユーザビリティエンジニアリング(第2版)―ユーザエクスペリエンスのための調査、設計、評価手法―」を読んで学んだこと</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/11/22/usability_engineering/" data-text="「ユーザビリティエンジニアリング(第2版)―ユーザエクスペリエンスのための調査、設計、評価手法―」を読んで学んだこと" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/11/22/usability_engineering/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/11/22/usability_engineering/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/11/22/usability_engineering/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/11/22/usability_engineering/" class="hatena-bookmark-button" data-hatena-bookmark-title="「ユーザビリティエンジニアリング(第2版)―ユーザエクスペリエンスのための調査、設計、評価手法―」を読んで学んだこと" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>こんにちは、ミッキーです。</p>
+<p>MMMでは毎週、「読書会」を開催しています。全メンバーが同じ本を読んで、感想を言いあったり、議論したりすることで、様々な分野の学習や研鑽をする時間です。</p>
+<p>今秋、読書会で読んだ書籍は、<a href="https://www.amazon.co.jp/dp/4274214834" target="_blank" rel="noopener">「ユーザビリティエンジニアリング(第2版)―ユーザエクスペリエンスのための調査、設計、評価手法―</a>」です。</p>
+<p>もともとメンバー内に、UXやユーザビリティに関わる本を読んでみたいという声がありました。そこで、ユーザビリティ分野の定番的な入門書として取り上げられることが多く、私自身も以前読んでとても役に立ったことから、本書を推薦しました。</p>
+<p>　　　</p>
+<h2 id="学んだこと"><a href="#学んだこと" class="headerlink" title="学んだこと"></a>学んだこと</h2><p>週に1回、皆で理解を確かめ合いながら本書を読み進めることで、UCDの意義やプロセスを、深く理解できたように思います。</p>
+<p>「ユーザー調査」→「調査結果の分析」→「プロトタイプの設計」→「プロトタイプの評価」→「改善プロセスをまわす」というUCDの全体像。ユーザーをよく理解し、誰に、どんな文脈で、どんな価値を提供したいのかを明らかにする。それができて始めてモノづくりをスタートできるということを、改めて学びました。</p>
+<p>「ペルソナ」や「シナリオ」、「ユーザーテスト」について、今までも意識してきたものの、重要性を認識し直しました。「The Elements of UX」のフレームワークやKJ法、ユーザビリティ評価の手法の使い分けなど、様々なメソッドについて触れたことも大きな収穫でした。</p>
+<p>限られた時間の中での読書でしたが、実務に即して丁寧に解説している本なので、学ぶことがたくさんありました。</p>
+<p>　　　</p>
+<h2 id="メンバーの声"><a href="#メンバーの声" class="headerlink" title="メンバーの声"></a>メンバーの声</h2><p>続いて、メンバーの本書を読んだ感想の一部をご紹介します。</p>
+<p>・UCD全体について</p>
+<blockquote>
+<p>受託形式でのプロジェクトだと、プロジェクトの発注主側の発言力が大きく「提示された仕様通りに作る」ケースがあるけど、その場合でもユーザビリティに関しては我々も真剣に考えて、主体的に取り組むことがすごく重要だと感じた。</p>
+</blockquote>
+<blockquote>
+<p>受託でも、早めの段階からエンドユーザーにクローズドベータみたいな形で使ってもらってフィードバックをもらう、といった取り組みができるといいと思った。「その機能ほんとに必要？」って思うような機能もあったりする。</p>
+</blockquote>
+<blockquote>
+<p>「誰が何をしたいか」を明らかにしないうちに、言われるままに作ってしまうと、「これはやっぱり必要なかった」「あれが必要だった」となってしまう。漠然とした要望に対して、こちらから本当に重要な要点を引き出す努力を、欠いてはいけないと感じた。</p>
+</blockquote>
+<p>・ペルソナについて</p>
+<blockquote>
+<p>機能を追加することは簡単。無数のユーザーを思い浮かべると、いろんな機能を付けたくなってくる。でも、そうすることで使いものにならないソフトウェアや製品になっているものが世の中にたくさんある。昔、開発していたソフトウェアも、要求や不満に対応するというアプローチを取り入れたところ、どんどんカオスになっていったことがある。</p>
+</blockquote>
+<blockquote>
+<p>ペルソナを明確にしないまま改善を繰り返していくと、本来の目的からどんどんズレて、迷走することがあった。改善を繰り返すにしても、まずはブレないような目的を決めておくことはやっておいたほうがいいと感じた。</p>
+</blockquote>
+<blockquote>
+<p>複数のペルソナを作って、優先順位をつけて、重み付け機能一覧を作るのは良さそう。ある機能が必要かどうかなどの議論は、プロジェクトメンバーそれぞれ主観が入ってしまい混乱する場合があったりするので、ペルソナベースで議論するようにしたいと思った。</p>
+</blockquote>
+<p>・プロトタイプについて</p>
+<blockquote>
+<p>ユーザーニーズに対する深い理解、論理性、既成概念にとらわれない発想力がプロトタイプ制作で重要だと感じた。そのため、MMMが主体的に取り組むのはもちろん、クライアント側の担当者も、レビューだけじゃなく制作に巻き込んでいくような進め方のほうが、より価値のあるプロトタイプが制作できるかもしれない。</p>
+</blockquote>
+<p>・ユーザービリティ評価について</p>
+<blockquote>
+<p>パフォーマンス測定よりも、思考発話法などの少人数テスト（わずか5人で大規模な テストの85%の成果が得られる）のほうが、ほとんどのプロジェクトで役に立ちそうだと感じた。</p>
+</blockquote>
+<blockquote>
+<p>（本書の「作り手と評価者の間に十分な信頼関係を構築すべき」という箇所について）顧客やベンダーや、社内のチームメンバーとの間でも同じことが言える。十分な信頼関係があって初めて、良いものが作れると思う。</p>
+</blockquote>
+<p>普段、開発に専念しているメンバーが多いので、頭の中をユーザー視点に切り替えるのは良いリフレッシュになったかもしれません。</p>
+<p>　　　</p>
+<h2 id="今後に生かす"><a href="#今後に生かす" class="headerlink" title="今後に生かす"></a>今後に生かす</h2><p>MMMは、システムインテグレーターとして、価値を生み出す、品質の高いシステムを作り上げることがミッションです。今回の読書会は様々な学びがありましたが、特に、MMMの業務にダイレクトに生かせそうだと感じたのが、ユーザービリティ評価です。</p>
+<p><img src="/images/usability_engineering/usability.png" width="600"></p>
+<p>ユーザビリティ評価のメソッドを、システム開発の様々なフェーズやシチュエーションの中で適切に取り入れれば、プロトタイプの検証や、本番システムの継続的な改善に役立ちそうです。</p>
+<p>まずは第一歩として行いたいのは、メンバー同士でのユーザーテストです。MMMが今まで作ったもの、もしくはこれから作るものに関して、プロジェクトに直接関わっていない社内メンバーに、簡易的なユーザーテストをしてもらうところから始めたいと考えています。</p>
+<p>経験がないメンバーもあまり難しく考えずに、シンプルにクイックに、まずは負担無くできることから始めて、少しずつ経験を積んで習熟していけたらと思っています。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/11/22/usability_engineering/" data-text="「ユーザビリティエンジニアリング(第2版)―ユーザエクスペリエンスのための調査、設計、評価手法―」を読んで学んだこと" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/11/22/usability_engineering/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/11/22/usability_engineering/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/11/22/usability_engineering/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/11/22/usability_engineering/" class="hatena-bookmark-button" data-hatena-bookmark-title="「ユーザビリティエンジニアリング(第2版)―ユーザエクスペリエンスのための調査、設計、評価手法―」を読んで学んだこと" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UX/">UX</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ユーザビリティ/">ユーザビリティ</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/社内制度/">社内制度</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/読書会/">読書会</a></li></ul>
+
+
+      <p class="article-footer__author">by 坂上</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

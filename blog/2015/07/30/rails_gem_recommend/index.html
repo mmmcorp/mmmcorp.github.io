@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Rails開発で使っているオススメgemを5個(-1個)紹介します | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="ネット上にはいろいろと便利なgemの紹介サイトがあるわけだが、弊社で使っているgemについても私の独断と偏見で選んだおすすめgemを5個(-1個)ご紹介したい。 rubocopコードがRuby Style Guideに沿っているかをチェックするgem。これは以前のブログ記事でも紹介した。RuboCopを使ってコーディング規約に沿ったコードを書く RuboCopのデフォルト設定はかなり厳しい。メソッ">
+<meta name="keywords" content="サーバーサイド,Ruby on Rails,gem">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rails開発で使っているオススメgemを5個(-1個)紹介します">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2015/07/30/rails_gem_recommend/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="ネット上にはいろいろと便利なgemの紹介サイトがあるわけだが、弊社で使っているgemについても私の独断と偏見で選んだおすすめgemを5個(-1個)ご紹介したい。 rubocopコードがRuby Style Guideに沿っているかをチェックするgem。これは以前のブログ記事でも紹介した。RuboCopを使ってコーディング規約に沿ったコードを書く RuboCopのデフォルト設定はかなり厳しい。メソッ">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/rails_gem_recommend/did_you_mean.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.134Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Rails開発で使っているオススメgemを5個(-1個)紹介します">
+<meta name="twitter:description" content="ネット上にはいろいろと便利なgemの紹介サイトがあるわけだが、弊社で使っているgemについても私の独断と偏見で選んだおすすめgemを5個(-1個)ご紹介したい。 rubocopコードがRuby Style Guideに沿っているかをチェックするgem。これは以前のブログ記事でも紹介した。RuboCopを使ってコーディング規約に沿ったコードを書く RuboCopのデフォルト設定はかなり厳しい。メソッ">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/rails_gem_recommend/did_you_mean.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-rails-gem-recommend" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2015-07-30T14:37:29.000Z" itemprop="datePublished">2015-07-30</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2015/07/30/rails_gem_recommend/">Rails開発で使っているオススメgemを5個(-1個)紹介します</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/07/30/rails_gem_recommend/" data-text="Rails開発で使っているオススメgemを5個(-1個)紹介します" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/07/30/rails_gem_recommend/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/07/30/rails_gem_recommend/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/07/30/rails_gem_recommend/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/07/30/rails_gem_recommend/" class="hatena-bookmark-button" data-hatena-bookmark-title="Rails開発で使っているオススメgemを5個(-1個)紹介します" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>ネット上にはいろいろと便利なgemの紹介サイトがあるわけだが、弊社で使っているgemについても私の独断と偏見で選んだおすすめgemを5個(-1個)ご紹介したい。</p>
+<h2 id="rubocop"><a href="#rubocop" class="headerlink" title="rubocop"></a><a href="https://github.com/bbatsov/rubocop" target="_blank" rel="noopener">rubocop</a></h2><p>コードが<a href="https://github.com/bbatsov/ruby-style-guide" target="_blank" rel="noopener">Ruby Style Guide</a>に沿っているかをチェックするgem。これは以前のブログ記事でも紹介した。<br><a href="http://blog.mmmcorp.co.jp/blog/2014/05/09/shimojo/">RuboCopを使ってコーディング規約に沿ったコードを書く</a></p>
+<p>RuboCopのデフォルト設定はかなり厳しい。<code>メソッドは10行以内</code>なんかは結構厳しいと思う。チェック項目や設定は変更することができるのだが、あえて厳しい設定でチェックすると、クラス分割やメソッド分割などいろいろと議論のネタを提供してくれて面白い。<br>例えば、<br>「ここのメソッドが10行に収まらないんだけどどうすればいいかな？.rubocopを書き換えるって最終手段使っていいですか・・・？」<br>「うーん、Rubyのシンタックスを変えればなんとか10行に収まるけど、メソッドの役割自体を考えなおして、これこれこういうメソッドに変えたほうがいいんじゃないかな。」<br>みたいな議論がかわされることになる。</p>
+<h2 id="pre-commit"><a href="#pre-commit" class="headerlink" title="pre-commit"></a><a href="https://github.com/jish/pre-commit" target="_blank" rel="noopener">pre-commit</a></h2><p>コミット前にバリデーションをかけて、通らなかったらコミットを通らなくする。rubocopチェックを実行することも可能。以前、vimの保存時にrubocopチェックを走らせる方法をご紹介したが、ちょっと保存処理が重くなるので、コミット時にチェックをするのがベターかもしれない。（rubocopに慣れるまでは保存時にチェックをしたほうがよいとおもうけれども。）</p>
+<p>参考URL：<br><a href="http://takitake.hatenablog.com/entry/2014/07/27/172151" target="_blank" rel="noopener">git用のpre-commit gemが便利すぎる</a></p>
+<h2 id="did_you_mean"><a href="#did-you-mean" class="headerlink" title="did_you_mean"></a><a href="https://github.com/yuki24/did_you_mean" target="_blank" rel="noopener">did_you_mean</a></h2><p>（言い訳であるが、）私はもともとCやJavaなどのコンパイル型言語ばかりを書いていた人間なので、Railsアプリケーションがスペルミスでエラーになっている場合に原因に気づかないことがある。このgemは、エラー時に、こういうスペルミスじゃないの？とメッセージ表示してくれるものである。<br>以下が公式サイトから引用したサンプル。本来<code>user_signed_in?</code>と書くべきところ、<code>user_logged_in?</code>という存在しないメソッド名を書いてしまった時に、正しいメソッド名<code>user_signed_in?</code>をサジェストしてくれている。</p>
+<p><img src="/images/rails_gem_recommend/did_you_mean.png" alt=""></p>
+<p>精度は結構高く、何度も助けられたことがある。入れておいて損はないのではないだろうか。</p>
+<h2 id="airbrake"><a href="#Airbrake" class="headerlink" title="Airbrake"></a><a href="https://github.com/airbrake/airbrake" target="_blank" rel="noopener">Airbrake</a></h2><p>AirbrakeというWebアプリケーションのエラーを監視・通知するサービスがある。これは有料サービスなのだが、ErrbitというクローンがOSSで開発されており、Errbitのサーバを立てることでAirbrakeと同様の監視を実現することが可能である。その際、アプリケーションからErrbitへのエラー通知にairbrake gemを使用する。<br>弊社ではErrbitからSlackにエラーを通知していることが多い。<br>Errbitおよびairbrake gemの導入方法については、多くのページが引っかかる。<br>例えば、<a href="http://morizyun.github.io/blog/errbit-heroku-rails-error-ruby/" target="_blank" rel="noopener">Errbit - Railsアプリの本番エラーをherokuで管理、メール通知する【無料枠】</a>。<br>ハマりどころはほとんどないと思う。</p>
+<h2 id="active-admin"><a href="#Active-Admin" class="headerlink" title="Active Admin"></a><a href="https://github.com/activeadmin/activeadmin" target="_blank" rel="noopener">Active Admin</a></h2><p>おすすめgemという記事だけれども、実はこれはあまりおすすめしないgem。。。なので<code>-1個</code>と書いた。<br>以前、<br><a href="http://blog.mmmcorp.co.jp/blog/2015/02/18/activeadmin/">ActiveAdminでちょっと使い勝手の良い管理画面を作るTips</a><br>という記事を書いた。おかげさまで多くの方に見ていただけているのだが、最近感じているのは、正直Active Adminはあまりオススメできないということである。特に、デザインコーディングをちゃちゃっとしてくれる人がいる場合。ただ、デザインのコーダがいなくても、最近はBootstrapなどでちょっとしたデザインはプログラマでも簡単に作れるので、やはりActive Adminはオススメしない。理由はいろいろとあるのだが、だいたい以下の理由である。</p>
+<ul>
+<li>Active Admin自体のDSLなど、学習コストが発生する。</li>
+<li>Active Admin標準の機能でできないことをやりたい場合、スクラッチで作るよりも工数が増える場合が（多々）ある。</li>
+<li>標準のデザインがちょっと古風？</li>
+</ul>
+<h2 id="おわりに"><a href="#おわりに" class="headerlink" title="おわりに"></a>おわりに</h2><p>参考までに、いろいろと便利そうなgemが紹介されているサイトへのリンクをはっておく。今後、また良いgemがあればご紹介していこうと思う。</p>
+<p><a href="http://sue445.hatenablog.com/entry/2015/03/29/012855" target="_blank" rel="noopener">Railsアプリやgem作る時にいつも入れているgem一覧</a><br><a href="http://qiita.com/yusabana/items/8ce54577d959bb085b37" target="_blank" rel="noopener">Rails4 今のところ最強なデバッグツール達</a><br><a href="http://qiita.com/natsu871/items/7034e945e4e1f3737d1c" target="_blank" rel="noopener">Railsで使いたい便利なgemまとめ</a><br><a href="http://sugamasao.hatenablog.com/entry/2014/09/22/212611" target="_blank" rel="noopener">RubyKaigi 2014 で出会った神ツールのメモ</a><br><a href="https://moneyforward.com/engineers_blog/2015/07/14/gems-for-health/" target="_blank" rel="noopener">Rubyコードの健康を保つためのgem 5+1選</a></p>
+<p><a href="https://mmmcorp.co.jp/services/remote_system_engineering_service/ruby" target="_blank" rel="noopener">Ruby on Railsを活用したWebサービスや業務システム開発</a>をご検討の企業様は、是非MMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/07/30/rails_gem_recommend/" data-text="Rails開発で使っているオススメgemを5個(-1個)紹介します" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/07/30/rails_gem_recommend/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/07/30/rails_gem_recommend/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/07/30/rails_gem_recommend/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/07/30/rails_gem_recommend/" class="hatena-bookmark-button" data-hatena-bookmark-title="Rails開発で使っているオススメgemを5個(-1個)紹介します" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby-on-Rails/">Ruby on Rails</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gem/">gem</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーサイド/">サーバーサイド</a></li></ul>
+
+
+      <p class="article-footer__author">by 下條 真嗣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

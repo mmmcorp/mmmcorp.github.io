@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>React+Reduxのテスト方針をまとめた | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="概要React.js Advent Calendar21日目の記事です。 Reduxというフレームワークがじわじわ広まっている。Reduxは、Fluxの概念を拡張したもので、アプリケーションでひとつの状態をもつと、クライアントでの状態管理がいろいろ便利になるよ、というコンセプトを持つ。詳細は以下の記事が詳しい。  人気のFluxフレームワークReduxをさわってみた - マルシテイアは月の上 Mo">
+<meta name="keywords" content="フロントエンド,JavaScript,React,Redux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="React+Reduxのテスト方針をまとめた">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2015/12/21/redux-test/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="概要React.js Advent Calendar21日目の記事です。 Reduxというフレームワークがじわじわ広まっている。Reduxは、Fluxの概念を拡張したもので、アプリケーションでひとつの状態をもつと、クライアントでの状態管理がいろいろ便利になるよ、というコンセプトを持つ。詳細は以下の記事が詳しい。  人気のFluxフレームワークReduxをさわってみた - マルシテイアは月の上 Mo">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.134Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="React+Reduxのテスト方針をまとめた">
+<meta name="twitter:description" content="概要React.js Advent Calendar21日目の記事です。 Reduxというフレームワークがじわじわ広まっている。Reduxは、Fluxの概念を拡張したもので、アプリケーションでひとつの状態をもつと、クライアントでの状態管理がいろいろ便利になるよ、というコンセプトを持つ。詳細は以下の記事が詳しい。  人気のFluxフレームワークReduxをさわってみた - マルシテイアは月の上 Mo">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-redux-test" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2015-12-21T12:25:14.000Z" itemprop="datePublished">2015-12-21</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2015/12/21/redux-test/">React+Reduxのテスト方針をまとめた</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/12/21/redux-test/" data-text="React+Reduxのテスト方針をまとめた" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/12/21/redux-test/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/12/21/redux-test/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/12/21/redux-test/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/12/21/redux-test/" class="hatena-bookmark-button" data-hatena-bookmark-title="React+Reduxのテスト方針をまとめた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p><a href="http://qiita.com/advent-calendar/2015/reactjs" target="_blank">React.js Advent Calendar</a>21日目の記事です。</p>
+<p>Reduxというフレームワークがじわじわ広まっている。Reduxは、Fluxの概念を拡張したもので、アプリケーションでひとつの状態をもつと、クライアントでの状態管理がいろいろ便利になるよ、というコンセプトを持つ。詳細は以下の記事が詳しい。</p>
+<ul>
+<li><a href="http://amagitakayosi.hatenablog.com/entry/2015/07/30/000000" target="_blank">人気のFluxフレームワークReduxをさわってみた - マルシテイアは月の上</a></li>
+<li><a href="http://rackt.org/redux/docs/introduction/Motivation.html" target="_blank">Motivation | Redux</a></li>
+</ul>
+<p>筆者は現在React+Reduxでアプリケーションをつくっているが、今回は、そのテスト方針を書こうと思う。</p>
+<h2 id="テスト環境"><a href="#テスト環境" class="headerlink" title="テスト環境"></a>テスト環境</h2><p>karma+jasmine+sinonでつくる。E2Eはいろいろと・・・なので・・・メインはユニットテストで実装している。JavaScript DOMをつかってSimulationすれば、最低限は担保できるかなと考える。</p>
+<h2 id="テスト方針"><a href="#テスト方針" class="headerlink" title="テスト方針"></a>テスト方針</h2><p>大きな方針としては、役割ごとに切り分けてテストを書く、というのがあり、その中でも、view(component), action, reducerに絞って解説をする。そうすると何がいいかというと、テストの1ファイルの見通しがとても良くなり、シンプルになる。</p>
+<p>ひとつひとつ見てゆくことにする。</p>
+<h3 id="view"><a href="#view" class="headerlink" title="view"></a>view</h3><p>view(component)のテストが担当するのは、データの表示や、DOMイベントによっておこる変化である。具体的な例をみてゆく。</p>
+<p>以下の様なカウンターのコンポーネントを想定し、クリックした際の挙動をテストすると仮定。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">increment</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> &#123; <span class="attr">type</span> : COUNTER_INCREMENT &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">Counter</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="keyword">static</span> propTypes = &#123;</span><br><span class="line">    dispatch: React.PropTypes.func.isRequired,</span><br><span class="line">    counter: React.PropTypes.number,</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">constructor</span>() &#123;</span><br><span class="line">    <span class="keyword">super</span>();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;div className=<span class="string">'container text-center'</span>&gt;</span><br><span class="line">        &lt;h1&gt;Sample Counter&lt;<span class="regexp">/h1&gt;</span></span><br><span class="line"><span class="regexp">        &lt;h2&gt;&#123;this.props.counter&#125;&lt;/</span>h2&gt;</span><br><span class="line">        &lt;button onClick=&#123;<span class="keyword">this</span>.props.dispatch(increment)&#125;&gt;</span><br><span class="line">          Increment</span><br><span class="line">        &lt;<span class="regexp">/button&gt;</span></span><br><span class="line"><span class="regexp">      &lt;/</span>div&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>こちらのテストは以下のようになる。sinon.jsで関数をspyし、実行されたかどうかのテストをしている。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>;</span><br><span class="line"><span class="keyword">import</span> TestUtils <span class="keyword">from</span> <span class="string">'react-addons-test-utils'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; Counter &#125; <span class="keyword">from</span> <span class="string">'./path/to/counter.js'</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">renderWithProps</span> (<span class="params">props = &#123;&#125;</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 仮想DOMを描画する</span></span><br><span class="line">  <span class="keyword">return</span> TestUtils.renderIntoDocument(<span class="xml"><span class="tag">&lt;<span class="name">Counter</span> &#123;<span class="attr">...props</span>&#125; /&gt;</span>);</span></span><br><span class="line"><span class="xml">&#125;</span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml">describe('Counter', function () &#123;</span></span><br><span class="line"><span class="xml">  let _rendered, _props, _spies;</span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml">  beforeEach(function () &#123;</span></span><br><span class="line"><span class="xml">    _spies = &#123;&#125;;</span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml">    // propsのモック</span></span><br><span class="line"><span class="xml">    _props = &#123;</span></span><br><span class="line"><span class="xml">      // sinon.jsを使用し、関数をspyする</span></span><br><span class="line"><span class="xml">      dispatch: _spies.dispatch = sinon.spy(),</span></span><br><span class="line"><span class="xml">      counter: 0,</span></span><br><span class="line"><span class="xml">    &#125;;</span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml">    _rendered  = renderWithProps(_props);</span></span><br><span class="line"><span class="xml">  &#125;);</span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml">  // コンポーネントのテストなので関数が実行されるかどうかまでをテストすればよい</span></span><br><span class="line"><span class="xml">  it('Incrementボタンをクリックでdispatchが走ること', function () &#123;</span></span><br><span class="line"><span class="xml">    const btn = TestUtils.scryRenderedDOMComponentsWithTag(_rendered, 'button');</span></span><br><span class="line"><span class="xml">    TestUtils.Simulate.click(btn[0]);</span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml">    // spyされた関数が実行されたかどうかをチェックする</span></span><br><span class="line"><span class="xml">    expect(_spies.dispatch.called).toBe(true);</span></span><br><span class="line"><span class="xml">  &#125;);</span></span><br><span class="line"><span class="xml">&#125;);</span></span><br></pre></td></tr></table></figure>
+<p>非同期なデータ取得や、stateの変更などはここでは責務として持たない。クリックして、dispatchがおこるか?だけをここではテストすればよいので、シンプルな実装になる。詳細は以下に書いておいたので気になる人は見てほしい。</p>
+<ul>
+<li><a href="http://qiita.com/okmttdhr/items/08180ff31b53a4cb9164" target="_blank">React+ReduxのコンポーネントをKarma+Jasmineでユニットテストする - Qiita</a></li>
+</ul>
+<h3 id="action"><a href="#action" class="headerlink" title="action"></a>action</h3><p>次に、actionのテストを実装する。actionのテストが担当するのは、非同期関数などのメインロジックである。担当範囲は、データを取得し、<strong>正しいactionがdispatchされているか</strong>で、その後はreducerテストの担当範囲となる。</p>
+<p>stateの変更をテストしなくて良いので、シンプルになるが、非同期な処理が入ってくるので少し工夫する必要がある。実際に例を見てゆく。</p>
+<p>以下の様なactionを想定する。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123;</span><br><span class="line">  REQUEST,</span><br><span class="line">  REQUEST_SUCCESS,</span><br><span class="line">&#125; <span class="keyword">from</span> <span class="string">'constants'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// リソース管理はsuperagent</span></span><br><span class="line"><span class="keyword">import</span> request <span class="keyword">from</span> <span class="string">'superagent'</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">request</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    type: REQUEST,</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">requestSuccess</span>(<span class="params">items</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    type: REQUEST_SUCCESS,</span><br><span class="line">    items: items,</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">fetchSomeResource</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function">(<span class="params">dispatch, getState</span>) =&gt;</span> &#123;</span><br><span class="line">    dispatch(request());</span><br><span class="line">    request</span><br><span class="line">      .get(<span class="string">'http://apiserver.com/someuri'</span>)</span><br><span class="line">      .end(<span class="function"><span class="keyword">function</span>(<span class="params">err, res</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> dispatch(requestSuccess(res.body.items));</span><br><span class="line">      &#125;);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>このテストは、以下のようになる。<code>mockStore</code>は、<a href="https://github.com/arnaudbenard/redux-mock-store" target="_blank"><code>redux-mock-store</code></a>というライブラリを使って、store層をモックしている。</p>
+<p>内部では、想定されたaction(<code>expectedActions</code>)がstore層でdispatchされるか、というのをテストしてくれている。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123;</span><br><span class="line">  REQUEST,</span><br><span class="line">  REQUEST_SUCCESS,</span><br><span class="line">&#125; <span class="keyword">from</span> <span class="string">'constants'</span>;</span><br><span class="line"><span class="keyword">import</span> configureMockStore <span class="keyword">from</span> <span class="string">'redux-mock-store'</span>;</span><br><span class="line"><span class="keyword">import</span> thunk <span class="keyword">from</span> <span class="string">'redux-thunk'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; fetchSomeResource &#125; <span class="keyword">from</span> <span class="string">'./action.js'</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">describe(<span class="string">'(Action)'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> middlewares = [ thunk ];</span><br><span class="line">  <span class="keyword">const</span> mockStore = configureMockStore(middlewares);</span><br><span class="line">  <span class="keyword">const</span> initialState = &#123;</span><br><span class="line">    items: [],</span><br><span class="line">    isFetching: <span class="literal">false</span>,</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> expectedActions = [</span><br><span class="line">    &#123; <span class="attr">type</span>: REQUEST &#125;,</span><br><span class="line">    &#123; <span class="attr">type</span>: REQUEST_SUCCESS, <span class="attr">items</span>: [<span class="string">'items'</span>] &#125;,</span><br><span class="line">  ];</span><br><span class="line"></span><br><span class="line">  it(<span class="string">'REQUEST_SUCCESSがdisapatchされること'</span>, (done) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> store = mockStore(initialState, expectedActions, done);</span><br><span class="line">    store.dispatch(fetchSomeResource());</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>このように、actionを作成するまでのロジックに集中してテストを書くことができる。詳細は以下に書いてあるので気になる人は見てほしい。</p>
+<ul>
+<li><a href="http://qiita.com/okmttdhr/items/decedca042e161980220" target="_blank">React+Reduxでasyncなactionをテストする - Qiita</a><ul>
+<li>redux-mock-storeは使用せずに書いている</li>
+</ul>
+</li>
+<li><a href="http://rackt.org/redux/docs/recipes/WritingTests.html" target="_blank">Writing Tests | Redux</a></li>
+</ul>
+<h3 id="reducer"><a href="#reducer" class="headerlink" title="reducer"></a>reducer</h3><p>reducerでは、受け取ったデータを加工し、正しいstateを返しているかどうかをテストする。基本的に、reducerはそこまで大きな処理はしないと思うので、テストもシンプルになる。<a href="http://rackt.org/redux/docs/recipes/WritingTests.html" target="_blank">公式</a>のテストをそのままのせてみるが、以下のようになる。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; ADD_TODO &#125; <span class="keyword">from</span> <span class="string">'../constants/ActionTypes'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> initialState = [</span><br><span class="line">  &#123;</span><br><span class="line">    text: <span class="string">'Use Redux'</span>,</span><br><span class="line">    completed: <span class="literal">false</span>,</span><br><span class="line">    id: <span class="number">0</span></span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> <span class="title">todos</span>(<span class="params">state = initialState, action</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">switch</span> (action.type) &#123;</span><br><span class="line">    <span class="keyword">case</span> ADD_TODO:</span><br><span class="line">      <span class="keyword">return</span> [</span><br><span class="line">        &#123;</span><br><span class="line">          id: state.reduce(<span class="function">(<span class="params">maxId, todo</span>) =&gt;</span> <span class="built_in">Math</span>.max(todo.id, maxId), <span class="number">-1</span>) + <span class="number">1</span>,</span><br><span class="line">          completed: <span class="literal">false</span>,</span><br><span class="line">          text: action.text</span><br><span class="line">        &#125;,</span><br><span class="line">        ...state</span><br><span class="line">      ]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">      <span class="keyword">return</span> state</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上のようなreducerは以下のようにテストできる。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> expect <span class="keyword">from</span> <span class="string">'expect'</span></span><br><span class="line"><span class="keyword">import</span> reducer <span class="keyword">from</span> <span class="string">'../../reducers/todos'</span></span><br><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> types <span class="keyword">from</span> <span class="string">'../../constants/ActionTypes'</span></span><br><span class="line"></span><br><span class="line">describe(<span class="string">'todos reducer'</span>, () =&gt; &#123;</span><br><span class="line">  it(<span class="string">'should handle ADD_TODO'</span>, () =&gt; &#123;</span><br><span class="line">    expect(</span><br><span class="line">      reducer([], &#123;</span><br><span class="line">        type: types.ADD_TODO,</span><br><span class="line">        text: <span class="string">'Run the tests'</span></span><br><span class="line">      &#125;)</span><br><span class="line">    ).toEqual(</span><br><span class="line">      [</span><br><span class="line">        &#123;</span><br><span class="line">          text: <span class="string">'Run the tests'</span>,</span><br><span class="line">          completed: <span class="literal">false</span>,</span><br><span class="line">          id: <span class="number">0</span></span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    )</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="懸念注意点"><a href="#懸念・注意点" class="headerlink" title="懸念・注意点"></a>懸念・注意点</h2><ul>
+<li>コンポーネントのテストをすべて書こうと思うと、ファイル数が大変なことになるので、ロジックがはいっているものだけにするとか、適宜判断してゆくことが大事かもしれない。</li>
+<li><code>connect</code>されたコンポーネントは、切り出してテストしたほうがいいかもしれない。</li>
+<li><code>callComponentWillReceiveProps</code>, <code>callComponentWillUnmount</code>などをよぶ時はやや工夫が必要。</li>
+<li>まだ出会ったことはないが、view, action, reducerが密接に絡んでいる時は、切り分けてテストするというのができないかもしれない。</li>
+</ul>
+<h3 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h3><p>ある程度パターンが決まってくるので、テストが書きやすい。また、変に、view, action, reducerを一緒くたにテストするよりも、問題を見つけやすいのかなとも思った。</p>
+<p>また、テスト方針についてだけでなく、<a href="http://rackt.org/redux/" target="_blank">公式ドキュメント</a>がいろいろ参考になるので見ておくといいかもしれない。</p>
+<p>今回ご紹介したテスト手法を取り入れ、<a href="https://mmmcorp.co.jp/services/entrusted_development/" target="_blank" rel="noopener">品質の見える化を実現したサービス開発</a>をご検討の企業様は、是非MMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/12/21/redux-test/" data-text="React+Reduxのテスト方針をまとめた" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/12/21/redux-test/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/12/21/redux-test/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/12/21/redux-test/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/12/21/redux-test/" class="hatena-bookmark-button" data-hatena-bookmark-title="React+Reduxのテスト方針をまとめた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/React/">React</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redux/">Redux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li></ul>
+
+
+      <p class="article-footer__author">by okp</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

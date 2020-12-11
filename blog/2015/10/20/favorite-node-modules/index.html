@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>オススメnode-modules | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="手指がカサつき過ぎて指紋認証が出来ない小飼です。 フロントエンド開発においてデファクトスタンダードとなった感のあるnpmは、Node.jsコミュニティによる開発の活発な無数のライブラリ群があり、Node.jsそのものの魅力に大きく貢献しています。そこで本稿では私の気に入っているnpmを、活用範囲をフロントエンドに限らずいくつかご紹介します。 validatorvalidator 与えられた文字列を">
+<meta name="keywords" content="フロントエンド,Node.js,JavaScript,npm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="オススメnode-modules">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2015/10/20/favorite-node-modules/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="手指がカサつき過ぎて指紋認証が出来ない小飼です。 フロントエンド開発においてデファクトスタンダードとなった感のあるnpmは、Node.jsコミュニティによる開発の活発な無数のライブラリ群があり、Node.jsそのものの魅力に大きく貢献しています。そこで本稿では私の気に入っているnpmを、活用範囲をフロントエンドに限らずいくつかご紹介します。 validatorvalidator 与えられた文字列を">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.134Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="オススメnode-modules">
+<meta name="twitter:description" content="手指がカサつき過ぎて指紋認証が出来ない小飼です。 フロントエンド開発においてデファクトスタンダードとなった感のあるnpmは、Node.jsコミュニティによる開発の活発な無数のライブラリ群があり、Node.jsそのものの魅力に大きく貢献しています。そこで本稿では私の気に入っているnpmを、活用範囲をフロントエンドに限らずいくつかご紹介します。 validatorvalidator 与えられた文字列を">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-favorite-node-modules" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2015-10-20T11:41:29.000Z" itemprop="datePublished">2015-10-20</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2015/10/20/favorite-node-modules/">オススメnode-modules</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/10/20/favorite-node-modules/" data-text="オススメnode-modules" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/10/20/favorite-node-modules/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/10/20/favorite-node-modules/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/10/20/favorite-node-modules/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/10/20/favorite-node-modules/" class="hatena-bookmark-button" data-hatena-bookmark-title="オススメnode-modules" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>手指がカサつき過ぎて指紋認証が出来ない小飼です。</p>
+<p>フロントエンド開発においてデファクトスタンダードとなった感のある<code>npm</code>は、<br><code>Node.js</code>コミュニティによる開発の活発な無数のライブラリ群があり、<code>Node.js</code>そのものの魅力に大きく貢献しています。<br>そこで本稿では私の気に入っている<code>npm</code>を、活用範囲をフロントエンドに限らずいくつかご紹介します。</p>
+<h3 id="validator"><a href="#validator" class="headerlink" title="validator"></a>validator</h3><p><a href="https://www.npmjs.com/package/validator" target="_blank" rel="noopener">validator</a></p>
+<p>与えられた文字列を検証したり無害化します。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> validator <span class="keyword">from</span> <span class="string">'validator'</span>;</span><br><span class="line"><span class="keyword">const</span> inValidMail = <span class="string">'test@test,com'</span></span><br><span class="line"><span class="keyword">const</span> dangerInput = <span class="string">'&lt;script&gt;alert("実行可能")&lt;/script&gt;'</span></span><br><span class="line"><span class="built_in">console</span>.log(validator.isEmail(inValidMail)); <span class="comment">// false</span></span><br><span class="line"><span class="built_in">console</span>.log(validator.escape(dangerInput)); <span class="comment">// &amp;lt;script&amp;gt;alert(&amp;quot;実行可能&amp;quot;)&amp;lt;&amp;#x2F;script&amp;gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="escape-regexp"><a href="#escape-regexp" class="headerlink" title="escape-regexp"></a>escape-regexp</h3><p><a href="https://www.npmjs.com/package/escape-regexp" target="_blank" rel="noopener">escape-regexp</a></p>
+<p>正規表現用に文字列をエスケープします。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="built_in">escape</span> <span class="keyword">from</span> <span class="string">'escape-regexp'</span>;</span><br><span class="line"><span class="keyword">const</span> dangerStr = <span class="string">'そのままでは/使えない/'</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">escape</span>(dangerStr)); <span class="comment">// そのままでは\/使えない\/</span></span><br></pre></td></tr></table></figure>
+<h3 id="uuid"><a href="#uuid" class="headerlink" title="uuid"></a>uuid</h3><p><a href="https://www.npmjs.com/package/uuid" target="_blank" rel="noopener">uuid</a></p>
+<p>ユニークな文字列を生成します。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> uuid <span class="keyword">from</span> <span class="string">'uuid'</span>;</span><br><span class="line"><span class="keyword">const</span> mytoken = uuid.v1();</span><br><span class="line"><span class="built_in">console</span>.log(mytoken); <span class="comment">// 19943a60-7182-11e5-9c4f-3738ae6ba773</span></span><br></pre></td></tr></table></figure>
+<h3 id="autolinker"><a href="#autolinker" class="headerlink" title="autolinker"></a>autolinker</h3><p><a href="https://www.npmjs.com/package/autolinker" target="_blank" rel="noopener">autolinker</a></p>
+<p>与えた文字列内のURL, メールアドレス, Twitterアカウントを判別してリンク化します。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Autolinker <span class="keyword">from</span> <span class="string">'autolinker'</span>;</span><br><span class="line"><span class="keyword">const</span> linkedText = Autolinker.link(<span class="string">'パッケージのURLはhttps://www.npmjs.com/package/autolinkerです'</span>);</span><br><span class="line"><span class="built_in">console</span>.log(linkedText);</span><br><span class="line"><span class="comment">// パッケージのURLは&lt;a href="https://www.npmjs.com/package/autolinker" target="_blank"&gt;npmjs.com/package/autolinker&lt;/a&gt;です</span></span><br></pre></td></tr></table></figure>
+<h3 id="bcrypt"><a href="#bcrypt" class="headerlink" title="bcrypt"></a>bcrypt</h3><p><a href="https://www.npmjs.com/package/bcrypt" target="_blank" rel="noopener">bcrypt</a></p>
+<p>主にパスワードなどの暗号化に用いるbcrypt暗号化のライブラリ。<br>安全性と比例して処理時間は長くなります。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> bcrypt <span class="keyword">from</span> <span class="string">'bcryptjs'</span></span><br><span class="line"><span class="keyword">import</span> <span class="built_in">Promise</span> <span class="keyword">from</span> <span class="string">'bluebird'</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 暗号化演算の回数 2の10乗</span></span><br><span class="line"><span class="comment">// この数字に比例して</span></span><br><span class="line"><span class="keyword">const</span> SALT_WORK_FACTOR = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 同期処理用のAPIも用意されているが、</span></span><br><span class="line"><span class="comment">// 暗号化処理の重さを考え非同期処理を採用した</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">generateSalt</span>(<span class="params">rawPassword</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>)=&gt;</span> &#123;</span><br><span class="line">    bcrypt.genSalt(SALT_WORK_FACTOR, (err, salt)=&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (err) &#123;</span><br><span class="line">        <span class="keyword">return</span> reject(err);</span><br><span class="line">      &#125;</span><br><span class="line">      resolve(&#123; rawPassword, salt &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hashPassword</span>(<span class="params">&#123; rawPassword, salt &#125;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>)=&gt;</span> &#123;</span><br><span class="line">    bcrypt.hash(rawPassword, salt, (err, hash)=&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (err) &#123;</span><br><span class="line">        <span class="keyword">return</span> reject(err);</span><br><span class="line">      &#125;</span><br><span class="line">      resolve(hash);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">saveDB</span>(<span class="params">hashedPassword</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>)=&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// DB保存の処理</span></span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">generateSalt()</span><br><span class="line">.then(hashPassword)</span><br><span class="line">.then(saveDB)</span><br><span class="line">.finally(next);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 復元して検証</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">inspectionPassword</span>(<span class="params">candidatePassword, hashedPassword</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>)=&gt;</span> &#123;</span><br><span class="line">    bcrypt.compare(candidatePassword, hashedPassword, (err, isMatch)=&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (err) &#123;</span><br><span class="line">        <span class="keyword">return</span> reject(err);</span><br><span class="line">      &#125;</span><br><span class="line">      resolve(isMatch);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>参考: 筆者の開発環境で暗号化部分のテストコードを<code>SALT_WORK_FACTOR</code>定数の値を変えて走らせてみた結果</p>
+<table>
+<thead>
+<tr>
+<th>SALT_WORK_FACTOR</th>
+<th>テスト完了までの時間</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10</td>
+<td>273ms</td>
+</tr>
+<tr>
+<td>11</td>
+<td>491ms</td>
+</tr>
+<tr>
+<td>12</td>
+<td>992ms</td>
+</tr>
+<tr>
+<td>13</td>
+<td>1876ms</td>
+</tr>
+<tr>
+<td>14</td>
+<td>3742ms</td>
+</tr>
+<tr>
+<td>15</td>
+<td>7613ms</td>
+</tr>
+<tr>
+<td>20</td>
+<td>250873ms</td>
+</tr>
+</tbody>
+</table>
+<h3 id="levenshtein"><a href="#levenshtein" class="headerlink" title="levenshtein"></a>levenshtein</h3><p><a href="https://www.npmjs.com/package/levenshtein" target="_blank" rel="noopener">levenshtein</a></p>
+<p>２つの文字列間の距離(差異)を算出するレーベンシュタイン距離アルゴリズムのライブラリです。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Levenshtein <span class="keyword">from</span> <span class="string">'levenshtein'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> baseString = <span class="string">'Hello, world'</span>;</span><br><span class="line"><span class="keyword">const</span> diffString = <span class="string">'Hey, world'</span>;</span><br><span class="line"><span class="keyword">const</span> l = <span class="keyword">new</span> Levenshtein(baseString, diffString);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(l.distance); <span class="comment">// 3</span></span><br><span class="line"><span class="built_in">console</span>.log(l);</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |10 |11 |12</span></span><br><span class="line"><span class="comment">---+---+---+---+---+---+---+---+---+---+---+---+---</span></span><br><span class="line"><span class="comment"> 1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |10 |11</span></span><br><span class="line"><span class="comment">---+---+---+---+---+---+---+---+---+---+---+---+---</span></span><br><span class="line"><span class="comment"> 2 | 1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |10</span></span><br><span class="line"><span class="comment">---+---+---+---+---+---+---+---+---+---+---+---+---</span></span><br><span class="line"><span class="comment"> 3 | 2 | 1 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |10</span></span><br><span class="line"><span class="comment">---+---+---+---+---+---+---+---+---+---+---+---+---</span></span><br><span class="line"><span class="comment"> 4 | 3 | 2 | 2 | 2 | 3 | 3 | 4 | 5 | 6 | 7 | 8 | 9</span></span><br><span class="line"><span class="comment">---+---+---+---+---+---+---+---+---+---+---+---+---</span></span><br><span class="line"><span class="comment"> 5 | 4 | 3 | 3 | 3 | 3 | 4 | 3 | 4 | 5 | 6 | 7 | 8</span></span><br><span class="line"><span class="comment">---+---+---+---+---+---+---+---+---+---+---+---+---</span></span><br><span class="line"><span class="comment"> 6 | 5 | 4 | 4 | 4 | 4 | 4 | 4 | 3 | 4 | 5 | 6 | 7</span></span><br><span class="line"><span class="comment">---+---+---+---+---+---+---+---+---+---+---+---+---</span></span><br><span class="line"><span class="comment"> 7 | 6 | 5 | 5 | 5 | 4 | 5 | 5 | 4 | 3 | 4 | 5 | 6</span></span><br><span class="line"><span class="comment">---+---+---+---+---+---+---+---+---+---+---+---+---</span></span><br><span class="line"><span class="comment"> 8 | 7 | 6 | 6 | 6 | 5 | 5 | 6 | 5 | 4 | 3 | 4 | 5</span></span><br><span class="line"><span class="comment">---+---+---+---+---+---+---+---+---+---+---+---+---</span></span><br><span class="line"><span class="comment"> 9 | 8 | 7 | 6 | 6 | 6 | 6 | 6 | 6 | 5 | 4 | 3 | 4</span></span><br><span class="line"><span class="comment">---+---+---+---+---+---+---+---+---+---+---+---+---</span></span><br><span class="line"><span class="comment">10 | 9 | 8 | 7 | 7 | 7 | 7 | 7 | 7 | 6 | 5 | 4 | 3</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<h3 id="scp"><a href="#scp" class="headerlink" title="scp"></a>scp</h3><p><a href="https://www.npmjs.com/package/scp" target="_blank" rel="noopener">scp</a></p>
+<p><code>scp</code>コマンドのラッパーライブラリ。<br>タスクランナーに混ぜ込んで<code>静的ファイルの生成</code>&gt;<code>リモートにコピー</code>とすると簡易デプロイツールとして使えます。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> scp <span class="keyword">from</span> <span class="string">'scp'</span>;</span><br><span class="line">scp.send(&#123;</span><br><span class="line">	file : <span class="string">'./.build/*'</span>,</span><br><span class="line">  host: <span class="string">'myhost.com'</span>,</span><br><span class="line">  user: <span class="string">'myhost'</span>,</span><br><span class="line">  port: <span class="number">2222</span>,</span><br><span class="line">  path: <span class="string">'/'</span>,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="log4js"><a href="#log4js" class="headerlink" title="log4js"></a>log4js</h3><p><a href="https://github.com/nomiddlename/log4js-node" target="_blank" rel="noopener">log4js</a></p>
+<p>ログ出力ライブラリ。<br>出力のタイプをコンソールやファイルなどから選択したり、出力先を設定したりできます。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> log4js <span class="keyword">from</span> <span class="string">'log4js'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> configure = &#123;</span><br><span class="line">  debug: &#123;</span><br><span class="line">    type: <span class="string">'console'</span>,</span><br><span class="line">    category: <span class="string">'console'</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  warn: &#123;</span><br><span class="line">    type: <span class="string">'file'</span>,</span><br><span class="line">    category: <span class="string">'file'</span>,</span><br><span class="line">    filename: <span class="string">`./file.log`</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">log4js.configure(&#123;</span><br><span class="line">  appenders: [</span><br><span class="line">    configure.debug,</span><br><span class="line">    configure.warn,</span><br><span class="line">  ],</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> consoleLogger = log4js.getLogger(<span class="string">'console'</span>);</span><br><span class="line"><span class="keyword">const</span> fileLogger = log4js.getLogger(<span class="string">'file'</span>);</span><br><span class="line"></span><br><span class="line">consoleLogger.info(<span class="string">'Hello, console log.'</span>); <span class="comment">// [2015-10-20 09:24:22.551] [INFO] console - Hello, console log.</span></span><br><span class="line">fileLogger.info(<span class="string">'Hello, file log.'</span>); <span class="comment">// [2015-10-20 09:24:22.555] [INFO] file - Hello, file log.</span></span><br></pre></td></tr></table></figure>
+<h3 id="cron"><a href="#cron" class="headerlink" title="cron"></a>cron</h3><p><a href="https://www.npmjs.com/package/cron" target="_blank" rel="noopener">cron</a></p>
+<p>cronシンタックスで定期的に実行したい関数が登録できるライブラリ。<br>通常の<code>Node.js</code>プロセスなので、バックグラウンドで実行するには別のライブラリとの併用が必要になります。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; CronJob &#125; <span class="keyword">from</span> <span class="string">'cron'</span>;</span><br><span class="line"><span class="keyword">const</span> everyMorning = <span class="string">'0 0 8 * * *'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> job = <span class="keyword">new</span> Cronjob(&#123;</span><br><span class="line">  cronTime: everyMorning,</span><br><span class="line">  onTick() &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'Good morning.'</span>);</span><br><span class="line">  &#125;,</span><br><span class="line">  start: <span class="literal">false</span>,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">job.start();</span><br></pre></td></tr></table></figure>
+<h3 id="keymirror"><a href="#keymirror" class="headerlink" title="keymirror"></a>keymirror</h3><p><a href="https://www.npmjs.com/package/keymirror" target="_blank" rel="noopener">keymirror</a></p>
+<p>keyとvalueが同じプロパティを作ります。<br><code>React/Flux</code>の<a href="https://github.com/facebook/flux/blob/master/examples/flux-todomvc/js/constants/TodoConstants.js" target="_blank" rel="noopener">example</a>で使われていますが、<br><code>babel</code>でコードを書くことが増えた最近では使う機会は少なくなってきています。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keymirror <span class="keyword">from</span> <span class="string">'keymirror'</span>;</span><br><span class="line"><span class="keyword">const</span> myObj = keymirror(&#123;</span><br><span class="line">  foo: <span class="literal">null</span>,</span><br><span class="line">  bar: <span class="literal">null</span>,</span><br><span class="line">&#125;);</span><br><span class="line"><span class="built_in">console</span>.log(myObj); <span class="comment">// &#123; foo: 'foo', bar: 'bar' &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// bable経由ではこう書ける</span></span><br><span class="line"><span class="keyword">const</span> foo = <span class="string">'foo'</span>;</span><br><span class="line"><span class="keyword">const</span> bar = <span class="string">'bar'</span>;</span><br><span class="line"><span class="keyword">const</span> es2015Obj = &#123;</span><br><span class="line">  foo,</span><br><span class="line">  bar,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">console</span>.log(es2015Obj); <span class="comment">// &#123; foo: 'foo', bar: 'bar' &#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="object-assign"><a href="#object-assign" class="headerlink" title="object-assign"></a>object-assign</h3><p><a href="https://www.npmjs.com/package/object-assign" target="_blank" rel="noopener">object-assign</a></p>
+<p>ES2015の<code>Object.assign</code>メソッドの先取り実装。<br>これも<code>keymirror</code>と同様の理由で、最近は使う機会がありません。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> objectAssign <span class="keyword">from</span> <span class="string">'object-assign'</span>;</span><br><span class="line"><span class="keyword">const</span> objA = &#123;</span><br><span class="line">  foo: <span class="string">'foo'</span>,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">const</span> objB = &#123;</span><br><span class="line">  bar: <span class="string">'bar'</span>,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">console</span>.log(objectAssign(objA, objB)); <span class="comment">// &#123; foo: 'foo', bar: 'bar' &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">Object</span>.assign(objA, objB)); <span class="comment">// &#123; foo: 'foo', bar: 'bar' &#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="q"><a href="#q" class="headerlink" title="q"></a>q</h3><p><a href="https://www.npmjs.com/package/q" target="_blank" rel="noopener">q</a></p>
+<p>callback地獄に陥らないためのPromiseライブラリの一つ。<br>後述の<code>bluebird</code>と並んで2大人気Promiseライブラリという印象があります。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> fs <span class="keyword">from</span> <span class="string">'fs'</span>;</span><br><span class="line"><span class="keyword">import</span> Q <span class="keyword">from</span> <span class="string">'q'</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">readAsync</span>(<span class="params">pathtofile</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> deffered = Q.defer();</span><br><span class="line">  fs.readFile(pathtofile, (err, data)=&gt; &#123;</span><br><span class="line">    <span class="keyword">if</span> (err) &#123;</span><br><span class="line">      <span class="keyword">return</span> deffered.reject(err);</span><br><span class="line">    &#125;</span><br><span class="line">    deffered.resolve(data);</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="keyword">return</span> deffered.promise;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">readAsync(<span class="string">'README.md'</span>).then(<span class="function">(<span class="params">data</span>)=&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">`data: <span class="subst">$&#123;data&#125;</span>`</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="bluebird"><a href="#bluebird" class="headerlink" title="bluebird"></a>bluebird</h3><p><a href="https://www.npmjs.com/package/bluebird" target="_blank" rel="noopener">bluebird</a></p>
+<p><code>Q</code>と並んで人気のPromiseライブラリ。<br>個人的な印象としてはこちらのインターフェースの方が直感的に使いやすいと思っています。<br>また、<code>Node.js</code>スタイルの関数をPromise化してくれる<code>Promise.promisify</code>メソッドが非常に有用で、筆者は主にこちらを使っています。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> fs <span class="keyword">from</span> <span class="string">'fs'</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="built_in">Promise</span> <span class="keyword">from</span> <span class="string">'bluebird'</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">readAsync</span>(<span class="params">pathtofile</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>)=&gt;</span> &#123;</span><br><span class="line">    fs.readFile(pathtofile, (err, data)=&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (err) &#123;</span><br><span class="line">        <span class="keyword">return</span> reject(err);</span><br><span class="line">      &#125;</span><br><span class="line">      resolve(data);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">readAsync(<span class="string">'README.md'</span>).then(<span class="function">(<span class="params">data</span>)=&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">`data: <span class="subst">$&#123;data&#125;</span>`</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Promise配列を同時に処理したり</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">Promise</span>.all([readAsync(<span class="string">'README-1.md'</span>), readAsync(<span class="string">'README-2.md'</span>), readAsync(<span class="string">'README-3.md'</span>)])</span><br><span class="line">.then(<span class="function">(<span class="params">datas</span>)=&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">`datas: <span class="subst">$&#123;datas&#125;</span>`</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 順番に非同期処理を実行したりできる</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">readAsyncReduce</span>(<span class="params">_, pathtofile</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>)=&gt;</span> &#123;</span><br><span class="line">    fs.readFile(pathtofile, (err, data)=&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (err) &#123;</span><br><span class="line">        <span class="keyword">return</span> reject(err);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;pathtofile&#125;</span>: data`</span>);</span><br><span class="line">      resolve();</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">Promise</span>.reduce([<span class="string">'README-1.md'</span>, <span class="string">'README-2.md'</span>, <span class="string">'README-3.md'</span>], readAsyncReduce, <span class="literal">null</span>)</span><br><span class="line">.then(<span class="function"><span class="params">()</span>=&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'all done.'</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// コールバック関数の第一引数にエラー、第二引数に処理結果を渡す関数をPromise化してくれる</span></span><br><span class="line"><span class="keyword">const</span> readPromisify = <span class="built_in">Promise</span>.promisify(fs.readFile);</span><br><span class="line"></span><br><span class="line">readPromisify(<span class="string">'README.md'</span>, <span class="string">'utf-8'</span>)</span><br><span class="line">.then(<span class="function">(<span class="params">data</span>)=&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(data);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="sequelize"><a href="#sequelize" class="headerlink" title="sequelize"></a>sequelize</h3><p><a href="https://www.npmjs.com/package/sequelize" target="_blank" rel="noopener">sequelize</a></p>
+<p>SQL系データベースのORMライブラリ。<br>筆者は<code>MySQL, PostgreSQL</code>でしか活用したことがありませんが、</p>
+<blockquote>
+<p>Sequelize is a promise-based Node.js/io.js ORM for Postgres, MySQL, MariaDB, SQLite and Microsoft SQL Server.</p>
+</blockquote>
+<p>とのことです。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// MySQLでの例</span></span><br><span class="line"><span class="keyword">import</span> Sequelize <span class="keyword">from</span> <span class="string">'sequelize'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> db = <span class="string">'mysql://username:password@127.0.0.1:3306/databasename'</span>;</span><br><span class="line"><span class="keyword">const</span> connection = <span class="keyword">new</span> Sequelize(db);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> UserModel = connection.define(<span class="string">'user'</span>, &#123;</span><br><span class="line">    mail: &#123;</span><br><span class="line">      type: Sequelize.STRING,</span><br><span class="line">      field: <span class="string">'mail'</span>,</span><br><span class="line">      unique: <span class="literal">true</span>,</span><br><span class="line">      validate: &#123;</span><br><span class="line">        isEmail: <span class="literal">true</span></span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    password: &#123;</span><br><span class="line">      type: Sequelize.STRING,</span><br><span class="line">      field: <span class="string">'password'</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">UserModel.create(&#123;</span><br><span class="line">  mail: <span class="string">'my-mail@test.com'</span>,</span><br><span class="line">  password: <span class="string">'mypassword'</span>,</span><br><span class="line">&#125;)</span><br><span class="line">.then(<span class="function">(<span class="params">newUser</span>)=&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'user saved.'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="mongoose"><a href="#mongoose" class="headerlink" title="mongoose"></a>mongoose</h3><p><a href="https://www.npmjs.com/package/mongoose" target="_blank" rel="noopener">mongoose</a></p>
+<p>MongoDBのORMライブラリ。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> mongoose <span class="keyword">from</span> <span class="string">'mongoose'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> db = <span class="string">'mongodb://username:password@127.0.0.1:27017/databasename'</span>;</span><br><span class="line"><span class="keyword">const</span> connection = mongoose.createConnection(db);</span><br><span class="line"><span class="keyword">const</span> UserSchema = <span class="keyword">new</span> mongoose.Schema(&#123;</span><br><span class="line">  mail: &#123;</span><br><span class="line">    type: <span class="built_in">String</span>,</span><br><span class="line">    index: &#123;</span><br><span class="line">      unique: <span class="literal">true</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">  password: <span class="built_in">String</span>,</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">const</span> UserModel = db.model(<span class="string">'user'</span>, UserSchema);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> newUser = <span class="keyword">new</span> User(&#123;</span><br><span class="line">  mail: <span class="string">'my-mail@test.com'</span>,</span><br><span class="line">  password: <span class="string">'mypassword'</span>,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">newUser.save(<span class="function">(<span class="params">err</span>)=&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'user saved.'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>いくつか駆け足で紹介してみましたがいかがだったでしょうか。<br>参考になればうれしいです。</p>
+<p><a href="https://mmmcorp.co.jp/services/remote_system_engineering_service/nodejs" target="_blank" rel="noopener">Nodeモジュールを活用したフロントエンドアプリケーション開発</a>をご検討の企業様は、是非MMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/10/20/favorite-node-modules/" data-text="オススメnode-modules" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/10/20/favorite-node-modules/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/10/20/favorite-node-modules/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/10/20/favorite-node-modules/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/10/20/favorite-node-modules/" class="hatena-bookmark-button" data-hatena-bookmark-title="オススメnode-modules" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node-js/">Node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/npm/">npm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li></ul>
+
+
+      <p class="article-footer__author">by 小飼 慎一</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

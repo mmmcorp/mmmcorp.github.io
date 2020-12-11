@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>リーダブルコードを心がける | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="レールの上のルビーが好きな前田です。梅雨で雨が続いています。主な移動手段が自転車な私としては辛い時期になりました。 現在、リーダブルコード（オライリー・ジャパン）を再読しています。進行中のプロジェクトで、メソッド名や変数名に悩むことが多かったので、その参考になればと再読している次第です。 命名の大切さ忙しいから、めんどくさいから、とついつい命名に対して疎かになっていませんでしょうか。プロジェクトス">
+<meta name="keywords" content="サーバーサイド,Ruby">
+<meta property="og:type" content="article">
+<meta property="og:title" content="リーダブルコードを心がける">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2015/06/12/readable_code/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="レールの上のルビーが好きな前田です。梅雨で雨が続いています。主な移動手段が自転車な私としては辛い時期になりました。 現在、リーダブルコード（オライリー・ジャパン）を再読しています。進行中のプロジェクトで、メソッド名や変数名に悩むことが多かったので、その参考になればと再読している次第です。 命名の大切さ忙しいから、めんどくさいから、とついつい命名に対して疎かになっていませんでしょうか。プロジェクトス">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.130Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="リーダブルコードを心がける">
+<meta name="twitter:description" content="レールの上のルビーが好きな前田です。梅雨で雨が続いています。主な移動手段が自転車な私としては辛い時期になりました。 現在、リーダブルコード（オライリー・ジャパン）を再読しています。進行中のプロジェクトで、メソッド名や変数名に悩むことが多かったので、その参考になればと再読している次第です。 命名の大切さ忙しいから、めんどくさいから、とついつい命名に対して疎かになっていませんでしょうか。プロジェクトス">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-readable-code" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2015-06-12T23:20:55.000Z" itemprop="datePublished">2015-06-12</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2015/06/12/readable_code/">リーダブルコードを心がける</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/06/12/readable_code/" data-text="リーダブルコードを心がける" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/06/12/readable_code/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/06/12/readable_code/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/06/12/readable_code/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/06/12/readable_code/" class="hatena-bookmark-button" data-hatena-bookmark-title="リーダブルコードを心がける" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="http://rubyonrails.org/" target="_blank" rel="noopener"><strong>レールの上のルビー</strong></a>が好きな前田です。<br>梅雨で雨が続いています。<br>主な移動手段が自転車な私としては辛い時期になりました。</p>
+<p>現在、<a href="http://www.oreilly.co.jp/books/9784873115658/" target="_blank" rel="noopener"><strong>リーダブルコード（オライリー・ジャパン）</strong></a>を再読しています。<br>進行中のプロジェクトで、メソッド名や変数名に悩むことが多かったので、その参考になればと再読している次第です。</p>
+<h2 id="命名の大切さ"><a href="#命名の大切さ" class="headerlink" title="命名の大切さ"></a>命名の大切さ</h2><p>忙しいから、めんどくさいから、とついつい命名に対して疎かになっていませんでしょうか。<br>プロジェクトスタート時におかしな名前を命名してしまうと、プロジェクトの途中で担当者が代わったりした時など、全く意味が分からなかったり、非常に扱いにくいデータとなってしまったりなど、弊害は計り知れません。<br>一番最初に名前やアーキテクチャをしっかり設計しておく、ということがメンテナンスしやすいWebシステムを作る上で非常に重要だということです。</p>
+<p>Webシステムを作っていく上で決めていかなければならない重要な名前はたくさんあります。<br>データベース名、テーブル名、テーブルカラム名、メソッド名、変数名、などなど。<br>プログラミング言語はアルファベットで書いていくので、当然日本語から英語に変換しなければなりません。<br>どうしても該当が無い場合は日本語のアルファベットにするしかないですが。<br>本当にビシっと決まる名前を命名することは非常に難しいと思います。</p>
+<p>弊社ではこの名前決めに非常に時間を割いて議論しているように思います。<br>一番重点を置いているのは、名前を見ただけでその役割を理解することができるような名前になっているか。</p>
+<h2 id="命名規則"><a href="#命名規則" class="headerlink" title="命名規則"></a>命名規則</h2><p>リーダブルコードの中では命名の際に、下記のルールを守れと書いてあります。</p>
+<p>①明確な単語を選ぶ<br>②汎用的な名前を避ける(あるいは、使う状況を選ぶ)<br>③抽象的な名前よりも具体的な名前を使う<br>④接尾辞や接頭辞を使って情報を追加する<br>⑤名前の長さを決める<br>⑥名前のフォーマットで情報を伝える</p>
+<p>①〜④までは名前を具体的にする、ということ。</p>
+<p>⑥については、<strong>Rails</strong>や<strong>Ruby</strong>の規約がありますので、名前のフォーマットもそれらに従うのが良いと考えられます。</p>
+<p>⑤については難しいところだなと思いました。<br>リーダブルコード文中では「<strong>長い名前を命名するのは問題じゃない</strong>」と言っています。<br>スコープが小さい時は短くても良い、ただしスコープが大きい時は、長さを優先させたほうが良い、という内容でしたが、弊社では<a href="https://github.com/bbatsov/rubocop" target="_blank" rel="noopener"><strong>rubocop</strong></a>でコードをチェックしており、あまりメソッド名や変数名が長いと１ラインあたり80桁の制限に引っかかりやすくなり、無駄な改行などで余計にコードが見づらくなってしまう、という本末転倒なことになることが想像できるので、やはり<strong>短く具体的にする</strong>、というハードな命名センスが必要になってきます。</p>
+<p>重要なのはやはり名前に情報を詰め込む、ということ。</p>
+<h2 id="コード修正"><a href="#コード修正" class="headerlink" title="コード修正"></a>コード修正</h2><p>以上を踏まえて<strong>カタカナを扱うカタカナクラス</strong>のコードを修正してみました。<br>各メソッドの役割は以下の通りです。</p>
+<ol>
+<li><p><strong>include_kana_list?</strong><br>与えられた文字(ローマ字)が、<code>KANA_LIST</code>の各行の先頭文字をローマ字にしたキー値一覧<code>[&#39;a&#39;, &#39;ka&#39;, &#39;sa&#39;, &#39;ta&#39;, &#39;na&#39;, &#39;ha&#39;, &#39;ma&#39;, &#39;ya&#39;, &#39;ra&#39;, &#39;wa&#39;]</code>に含まれているかどうかを返す。<br>例: <code>&#39;na&#39;</code> → <code>true</code><br>例: <code>&#39;ナ&#39;</code> → <code>false</code>  <code>&#39;20&#39;</code> → <code>false</code></p>
+</li>
+<li><p><strong>kana_list_line</strong><br>与えられた文字(ローマ字)から<code>KANA_LIST</code>の各行を取得する。<br>例: <code>&#39;a&#39;</code> → <code>[&#39;ア&#39;, &#39;イ&#39;, &#39;ウ&#39;, &#39;エ&#39;, &#39;オ&#39;]</code><br>例: <code>&#39;sa&#39;</code> → <code>[&#39;サ&#39;, &#39;シ&#39;, &#39;ス&#39;, &#39;セ&#39;, &#39;ソ&#39;]</code></p>
+</li>
+<li><p><strong>alphabetical_head_string</strong><br>与えられたカタカナ文字列の先頭文字が、５０音のどの行(あ行、か行など)に所属しているか判断し、あ行なら<code>&#39;a&#39;</code>、か行なら<code>&#39;ka&#39;</code>といったローマ字で返す。<br>例: <code>&#39;ニシノミヤシ&#39;</code> → <code>&#39;na&#39;</code><br>例: <code>&#39;ゲロシ&#39;</code> → <code>&#39;ka&#39;</code></p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"># カタカナクラス</span><br><span class="line">class Katakana</span><br><span class="line">  KANA_LIST = &#123; a: %w(ア イ ウ エ オ),</span><br><span class="line">                ka: %w(カ キ ク ケ コ ガ ギ グ ゲ ゴ),</span><br><span class="line">                sa: %w(サ シ ス セ ソ ザ ジ ズ ゼ ゾ),</span><br><span class="line">                ta: %w(タ チ ツ テ ト ダ ヂ ヅ デ ド),</span><br><span class="line">                na: %w(ナ ニ ヌ ネ ノ),</span><br><span class="line">                ha: %w(ハ ヒ フ ヘ ホ バ ビ ブ ベ ボ パ ピ プ ペ ポ),</span><br><span class="line">                ma: %w(マ ミ ム メ モ),</span><br><span class="line">                ya: %w(ヤ ユ ヨ),</span><br><span class="line">                ra: %w(ラ リ ル レ ロ),</span><br><span class="line">                wa: %w(ワ ヰ ヱ ヲ ン) &#125;</span><br><span class="line"></span><br><span class="line">  def initialize(str)</span><br><span class="line">    @katakana = str</span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">  def self.include_kana_list?(param)</span><br><span class="line">    KANA_LIST.key?(param.to_sym)</span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">  def self.kana_list_line(param)</span><br><span class="line">    KANA_LIST[param.to_sym]</span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">  def alphabetical_head_string</span><br><span class="line">    KANA_LIST.each do |key, val|</span><br><span class="line">      return key.to_s if val.include?(@katakana[0])</span><br><span class="line">    end</span><br><span class="line">    nil</span><br><span class="line">  end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>順に見ていきます。</p>
+<p><strong>3行目 KANA_LIST</strong><br>実際にこの<code>KANA_LIST</code>にアクセスすることはありませんが、アクセスすると、<br><code>Katakana.KANA_LIST</code>となり、<code>kana</code>が続いています。<br>Katakanaクラスのリストは当然カタカナとなりますので、<code>KANA_</code>を削除します。</p>
+<p><strong>18行目 include_kana_list?</strong><br>3行目の<code>KANA_LIST</code>に含まれているか、を判断するものとして、<code>kana_list</code>としましたが、3行目を<code>LIST</code>だけにしたので、こちらも<code>kana</code>を削除します。<br><code>各行のキー値一覧</code>を<code>line_keys</code>としますと、<code>include_list_line_keys?</code>となります。<br>実際にメソッドを使う時は<code>Katakana.include_list_line_keys?(chara)</code>となりますが、<code>keys</code>というのは外から見た時には何の<code>key</code>かが分かりにくいかなと思いました。<br>そこで最終的には<code>include_line_head_charas?(chara)</code>としました。</p>
+<p><strong>22行目 kana_list_line</strong><br>こちらも<code>kana_list</code>を削除します。<br><code>line</code>だけだと分かりづらいので、ありふれていますが<code>get_</code>を付けて、<code>get_line</code>としました。</p>
+<p><strong>26行目 alphabetical_head_string</strong><br><code>alphabetical</code>とは<code>アルファベット順の</code>という意味です。<br><code>日本語の50音</code>、を英語に変換しているのですが、少し無理がありそうですね。<br><code>50音の各行の先頭文字</code>というのを表したかったのですが少し説明不足と誤解を与えてしまうことになるかもしれません。<br><code>alphabetical</code>を大胆に削除して、<code>get_line_head_chara</code>とし、<code>行の先頭文字を取得する</code>という意味を持たせることにしました。</p>
+<p><strong>その他</strong><br>引数やメソッド名の中の<code>文字列</code>は<code>str</code>、<code>一文字</code>は<code>chara</code>としました。<br><code>chara</code>といいながらも<code>ka</code>などを返していたりするのですが、このクラスは<code>Katakana</code>クラスということで、あくまでも日本語の意味での一文字という意味で<code>ka</code>なども一文字とみなすことにしました。</p>
+<h3 id="整形後"><a href="#整形後" class="headerlink" title="整形後"></a>整形後</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"># カタカナクラス</span><br><span class="line">class Katakana</span><br><span class="line">  LIST = &#123; a: %w(ア イ ウ エ オ),</span><br><span class="line">           ka: %w(カ キ ク ケ コ ガ ギ グ ゲ ゴ),</span><br><span class="line">           sa: %w(サ シ ス セ ソ ザ ジ ズ ゼ ゾ),</span><br><span class="line">           ta: %w(タ チ ツ テ ト ダ ヂ ヅ デ ド),</span><br><span class="line">           na: %w(ナ ニ ヌ ネ ノ),</span><br><span class="line">           ha: %w(ハ ヒ フ ヘ ホ バ ビ ブ ベ ボ パ ピ プ ペ ポ),</span><br><span class="line">           ma: %w(マ ミ ム メ モ),</span><br><span class="line">           ya: %w(ヤ ユ ヨ),</span><br><span class="line">           ra: %w(ラ リ ル レ ロ),</span><br><span class="line">           wa: %w(ワ ヰ ヱ ヲ ン) &#125;</span><br><span class="line"></span><br><span class="line">  def self.include_line_head_charas?(chara)</span><br><span class="line">    LIST.key?(chara.to_sym)</span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">  def self.get_line(chara)</span><br><span class="line">    LIST[chara.to_sym]</span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">  def self.get_line_head_chara(str)</span><br><span class="line">    LIST.each do |key, val|</span><br><span class="line">      return key.to_s if val.include?(str[0])</span><br><span class="line">    end</span><br><span class="line">    &apos;&apos;</span><br><span class="line">  end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>読みやすいコードを書くということは奥が深いですし、終わりが無い作業のようにも思います。<br>弊社ではプルリクエストでプロジェクトに携わる関係メンバーにコードレビューをしてもらいますが、何故その名前にしたのか、無駄は無いかなど、激しくツッコミを受けますので気を付ける癖が自然と身に付いてきたように思います。<br>大事なことは、日々考えながら少しでも良いコードを書けるように努力することだと思いますので、これからも頑張ります！</p>
+<p><a href="https://mmmcorp.co.jp/services/entrusted_development/" target="_blank" rel="noopener">リーダブルコードを意識した保守性の高いシステム開発やモバイルアプリケーション開発</a>をご検討の企業様は、是非MMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/06/12/readable_code/" data-text="リーダブルコードを心がける" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/06/12/readable_code/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/06/12/readable_code/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/06/12/readable_code/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/06/12/readable_code/" class="hatena-bookmark-button" data-hatena-bookmark-title="リーダブルコードを心がける" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーサイド/">サーバーサイド</a></li></ul>
+
+
+      <p class="article-footer__author">by 前田 正樹</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

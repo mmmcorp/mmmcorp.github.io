@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Amazon RDS ProxyがGA(一般提供)されました！ | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="毎日リングフィットアドベンチャー生活を始めました、やっさんです。 2020年7月1日にAmazon RDS Proxyが一般提供されました！ Amazon RDS ProxyとはAmazon RDS Proxyは、Amazon Relational Database Service（RDS）向けの高可用性フルマネージ型データベースプロキシです。現在、RDS ProxyはMySQLおよびPostgr">
+<meta name="keywords" content="AWS,サーバーレス,Serverless">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Amazon RDS ProxyがGA(一般提供)されました！">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/07/06/amazon-rds-proxy-ga/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="毎日リングフィットアドベンチャー生活を始めました、やっさんです。 2020年7月1日にAmazon RDS Proxyが一般提供されました！ Amazon RDS ProxyとはAmazon RDS Proxyは、Amazon Relational Database Service（RDS）向けの高可用性フルマネージ型データベースプロキシです。現在、RDS ProxyはMySQLおよびPostgr">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-07-06-rds-proxy-ga/01.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-07-06-rds-proxy-ga/02.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-07-06-rds-proxy-ga/03.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-07-06-rds-proxy-ga/04.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Amazon RDS ProxyがGA(一般提供)されました！">
+<meta name="twitter:description" content="毎日リングフィットアドベンチャー生活を始めました、やっさんです。 2020年7月1日にAmazon RDS Proxyが一般提供されました！ Amazon RDS ProxyとはAmazon RDS Proxyは、Amazon Relational Database Service（RDS）向けの高可用性フルマネージ型データベースプロキシです。現在、RDS ProxyはMySQLおよびPostgr">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/2020-07-06-rds-proxy-ga/01.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-rds-proxy-ga" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-07-06T18:30:00.000Z" itemprop="datePublished">2020-07-06</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/07/06/amazon-rds-proxy-ga/">Amazon RDS ProxyがGA(一般提供)されました！</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/07/06/amazon-rds-proxy-ga/" data-text="Amazon RDS ProxyがGA(一般提供)されました！" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/07/06/amazon-rds-proxy-ga/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/07/06/amazon-rds-proxy-ga/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/07/06/amazon-rds-proxy-ga/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/07/06/amazon-rds-proxy-ga/" class="hatena-bookmark-button" data-hatena-bookmark-title="Amazon RDS ProxyがGA(一般提供)されました！" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>毎日リングフィットアドベンチャー生活を始めました、やっさんです。</p>
+<p>2020年7月1日に<code>Amazon RDS Proxy</code>が一般提供されました！</p>
+<h2 id="amazon-rds-proxyとは"><a href="#Amazon-RDS-Proxyとは" class="headerlink" title="Amazon RDS Proxyとは"></a>Amazon RDS Proxyとは</h2><p>Amazon RDS Proxyは、Amazon Relational Database Service（RDS）向けの<br><code>高可用性フルマネージ型データベースプロキシ</code>です。<br>現在、RDS ProxyはMySQLおよびPostgreSQLエンジンファミリーで利用可能です。</p>
+<h2 id="なぜ-amazon-rds-proxyが注目されているのか"><a href="#なぜ、Amazon-RDS-Proxyが注目されているのか" class="headerlink" title="なぜ、Amazon RDS Proxyが注目されているのか"></a>なぜ、Amazon RDS Proxyが注目されているのか</h2><p>Lambdaによるサーバーレスアーキテクチャは関数が最小の実行単位になります。<br>一度起動した関数はウォームアップにより再利用されることもありますが、<br>基本的にはそれぞれの関数の実行は独立しており、<br>データベースのコネクションも関数単位で独立します。</p>
+<p>これが、どういうことになるかと言いますと、<br>Lambdaが<code>100</code>の同時実行を行うとして<br>それぞれがデータベースへコネクションを貼り、<br><code>100</code>のデータベースコネクションが生成されることになります。</p>
+<p><code>100</code>なら問題ないかもしれません。<code>1000</code>だとどうなるでしょう？<br>多くのデータベースはコネクション数が枯渇してしまいます。</p>
+<p><img src="/images/2020-07-06-rds-proxy-ga/01.png" alt="Amazon RDS Proxyを利用しない場合"></p>
+<p>この問題を解消するためにAWSが提供を始めたマネージドサービスが<br><code>Amazon RDS Proxy</code>です。</p>
+<p><img src="/images/2020-07-06-rds-proxy-ga/02.png" alt="Amazon RDS Proxyを利用する場合"></p>
+<h2 id="従来型のコネクションプーリングとは"><a href="#従来型のコネクションプーリングとは" class="headerlink" title="従来型のコネクションプーリングとは"></a>従来型のコネクションプーリングとは</h2><p>従来型のコネクションプーリングは、<br>アプリケーションサーバー単位でコネクション数を管理します。<br>これはサーバーで動作するアプリケーション単位もしくは、<br>コンテナーオーケストレーションで動作するコンテナー単位が該当します。<br>よって、最大コネクション数がボトルネックになる可能性はあっても、<br>RDSが使えなくなることはありませんでした。</p>
+<p>Lambdaの場合、関数の実行が独立しているため、<br>従来型のコネクションプーリングは難しいです。<br>そこで、 <code>Amazon RDS Proxy</code> が必要になります。</p>
+<p><img src="/images/2020-07-06-rds-proxy-ga/03.png" alt="従来型のコネクションプーリング"></p>
+<h2 id="dynamodbはrdbの代わりにはなりません"><a href="#DynamoDBはRDBの代わりにはなりません。" class="headerlink" title="DynamoDBはRDBの代わりにはなりません。"></a>DynamoDBはRDBの代わりにはなりません。</h2><p>サーバーレスアーキテクチャのデータソースとしてはDynamoDBがあります。<br>しかし、DynamoDBはキーバリューストアであり、<br>RDBのリレーショナル構造のテーブルとは異なる設計方法が必要です。</p>
+<p>多くの開発者がリレーショナルデータベースを<br>サーバーレスアーキテクチャで利用したいと切望していました。</p>
+<h2 id="gaされたamazon-rds-proxyの検証"><a href="#GAされたAmazon-RDS-Proxyの検証" class="headerlink" title="GAされたAmazon RDS Proxyの検証"></a>GAされたAmazon RDS Proxyの検証</h2><p>弊社では以前、Amazon RDS Proxyを検証しました。<br>その時はGAではなくプレビュー版であったため、<br>負荷ツールHeyによる実行で5XXエラーが頻発していました。</p>
+<p>GAになったAmazon RDS Proxyで同様の検証を再現してみます。<br>以下がその結果です。すべてのHTTPリクエストが<br>HTTPステータスコード200を返却しており、<br><code>Amazon RDS Proxyを問題なく利用することができる結果になりました。</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">Summary:</span><br><span class="line">  Total:	0.5001 secs</span><br><span class="line">  Slowest:	0.2104 secs</span><br><span class="line">  Fastest:	0.0396 secs</span><br><span class="line">  Average:	0.0864 secs</span><br><span class="line">  Requests/sec:	399.9392</span><br><span class="line"></span><br><span class="line">  Total data:	9400 bytes</span><br><span class="line">  Size/request:	47 bytes</span><br><span class="line"></span><br><span class="line">Response time histogram:</span><br><span class="line">  0.040 [1]	|■</span><br><span class="line">  0.057 [42]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■</span><br><span class="line">  0.074 [51]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■</span><br><span class="line">  0.091 [38]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■</span><br><span class="line">  0.108 [16]	|■■■■■■■■■■■■■</span><br><span class="line">  0.125 [20]	|■■■■■■■■■■■■■■■■</span><br><span class="line">  0.142 [17]	|■■■■■■■■■■■■■</span><br><span class="line">  0.159 [3]	|■■</span><br><span class="line">  0.176 [9]	|■■■■■■■</span><br><span class="line">  0.193 [2]	|■■</span><br><span class="line">  0.210 [1]	|■</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Latency distribution:</span><br><span class="line">  10% in 0.0515 secs</span><br><span class="line">  25% in 0.0587 secs</span><br><span class="line">  50% in 0.0748 secs</span><br><span class="line">  75% in 0.1118 secs</span><br><span class="line">  90% in 0.1351 secs</span><br><span class="line">  95% in 0.1684 secs</span><br><span class="line">  99% in 0.1848 secs</span><br><span class="line"></span><br><span class="line">Details (average, fastest, slowest):</span><br><span class="line">  DNS+dialup:	0.0128 secs, 0.0396 secs, 0.2104 secs</span><br><span class="line">  DNS-lookup:	0.0008 secs, 0.0000 secs, 0.0038 secs</span><br><span class="line">  req write:	0.0000 secs, 0.0000 secs, 0.0003 secs</span><br><span class="line">  resp wait:	0.0735 secs, 0.0361 secs, 0.2103 secs</span><br><span class="line">  resp read:	0.0001 secs, 0.0000 secs, 0.0001 secs</span><br><span class="line"></span><br><span class="line">Status code distribution:</span><br><span class="line">  [200]	200 responses</span><br></pre></td></tr></table></figure>
+<p>何回か試行したところ、以下のように処理時間が2秒以上かかることがありました。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2.698 [1]</span><br></pre></td></tr></table></figure></p>
+<p>これは、ENIの新規作成が発生していると見受けられました。<br>ENIの新規作成が発生している時にレスポンスが遅くなることについては、<br>前回検証した時と同じでした。</p>
+<h2 id="amazon-rds-proxyの料金"><a href="#Amazon-RDS-Proxyの料金" class="headerlink" title="Amazon RDS Proxyの料金"></a>Amazon RDS Proxyの料金</h2><p>Amazon RDS Proxyの料金にも触れておきましょう。<br>2020年7月時点では、Amazon RDS Proxyの料金体系は以下の通りです。</p>
+<blockquote>
+<p>有効化されている各データベースインスタンスの <code>vCPU</code> ごとの<br>1時間あたりの料金が設定されています。</p>
+<p>東京リージョン：<br>  vCPUあたりの料金：0.018USD/時間</p>
+</blockquote>
+<p>上記の料金を、具体的なvCPU数で計算してみます。<br>1か月の料金は以下の通りです。</p>
+<table>
+<thead>
+<tr>
+<th>vCPUの数</th>
+<th>料金</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>12.96USD</code> (1 vCPU x 24時間 x 30日 x 0.018USD)</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>25.92USD</code> (2 vCPU x 24時間 x 30日 x 0.018USD)</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>51.84USD</code> (4 vCPU x 24時間 x 30日 x 0.018USD)</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>103.68USD</code> (8 vCPU x 24時間 x 30日 x 0.018USD)</td>
+</tr>
+<tr>
+<td>16</td>
+<td><code>207.36USD</code> (16 vCPU x 24時間 x 30日 x 0.018USD)</td>
+</tr>
+<tr>
+<td>48</td>
+<td><code>622.08USD</code> (48 vCPU x 24時間 x 30日 x 0.018USD)</td>
+</tr>
+<tr>
+<td>96</td>
+<td><code>1244.16USD</code> (96 vCPU x 24時間 x 30日 x 0.018USD)</td>
+</tr>
+</tbody>
+</table>
+<p>8コア程度であれば、充分に実用範囲の料金設定と言えるのではないでしょうか。</p>
+<h2 id="amazon-rds-proxyリソース作成のコツ"><a href="#Amazon-RDS-Proxyリソース作成のコツ" class="headerlink" title="Amazon RDS Proxyリソース作成のコツ"></a>Amazon RDS Proxyリソース作成のコツ</h2><p>Amazon RDS Proxyリソース作成のコツにも触れます。</p>
+<h3 id="リソース作成はrdsのマネージメントコンソールから"><a href="#リソース作成はRDSのマネージメントコンソールから" class="headerlink" title="リソース作成はRDSのマネージメントコンソールから"></a>リソース作成はRDSのマネージメントコンソールから</h3><p>Amazon RDS Proxyのリソース作成方法はコンソール画面ですと<br>ふたつの方法があります。</p>
+<ol>
+<li>Lambdaのコンソール画面から作成<ul>
+<li><code>IAMロールを自動作成してくれない</code></li>
+</ul>
+</li>
+<li>RDSのコンソール画面から作成<ul>
+<li><code>IAMロールを自動作成してくれる</code></li>
+</ul>
+</li>
+</ol>
+<p>Lambdaのコンソール画面から作成する時は、<br>IAMロールの作成でつまづいてしまうことも多いかと思います。<br>最初はRDSのコンソール画面から作成し、どのようなIAMロールが必要なのかを<br>自動生成されたロールから確認することをオススメします。</p>
+<p><img src="/images/2020-07-06-rds-proxy-ga/04.png" alt="RDSのコンソール画面からAmazon RDS Proxyを作成すると、IAMロールを自動生成できます。"></p>
+<h2 id="デプロイフレームワークの動向に注視したい"><a href="#デプロイフレームワークの動向に注視したい" class="headerlink" title="デプロイフレームワークの動向に注視したい"></a>デプロイフレームワークの動向に注視したい</h2><p>Lambdaを手動で構築することは最近では少ないのかなと思います。<br>CI・CDも考慮し、何かしらデプロイフレームワークを利用することが多いでしょう。<br>有名所では、</p>
+<ul>
+<li>Serverless Framework</li>
+<li>AWS SAM</li>
+<li>AWS CDK</li>
+</ul>
+<p>などが挙げられますが、<code>Amazon RDS Proxyにネイティブ対応していない</code>ように<br>見受けられます。デプロイフレームワークが対応することで<br>より簡単にAmazon RDS Proxyのアタッチができるようになると思いますので、<br>今後のデプロイフレームワークの動向に注視したいところです。</p>
+<h2 id="amazon-rds-proxyはサーバーレスの未来"><a href="#Amazon-RDS-Proxyはサーバーレスの未来" class="headerlink" title="Amazon RDS Proxyはサーバーレスの未来"></a>Amazon RDS Proxyはサーバーレスの未来</h2><p>Amazon RDS Proxyが存在しなかった時も、私達はLambdaでRDSにアクセスしていました。<br>1日に1回しか起動しないLambdaのみに限定したり、同時実行数を制限したりし、<br>最新の注意をはらい限定的に利用していました。</p>
+<p>Amazon RDS Proxyの登場によりスケールする同期的なAPI実行の<br>データソースにRDSを利用することができるようになります。<br>Lambda統合されたAPI Gatewayを利用するケースがこれに該当します。</p>
+<p>これからもサーバーレスの動向には関心を持たずにはいられません。<br>サーバーレスアーキテクチャの未来に期待したいですね。</p>
+<p>以上です。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/07/06/amazon-rds-proxy-ga/" data-text="Amazon RDS ProxyがGA(一般提供)されました！" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/07/06/amazon-rds-proxy-ga/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/07/06/amazon-rds-proxy-ga/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/07/06/amazon-rds-proxy-ga/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/07/06/amazon-rds-proxy-ga/" class="hatena-bookmark-button" data-hatena-bookmark-title="Amazon RDS ProxyがGA(一般提供)されました！" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Serverless/">Serverless</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li></ul>
+
+
+      <p class="article-footer__author">by yassan</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

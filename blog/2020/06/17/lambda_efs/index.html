@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AWSの新機能「AWS LambdaのEFS連携」を早速検証しました | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="はじめに日本時間の6月17日（水）、AWSよりAWS LambdaがAmazon Elastic File System（EFS）に対応したという新機能のリリースが発表されました。  AWS Lambda support for Amazon Elastic File System now generally available AWS Lambda customers can now enabl">
+<meta name="keywords" content="AWS,サーバーレス">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWSの新機能「AWS LambdaのEFS連携」を早速検証しました">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/06/17/lambda_efs/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="はじめに日本時間の6月17日（水）、AWSよりAWS LambdaがAmazon Elastic File System（EFS）に対応したという新機能のリリースが発表されました。  AWS Lambda support for Amazon Elastic File System now generally available AWS Lambda customers can now enabl">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-06-17-lambda-efs/image1.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-06-17-lambda-efs/image2.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-06-17-lambda-efs/image3.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-06-17-lambda-efs/image4.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-06-17-lambda-efs/image5.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-06-17-lambda-efs/image6.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-06-17-lambda-efs/image7.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-06-17-lambda-efs/image8.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-06-17-lambda-efs/image9.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-06-17-lambda-efs/image1.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AWSの新機能「AWS LambdaのEFS連携」を早速検証しました">
+<meta name="twitter:description" content="はじめに日本時間の6月17日（水）、AWSよりAWS LambdaがAmazon Elastic File System（EFS）に対応したという新機能のリリースが発表されました。  AWS Lambda support for Amazon Elastic File System now generally available AWS Lambda customers can now enabl">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/2020-06-17-lambda-efs/image1.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-lambda-efs" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-06-17T10:00:00.000Z" itemprop="datePublished">2020-06-17</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/06/17/lambda_efs/">AWSの新機能「AWS LambdaのEFS連携」を早速検証しました</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/06/17/lambda_efs/" data-text="AWSの新機能「AWS LambdaのEFS連携」を早速検証しました" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/06/17/lambda_efs/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/06/17/lambda_efs/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/06/17/lambda_efs/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/06/17/lambda_efs/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWSの新機能「AWS LambdaのEFS連携」を早速検証しました" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="はじめに"><a href="#はじめに" class="headerlink" title="はじめに"></a>はじめに</h2><p>日本時間の6月17日（水）、AWSよりAWS LambdaがAmazon Elastic File System（EFS）に対応したという新機能のリリースが発表されました。</p>
+<blockquote>
+<p>AWS Lambda support for Amazon Elastic File System now generally available</p>
+<p>AWS Lambda customers can now enable functions to access Amazon Elastic File System (Amazon EFS). Customers can easily share data across function invocations, read large reference data files, and write function output to a persistent and shared data store.<br><a href="https://aws.amazon.com/jp/about-aws/whats-new/2020/06/aws-lambda-support-for-amazon-elastic-file-system-now-generally-/" target="_blank" rel="noopener">https://aws.amazon.com/jp/about-aws/whats-new/2020/06/aws-lambda-support-for-amazon-elastic-file-system-now-generally-/</a></p>
+</blockquote>
+<p> すでにNFSアクセスを使って複数のEC2インスタンスでファイルシステムを共有できるElastic File System（EFS）という機能はありましたが、今回公開された新機能「AWS LambdaのEFS連携」によって、Lambda関数からElastic File Systemのファイルシステムにアクセスができるようになりました。</p>
+<p>そのため、以下のようなシナリオを実現できることになります。</p>
+<ul>
+<li>EC2で生成してEFSに格納したファイルをLambda関数で処理する</li>
+<li>Lambda関数で生成してEFSに格納したファイルをEC2のアプリケーションで使用する</li>
+<li>EFSに格納したファイルでLambda関数のstateを管理する</li>
+</ul>
+<h2 id="aws-lambdaのefs連携の検証内容"><a href="#AWS-LambdaのEFS連携の検証内容" class="headerlink" title="AWS LambdaのEFS連携の検証内容"></a>AWS LambdaのEFS連携の検証内容</h2><p>ところで、MMMは従来よりWordPressを静的化するソリューションを提供してきました。サイトのパフォーマンスを抜本的に改善できるため、多くのお客様から好評を頂いてきました。</p>
+<p>ただ、静的化したファイルをEC2インスタンスからS3にアップロードをする処理を冗長化することがやや難しく、ボトルネックとなってきました。</p>
+<p>今回の新機能によってこのボトルネックを解決できるのではないかと考え、「静的化したWordPressサイトを、AWS LambdaのEFS連携を用いてS3にホスティングする」方式が可能かどうかを検証することにしました。</p>
+<p>検証の作業は以下の流れで進めていきます。</p>
+<ol>
+<li>EFSファイルシステムを作成する</li>
+<li>EC2複数台でWordPressを構築する</li>
+<li>WordPressを静的化し、EFSファイルシステムに出力する</li>
+<li>S3バケットを作成する</li>
+<li>Lambda関数を設定する</li>
+<li>Lambda関数で、EFSファイルシステムのデータをS3バケットにコピーする</li>
+</ol>
+<p>構成イメージは次の通りです。</p>
+<p><img src="/images/2020-06-17-lambda-efs/image1.png" alt="構成イメージ図"></p>
+<h2 id="1-efsファイルシステムの作成"><a href="#1-EFSファイルシステムの作成" class="headerlink" title="1. EFSファイルシステムの作成"></a>1. EFSファイルシステムの作成</h2><p>最初にEFSファイルシステムを作成しました。EC2にファイルシステムをマウントして利用する通常のケースと同様に、EFSファイルシステムには以下のような設定を行いました。</p>
+<ul>
+<li>EC2インスタンスからアクセスできるように、同じVPC／サブネットに配備する</li>
+<li>EC2インスタンスから、NFS（2049番ポート）でアクセスできるようにセキュリティグループを設定する</li>
+</ul>
+<p>さらに、今回は</p>
+<ul>
+<li>アクセスポイントを設定する</li>
+</ul>
+<p>という作業を行います。</p>
+<p>そこで動作検証用に以下のような設定をしました。</p>
+<p>今回のアクセスポイントの設定は以下の通りです。<br>＜設定画面＞</p>
+<p><img src="/images/2020-06-17-lambda-efs/image2.png" alt="アクセスポイント設定例"></p>
+<p>＜各項目＞</p>
+<p>アクセスポイント名：Lambda<br>Posixユーザー設定（ユーザーID:グループID）：1000:1000<br>ディレクトリのパス設定：/shared<br>所有者設定（ユーザーID：グループID）：1000:1000<br>アクセス許可：777（検証のためすべてを許可）</p>
+<h2 id="2-ec2複数台でwordpressを構築する"><a href="#2-EC2複数台でWordPressを構築する" class="headerlink" title="2. EC2複数台でWordPressを構築する"></a>2. EC2複数台でWordPressを構築する</h2><p>次はWordPressの構築に入ります。WordPressの基盤として、EC2を複数作成します。<br>なお、本来WordPressの構築にはデータベースとしてRDSインスタンスを作成したり、WordPress自体をインストールする作業が必要ですが、今回は省略します。</p>
+<p>「1. EFSファイルシステムを作成する」にてEFSファイルシステムを作成済みのため、次の画面の通り、EC2インスタンスを作成する際には、どのパスにどのEFSファイルシステムをマウントさせるかを選択できるようになっています。</p>
+<p><img src="/images/2020-06-17-lambda-efs/image3.png" alt="EC2作成時のファイルシステムマウント設定例"></p>
+<p>これによって、<code>/etc/fstab</code> などのファイルシステムマウントの設定をEC2で行わずに済みます。今回はデフォルト設定に沿って<code>/mnt/efs/fs1/</code>にファイルシステムをマウントしました。</p>
+<h2 id="3-wordpressを静的化し-efsファイルシステムに出力する"><a href="#3-WordPressを静的化し、EFSファイルシステムに出力する" class="headerlink" title="3. WordPressを静的化し、EFSファイルシステムに出力する"></a>3. WordPressを静的化し、EFSファイルシステムに出力する</h2><p>続いて、WordPressサイトをHTMLやCSSなどの静的なファイル群に変換する作業を行いました。静的化には、<a href="https://ja.wordpress.org/plugins/simply-static/" target="_blank" rel="noopener">Simply Static</a>というプラグインを用いました。</p>
+<p>この静的ファイル群の出力先にはEFSファイルシステムを設定し、Lambda関数にてファイルの操作ができるようにします。</p>
+<p>今回は以下の画面の通り、<code>/mnt/efs/fs1/shared/</code>にファイルを出力する設定を行いました。</p>
+<p><img src="/images/2020-06-17-lambda-efs/image4.png" alt="Simply Static設定例"></p>
+<p>以上で、WordPressの静的ファイルをEFSに出力する準備が完了しました。</p>
+<h2 id="4-s3バケットの作成"><a href="#4-S3バケットの作成" class="headerlink" title="4. S3バケットの作成"></a>4. S3バケットの作成</h2><p>次に、静的化したWordPressサイトをホスティングするためのS3バケットを作成しておきます。<br>S3バケットは「〜〜〜〜test.mmmcorp.co.jp」のように命名します。</p>
+<p>今回の記事ではS3バケットの作成と静的ウェブサイトホスティングの設定について詳細は省きます。</p>
+<h2 id="5-lambda関数を設定する"><a href="#5-Lambda関数を設定する" class="headerlink" title="5. Lambda関数を設定する"></a>5. Lambda関数を設定する</h2><p>ここからが今回の検証の本題です。<br>AWS LambdaのEFS連携の登場で、Lambda関数の環境にEFSファイルシステムをアタッチすることができるようになりました。</p>
+<p>さらに、Lambda関数からEFSファイルシステム内のファイルへアクセスできるようにするため、必要な設定を進めていきます。</p>
+<h3 id="lambdaに付与するロールの設定"><a href="#Lambdaに付与するロールの設定" class="headerlink" title="Lambdaに付与するロールの設定"></a>Lambdaに付与するロールの設定</h3><p>Lambda関数の作成の際には、ロールの付与が必要です。今回の検証作業の目的をふまえると、必要な設定は以下になります。</p>
+<table>
+<thead>
+<tr>
+<th>付与するポリシー</th>
+<th>利用目的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AmazonElasticFileSystemClientFullAccess</td>
+<td>EFSファイル関連の処理の実行</td>
+</tr>
+<tr>
+<td>AWSLambdaVPCAccessExecutionRole</td>
+<td>VPC設定をした上でのEFSへのアクセス</td>
+</tr>
+<tr>
+<td>AmazonS3FullAccess</td>
+<td>S3バケットへのファイルアップロード</td>
+</tr>
+</tbody>
+</table>
+<p>さらに動作確認用のログを出力するため、 <code>AWSLambdaBasicExecutionRole</code>も付与しました。</p>
+<p>設定画面は以下の通りになります。</p>
+<p><img src="/images/2020-06-17-lambda-efs/image5.png" alt="ロール設定例"></p>
+<h3 id="vpcとセキュリティグループの設定"><a href="#VPCとセキュリティグループの設定" class="headerlink" title="VPCとセキュリティグループの設定"></a>VPCとセキュリティグループの設定</h3><p>続いて、Lambda関数とEFSを連携させるための設定を進めます。<br>Lambda関数の環境にEFSファイルシステムをアタッチするためには、Lambda関数をEFSと同じVPCに配備しておく必要があります。（Lambda関数はデフォルトで「非VPC」に配備されますが、これではEFSにアクセスできません）<br>合わせてセキュリティグループも設定して、EFSのセキュリティグループにてNFSアクセスが許可されるようにしておきます。<br>以上の設定を画面で見ると以下の通りです。</p>
+<p><img src="/images/2020-06-17-lambda-efs/image6.png" alt="LambdaのVPC設定例"></p>
+<p>さらに、EFSファイルシステムのセキュリティグループの設定を変更し、今回作成したセキュリティグループからのアクセスを許可するようにします。こうすることで、Lambda関数からEFSファイルシステムへアクセスできるようになります。</p>
+<h3 id="ファイルシステムの設定"><a href="#ファイルシステムの設定" class="headerlink" title="ファイルシステムの設定"></a>ファイルシステムの設定</h3><p>続いて、Lambda環境にファイルシステムをマウントする作業を行います。</p>
+<p>「1. EFSファイルシステムを作成する」を行ったことで、以下の「ファイルシステムの追加」画面で、「EFSファイルシステム」と「アクセスポイント」が選択できるようになっています。また、「ローカルマウントパス」欄で、Lambda環境のどのパスにEFSをマウントするかを指定できます。</p>
+<p><img src="/images/2020-06-17-lambda-efs/image7.png" alt="Lambdaのファイルシステム追加画面"><br>ファイルシステムの設定は、次の「ファイルシステム」画面で確認できます。</p>
+<p><img src="/images/2020-06-17-lambda-efs/image8.png" alt="Lambdaのファイルシステム設定例"></p>
+<p>以上の作業で、Lambda環境の<code>/mnt/test</code>のパスに、EFSのファイルシステムがマウントされた状態、すなわちLambda関数とEFSが連携した状態を実現することができました。</p>
+<h2 id="6-lambda関数で-efsファイルシステムのデータをs3バケットにコピーする"><a href="#6-Lambda関数で、EFSファイルシステムのデータをS3バケットにコピーする" class="headerlink" title="6. Lambda関数で、EFSファイルシステムのデータをS3バケットにコピーする"></a>6. Lambda関数で、EFSファイルシステムのデータをS3バケットにコピーする</h2><p>最後に、Lambdaの機能を実装します。ここで実現したいことは以下になります。</p>
+<ul>
+<li>Lambda環境に連携したEFSファイルシステムの/mnt/test/配下を対象に、ファイルの一覧を取得する</li>
+<li>各ファイルについて、拡張子からContentTypeを決定する</li>
+<li>ファイルをEFSファイルシステムからS3バケットにアップロードする</li>
+</ul>
+<p>コードは次の通りです。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> boto3</span><br><span class="line"><span class="keyword">import</span> glob</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">lambda_handler</span><span class="params">(event, context)</span>:</span></span><br><span class="line">    file_lists_s3copy()</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">file_lists_s3copy</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="comment"># get file list in /mnt/test/</span></span><br><span class="line">    files = glob.glob(<span class="string">"/mnt/test/**"</span>, recursive=<span class="keyword">True</span>)</span><br><span class="line">    s3 = boto3.client(<span class="string">'s3'</span>)</span><br><span class="line">    <span class="keyword">for</span> file <span class="keyword">in</span> files:</span><br><span class="line">        print(file)</span><br><span class="line">        filename = file.replace(<span class="string">'/mnt/test/'</span>, <span class="string">''</span>)</span><br><span class="line">        print(filename)</span><br><span class="line">        root, extension = os.path.splitext(filename)</span><br><span class="line">        print(extension)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> extension == <span class="string">".html"</span>:</span><br><span class="line">            type = <span class="string">'text/html'</span></span><br><span class="line">            type_f = <span class="keyword">True</span></span><br><span class="line">        <span class="keyword">elif</span> extension == <span class="string">".css"</span>:</span><br><span class="line">            type = <span class="string">'text/css'</span></span><br><span class="line">            type_f = <span class="keyword">True</span></span><br><span class="line">        <span class="keyword">elif</span> extension == <span class="string">".js"</span>:</span><br><span class="line">            type = <span class="string">'application/javascript'</span></span><br><span class="line">            type_f = <span class="keyword">True</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            type = <span class="string">'text/plain'</span></span><br><span class="line">            type_f = <span class="keyword">False</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> os.path.isfile(file):</span><br><span class="line">            s3copy(file, filename, type, type_f, s3)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">s3copy</span><span class="params">(file_path, file_name, type, type_f, s3)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> type_f:</span><br><span class="line">        s3.upload_file(file_path, <span class="string">'&lt;S3バケット名をここに記載。今回は`〜〜〜〜test.mmmcorp.co.jp`&gt;'</span>,</span><br><span class="line">                        file_name, ExtraArgs=&#123;<span class="string">'ContentType'</span>: type&#125;)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        s3.upload_file(</span><br><span class="line">            file_path, <span class="string">'&lt;S3バケット名をここに記載。`〜〜〜〜test.mmmcorp.co.jp`&gt;'</span>, file_name)</span><br><span class="line">    <span class="keyword">return</span></span><br></pre></td></tr></table></figure>
+<p>一連の作業によって、今回のゴールである「静的化したWordPressサイトを、AWS LambdaのEFS連携を用いてS3にホスティングする」ことは、実際に可能であることが検証できました。</p>
+<p>さらに、CloudWatchEventsルールなどでLambda関数を定期実行する設定を行えば、EFSのファイルを定期的にS3バケットに反映させることができます。</p>
+<h2 id="aws-lambdaのefs連携の検証の振り返り"><a href="#AWS-LambdaのEFS連携の検証の振り返り" class="headerlink" title="AWS LambdaのEFS連携の検証の振り返り"></a>AWS LambdaのEFS連携の検証の振り返り</h2><p>今回の検証では、新機能であるAWS LambdaのEFS連携を用いて、静的化したWordPressのコンテンツを、S3バケットにアップロードする方式を実現しました。</p>
+<p>従来の方式では、複数のEC2からS3バケットにファイルをアップロードする処理を行おうとすると、同じ処理を重複して行うことになりムダな転送も発生していました。</p>
+<p>これを防ぐため、1台のEC2だけにAWS CLIによるファイルのアップロード処理を実装したりしていましたが、この構成だとアップロード処理を設定したEC2が単一障害点となってしまい、万が一のときのための体制ができていない状態でした。</p>
+<p>この構成を次の図にすると次の通りです。</p>
+<p><img src="/images/2020-06-17-lambda-efs/image9.png" alt="以前の構成"></p>
+<p>今回検証した方式では、Lambda関数の処理によってEFS内のファイルを読み出し、S3へアップロードする処理ができるようなりました。</p>
+<p><img src="/images/2020-06-17-lambda-efs/image1.png" alt="今回の構成（再掲）"></p>
+<p>この構成には、従来の構成に比べて以下のようなメリットがあります。</p>
+<ul>
+<li>EC2インスタンスではなくAWSのマネージドサービスにアップロード処理を置くことで、処理の冗長化を実現できる</li>
+<li>EC2でのアクセスキーやロールの設定を無くし、最小権限にできる</li>
+<li>アップロード処理がEC2のメモリ不足などの影響を受けずに済み、確実な定期実行が可能になる</li>
+<li>個別に実装していた処理をAWSのマネージドサービスに任せることで、クラウドプラットフォームの恩恵を受けられる</li>
+</ul>
+<p>今回の記事が、AWS LambdaのEFS連携活用の参考になれば幸いです。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/06/17/lambda_efs/" data-text="AWSの新機能「AWS LambdaのEFS連携」を早速検証しました" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/06/17/lambda_efs/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/06/17/lambda_efs/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/06/17/lambda_efs/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/06/17/lambda_efs/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWSの新機能「AWS LambdaのEFS連携」を早速検証しました" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li></ul>
+
+
+      <p class="article-footer__author">by 西藤翔太朗</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

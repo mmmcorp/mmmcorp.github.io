@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Go言語でメタプログラミング | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="YouTubeのプレミアム会員に入ってしまい、動画を見る時間がますます増えてしまいました。エンジニアの内山です。 最近の業務では、Go言語を書いています。言語の機能については物足りなさを感じることもありますが、それよりもシンプルさが結構気に入っています。 今回は、Go言語のメタプログラミングについて、ご紹介します。 メタプログラミングとは開発業務では、似たような単純なプログラムを何度も書く必要があ">
+<meta name="keywords" content="Golang,サーバーレス,サーバサイド">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go言語でメタプログラミング">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2019/07/01/metago/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="YouTubeのプレミアム会員に入ってしまい、動画を見る時間がますます増えてしまいました。エンジニアの内山です。 最近の業務では、Go言語を書いています。言語の機能については物足りなさを感じることもありますが、それよりもシンプルさが結構気に入っています。 今回は、Go言語のメタプログラミングについて、ご紹介します。 メタプログラミングとは開発業務では、似たような単純なプログラムを何度も書く必要があ">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.158Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Go言語でメタプログラミング">
+<meta name="twitter:description" content="YouTubeのプレミアム会員に入ってしまい、動画を見る時間がますます増えてしまいました。エンジニアの内山です。 最近の業務では、Go言語を書いています。言語の機能については物足りなさを感じることもありますが、それよりもシンプルさが結構気に入っています。 今回は、Go言語のメタプログラミングについて、ご紹介します。 メタプログラミングとは開発業務では、似たような単純なプログラムを何度も書く必要があ">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-metago" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2019-07-01T14:50:37.000Z" itemprop="datePublished">2019-07-01</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2019/07/01/metago/">Go言語でメタプログラミング</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/07/01/metago/" data-text="Go言語でメタプログラミング" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/07/01/metago/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/07/01/metago/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/07/01/metago/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/07/01/metago/" class="hatena-bookmark-button" data-hatena-bookmark-title="Go言語でメタプログラミング" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>YouTubeのプレミアム会員に入ってしまい、動画を見る時間がますます増えてしまいました。エンジニアの内山です。</p>
+<p>最近の業務では、Go言語を書いています。言語の機能については物足りなさを感じることもありますが、それよりもシンプルさが結構気に入っています。</p>
+<p>今回は、Go言語のメタプログラミングについて、ご紹介します。</p>
+<h2 id="メタプログラミングとは"><a href="#メタプログラミングとは" class="headerlink" title="メタプログラミングとは"></a>メタプログラミングとは</h2><p>開発業務では、似たような単純なプログラムを何度も書く必要がある場合があります。ボイラープレートと呼ばれるようなプログラムです。<br>そのようなプログラムを自動生成するプログラムを書いて、効率化することはよくあると思います。</p>
+<p>この <strong>「プログラムを生成するプログラムを書くこと」</strong> を メタプログラミングと呼びます。</p>
+<p>筆者が参加しているプロジェクトでは、実際に以下のようなことを行っています。</p>
+<ul>
+<li>AWS LambdaのHandlerとなるプログラムと呼び出し関数を自動生成</li>
+<li>Goプログラムを解析して、AWS SAMの設定ファイルを自動生成(プログラムへの参照情報を自動設定)</li>
+</ul>
+<p>何度も単純なプログラムを書いたり、設定ファイルの記述ミスを減らしたりしています。</p>
+<p>メタプログラミングは、開発業務を効率化する上で強力な手法になります。</p>
+<h2 id="2種類のメタプログラミング"><a href="#2種類のメタプログラミング" class="headerlink" title="2種類のメタプログラミング"></a>2種類のメタプログラミング</h2><p>Go言語でメタプログラミングを行う場合、以下の2種類の方法があります。</p>
+<ul>
+<li>reflectパッケージによるメタプログラミング(実行時)</li>
+<li>go/*パッケージによるメタプログラミング(ソースコードの構文解析)</li>
+</ul>
+<p>今回は、後者の<code>go/*パッケージによるメタプログラミング</code>について、取り上げます。</p>
+<h2 id="go-パッケージによるメタプログラミング"><a href="#go-パッケージによるメタプログラミング" class="headerlink" title="go/* パッケージによるメタプログラミング"></a>go/* パッケージによるメタプログラミング</h2><p>go/*パッケージには、「Goのプログラムを構文解析し、操作を行うAPI」が提供されています。<br>以下のように、go/parserの<code>ParseExpr関数</code>にGoプログラムを文字列として渡すと、構文解析が行われます。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"go/parser"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    expr, _ := parser.ParseExpr(<span class="string">"a * -1"</span>)</span><br><span class="line">    fmt.Printf(<span class="string">"%#v"</span>, expr)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以下が実行結果です。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">*ast.BinaryExpr &#123;</span><br><span class="line">.  X: *ast.Ident &#123;</span><br><span class="line">.  .  NamePos: <span class="number">1</span></span><br><span class="line">.  .  Name: <span class="string">"a"</span></span><br><span class="line">.  .  Obj: *ast.Object &#123;</span><br><span class="line">.  .  .  Kind: bad</span><br><span class="line">.  .  .  Name: <span class="string">""</span></span><br><span class="line">.  .  &#125;</span><br><span class="line">.  &#125;</span><br><span class="line">.  OpPos: <span class="number">3</span></span><br><span class="line">.  Op: *</span><br><span class="line">.  Y: *ast.UnaryExpr &#123;</span><br><span class="line">.  .  OpPos: <span class="number">5</span></span><br><span class="line">.  .  Op: -</span><br><span class="line">.  .  X: *ast.BasicLit &#123;</span><br><span class="line">.  .  .  ValuePos: <span class="number">6</span></span><br><span class="line">.  .  .  Kind: INT</span><br><span class="line">.  .  .  Value: <span class="string">"1"</span></span><br><span class="line">.  .  &#125;</span><br><span class="line">.  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>「ast.BinaryExpr」「ast.Indent」「Op」「ast.UnaryExpr」「ast.BasicLit」など、<br>構造体やメンバ変数によって、Goの構文を表しているのが感じ取れると思います。<br>一番最初に現れる<code>ast.BinaryExpr構造体</code>は、２項演算子を表しています。</p>
+<p>今回は実例として<strong>「あるパッケージに含まれているすべての関数のリストを取得する」</strong>ことを考えてみます。</p>
+<h2 id="解析対象のプログラム"><a href="#解析対象のプログラム" class="headerlink" title="解析対象のプログラム"></a>解析対象のプログラム</h2><p>サンプルとして、以下のプログラムを解析対象とします。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sample/fuga.go</span></span><br><span class="line"><span class="keyword">package</span> sample</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> FugaArg <span class="keyword">struct</span> &#123;</span><br><span class="line">        Message <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Fuga</span><span class="params">(arg FugaArg)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">        fmt.Println(arg.Message)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// sample/hoge.go</span></span><br><span class="line"><span class="keyword">package</span> sample</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> HogeArg <span class="keyword">struct</span> &#123;</span><br><span class="line">        Message <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Hoge</span><span class="params">(arg *HogeArg)</span> <span class="params">(<span class="keyword">string</span>, error)</span></span> &#123;</span><br><span class="line">        <span class="keyword">return</span> arg.Message, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>実際には、Fuga関数 と Hoge関数 は別々のファイルで記述されています。</p>
+<p>このサンプルプログラムを構文解析した結果を単純に出力してみます。<br>パッケージ内のプログラムを構文解析するので、<code>parser.ParseDir</code>関数を使用します。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">        packageName := <span class="string">"sample"</span></span><br><span class="line">        OutputFuncFromPackage(packageName)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">OutputFuncFromPackage</span><span class="params">(packageName <span class="keyword">string</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">        fset := token.NewFileSet()</span><br><span class="line">        packages, err := parser.ParseDir(fset, packageName, <span class="literal">nil</span>, parser.Mode(<span class="number">0</span>))</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> err</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> _, pkg := <span class="keyword">range</span> packages &#123;</span><br><span class="line">                ast.Inspect(pkg, <span class="function"><span class="keyword">func</span><span class="params">(n ast.Node)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">                        <span class="keyword">if</span> t, ok := n.(*ast.FuncDecl); ok &#123;</span><br><span class="line">                                ast.Print(fset, t)</span><br><span class="line">                                fmt.Println()</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">                &#125;)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以下が出力結果となります。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br></pre></td><td class="code"><pre><span class="line">*ast.FuncDecl &#123;</span><br><span class="line">.  Name: *ast.Ident &#123;</span><br><span class="line">.  .  NamePos: sample/hoge.<span class="keyword">go</span>:<span class="number">7</span>:<span class="number">6</span></span><br><span class="line">.  .  Name: <span class="string">"Hoge"</span></span><br><span class="line">.  .  Obj: *ast.Object &#123;</span><br><span class="line">.  .  .  Kind: <span class="function"><span class="keyword">func</span></span></span><br><span class="line"><span class="function">.  .  .  <span class="title">Name</span>: "<span class="title">Hoge</span>"</span></span><br><span class="line"><span class="function">.  .  .  <span class="title">Decl</span>: *<span class="params">(obj @ 0)</span></span></span><br><span class="line"><span class="function">.  .  &#125;</span></span><br><span class="line"><span class="function">.  &#125;</span></span><br><span class="line"><span class="function">.  <span class="title">Type</span>: *<span class="title">ast</span>.<span class="title">FuncType</span></span> &#123;</span><br><span class="line">.  .  Func: sample/hoge.<span class="keyword">go</span>:<span class="number">7</span>:<span class="number">1</span></span><br><span class="line">.  .  Params: *ast.FieldList &#123;</span><br><span class="line">.  .  .  Opening: sample/hoge.<span class="keyword">go</span>:<span class="number">7</span>:<span class="number">10</span></span><br><span class="line">.  .  .  List: []*ast.Field (<span class="built_in">len</span> = <span class="number">1</span>) &#123;</span><br><span class="line">.  .  .  .  <span class="number">0</span>: *ast.Field &#123;</span><br><span class="line">.  .  .  .  .  Names: []*ast.Ident (<span class="built_in">len</span> = <span class="number">1</span>) &#123;</span><br><span class="line">.  .  .  .  .  .  <span class="number">0</span>: *ast.Ident &#123;</span><br><span class="line">.  .  .  .  .  .  .  NamePos: sample/hoge.<span class="keyword">go</span>:<span class="number">7</span>:<span class="number">11</span></span><br><span class="line">.  .  .  .  .  .  .  Name: <span class="string">"arg"</span></span><br><span class="line">.  .  .  .  .  .  .  Obj: *ast.Object &#123;</span><br><span class="line">.  .  .  .  .  .  .  .  Kind: <span class="keyword">var</span></span><br><span class="line">.  .  .  .  .  .  .  .  Name: <span class="string">"arg"</span></span><br><span class="line">.  .  .  .  .  .  .  .  Decl: *(obj @ <span class="number">15</span>)</span><br><span class="line">.  .  .  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  Type: *ast.StarExpr &#123;</span><br><span class="line">.  .  .  .  .  .  Star: sample/hoge.<span class="keyword">go</span>:<span class="number">7</span>:<span class="number">15</span></span><br><span class="line">.  .  .  .  .  .  X: *ast.Ident &#123;</span><br><span class="line">.  .  .  .  .  .  .  NamePos: sample/hoge.<span class="keyword">go</span>:<span class="number">7</span>:<span class="number">16</span></span><br><span class="line">.  .  .  .  .  .  .  Name: <span class="string">"HogeArg"</span></span><br><span class="line">.  .  .  .  .  .  .  Obj: *ast.Object &#123;</span><br><span class="line">.  .  .  .  .  .  .  .  Kind: <span class="keyword">type</span></span><br><span class="line">.  .  .  .  .  .  .  .  Name: <span class="string">"HogeArg"</span></span><br><span class="line">.  .  .  .  .  .  .  .  Decl: *ast.TypeSpec &#123;</span><br><span class="line">.  .  .  .  .  .  .  .  .  Name: *ast.Ident &#123;</span><br><span class="line">.  .  .  .  .  .  .  .  .  .  NamePos: sample/hoge.<span class="keyword">go</span>:<span class="number">3</span>:<span class="number">6</span></span><br><span class="line">.  .  .  .  .  .  .  .  .  .  Name: <span class="string">"HogeArg"</span></span><br><span class="line">.  .  .  .  .  .  .  .  .  .  Obj: *(obj @ <span class="number">32</span>)</span><br><span class="line">.  .  .  .  .  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  .  .  .  .  Assign: -</span><br><span class="line">.  .  .  .  .  .  .  .  .  Type: *ast.StructType &#123;</span><br><span class="line">.  .  .  .  .  .  .  .  .  .  Struct: sample/hoge.<span class="keyword">go</span>:<span class="number">3</span>:<span class="number">14</span></span><br><span class="line">.  .  .  .  .  .  .  .  .  .  Fields: *ast.FieldList &#123;</span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  Opening: sample/hoge.<span class="keyword">go</span>:<span class="number">3</span>:<span class="number">21</span></span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  List: []*ast.Field (<span class="built_in">len</span> = <span class="number">1</span>) &#123;</span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  .  <span class="number">0</span>: *ast.Field &#123;</span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  .  .  Names: []*ast.Ident (<span class="built_in">len</span> = <span class="number">1</span>) &#123;</span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  .  .  .  <span class="number">0</span>: *ast.Ident &#123;</span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  .  .  .  .  NamePos: sample/hoge.<span class="keyword">go</span>:<span class="number">4</span>:<span class="number">2</span></span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  .  .  .  .  Name: <span class="string">"Message"</span></span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  .  .  .  .  Obj: *ast.Object &#123;</span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  Kind: <span class="keyword">var</span></span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  Name: <span class="string">"Message"</span></span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ <span class="number">47</span>)</span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  .  .  Type: *ast.Ident &#123;</span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  .  .  .  NamePos: sample/hoge.<span class="keyword">go</span>:<span class="number">4</span>:<span class="number">10</span></span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  .  .  .  Name: <span class="string">"string"</span></span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  .  .  .  .  .  .  Closing: sample/hoge.<span class="keyword">go</span>:<span class="number">5</span>:<span class="number">1</span></span><br><span class="line">.  .  .  .  .  .  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  .  .  .  .  .  Incomplete: <span class="literal">false</span></span><br><span class="line">.  .  .  .  .  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  &#125;</span><br><span class="line">.  .  .  &#125;</span><br><span class="line">.  .  .  Closing: sample/hoge.<span class="keyword">go</span>:<span class="number">7</span>:<span class="number">23</span></span><br><span class="line">.  .  &#125;</span><br><span class="line">.  .  Results: *ast.FieldList &#123;</span><br><span class="line">.  .  .  Opening: sample/hoge.<span class="keyword">go</span>:<span class="number">7</span>:<span class="number">25</span></span><br><span class="line">.  .  .  List: []*ast.Field (<span class="built_in">len</span> = <span class="number">2</span>) &#123;</span><br><span class="line">.  .  .  .  <span class="number">0</span>: *ast.Field &#123;</span><br><span class="line">.  .  .  .  .  Type: *ast.Ident &#123;</span><br><span class="line">.  .  .  .  .  .  NamePos: sample/hoge.<span class="keyword">go</span>:<span class="number">7</span>:<span class="number">26</span></span><br><span class="line">.  .  .  .  .  .  Name: <span class="string">"string"</span></span><br><span class="line">.  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  &#125;</span><br><span class="line">.  .  .  .  <span class="number">1</span>: *ast.Field &#123;</span><br><span class="line">.  .  .  .  .  Type: *ast.Ident &#123;</span><br><span class="line">.  .  .  .  .  .  NamePos: sample/hoge.<span class="keyword">go</span>:<span class="number">7</span>:<span class="number">34</span></span><br><span class="line">.  .  .  .  .  .  Name: <span class="string">"error"</span></span><br><span class="line">.  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  &#125;</span><br><span class="line">.  .  .  &#125;</span><br><span class="line">.  .  .  Closing: sample/hoge.<span class="keyword">go</span>:<span class="number">7</span>:<span class="number">39</span></span><br><span class="line">.  .  &#125;</span><br><span class="line">.  &#125;</span><br><span class="line">.  Body: *ast.BlockStmt &#123;</span><br><span class="line">.  .  Lbrace: sample/hoge.<span class="keyword">go</span>:<span class="number">7</span>:<span class="number">41</span></span><br><span class="line">.  .  List: []ast.Stmt (<span class="built_in">len</span> = <span class="number">1</span>) &#123;</span><br><span class="line">.  .  .  <span class="number">0</span>: *ast.ReturnStmt &#123;</span><br><span class="line">.  .  .  .  Return: sample/hoge.<span class="keyword">go</span>:<span class="number">8</span>:<span class="number">2</span></span><br><span class="line">.  .  .  .  Results: []ast.Expr (<span class="built_in">len</span> = <span class="number">2</span>) &#123;</span><br><span class="line">.  .  .  .  .  <span class="number">0</span>: *ast.SelectorExpr &#123;</span><br><span class="line">.  .  .  .  .  .  X: *ast.Ident &#123;</span><br><span class="line">.  .  .  .  .  .  .  NamePos: sample/hoge.<span class="keyword">go</span>:<span class="number">8</span>:<span class="number">9</span></span><br><span class="line">.  .  .  .  .  .  .  Name: <span class="string">"arg"</span></span><br><span class="line">.  .  .  .  .  .  .  Obj: *(obj @ <span class="number">20</span>)</span><br><span class="line">.  .  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  .  Sel: *ast.Ident &#123;</span><br><span class="line">.  .  .  .  .  .  .  NamePos: sample/hoge.<span class="keyword">go</span>:<span class="number">8</span>:<span class="number">13</span></span><br><span class="line">.  .  .  .  .  .  .  Name: <span class="string">"Message"</span></span><br><span class="line">.  .  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  .  <span class="number">1</span>: *ast.Ident &#123;</span><br><span class="line">.  .  .  .  .  .  NamePos: sample/hoge.<span class="keyword">go</span>:<span class="number">8</span>:<span class="number">22</span></span><br><span class="line">.  .  .  .  .  .  Name: <span class="string">"nil"</span></span><br><span class="line">.  .  .  .  .  &#125;</span><br><span class="line">.  .  .  .  &#125;</span><br><span class="line">.  .  .  &#125;</span><br><span class="line">.  .  &#125;</span><br><span class="line">.  .  Rbrace: sample/hoge.<span class="keyword">go</span>:<span class="number">9</span>:<span class="number">1</span></span><br><span class="line">.  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>構文解析木を表現している構造体から、必要な情報だけを取る際に、どのような構造になっているのかを把握できるように、上記のように出力してみるのがおすすめです。</p>
+<h2 id="関数情報を取り出す処理"><a href="#関数情報を取り出す処理" class="headerlink" title="関数情報を取り出す処理"></a>関数情報を取り出す処理</h2><p>あとは、解析結果を出力したものを見ながら、欲しい情報を取得する処理を書いていくのみです。<br>以下は、関数の一覧を取得する処理を行うプログラムです。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">  packageName := <span class="string">"sample"</span></span><br><span class="line">  funcs, err := GetFuncFromPackage(packageName)</span><br><span class="line">  <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="built_in">panic</span>(err)</span><br><span class="line">  &#125;</span><br><span class="line">  pp.Println(funcs)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> GoFunc <span class="keyword">struct</span> &#123;</span><br><span class="line">        FuncName <span class="keyword">string</span></span><br><span class="line">        Args     []*GoFuncArg</span><br><span class="line">        Returns  []<span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> GoFuncArg <span class="keyword">struct</span> &#123;</span><br><span class="line">        Name []<span class="keyword">string</span></span><br><span class="line">        Type <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetFuncArgTypeStr</span><span class="params">(t ast.Expr)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">  typeStr := <span class="string">""</span></span><br><span class="line">  <span class="keyword">var</span> symbols []<span class="keyword">string</span></span><br><span class="line">  ast.Inspect(t, <span class="function"><span class="keyword">func</span><span class="params">(n ast.Node)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">    <span class="keyword">switch</span> n.(<span class="keyword">type</span>) &#123;</span><br><span class="line">    <span class="keyword">case</span> *ast.SelectorExpr:</span><br><span class="line">            sel := n.(*ast.SelectorExpr)</span><br><span class="line">            typeStr = fmt.Sprintf(<span class="string">"%s.%s"</span>, sel.X, sel.Sel.Name)</span><br><span class="line">    <span class="keyword">case</span> *ast.Ident:</span><br><span class="line">            <span class="keyword">if</span> typeStr == <span class="string">""</span> &#123;</span><br><span class="line">                    typeStr = n.(*ast.Ident).Name</span><br><span class="line">            &#125;</span><br><span class="line">    <span class="keyword">case</span> *ast.InterfaceType:</span><br><span class="line">            typeStr = <span class="string">"interface&#123;&#125;"</span></span><br><span class="line">    <span class="keyword">case</span> *ast.ArrayType:</span><br><span class="line">            symbols = <span class="built_in">append</span>(symbols, <span class="string">"[]"</span>)</span><br><span class="line">    <span class="keyword">case</span> *ast.MapType:</span><br><span class="line">            m := n.(*ast.MapType)</span><br><span class="line">            typeStr = fmt.Sprintf(<span class="string">"map[%s]%s"</span>, m.Key, m.Value)</span><br><span class="line">    <span class="keyword">case</span> *ast.StarExpr:</span><br><span class="line">            symbols = <span class="built_in">append</span>(symbols, <span class="string">"*"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> fmt.Sprintf(<span class="string">"%s%s"</span>, strings.Join(symbols, <span class="string">""</span>), typeStr)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetFuncFromPackage</span><span class="params">(packageName <span class="keyword">string</span>)</span> <span class="params">([]*GoFunc, error)</span></span> &#123;</span><br><span class="line">  fset := token.NewFileSet()</span><br><span class="line">  packages, err := parser.ParseDir(fset, packageName, <span class="literal">nil</span>, parser.Mode(<span class="number">0</span>))</span><br><span class="line">  <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">          <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> funcs []*GoFunc</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> _, pkg := <span class="keyword">range</span> packages &#123;</span><br><span class="line">    ast.Inspect(pkg, <span class="function"><span class="keyword">func</span><span class="params">(n ast.Node)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">     <span class="keyword">if</span> t, ok := n.(*ast.FuncDecl); ok &#123;</span><br><span class="line"></span><br><span class="line">       <span class="comment">// メソッド は除外</span></span><br><span class="line">       <span class="keyword">if</span> t.Recv != <span class="literal">nil</span> &#123;</span><br><span class="line">               <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="comment">// テスト は除外</span></span><br><span class="line">       <span class="keyword">if</span> strings.HasPrefix(t.Name.Name, <span class="string">"Test"</span>) &#123;</span><br><span class="line">               <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 関数の引数情報</span></span><br><span class="line">       <span class="keyword">var</span> argDecls = <span class="built_in">make</span>([]*GoFuncArg, <span class="built_in">len</span>(t.Type.Params.List))</span><br><span class="line">       <span class="keyword">for</span> i, l := <span class="keyword">range</span> t.Type.Params.List &#123;</span><br><span class="line"></span><br><span class="line">         <span class="comment">// (a, b string, c int) のような引数だった場合、</span></span><br><span class="line">         <span class="comment">// [a, b] と [c] のような配列で名前が返ってくる</span></span><br><span class="line">         <span class="keyword">var</span> names = <span class="built_in">make</span>([]<span class="keyword">string</span>, <span class="built_in">len</span>(l.Names))</span><br><span class="line">         <span class="keyword">for</span> i := <span class="keyword">range</span> l.Names &#123;</span><br><span class="line">                 names[i] = l.Names[i].Name</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         <span class="comment">// 引数の型情報を取得</span></span><br><span class="line">         typeStr := GetFuncArgTypeStr(l.Type)</span><br><span class="line"></span><br><span class="line">         <span class="comment">// testing.Tなどのテスト関数で定義される引数だった場合は除外する</span></span><br><span class="line">         <span class="keyword">if</span> strings.HasSuffix(typeStr, <span class="string">".T"</span>) &#123;</span><br><span class="line">                 <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         <span class="comment">// 引数情報を簡単に参照できるようにした構造体に保存しておく</span></span><br><span class="line">         argDecls[i] = &amp;GoFuncArg&#123;</span><br><span class="line">                 Name: names,</span><br><span class="line">                 Type: typeStr,</span><br><span class="line">         &#125;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 関数の返り値情報</span></span><br><span class="line">       retStr := <span class="string">""</span></span><br><span class="line">       <span class="keyword">var</span> retDecls []<span class="keyword">string</span></span><br><span class="line">       <span class="keyword">if</span> t.Type.Results != <span class="literal">nil</span> &#123;</span><br><span class="line"></span><br><span class="line">         <span class="comment">// (int, float, string) のような返り値の型情報リストを取得する</span></span><br><span class="line">         retDecls = <span class="built_in">make</span>([]<span class="keyword">string</span>, <span class="built_in">len</span>(t.Type.Results.List))</span><br><span class="line">         <span class="keyword">for</span> i, l := <span class="keyword">range</span> t.Type.Results.List &#123;</span><br><span class="line">                 <span class="comment">// 引数の型情報を取得</span></span><br><span class="line">                 retDecls[i] = GetFuncArgTypeStr(l.Type)</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         <span class="keyword">if</span> <span class="built_in">len</span>(retDecls) != <span class="number">0</span> &#123;</span><br><span class="line">                 retStr = strings.Join(retDecls, <span class="string">", "</span>)</span><br><span class="line">                 <span class="comment">// 返り値が２つ以上の場合は、 (int, float) のようにカッコを付ける</span></span><br><span class="line">                 <span class="keyword">if</span> <span class="built_in">len</span>(retDecls) &gt; <span class="number">1</span> &#123;</span><br><span class="line">                         retStr = fmt.Sprintf(<span class="string">"(%s)"</span>, retStr)</span><br><span class="line">                 &#125;</span><br><span class="line">         &#125;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 関数情報を簡単に参照できるようにした構造体に保存しておく</span></span><br><span class="line">       funcs = <span class="built_in">append</span>(funcs, &amp;GoFunc&#123;</span><br><span class="line">               FuncName: t.Name.Name, <span class="comment">// 関数名</span></span><br><span class="line">               Args:     argDecls,    <span class="comment">// 関数の引数情報</span></span><br><span class="line">               Returns:  retDecls,    <span class="comment">// 関数の返り値情報</span></span><br><span class="line">       &#125;)</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> funcs, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以下は、出力結果となります。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">[]*main.GoFunc&#123;</span><br><span class="line">  &amp;main.GoFunc&#123;</span><br><span class="line">    FuncName: <span class="string">"Hoge"</span>,</span><br><span class="line">    Args:     []*main.GoFuncArg&#123;</span><br><span class="line">      &amp;main.GoFuncArg&#123;</span><br><span class="line">        Name: []<span class="keyword">string</span>&#123;</span><br><span class="line">          <span class="string">"arg"</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">        Type: <span class="string">"*HogeArg"</span>,</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    Returns: []<span class="keyword">string</span>&#123;</span><br><span class="line">      <span class="string">"string"</span>,</span><br><span class="line">      <span class="string">"error"</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">  &amp;main.GoFunc&#123;</span><br><span class="line">    FuncName: <span class="string">"Fuga"</span>,</span><br><span class="line">    Args:     []*main.GoFuncArg&#123;</span><br><span class="line">      &amp;main.GoFuncArg&#123;</span><br><span class="line">        Name: []<span class="keyword">string</span>&#123;</span><br><span class="line">          <span class="string">"arg"</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">        Type: <span class="string">"FugaArg"</span>,</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    Returns: []<span class="keyword">string</span>&#123;</span><br><span class="line">      <span class="string">"error"</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>生の解析結果より、関数の情報を取り出しやすい形になっていると思います。<br>この情報を基に、プログラムを生成する処理を書いていくことができます。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>Go言語でメタプログラミングをする手法をご紹介しました。<br>メタプログラミングは「黒魔術」と呼ばれることもあり、取り扱いには注意が必要です。<br>しかし、うまく行けば開発業務の効率化に繋がります。<br>ぜひとも挑戦してみてください。</p>
+<h2 id="参考リンク"><a href="#参考リンク" class="headerlink" title="参考リンク"></a>参考リンク</h2><p>GoのためのGo<br><a href="https://motemen.github.io/go-for-go-book/" target="_blank" rel="noopener">https://motemen.github.io/go-for-go-book/</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/07/01/metago/" data-text="Go言語でメタプログラミング" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/07/01/metago/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/07/01/metago/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/07/01/metago/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/07/01/metago/" class="hatena-bookmark-button" data-hatena-bookmark-title="Go言語でメタプログラミング" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/">Golang</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバサイド/">サーバサイド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li></ul>
+
+
+      <p class="article-footer__author">by 内山 浩佑</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

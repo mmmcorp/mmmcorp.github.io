@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AWS Elastic Beanstalkを使ったBlue-Green Deployment | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="今回は、Blue-Green Deployment(ブルーグリーンデプロイメント)を、AWS Elastic Beanstalkを使ってやってみました。   Blue-Green Deployment とは同等の環境を2つ用意して、リリース時にリクエスト先を切り替えることで、ダウンタイムをほぼゼロすることができるデプロイ方法です。  上記の画像では、左側の Blue environment へアク">
+<meta name="keywords" content="サーバーサイド,AWS,インフラ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWS Elastic Beanstalkを使ったBlue-Green Deployment">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/08/20/blue_green_deployment_eb_cli/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="今回は、Blue-Green Deployment(ブルーグリーンデプロイメント)を、AWS Elastic Beanstalkを使ってやってみました。   Blue-Green Deployment とは同等の環境を2つ用意して、リリース時にリクエスト先を切り替えることで、ダウンタイムをほぼゼロすることができるデプロイ方法です。  上記の画像では、左側の Blue environment へアク">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/blue_green_deployment_eb_cli/blue-green-deployment.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/blue_green_deployment_eb_cli/envblue01.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/blue_green_deployment_eb_cli/envgreen01.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/blue_green_deployment_eb_cli/route53.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/blue_green_deployment_eb_cli/ebapp.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/blue_green_deployment_eb_cli/ebapp1.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AWS Elastic Beanstalkを使ったBlue-Green Deployment">
+<meta name="twitter:description" content="今回は、Blue-Green Deployment(ブルーグリーンデプロイメント)を、AWS Elastic Beanstalkを使ってやってみました。   Blue-Green Deployment とは同等の環境を2つ用意して、リリース時にリクエスト先を切り替えることで、ダウンタイムをほぼゼロすることができるデプロイ方法です。  上記の画像では、左側の Blue environment へアク">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/blue_green_deployment_eb_cli/blue-green-deployment.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-blue-green-deployment-eb-cli" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-08-20T07:11:41.000Z" itemprop="datePublished">2020-08-20</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/08/20/blue_green_deployment_eb_cli/">AWS Elastic Beanstalkを使ったBlue-Green Deployment</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/08/20/blue_green_deployment_eb_cli/" data-text="AWS Elastic Beanstalkを使ったBlue-Green Deployment" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/08/20/blue_green_deployment_eb_cli/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/08/20/blue_green_deployment_eb_cli/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/08/20/blue_green_deployment_eb_cli/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/08/20/blue_green_deployment_eb_cli/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS Elastic Beanstalkを使ったBlue-Green Deployment" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今回は、Blue-Green Deployment(ブルーグリーンデプロイメント)を、<a href="https://aws.amazon.com/jp/elasticbeanstalk/" target="_blank" rel="noopener">AWS Elastic Beanstalk</a>を使ってやってみました。  </p>
+<h2 id="blue-green-deployment-とは"><a href="#Blue-Green-Deployment-とは" class="headerlink" title="Blue-Green Deployment とは"></a><code>Blue-Green Deployment</code> とは</h2><p>同等の環境を2つ用意して、リリース時にリクエスト先を切り替えることで、ダウンタイムをほぼゼロすることができるデプロイ方法です。</p>
+<p><img src="/images/blue_green_deployment_eb_cli/blue-green-deployment.png" alt="https://aws.amazon.com/jp/blogs/startups/how-to-use-blue-green-deployement-on-aws/ より引用"></p>
+<p>上記の画像では、左側の <code>Blue environment</code> へアクセスが行くようになっている状態です。<br>これをリリース時に、新しいバージョンのアプリケーションを配備済みの <code>Green environment</code> へ切り替える形でデプロイを行います。</p>
+<p>【参考】  </p>
+<ul>
+<li><a href="https://www.publickey1.jp/blog/14/blue-green_deployment.html" target="_blank" rel="noopener">「Blue-Green Deployment」とは何か、マーチン・ファウラー氏の解説 － Publickey</a></li>
+</ul>
+<h3 id="メリット"><a href="#メリット" class="headerlink" title="メリット"></a>メリット</h3><p>Blue-Green Deployment のメリットとしては、下記のものが考えられます。</p>
+<ul>
+<li>リリース時のダウンタイムがほぼゼロ</li>
+<li>本番公開する前に稼働中の環境と同等の環境でしっかりと事前検証できる</li>
+<li>万が一不具合などが発覚しても切り戻しが簡単</li>
+</ul>
+<h3 id="デメリット"><a href="#デメリット" class="headerlink" title="デメリット"></a>デメリット</h3><p>一方でデメリットとしては、下記のようなものがあります。</p>
+<ul>
+<li>同じような環境を2つ作らないといけないため、手間がかかる</li>
+<li>同じような環境を2つ作るため、コストがかかる</li>
+</ul>
+<h2 id="elastic-beanstalk-でやってみる"><a href="#Elastic-Beanstalk-でやってみる" class="headerlink" title="Elastic Beanstalk でやってみる"></a>Elastic Beanstalk でやってみる</h2><p>「同じような環境を2つ作らないといけないため、手間がかかる」として、デメリットの中で記載しましたが、Elastic Beanstalkを使うとAWSインフラをあまり意識しなくてもサクッと作れてしまうので、インフラの構築が苦手、という方にとっては、重宝するかと思います。  </p>
+<h3 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h3><p>今回は<a href="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/RelatedResources.html" target="_blank" rel="noopener">AWS公式ページ</a>のDocker用のサンプルアプリを使用しました。</p>
+<ul>
+<li><a href="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/samples/docker.zip" target="_blank" rel="noopener">ダウンロードURL</a></li>
+</ul>
+<h3 id="elastic-beanstalk-cli-インストール"><a href="#Elastic-Beanstalk-CLI-インストール" class="headerlink" title="Elastic Beanstalk CLI インストール"></a>Elastic Beanstalk CLI インストール</h3><p>Elastic Beanstalk CLIのインストールは、<a href="https://github.com/aws/aws-elastic-beanstalk-cli-setup" target="_blank" rel="noopener">こちらのページ</a>や<a href="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install-advanced.html" target="_blank" rel="noopener">こちらのぺーじ</a>を参考に行います。  </p>
+<p>個人的には環境に依存しない形で使えるのが好きなので、 <code>Dockerfile</code> と <code>docker-compose.yml</code> を用意して、Docker環境にインストールを行いました。<br>以下は、Dockerを使う際のインストール方法ですが、お好みの方法でインストールしてみてください。</p>
+<p>【<code>Dockerfile</code>】</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">FROM alpine:latest</span><br><span class="line"></span><br><span class="line">RUN apk add --no-cache make g++ libffi-dev openssl-dev python3 py3-pip python3-dev git &amp;&amp; \</span><br><span class="line">    pip3 install --upgrade --ignore-installed awsebcli</span><br><span class="line"></span><br><span class="line">VOLUME /app</span><br><span class="line">WORKDIR /app</span><br><span class="line">ENTRYPOINT [&quot;eb&quot;]</span><br></pre></td></tr></table></figure>
+<p>【<code>docker-compose.yml</code>】</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">version: &quot;3.8&quot;</span><br><span class="line">services:</span><br><span class="line">  eb:</span><br><span class="line">    build:</span><br><span class="line">      context: ./</span><br><span class="line">      dockerfile: ./Dockerfile</span><br><span class="line">    volumes:</span><br><span class="line">      - .:/app</span><br><span class="line">    env_file:</span><br><span class="line">      - .env</span><br></pre></td></tr></table></figure>
+<p><code>.env</code> ファイルに、 <code>AWS_ACCESS_KEY_ID</code> や <code>AWS_SECRET_ACCESS_KEY</code> を下記のように書いておき、</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">AWS_ACCESS_KEY_ID=AKIAJOUAASEXAMPLE</span><br><span class="line">AWS_SECRET_ACCESS_KEY=5ZRIrtTM4ciIAvd4EXAMPLEDtm+PiPSzpoK</span><br></pre></td></tr></table></figure>
+<p><code>docker-compose build</code> コマンドでDockerのビルドをします。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker-compose build</span><br></pre></td></tr></table></figure>
+<p><code>eb</code> コマンドを実行する際には、 <code>docker-compose run eb xxx</code> で実行できます。</p>
+<p>【<code>eb init</code> を実行したい際の例】</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker-compose run eb init</span><br></pre></td></tr></table></figure>
+<h3 id="elastic-beanstalk-初期設定"><a href="#Elastic-Beanstalk-初期設定" class="headerlink" title="Elastic Beanstalk 初期設定"></a>Elastic Beanstalk 初期設定</h3><p>まず始めに <code>eb init</code> を実行して、Elastic Beanstalkの初期設定を行います。<br>リージョンを聞かれるので、東京リージョンである <code>9</code> を入力します。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">$ eb init</span><br><span class="line"></span><br><span class="line">Select a default region</span><br><span class="line">1) us-east-1 : US East (N. Virginia)</span><br><span class="line">2) us-west-1 : US West (N. California)</span><br><span class="line">3) us-west-2 : US West (Oregon)</span><br><span class="line">4) eu-west-1 : EU (Ireland)</span><br><span class="line">5) eu-central-1 : EU (Frankfurt)</span><br><span class="line">6) ap-south-1 : Asia Pacific (Mumbai)</span><br><span class="line">7) ap-southeast-1 : Asia Pacific (Singapore)</span><br><span class="line">8) ap-southeast-2 : Asia Pacific (Sydney)</span><br><span class="line">9) ap-northeast-1 : Asia Pacific (Tokyo)</span><br><span class="line">10) ap-northeast-2 : Asia Pacific (Seoul)</span><br><span class="line">11) sa-east-1 : South America (Sao Paulo)</span><br><span class="line">12) cn-north-1 : China (Beijing)</span><br><span class="line">13) cn-northwest-1 : China (Ningxia)</span><br><span class="line">14) us-east-2 : US East (Ohio)</span><br><span class="line">15) ca-central-1 : Canada (Central)</span><br><span class="line">16) eu-west-2 : EU (London)</span><br><span class="line">17) eu-west-3 : EU (Paris)</span><br><span class="line">18) eu-north-1 : EU (Stockholm)</span><br><span class="line">19) eu-south-1 : EU (Milano)</span><br><span class="line">20) ap-east-1 : Asia Pacific (Hong Kong)</span><br><span class="line">21) me-south-1 : Middle East (Bahrain)</span><br><span class="line">22) af-south-1 : Africa (Cape Town)</span><br><span class="line">(default is 3): 9</span><br></pre></td></tr></table></figure>
+<p>リージョンを選択すると、AWSアクセスキーとシークレットキーを聞かれます。<br>適切な権限を持ったIAMユーザーを作成して、アクセスキーとシークレットキーを入力してください。<br>※ 環境変数に設定済みの場合は、聞かれません。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">You have not yet <span class="built_in">set</span> up your credentials or your credentials are incorrect.</span><br><span class="line">You must provide your credentials.</span><br><span class="line">(aws-access-id): AKIAJOUAASEXAMPLE</span><br><span class="line">(aws-secret-key): 5ZRIrtTM4ciIAvd4EXAMPLEDtm+PiPSzpoK</span><br></pre></td></tr></table></figure>
+<p>次に、利用するアプリケーションを聞かれます。<br>何もアプリケーションが無い場合は、 <code>[ Create new Application ]</code> 選択後、アプリケーション名を聞かれるので、入力します。<br>今回は、事前に作成済みの <code>app</code> を利用しました。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Select an application to use</span><br><span class="line">1) app</span><br><span class="line">2) uchiko-test-app</span><br><span class="line">3) lightsail_to_eb</span><br><span class="line">4) Go-Car-API</span><br><span class="line">5) [ Create new Application ]</span><br><span class="line">(default is 1):</span><br></pre></td></tr></table></figure>
+<p>「Dockerを利用しているようですが、正しいですか？」と問われるので、 <code>y</code> と入力します。<br>デフォルト設定の <code>Amazon Linux 2</code> の <code>1</code> を選択しました。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">It appears you are using Docker. Is this correct?</span><br><span class="line">(Y/n): y</span><br><span class="line">Select a platform branch.</span><br><span class="line">1) Docker running on 64bit Amazon Linux 2</span><br><span class="line">2) Multi-container Docker running on 64bit Amazon Linux</span><br><span class="line">3) Docker running on 64bit Amazon Linux</span><br><span class="line">(default is 1):</span><br></pre></td></tr></table></figure>
+<p><code>CodeCommit</code> を利用するか？と聞かれますが、今回は利用しないので <code>n</code> を入力します。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Do you wish to <span class="built_in">continue</span> with CodeCommit? (Y/n): n</span><br></pre></td></tr></table></figure>
+<p>続いて <code>SSH</code> の設定について聞かれます。<br>今回は <code>SSH</code> をする必要は無いので <code>n</code> を入力します。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Do you want to <span class="built_in">set</span> up SSH <span class="keyword">for</span> your instances?</span><br><span class="line">(Y/n): n</span><br></pre></td></tr></table></figure>
+<p>以上で、初期設定は完了です。<br><code>.elasticbeanstalk/</code> ディレクトリ配下に <code>config.yml</code> というファイルができます。<br>これまで入力してきた内容が入っているのが確認できます。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">branch-defaults:</span></span><br><span class="line"><span class="attr">  master:</span></span><br><span class="line"><span class="attr">    environment:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">global:</span></span><br><span class="line"><span class="attr">  application_name:</span> <span class="string">app</span></span><br><span class="line"><span class="attr">  branch:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">  default_ec2_keyname:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">  default_platform:</span> <span class="string">Docker</span> <span class="string">running</span> <span class="string">on</span> <span class="number">64</span><span class="string">bit</span> <span class="string">Amazon</span> <span class="string">Linux</span> <span class="number">2</span></span><br><span class="line"><span class="attr">  default_region:</span> <span class="string">ap-northeast-1</span></span><br><span class="line"><span class="attr">  include_git_submodules:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  instance_profile:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">  platform_name:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">  platform_version:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">  profile:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">  repository:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">  sc:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">  workspace_type:</span> <span class="string">Application</span></span><br></pre></td></tr></table></figure>
+<h3 id="blue環境作成"><a href="#Blue環境作成" class="headerlink" title="Blue環境作成"></a>Blue環境作成</h3><p>次に、 <code>eb create &lt;環境名&gt;</code> を実行し、 Blue環境を作成します。<br>環境名は、 <code>envblue</code> としました。</p>
+<p>分かりやすいように、サンプルアプリケーションの <code>application.py</code> の74行目の <code>background-color</code> を <code>blue</code> 修正しておきます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.textColumn &#123;</span><br><span class="line">  position: absolute;</span><br><span class="line">  top: 0px;</span><br><span class="line">  right: 50%;</span><br><span class="line">  bottom: 0px;</span><br><span class="line">  left: 0px;</span><br><span class="line"></span><br><span class="line">  text-align: right;</span><br><span class="line">  padding-top: 11em;</span><br><span class="line">  background-color: blue; //ここを blue に変更</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>コマンド実行して、環境を作ります。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">$ eb create envblue</span><br><span class="line">Creating application version archive <span class="string">"app-f56a-200820_045534"</span>.</span><br><span class="line">Uploading app/app-f56a-200820_045534.zip to S3. This may take a <span class="keyword">while</span>.</span><br><span class="line">Upload Complete.</span><br><span class="line">Environment details <span class="keyword">for</span>: envblue</span><br><span class="line">  Application name: app</span><br><span class="line">  Region: ap-northeast-1</span><br><span class="line">  Deployed Version: app-f56a-200820_045534</span><br><span class="line">  Environment ID: e-jywrptwt6c</span><br><span class="line">  Platform: arn:aws:elasticbeanstalk:ap-northeast-1::platform/Docker running on 64bit Amazon Linux 2/3.1.0</span><br><span class="line">  Tier: WebServer-Standard-1.0</span><br><span class="line">  CNAME: UNKNOWN</span><br><span class="line">  Updated: 2020-08-20 04:55:37.419000+00:00</span><br><span class="line">Printing Status:</span><br><span class="line">2020-08-20 04:55:36    INFO    createEnvironment is starting.</span><br><span class="line">2020-08-20 04:55:37    INFO    Using elasticbeanstalk-ap-northeast-1-111111111111 as Amazon S3 storage bucket <span class="keyword">for</span> environment data.</span><br><span class="line">2020-08-20 04:55:59    INFO    Created target group named: arn:aws:elasticloadbalancing:ap-northeast-1:111111111111:targetgroup/awseb-AWSEB-AQC6223EWOQ9/0b8483a5d06ccf39</span><br><span class="line">2020-08-20 04:55:59    INFO    Created security group named: sg-0929db6bd29b38a61</span><br><span class="line">2020-08-20 04:56:15    INFO    Created security group named: awseb<span class="_">-e</span>-jywrptwt6c-stack-AWSEBSecurityGroup-S4Y5PPX8II3I</span><br><span class="line">2020-08-20 04:56:15    INFO    Created Auto Scaling launch configuration named: awseb<span class="_">-e</span>-jywrptwt6c-stack-AWSEBAutoScalingLaunchConfiguration-53FXXR9QFA81</span><br><span class="line">2020-08-20 04:57:48    INFO    Created Auto Scaling group named: awseb<span class="_">-e</span>-jywrptwt6c-stack-AWSEBAutoScalingGroup-1CZ9R8SWCCMPT</span><br><span class="line">2020-08-20 04:57:48    INFO    Waiting <span class="keyword">for</span> EC2 instances to launch. This may take a few minutes.</span><br><span class="line">2020-08-20 04:57:48    INFO    Created Auto Scaling group policy named: arn:aws:autoscaling:ap-northeast-1:111111111111:scalingPolicy:2a4a7352-11d2-4104-8edd-46c3e1e5f112:autoScalingGroupName/awseb<span class="_">-e</span>-jywrptwt6c-stack-AWSEBAutoScalingGroup-1CZ9R8SWCCMPT:policyName/awseb<span class="_">-e</span>-jywrptwt6c-stack-AWSEBAutoScalingScaleDownPolicy-1XG7ZR7RYCHLD</span><br><span class="line">2020-08-20 04:57:48    INFO    Created Auto Scaling group policy named: arn:aws:autoscaling:ap-northeast-1:111111111111:scalingPolicy:1e833cea-2056-43ed-ad85-81b4d736e173:autoScalingGroupName/awseb<span class="_">-e</span>-jywrptwt6c-stack-AWSEBAutoScalingGroup-1CZ9R8SWCCMPT:policyName/awseb<span class="_">-e</span>-jywrptwt6c-stack-AWSEBAutoScalingScaleUpPolicy-T2H16EIIX9CY</span><br><span class="line">2020-08-20 04:57:48    INFO    Created CloudWatch alarm named: awseb<span class="_">-e</span>-jywrptwt6c-stack-AWSEBCloudwatchAlarmLow-OOAK208S5O85</span><br><span class="line">2020-08-20 04:57:48    INFO    Created CloudWatch alarm named: awseb<span class="_">-e</span>-jywrptwt6c-stack-AWSEBCloudwatchAlarmHigh-1JYHQZHWCC8CG</span><br><span class="line">2020-08-20 04:58:07    INFO    Created load balancer named: arn:aws:elasticloadbalancing:ap-northeast-1:111111111111:loadbalancer/app/awseb-AWSEB-K7ARO4RZPPFS/132af7e0b271b51e</span><br><span class="line">2020-08-20 04:58:07    INFO    Created Load Balancer listener named: arn:aws:elasticloadbalancing:ap-northeast-1:111111111111:listener/app/awseb-AWSEB-K7ARO4RZPPFS/132af7e0b271b51e/179271fd42db6b0b</span><br><span class="line">2020-08-20 04:59:04    INFO    Instance deployment completed successfully.</span><br><span class="line">2020-08-20 04:59:20    INFO    Application available at envblue.eba-at7th2ac.ap-northeast-1.elasticbeanstalk.com.</span><br><span class="line">2020-08-20 04:59:21    INFO    Successfully launched environment: envblue</span><br></pre></td></tr></table></figure>
+<p>実行ログを見ると、セキュリティーグループの作成や、オートスケーリンググループの作成、EC2インスタンスの作成、CloudWatch Alarmの作成、ロードバランサーの作成などが行われていることが確認できます。<br>コマンド一発で、いい感じに作成してくれるので、AWSインフラの知識がない人でも楽ちんです。  </p>
+<p>作成完了後に、ステータスを確認します。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ eb status envblue</span><br><span class="line">Environment details <span class="keyword">for</span>: envblue</span><br><span class="line">  Application name: app</span><br><span class="line">  Region: ap-northeast-1</span><br><span class="line">  Deployed Version: app-f56a-200820_045534</span><br><span class="line">  Environment ID: e-jywrptwt6c</span><br><span class="line">  Platform: arn:aws:elasticbeanstalk:ap-northeast-1::platform/Docker running on 64bit Amazon Linux 2/3.1.0</span><br><span class="line">  Tier: WebServer-Standard-1.0</span><br><span class="line">  CNAME: envblue.eba-at7th2ac.ap-northeast-1.elasticbeanstalk.com</span><br><span class="line">  Updated: 2020-08-20 04:59:21.579000+00:00</span><br><span class="line">  Status: Ready</span><br><span class="line">  Health: Green</span><br></pre></td></tr></table></figure>
+<p>CNAMEの項目で出力されている <code>http://envblue.eba-at7th2ac.ap-northeast-1.elasticbeanstalk.com</code> にブラウザからアクセスしてみると、</p>
+<p><img src="/images/blue_green_deployment_eb_cli/envblue01.png" alt=""></p>
+<p>サンプルアプリケーションの画面が表示されることが確認できます。</p>
+<h3 id="green環境作成"><a href="#Green環境作成" class="headerlink" title="Green環境作成"></a>Green環境作成</h3><p>次に、同じようにGreen環境を作成していきます。<br>名前は <code>envgreen</code> としました。</p>
+<p>分かりやすいように、先ほどと同様にサンプルアプリケーションの <code>application.py</code> の74行目の <code>background-color</code> を <code>green</code> 修正しておきます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.textColumn &#123;</span><br><span class="line">  position: absolute;</span><br><span class="line">  top: 0px;</span><br><span class="line">  right: 50%;</span><br><span class="line">  bottom: 0px;</span><br><span class="line">  left: 0px;</span><br><span class="line"></span><br><span class="line">  text-align: right;</span><br><span class="line">  padding-top: 11em;</span><br><span class="line">  background-color: green; //ここを green に変更</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>コマンド実行して、環境を作ります。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">$ eb create envgreen</span><br><span class="line">Creating application version archive <span class="string">"app-f56a-200820_050403"</span>.</span><br><span class="line">Uploading app/app-f56a-200820_050403.zip to S3. This may take a <span class="keyword">while</span>.</span><br><span class="line">Upload Complete.</span><br><span class="line">Environment details <span class="keyword">for</span>: envgreen</span><br><span class="line">  Application name: app</span><br><span class="line">  Region: ap-northeast-1</span><br><span class="line">  Deployed Version: app-f56a-200820_050403</span><br><span class="line">  Environment ID: e-u6j7ubnf56</span><br><span class="line">  Platform: arn:aws:elasticbeanstalk:ap-northeast-1::platform/Docker running on 64bit Amazon Linux 2/3.1.0</span><br><span class="line">  Tier: WebServer-Standard-1.0</span><br><span class="line">  CNAME: UNKNOWN</span><br><span class="line">  Updated: 2020-08-20 05:04:07.009000+00:00</span><br><span class="line">Printing Status:</span><br><span class="line">2020-08-20 05:04:05    INFO    createEnvironment is starting.</span><br><span class="line">2020-08-20 05:04:07    INFO    Using elasticbeanstalk-ap-northeast-1-111111111111 as Amazon S3 storage bucket <span class="keyword">for</span> environment data.</span><br><span class="line">2020-08-20 05:04:28    INFO    Created target group named: arn:aws:elasticloadbalancing:ap-northeast-1:111111111111:targetgroup/awseb-AWSEB-19G3AMQDOPOMM/63866529b59c2db4</span><br><span class="line">2020-08-20 05:04:29    INFO    Created security group named: sg-0a29b375fef10adce</span><br><span class="line">2020-08-20 05:04:44    INFO    Created security group named: awseb<span class="_">-e</span>-u6j7ubnf56-stack-AWSEBSecurityGroup-1MR72ZIN6S1G6</span><br><span class="line">2020-08-20 05:04:44    INFO    Created Auto Scaling launch configuration named: awseb<span class="_">-e</span>-u6j7ubnf56-stack-AWSEBAutoScalingLaunchConfiguration-C6CT6HF14TH5</span><br><span class="line">2020-08-20 05:05:46    INFO    Created Auto Scaling group named: awseb<span class="_">-e</span>-u6j7ubnf56-stack-AWSEBAutoScalingGroup-94SRCJPFN5F9</span><br><span class="line">2020-08-20 05:05:46    INFO    Waiting <span class="keyword">for</span> EC2 instances to launch. This may take a few minutes.</span><br><span class="line">2020-08-20 05:05:46    INFO    Created Auto Scaling group policy named: arn:aws:autoscaling:ap-northeast-1:111111111111:scalingPolicy:f2d0c1fc-e96d-41d6-a20c-9e791c2b7166:autoScalingGroupName/awseb<span class="_">-e</span>-u6j7ubnf56-stack-AWSEBAutoScalingGroup-94SRCJPFN5F9:policyName/awseb<span class="_">-e</span>-u6j7ubnf56-stack-AWSEBAutoScalingScaleUpPolicy-1WWHVFHUA9ATS</span><br><span class="line">2020-08-20 05:05:46    INFO    Created Auto Scaling group policy named: arn:aws:autoscaling:ap-northeast-1:111111111111:scalingPolicy:49c8098c-495d-455f-bf0a-63472593f645:autoScalingGroupName/awseb<span class="_">-e</span>-u6j7ubnf56-stack-AWSEBAutoScalingGroup-94SRCJPFN5F9:policyName/awseb<span class="_">-e</span>-u6j7ubnf56-stack-AWSEBAutoScalingScaleDownPolicy-4AUHRB0KFKGU</span><br><span class="line">2020-08-20 05:06:02    INFO    Created CloudWatch alarm named: awseb<span class="_">-e</span>-u6j7ubnf56-stack-AWSEBCloudwatchAlarmHigh-149KK1O2VXJXG</span><br><span class="line">2020-08-20 05:06:02    INFO    Created CloudWatch alarm named: awseb<span class="_">-e</span>-u6j7ubnf56-stack-AWSEBCloudwatchAlarmLow-GKTVA8SZ66O6</span><br><span class="line">2020-08-20 05:06:37    INFO    Created load balancer named: arn:aws:elasticloadbalancing:ap-northeast-1:111111111111:loadbalancer/app/awseb-AWSEB-9QSDBBY8XY1A/10604c0117039c7e</span><br><span class="line">2020-08-20 05:06:52    INFO    Created Load Balancer listener named: arn:aws:elasticloadbalancing:ap-northeast-1:111111111111:listener/app/awseb-AWSEB-9QSDBBY8XY1A/10604c0117039c7e/02dde44d0da6f440</span><br><span class="line">2020-08-20 05:07:35    INFO    Instance deployment completed successfully.</span><br><span class="line">2020-08-20 05:07:41    INFO    Application available at envgreen.eba-at7th2ac.ap-northeast-1.elasticbeanstalk.com.</span><br><span class="line">2020-08-20 05:07:41    INFO    Successfully launched environment: envgreen</span><br></pre></td></tr></table></figure>
+<p>環境作成後に、ステータスを確認します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ eb status envgreen</span><br><span class="line">Environment details for: envgreen</span><br><span class="line">  Application name: app</span><br><span class="line">  Region: ap-northeast-1</span><br><span class="line">  Deployed Version: app-f56a-200820_050403</span><br><span class="line">  Environment ID: e-u6j7ubnf56</span><br><span class="line">  Platform: arn:aws:elasticbeanstalk:ap-northeast-1::platform/Docker running on 64bit Amazon Linux 2/3.1.0</span><br><span class="line">  Tier: WebServer-Standard-1.0</span><br><span class="line">  CNAME: envgreen.eba-at7th2ac.ap-northeast-1.elasticbeanstalk.com</span><br><span class="line">  Updated: 2020-08-20 05:07:41.383000+00:00</span><br><span class="line">  Status: Ready</span><br><span class="line">  Health: Green</span><br></pre></td></tr></table></figure>
+<p>こちらもCNAMEの項目で表示されている <code>http://envgreen.eba-at7th2ac.ap-northeast-1.elasticbeanstalk.com</code> にブラウザからアクセスしてみると、</p>
+<p><img src="/images/blue_green_deployment_eb_cli/envgreen01.png" alt=""></p>
+<p>背景が緑になったサンプルアプリケーションが確認できます。</p>
+<h3 id="route53にレコードを追加する"><a href="#Route53にレコードを追加する" class="headerlink" title="Route53にレコードを追加する"></a>Route53にレコードを追加する</h3><p>サービスURLとして分かりやすいように <code>Route53</code> にレコードを追加してみます。<br>今回は、 <code>ebapp.test.mmmcorp.co.jp</code> にしました。<br>ALIAS として、先程作成したBlue環境のCNAME <code>envblue.eba-at7th2ac.ap-northeast-1.elasticbeanstalk.com</code> を設定します。  </p>
+<p><img src="/images/blue_green_deployment_eb_cli/route53.png" alt=""></p>
+<p><code>http://ebapp.test.mmmcorp.co.jp</code> にアクセスしてみると</p>
+<p><img src="/images/blue_green_deployment_eb_cli/ebapp.png" alt=""></p>
+<p>想定通りBlue環境へアクセスが行っていることがわかります。</p>
+<h3 id="cname-を切り替える"><a href="#CNAME-を切り替える" class="headerlink" title="CNAME を切り替える"></a>CNAME を切り替える</h3><p>この状態で、 <code>eb swap</code> コマンドで2つの環境のCNAMEを入れ替えます。<br>まずは、ステータス確認から。<br>Blue環境のCNAMEは、下記のとおりになっています。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ eb status envblue</span><br><span class="line">Environment details <span class="keyword">for</span>: envblue</span><br><span class="line">  (略)</span><br><span class="line">  CNAME: envblue.eba-at7th2ac.ap-northeast-1.elasticbeanstalk.com</span><br><span class="line">  (略)</span><br></pre></td></tr></table></figure>
+<p>これを <code>eb swap</code> で切り替えます。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ eb swap --destination_name envgreen</span><br><span class="line">2020-08-20 05:48:33    INFO    swapEnvironmentCNAMEs is starting.</span><br><span class="line">2020-08-20 05:48:34    INFO    Swapping CNAMEs <span class="keyword">for</span> environments <span class="string">'envblue'</span> and <span class="string">'envgreen'</span>.</span><br><span class="line">2020-08-20 05:48:39    INFO    <span class="string">'envgreen.eba-at7th2ac.ap-northeast-1.elasticbeanstalk.com'</span> now points to <span class="string">'awseb-AWSEB-K7ARO4RZPPFS-554919051.ap-northeast-1.elb.amazonaws.com'</span>.</span><br><span class="line">2020-08-20 05:48:39    INFO    Completed swapping CNAMEs <span class="keyword">for</span> environments <span class="string">'envblue'</span> and <span class="string">'envgreen'</span>.</span><br></pre></td></tr></table></figure>
+<p>コマンド実行が完了した後に、ステータスを確認すると、</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ eb status envblue</span><br><span class="line">Environment details <span class="keyword">for</span>: envblue</span><br><span class="line">  (略)</span><br><span class="line">  CNAME: envgreen.eba-at7th2ac.ap-northeast-1.elasticbeanstalk.com</span><br><span class="line">  (略)</span><br></pre></td></tr></table></figure>
+<p>Blue環境のCNAMEが Green環境のCNAMEになっていることが確認できます。<br>さらにその状態で、Green環境のステータスを確認すると、</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ eb status envgreen</span><br><span class="line">Environment details <span class="keyword">for</span>: envgreen</span><br><span class="line">  (略)</span><br><span class="line">  CNAME: envblue.eba-at7th2ac.ap-northeast-1.elasticbeanstalk.com</span><br><span class="line">  (略)</span><br></pre></td></tr></table></figure>
+<p>CNAMEがBlue環境のものに入れ替わっており、サービスURLの <code>http://ebapp.test.mmmcorp.co.jp/</code> にアクセスすると、</p>
+<p><img src="/images/blue_green_deployment_eb_cli/ebapp1.png" alt=""></p>
+<p>Green環境のアプリケーションが表示されていることが確認できました。<br>リリース後に何か不具合が発覚して、アプリケーションを切り戻したい、という場合は同じように <code>eb swap</code> コマンドでCNAMEを入れ替えるだけで実現できます。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>以上、今回はBlue-Green DeploymentをElastic Beanstalkでやってみました。<br>弊社では、マイクロサービスや複雑なカスタマイズが要件上発生する(見込まれる)システムの開発を請け負うことが多く、コードベースの管理コスト・複雑性の観点からElastic Beanstalkをあまり利用しません。<br>とはいえ、比較的シンプルなAWSインフラで問題ない場合や、AWSインフラをあまり考えたくない場合、AWSインフラの複雑な管理をしたくない場合には、Elastic Beanstalkを採用することで、簡単にBlue-Green Deploymentが行えるので一考の余地ありだとは思います。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://aws.amazon.com/jp/quickstart/architecture/blue-green-deployment/" target="_blank" rel="noopener">AWS のブルー/グリーンデプロイ</a></li>
+<li><a href="https://aws.amazon.com/jp/blogs/startups/how-to-use-blue-green-deployement-on-aws/" target="_blank" rel="noopener">Upgrades Without Tears Part 1: An Introduction to Blue/Green Deployment on AWS | AWS Startups Blog</a></li>
+<li><a href="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb3-cmd-commands.html" target="_blank" rel="noopener">EB CLI command reference - AWS Elastic Beanstalk</a></li>
+<li><a href="https://www.publickey1.jp/blog/14/blue-green_deployment.html" target="_blank" rel="noopener">「Blue-Green Deployment」とは何か、マーチン・ファウラー氏の解説 － Publickey</a></li>
+<li><a href="https://www.casleyconsulting.co.jp/blog/engineer/246/" target="_blank" rel="noopener">AWSでブルーグリーンデプロイを実践してみた | キャスレーコンサルティング株式会社</a></li>
+<li><a href="https://tech-lab.sios.jp/archives/17471" target="_blank" rel="noopener">AWS Elastic BeanstalkでBlue-Green Deployment | SIOS Tech. Lab</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/08/20/blue_green_deployment_eb_cli/" data-text="AWS Elastic Beanstalkを使ったBlue-Green Deployment" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/08/20/blue_green_deployment_eb_cli/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/08/20/blue_green_deployment_eb_cli/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/08/20/blue_green_deployment_eb_cli/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/08/20/blue_green_deployment_eb_cli/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS Elastic Beanstalkを使ったBlue-Green Deployment" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/インフラ/">インフラ</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーサイド/">サーバーサイド</a></li></ul>
+
+
+      <p class="article-footer__author">by 佐々木 悠人</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

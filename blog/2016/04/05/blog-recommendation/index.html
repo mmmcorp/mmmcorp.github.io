@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>ブログの類似記事レコメンドエンジンを作ってみた | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="新年度一発目の記事を担当します。伊藤です！今年度からは機械学習を使った行動ログの解析を行うなど、リサーチエンジニア的な仕事も頑張ります！ 背景MMMブログでは、ブログ検索で2015年を振り返る に書かれているように3ヶ月前にブログ内検索の機能が実装され、気になる記事を簡単に探せるようになりました。毎週2本ずつ投稿されるこのブログではこの記事を含めて160本があり、検索機能なしでは読みたい記事を探す">
+<meta name="keywords" content="プログラミング,レコメンド,機械学習,TF-IDF">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ブログの類似記事レコメンドエンジンを作ってみた">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2016/04/05/blog-recommendation/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="新年度一発目の記事を担当します。伊藤です！今年度からは機械学習を使った行動ログの解析を行うなど、リサーチエンジニア的な仕事も頑張ります！ 背景MMMブログでは、ブログ検索で2015年を振り返る に書かれているように3ヶ月前にブログ内検索の機能が実装され、気になる記事を簡単に探せるようになりました。毎週2本ずつ投稿されるこのブログではこの記事を含めて160本があり、検索機能なしでは読みたい記事を探す">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/blog_recommend/architecture.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.138Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ブログの類似記事レコメンドエンジンを作ってみた">
+<meta name="twitter:description" content="新年度一発目の記事を担当します。伊藤です！今年度からは機械学習を使った行動ログの解析を行うなど、リサーチエンジニア的な仕事も頑張ります！ 背景MMMブログでは、ブログ検索で2015年を振り返る に書かれているように3ヶ月前にブログ内検索の機能が実装され、気になる記事を簡単に探せるようになりました。毎週2本ずつ投稿されるこのブログではこの記事を含めて160本があり、検索機能なしでは読みたい記事を探す">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/blog_recommend/architecture.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-blog-recommend" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2016-04-05T17:24:06.000Z" itemprop="datePublished">2016-04-05</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2016/04/05/blog-recommendation/">ブログの類似記事レコメンドエンジンを作ってみた</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/04/05/blog-recommendation/" data-text="ブログの類似記事レコメンドエンジンを作ってみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/04/05/blog-recommendation/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/04/05/blog-recommendation/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/04/05/blog-recommendation/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/04/05/blog-recommendation/" class="hatena-bookmark-button" data-hatena-bookmark-title="ブログの類似記事レコメンドエンジンを作ってみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>新年度一発目の記事を担当します。伊藤です！<br>今年度からは機械学習を使った行動ログの解析を行うなど、リサーチエンジニア的な仕事も頑張ります！</p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>MMMブログでは、<a href="http://blog.mmmcorp.co.jp/blog/2016/01/13/blog-search/">ブログ検索で2015年を振り返る</a> に書かれているように3ヶ月前にブログ内検索の機能が実装され、気になる記事を簡単に探せるようになりました。毎週2本ずつ投稿されるこのブログではこの記事を含めて160本があり、検索機能なしでは読みたい記事を探すのが難しい規模であるため、これは大変嬉しい機能追加でした。<br>しかし、一方 <strong>検索</strong> は検索する適切なキーワードを自分で考えるという能動的な行動が必要となり、若干ハードルが高いものでもあります。もっと気軽にいろいろな記事を読み漁って欲しいという思いもあり、類似記事をレコメンドするシステムを作ってみました。</p>
+<p>なお、レコメンドエンジンの実装はすでに完了していますが、レコメンドの精度を含めて現在社内レビューの段階にあり、本当に機能追加されるかはまだ未定です！笑</p>
+<h2 id="アルゴリズム概要"><a href="#アルゴリズム概要" class="headerlink" title="アルゴリズム概要"></a>アルゴリズム概要</h2><p>文章間の類似度計算に一般的に使われる手法を用いており、特に複雑なことはしていません。ブログ記事内の文章を MeCab を使い形態素解析を行い、その後 TF-IDF で単語の特徴ベクトルを計算します。最後に記事間の類似度を、TF-IDF の特徴ベクトルのコサイン類似度を用いて判断します。</p>
+<p>以下でもう少し細かく処理の説明をします。</p>
+<h3 id="手順1-マークダウンで書かれた記事のクリーニング"><a href="#手順1-マークダウンで書かれた記事のクリーニング" class="headerlink" title="手順1 マークダウンで書かれた記事のクリーニング"></a>手順1 マークダウンで書かれた記事のクリーニング</h3><p>このブログ記事はマークダウン記法で書かれているため、形態素解析を行う前に余分な記号を取り除く前処理が必要です。<br>例えば、この記事の先頭部分は以下のように書かれています。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: &apos;ブログの類似記事レコメンドエンジンを作ってみた&apos;</span><br><span class="line">date: 2016-04-05 17:24:06</span><br><span class="line">tags:</span><br><span class="line">  - レコメンド</span><br><span class="line">  - 機械学習</span><br><span class="line">  - TF-IDF</span><br><span class="line">id: blog-recommendation</span><br><span class="line">author: 伊藤 勝梧</span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">新年度一発目の記事を担当します。伊藤です！</span><br><span class="line">今年度からは機械学習を使った行動ログの解析を行うなど、リサーチエンジニア的な仕事も頑張ります！</span><br><span class="line"></span><br><span class="line">## 背景</span><br><span class="line"></span><br><span class="line">MMMブログでは、[ブログ検索で2015年を振り返る](http://blog.mmmcorp.co.jp/blog/2016/01/13/blog-search/) に書かれているように3ヶ月前にブログ内検索の機能が実装され、気になる記事を簡単に探せるようになりました。</span><br></pre></td></tr></table></figure></p>
+<p><code>---</code> に囲まれた部分はこの記事のメタ情報が YAML 形式で記述されており、その後にマークダウン記法での文章が続きます。<br>これに対してクリーニングを行い、以下のようにします。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">新年度一発目の記事を担当します。伊藤です！</span><br><span class="line">今年度からは機械学習を使った行動ログの解析を行うなど、リサーチエンジニア的な仕事も頑張ります！</span><br><span class="line"></span><br><span class="line">背景</span><br><span class="line"></span><br><span class="line">MMMブログでは、 ブログ検索で2015年を振り返る に書かれているように3ヶ月前にブログ内検索の機能が実装され、気になる記事を簡単に探せるようになりました。</span><br></pre></td></tr></table></figure></p>
+<p>メタ情報部分や <code>##</code>, <code>[]()</code> などのマークダウン記法を除外し、文章の文字列のみにします。</p>
+<h3 id="手順2-形態素解析"><a href="#手順2-形態素解析" class="headerlink" title="手順2 形態素解析"></a>手順2 形態素解析</h3><p>アルゴリズムの概要でも説明したとおり、MeCab を使用しています。標準の辞書では <code>リモートワーク</code> が <code>リモート</code> と <code>ワーク</code> に分割されてしまったり、 <code>E2Eテスト</code> が <code>E</code> <code>2</code> <code>E</code> <code>テスト</code> とバラバラになってしまうので、それらを正しく解析できるようにユーザ辞書を作成しました。と言ってもすべてのIT/ソフトウェア系の単語を救うのは不可能なので、解析した結果を自分の目で確認して、これはマズイな…と思う単語だけをピックアップして登録しました。<br>文章の類似度を計算するときには名詞だけを用いるのが一般的だと思いますので、今回もそのようにしています。ただ、 品詞が名詞の単語すべてを使用した場合にあまり精度が良くなかったため、品詞細分類が <code>一般</code> と <code>固有名詞</code> のものだけを抽出するようにしました。</p>
+<h3 id="手順3-tf-idf法"><a href="#手順3-TF-IDF法" class="headerlink" title="手順3 TF-IDF法"></a>手順3 TF-IDF法</h3><p>TF-IDF による単語の特徴ベクトル計算には <a href="https://github.com/kyow/tfidf_ja" target="_blank" rel="noopener">kyow/tfidf_ja</a> のライブラリを使用しています。<a href="https://github.com/kyow/tfidf_ja/blob/master/README.rdoc" target="_blank" rel="noopener">README</a> を読むと</p>
+<blockquote>
+<p>・IDF辞書<br>IPADIC辞書に収録されている日本語の形態素(約32万語)を使用し、TF値をYahoo!のインデックス数としてあらかじめ算出。</p>
+</blockquote>
+<p>と書かれています。<code>TF値をYahoo!のインデックス数としてあらかじめ算出。</code> の部分がよく理解できませんでしたが、一般的な文章における単語の出現頻度を IDF 辞書として持っているのだとなんとなく解釈しました。ブログ内の記事だけを用いて IDF を計算すると、記事自体が少なく学習量が不十分なため <a href="https://github.com/kyow/tfidf_ja" target="_blank" rel="noopener">kyow/tfidf_ja</a> の IDF 辞書を使うよりも精度が悪くなってしまいました。</p>
+<p>ちなみに先程から <code>精度が悪い</code> という言葉がでてきますが、なにか客観的な指標を用いて判断しているわけではなく、類似度の高い記事の良し悪しを私の主観で判断しているだけです。</p>
+<h3 id="手順4-レコメンド"><a href="#手順4-レコメンド" class="headerlink" title="手順4 レコメンド"></a>手順4 レコメンド</h3><p>記事毎に TF-IDF で算出した単語の特徴ベクトルのコサイン類似度を計算して、記事間の類似度を判断します。コサイン類似度の値が大きければ類似度が高いといえるので、その値が大きいものを類似する記事として推薦します。</p>
+<h2 id="レコメンドの精度"><a href="#レコメンドの精度" class="headerlink" title="レコメンドの精度"></a>レコメンドの精度</h2><p>説明したアルゴリズムで算出した結果の一部をお見せします。2015年5月22日から6月3日に投稿された4つの記事と、それに類似度が高い記事3つです。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">・ここ数年前から2015までのモダンフロントエンドを総まとめしてみた</span><br><span class="line">	1. JavaScriptにどのようなビジネス的メリットがあるか</span><br><span class="line">	2. 最近気になったGithub JavaScriptトレンド7選（2015年6月編）</span><br><span class="line">	3. okpの2015年振り返りと目標</span><br><span class="line"></span><br><span class="line">・オフィスでリモートワーク</span><br><span class="line">	1. リモートで業務をする上で重要な3つのこと</span><br><span class="line">	2. リモートワーカーが気をつけたい運動不足と対策いろいろ</span><br><span class="line">	3. 日本のチームとリモートワークをした話@シリコンバレー</span><br><span class="line"></span><br><span class="line">・受託開発において大切にしている3つのこと</span><br><span class="line">	1. 開発プロジェクトで利用しているタスク管理ツールについて</span><br><span class="line">	2. DDD Alliance!に参加して感じたソフトウェア設計と組織のあり方</span><br><span class="line">	3. チーム開発に必要な HRT</span><br><span class="line"></span><br><span class="line">・Ruby on Railsのテストコード実装方針を考えた</span><br><span class="line">	1. Ruby on Rails で Web API のパラメータをバリデーションする</span><br><span class="line">	2. 開発用モックデータの作成方法で試行錯誤した</span><br><span class="line">	3. Rails開発で使っているオススメgemを5個(-1個)紹介します</span><br></pre></td></tr></table></figure>
+<p>個人的には良い結果がでているのではないかと思うのですが、いかがでしょうか。<br>タイトルだけの判断になりますが、一番上の例では、<code>フロントエンドを総まとめ</code> に対して <code>JavaScript</code> 関連の記事が出ているのと、弊社フロントエンドチームのokpの記事が推薦されています。<br>その他の記事でどの程度の精度が出ているかは、実際にレコメンド機能が追加されてからのお楽しみということで…！</p>
+<h2 id="アーキテクチャ"><a href="#アーキテクチャ" class="headerlink" title="アーキテクチャ"></a>アーキテクチャ</h2><p>最後に、このレコメンドエンジンのアーキテクチャがどのようになっているかを説明します。簡単に概念図を書いてみました。実際には EC2 の前に ELB がいたり、EC2 は複数 AZ で冗長化されていたり…ですが、そのあたりは重要ではないので端折ってあります。<br><img src="/images/blog_recommend/architecture.png" alt=""><br>ブログ記事を書いて Bitbucket のレポジトリにプッシュすると、Webhook でレコメンドエンジンの API を叩きます。するとレコメンドエンジンは Bitbucket のブログ記事レポジトリを <code>git pull</code> して最新の記事を取り込んで解析し、既存の記事との類似度を計算した後、結果を DynamoDB に保存します。RDS を使わないで DynamoDB を使っている理由は特にないのですが、強いて言えば個人的に使ったことがなかったので練習で使ってみたかったことと、RDS を1台立てるよりは若干コストが低いかなと思うことの2点です。<br>新規記事の類似度計算バッチ処理はだいたい10~15秒程度で終わるため、別フローで走るブログのデプロイ処理が終わるよりも先に完了し、ブログが公開されるまでには類似度計算もバッチリ終わっている <strong>想定</strong> です。(未検証)</p>
+<h2 id="来週中にデプロイされる"><a href="#来週中にデプロイされる…？" class="headerlink" title="来週中にデプロイされる…？"></a>来週中にデプロイされる…？</h2><p>順調に行けば来週中ぐらいに社内レビューを通り、レコメンド機能がデプロイされるかと思いますので、ご期待ください！！</p>
+<p><a href="https://mmmcorp.co.jp/services/entrusted_development/" target="_blank" rel="noopener">ビジネスを進化させるレコメンドシステムの開発</a>をご希望の企業様は、是非MMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/04/05/blog-recommendation/" data-text="ブログの類似記事レコメンドエンジンを作ってみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/04/05/blog-recommendation/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/04/05/blog-recommendation/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/04/05/blog-recommendation/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/04/05/blog-recommendation/" class="hatena-bookmark-button" data-hatena-bookmark-title="ブログの類似記事レコメンドエンジンを作ってみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TF-IDF/">TF-IDF</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/プログラミング/">プログラミング</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/レコメンド/">レコメンド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/機械学習/">機械学習</a></li></ul>
+
+
+      <p class="article-footer__author">by 伊藤 勝梧</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

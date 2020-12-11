@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AWS SAMとGo言語で体感するサーバーレス開発 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="今回はAWS SAMを使用してサーバーレスアプリケーションを構築していきます。 API GatewayをトリガーとしてLambda関数が発火するという非常にシンプルな内容です。そのためサーバーレス開発のイメージを掴みやすいのではないかと思います。 AWS SAMとはAWS SAM(Serverless Application Model)とは、AWS上にサーバーレスアプリケーションを構築することが">
+<meta name="keywords" content="AWS,サーバーレス">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWS SAMとGo言語で体感するサーバーレス開発">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/01/19/aws-sam-golang/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="今回はAWS SAMを使用してサーバーレスアプリケーションを構築していきます。 API GatewayをトリガーとしてLambda関数が発火するという非常にシンプルな内容です。そのためサーバーレス開発のイメージを掴みやすいのではないかと思います。 AWS SAMとはAWS SAM(Serverless Application Model)とは、AWS上にサーバーレスアプリケーションを構築することが">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.162Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AWS SAMとGo言語で体感するサーバーレス開発">
+<meta name="twitter:description" content="今回はAWS SAMを使用してサーバーレスアプリケーションを構築していきます。 API GatewayをトリガーとしてLambda関数が発火するという非常にシンプルな内容です。そのためサーバーレス開発のイメージを掴みやすいのではないかと思います。 AWS SAMとはAWS SAM(Serverless Application Model)とは、AWS上にサーバーレスアプリケーションを構築することが">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-aws-sam-golang" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-01-19T21:32:20.000Z" itemprop="datePublished">2020-01-19</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/01/19/aws-sam-golang/">AWS SAMとGo言語で体感するサーバーレス開発</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/01/19/aws-sam-golang/" data-text="AWS SAMとGo言語で体感するサーバーレス開発" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/01/19/aws-sam-golang/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/01/19/aws-sam-golang/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/01/19/aws-sam-golang/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/01/19/aws-sam-golang/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS SAMとGo言語で体感するサーバーレス開発" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今回はAWS SAMを使用してサーバーレスアプリケーションを構築していきます。</p>
+<p>API GatewayをトリガーとしてLambda関数が発火するという非常にシンプルな内容です。そのためサーバーレス開発のイメージを掴みやすいのではないかと思います。</p>
+<h2 id="aws-samとは"><a href="#AWS-SAMとは" class="headerlink" title="AWS SAMとは"></a>AWS SAMとは</h2><p>AWS SAM(Serverless Application Model)とは、AWS上にサーバーレスアプリケーションを構築することができるフレームワークです。YAMLまたはJSON形式で構成を記述することができます。</p>
+<p>コマンドラインツールとしてAWS SAM CLIも提供されており、ローカル環境でもLambda関数を実行することができます。</p>
+<h2 id="準備"><a href="#準備" class="headerlink" title="準備"></a>準備</h2><p>AWS CLIとAWS SAM CLIを導入します。pipやbrewといった、お好きなパッケージ管理ツールでインストールしてください。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ pip install awscli</span><br><span class="line">$ pip install aws-sam-cli</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ brew install awscli</span><br><span class="line">$ brew install aws-sam-cli</span><br></pre></td></tr></table></figure>
+<p>AWS CLIで利用するプロファイルも設定しておきましょう。すでに設定済みの場合は不要です。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ aws configure --profile iamSAM</span><br><span class="line">AWS Access Key ID [None]: ******************</span><br><span class="line">AWS Secret Access Key ID [None]: ******************</span><br><span class="line">Default region name [None]: ap-northeast-1</span><br><span class="line">Default output format [None]: json</span><br></pre></td></tr></table></figure>
+<h2 id="サーバーレスアプリケーションのベースを作成"><a href="#サーバーレスアプリケーションのベースを作成" class="headerlink" title="サーバーレスアプリケーションのベースを作成"></a>サーバーレスアプリケーションのベースを作成</h2><p><code>sam init</code> コマンドでサーバーレスアプリケーションの雛形を作成します。</p>
+<p>今回はGoで関数を作成していきます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">$ sam init --runtime go1.x --name aws-sam-golang</span><br><span class="line"></span><br><span class="line">Which template source would you like to use?</span><br><span class="line">	1 - AWS Quick Start Templates</span><br><span class="line">	2 - Custom Template Location</span><br><span class="line">Choice: 1</span><br><span class="line"></span><br><span class="line">Cloning app templates from https://github.com/awslabs/aws-sam-cli-app-templates.git</span><br><span class="line"></span><br><span class="line">-----------------------</span><br><span class="line">Generating application:</span><br><span class="line">-----------------------</span><br><span class="line">Name: aws-sam-golang</span><br><span class="line">Runtime: go1.x</span><br><span class="line">Dependency Manager: mod</span><br><span class="line">Application Template: hello-world</span><br><span class="line">Output Directory: .</span><br><span class="line"></span><br><span class="line">Next steps can be found in the README file at ./aws-sam-golang/README.md</span><br><span class="line"></span><br><span class="line">$ cd aws-sam-golang</span><br><span class="line"></span><br><span class="line">$ tree</span><br><span class="line">.</span><br><span class="line">├── Makefile</span><br><span class="line">├── README.md</span><br><span class="line">├── hello-world</span><br><span class="line">│   ├── main.go</span><br><span class="line">│   └── main_test.go</span><br><span class="line">└── template.yaml</span><br><span class="line"></span><br><span class="line">1 directory, 5 files</span><br></pre></td></tr></table></figure>
+<p><code>hello-world/main.go</code> が、今回のLambda関数の実装を行うファイルです。 <code>template.yaml</code> にはサーバーレスアプリケーションの関数定義が記述されています。</p>
+<p>また、今回はGoのライブラリバージョン管理に<code>Modules</code>を使います。<br><code>Modules</code>については<a href="https://blog.mmmcorp.co.jp/blog/2019/10/10/go-mod/">こちら</a>の記事を御覧ください。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ go mod init</span><br><span class="line">go: creating new go.mod: module hoge/fuga/aws-sam-golang</span><br></pre></td></tr></table></figure>
+<h2 id="雛形の実行テスト"><a href="#雛形の実行テスト" class="headerlink" title="雛形の実行テスト"></a>雛形の実行テスト</h2><p><code>sam local start-api</code> コマンドで、ローカルでもLambda関数を実行することができます(Docker上で動作します)。</p>
+<p>Lambda関数の実行にはバイナリが必要ですので、<code>make</code>コマンドでビルドしましょう。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ make build</span><br><span class="line">GOOS=linux GOARCH=amd64 go build -o hello-world/hello-world ./hello-world</span><br><span class="line"></span><br><span class="line">$ sam local start-api</span><br><span class="line">Mounting HelloWorldFunction at http://127.0.0.1:3000/hello [GET]</span><br><span class="line">You can now browse to the above endpoints to invoke your functions. You do not need to restart/reload SAM CLI while working on your functions, changes will be reflected instantly/automatically. You only need to restart SAM CLI if you update your AWS SAM template</span><br><span class="line">2020-01-19 20:38:36  * Running on http://127.0.0.1:3000/ (Press CTRL+C to quit)</span><br><span class="line">Invoking hello-world (go1.x)</span><br></pre></td></tr></table></figure>
+<p>この状態で、<code>curl</code>コマンドでAPIを叩いてみましょう。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl http://localhost:3000/hello</span><br><span class="line">Hello, 118.***.***.**</span><br></pre></td></tr></table></figure>
+<p>雛形の<code>hello-world/main.go</code>に従い、自分のグローバルIPアドレスが返ってきました。</p>
+<p>SAM Local側では次のようなログが確認できます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Fetching lambci/lambda:go1.x Docker container image......</span><br><span class="line">Mounting /Users/daisakuhazui/develop/aws-sam-golang/hello-world as /var/task:ro,delegated inside runtime container</span><br><span class="line">START RequestId: c0308535-1ed4-15d2-a58d-ff1ac09907ad Version: $LATEST</span><br><span class="line">END RequestId: c0308535-1ed4-15d2-a58d-ff1ac09907ad</span><br><span class="line">REPORT RequestId: c0308535-1ed4-15d2-a58d-ff1ac09907ad	Init Duration: 169.68 ms	Duration: 891.58 ms	Billed Duration: 900 ms	Memory Size: 128 MB	Max Memory Used: 27 MB</span><br><span class="line">No Content-Type given. Defaulting to &apos;application/json&apos;.</span><br><span class="line">2020-01-19 20:38:58 127.0.0.1 - - [19/Jan/2020 20:38:58] &quot;GET /hello HTTP/1.1&quot; 200 -</span><br></pre></td></tr></table></figure>
+<h2 id="lambda関数の修正"><a href="#Lambda関数の修正" class="headerlink" title="Lambda関数の修正"></a>Lambda関数の修正</h2><p>雛形の動作確認が取れたので、次はLambda関数に手を加えましょう。</p>
+<p>先ほど確認した通り、現状のコードは<code>http://localhost:3000/hello</code>へのリクエストに対しIPアドレスを返す実装になっています。</p>
+<p>この実装を<code>http://localhost:3000/hello/{user}</code>に対して<code>Hello, {user}</code>と返すよう、これから修正していきます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">`main.go`</span><br><span class="line"></span><br><span class="line">package main</span><br><span class="line"></span><br><span class="line">(中略)</span><br><span class="line"></span><br><span class="line">func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) &#123;</span><br><span class="line">	user, _ := request.PathParameters[&quot;user&quot;]</span><br><span class="line"></span><br><span class="line">	return events.APIGatewayProxyResponse&#123;</span><br><span class="line">		Body:       fmt.Sprintf(&quot;Hello, %s&quot;, user),</span><br><span class="line">		StatusCode: 200,</span><br><span class="line">	&#125;, nil</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	lambda.Start(handler)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>関数を修正したら<code>template.yaml</code>にも修正が必要です。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">`template.yaml`</span><br><span class="line">AWSTemplateFormatVersion: &apos;2010-09-09&apos;</span><br><span class="line">Transform: AWS::Serverless-2016-10-31</span><br><span class="line">Description: &gt;</span><br><span class="line">  aws-sam-golang</span><br><span class="line"></span><br><span class="line">  Sample SAM Template for aws-sam-golang</span><br><span class="line"></span><br><span class="line">Globals:</span><br><span class="line">  Function:</span><br><span class="line">    Timeout: 5</span><br><span class="line"></span><br><span class="line">Resources:</span><br><span class="line">  HelloWorldFunction:</span><br><span class="line">    Type: AWS::Serverless::Function</span><br><span class="line">    Properties:</span><br><span class="line">      CodeUri: hello-world/</span><br><span class="line">      Handler: hello-world</span><br><span class="line">      Runtime: go1.x</span><br><span class="line">      Tracing: Active</span><br><span class="line">      Events:</span><br><span class="line">        CatchAll:</span><br><span class="line">          Type: Api</span><br><span class="line">          Properties:</span><br><span class="line">            Path: /hello/&#123;user&#125; # パスパラメータをセット</span><br><span class="line">            Method: GET</span><br><span class="line">      Environment:</span><br><span class="line">        Variables:</span><br><span class="line">          PARAM1: VALUE</span><br><span class="line">・</span><br><span class="line">・</span><br><span class="line">・</span><br></pre></td></tr></table></figure>
+<p><code>Type: AWS::Serverless::Function</code>でLambda関数であることを表し、<code>Events</code>配下の<code>CatchAll</code>でAPIの定義を行っています。</p>
+<p>今回はパスパラメータを受け取れるように<code>Path</code>の値を修正しました。</p>
+<h2 id="動作確認"><a href="#動作確認" class="headerlink" title="動作確認"></a>動作確認</h2><p>関数とテンプレートの修正が終わったのでローカルで動作確認していきます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ make build</span><br><span class="line">GOOS=linux GOARCH=amd64 go build -o hello-world/hello-world ./hello-world</span><br><span class="line"></span><br><span class="line">$ sam local start-api</span><br><span class="line">Mounting HelloWorldFunction at http://127.0.0.1:3000/hello/&#123;user&#125; [GET]</span><br><span class="line">You can now browse to the above endpoints to invoke your functions. You do not need to restart/reload SAM CLI while working on your functions, changes will be reflected instantly/automatically. You only need to restart SAM CLI if you update your AWS SAM template</span><br><span class="line">2020-01-19 20:47:07  * Running on http://127.0.0.1:3000/ (Press CTRL+C to quit)</span><br><span class="line">Invoking hello-world (go1.x)</span><br></pre></td></tr></table></figure>
+<p>今度はパスパラメータを与えて<code>curl</code>コマンドを叩いてみましょう。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl http://localhost:3000/hello/Daisaku</span><br><span class="line">Hello, Daisaku</span><br></pre></td></tr></table></figure>
+<p>OKです。想定通りの動きになっています。</p>
+<h2 id="aws上にデプロイ"><a href="#AWS上にデプロイ" class="headerlink" title="AWS上にデプロイ"></a>AWS上にデプロイ</h2><p>ローカルで動作確認を終えたので、実際にAWS上にデプロイしてみましょう。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">$ sam validate --profile iamSAM</span><br><span class="line">/Users/daisakuhazui/develop/aws-sam-golang/template.yaml is a valid SAM Template</span><br><span class="line"></span><br><span class="line">$ sam package \</span><br><span class="line">    --template-file template.yaml \</span><br><span class="line">    --s3-bucket &lt;YOUR BUCKET NAME&gt; \</span><br><span class="line">    --output-template-file packaged.yaml \</span><br><span class="line">    --profile iamSAM</span><br><span class="line"></span><br><span class="line">Uploading to a1342a2f62dce02aba5dfa11e11a6d1d  5023955 / 5023955.0  (100.00%)</span><br><span class="line"></span><br><span class="line">Successfully packaged artifacts and wrote output template to file packaged.yaml.</span><br><span class="line">Execute the following command to deploy the packaged template</span><br><span class="line">sam deploy --template-file /Users/daisakuhazui/develop/aws-sam-golang/packaged.yaml --stack-name &lt;YOUR STACK NAME&gt;</span><br><span class="line"></span><br><span class="line">$ sam deploy \</span><br><span class="line">    --profile iamSAM \</span><br><span class="line">    --region ap-northeast-1  \</span><br><span class="line">    --template-file /Users/daisakuhazui/develop/aws-sam-golang/packaged.yaml \</span><br><span class="line">    --stack-name aws-sam-golang \</span><br><span class="line">    --capabilities CAPABILITY_IAM</span><br><span class="line"></span><br><span class="line">	Deploying with following values</span><br><span class="line">	===============================</span><br><span class="line">	Stack name                 : aws-sam-golang</span><br><span class="line">	Region                     : ap-northeast-1</span><br><span class="line">	Confirm changeset          : False</span><br><span class="line">	Deployment s3 bucket       : None</span><br><span class="line">	Capabilities               : [&quot;CAPABILITY_IAM&quot;]</span><br><span class="line">	Parameter overrides        : &#123;&#125;</span><br><span class="line"></span><br><span class="line">Initiating deployment</span><br><span class="line">=====================</span><br><span class="line"></span><br><span class="line">Waiting for changeset to be created..</span><br><span class="line"></span><br><span class="line">(中略)</span><br><span class="line"></span><br><span class="line">Stack aws-sam-golang outputs:</span><br><span class="line">---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span><br><span class="line">OutputKey-Description                                                                    OutputValue</span><br><span class="line">---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span><br><span class="line">HelloWorldFunctionIamRole - Implicit IAM Role created for Hello World function           arn:aws:iam::************:role/aws-sam-golang-HelloWorldFunctionRole-*************</span><br><span class="line">HelloWorldAPI - API Gateway endpoint URL for Prod environment for First Function         https://**********.execute-api.ap-northeast-1.amazonaws.com/Prod/hello/</span><br><span class="line">HelloWorldFunction - First Lambda Function ARN                                           arn:aws:lambda:ap-northeast-1:************:function:aws-sam-golang-</span><br><span class="line">                                                                                         HelloWorldFunction-*************</span><br><span class="line">---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span><br><span class="line"></span><br><span class="line">Successfully created/updated stack - aws-sam-golang in ap-northeast-1</span><br></pre></td></tr></table></figure>
+<p>これでAWS上へのデプロイが完了しました。</p>
+<p>最後にAPI Gatewayのエンドポイントにアクセスしてみましょう。(<code>API Gateway endpoint URL for Prod environment for First Function</code>の右にあるURL)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl https://**********.execute-api.ap-northeast-1.amazonaws.com/Prod/hello/Daisaku</span><br><span class="line">Hello, Daisaku</span><br></pre></td></tr></table></figure>
+<p>API Gateway経由でも期待通りのレスポンスが返ってきました。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>AWS SAMとGo言語を使って非常にシンプルなサーバーレス構成を構築しました。</p>
+<p>昨年のアップデートでAWS SAMのデプロイ方法が非常に簡単になり、とても使いやすくなったんじゃないかなと思います。(<code>sam package</code>と<code>sam deploy</code>のパラメータは複雑ですが…)</p>
+<p>参考になれば幸いです。</p>
+<p>近年、MMMはAWS Lambdaに力を入れています。ぜひ以下のページもご覧ください。</p>
+<p>・<a href="https://mmmcorp.co.jp/service/serverlessarchitecture/" target="_blank" rel="noopener">サーバーレスアーキテクチャ（AWS Lambda）</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/01/19/aws-sam-golang/" data-text="AWS SAMとGo言語で体感するサーバーレス開発" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/01/19/aws-sam-golang/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/01/19/aws-sam-golang/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/01/19/aws-sam-golang/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/01/19/aws-sam-golang/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS SAMとGo言語で体感するサーバーレス開発" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li></ul>
+
+
+      <p class="article-footer__author">by Daisaku Hazui</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

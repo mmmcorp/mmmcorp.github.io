@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>レガシーコード改善ガイド内容メモ | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="先月あたりに読んだレガシーコード改善ガイドが面白かったので、その内容をメモしてみる。様々なテクニックが紹介されていたが、それをひとつひとつ書いていると長くなってしまうので、概要やコンセプトをメインに書こうと思う。  Amazon.co.jp: レガシーコード改善ガイド  レガシーコードの変更手順レガシーコードの変更手順は以下の様なものだ。これを基本として、様々な手法や例を交えて、章が進んでいく。">
+<meta name="keywords" content="フロントエンド,Test,テスト,リファクタリング,TDD">
+<meta property="og:type" content="article">
+<meta property="og:title" content="レガシーコード改善ガイド内容メモ">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2016/10/27/working-effectively-with-legacy-code/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="先月あたりに読んだレガシーコード改善ガイドが面白かったので、その内容をメモしてみる。様々なテクニックが紹介されていたが、それをひとつひとつ書いていると長くなってしまうので、概要やコンセプトをメインに書こうと思う。  Amazon.co.jp: レガシーコード改善ガイド  レガシーコードの変更手順レガシーコードの変更手順は以下の様なものだ。これを基本として、様々な手法や例を交えて、章が進んでいく。">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.142Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="レガシーコード改善ガイド内容メモ">
+<meta name="twitter:description" content="先月あたりに読んだレガシーコード改善ガイドが面白かったので、その内容をメモしてみる。様々なテクニックが紹介されていたが、それをひとつひとつ書いていると長くなってしまうので、概要やコンセプトをメインに書こうと思う。  Amazon.co.jp: レガシーコード改善ガイド  レガシーコードの変更手順レガシーコードの変更手順は以下の様なものだ。これを基本として、様々な手法や例を交えて、章が進んでいく。">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-working-effectively-with-legacy-code" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2016-10-27T08:50:03.000Z" itemprop="datePublished">2016-10-27</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2016/10/27/working-effectively-with-legacy-code/">レガシーコード改善ガイド内容メモ</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/10/27/working-effectively-with-legacy-code/" data-text="レガシーコード改善ガイド内容メモ" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/10/27/working-effectively-with-legacy-code/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/10/27/working-effectively-with-legacy-code/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/10/27/working-effectively-with-legacy-code/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/10/27/working-effectively-with-legacy-code/" class="hatena-bookmark-button" data-hatena-bookmark-title="レガシーコード改善ガイド内容メモ" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>先月あたりに読んだレガシーコード改善ガイドが面白かったので、その内容をメモしてみる。様々なテクニックが紹介されていたが、それをひとつひとつ書いていると長くなってしまうので、概要やコンセプトをメインに書こうと思う。</p>
+<ul>
+<li><a href="https://www.amazon.co.jp/dp/B01AN97W08/ref=dp-kindle-redirect?_encoding=UTF8&amp;btkr=1" target="_blank" rel="noopener">Amazon.co.jp: レガシーコード改善ガイド</a></li>
+</ul>
+<h2 id="レガシーコードの変更手順"><a href="#レガシーコードの変更手順" class="headerlink" title="レガシーコードの変更手順"></a>レガシーコードの変更手順</h2><p>レガシーコードの変更手順は以下の様なものだ。これを基本として、様々な手法や例を交えて、章が進んでいく。</p>
+<ol>
+<li>変更箇所を特定する</li>
+<li>テストするべき事柄を把握する</li>
+<li>依存関係を排除する</li>
+<li>テストを書く</li>
+<li>変更、修正(リファクタ)を行う</li>
+</ol>
+<h2 id="テストの重要さ"><a href="#テストの重要さ" class="headerlink" title="テストの重要さ"></a>テストの重要さ</h2><p>一貫して、テストを書かないコードこそレガシーコード、テストがなければどんなにきれいに書いても意味がない、<code>Edit and Pray</code>ではなく<code>Cover and Modify</code>、ということを言っている。</p>
+<p>正しいことを確認するだけでなく、変更を検知するためのテスト(リグレッションテスト)が書けるとよく、それがないのであれば、いかなる変更も安全とはいえないとのことが書いてある。</p>
+<h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3><blockquote>
+<ul>
+<li>To me, legacy code is simply code without tests. I’ve gotten some grief for this</li>
+<li>Code without tests is bad code. It doesn’t matter how well written it is</li>
+<li>Working with care doesn’t do much for you if you don’t use the right tools and techniques.</li>
+<li>Cover and Modify is a different way of making changes. The idea behind it is that it is possible</li>
+<li>Do you want your feedback in a minute or overnight? Which scenario is more efficient?</li>
+<li>The beginnings of those iterations are terrible. People feel that they aren’t getting all the work done that they need to. But slowly, they start to discover that they are revisiting better code. Their changes are getting easier,</li>
+<li>The way to win is to concentrate effort on not putting bugs into code in the first place.</li>
+<li>In general, automated tests should specify a goal that we’d like to fulfill or attempt to preserve behavior that is already there.</li>
+<li>they(=リグレッションテスト) just sit there documenting what pieces of the system really do.</li>
+<li>The only problem is, if you don’t have tests, this can be pretty hazardous business. How do you know that you aren’t breaking anything when you do all of this refactoring to understand the code?</li>
+</ul>
+</blockquote>
+<h2 id="ユニットテストの利点"><a href="#ユニットテストの利点" class="headerlink" title="ユニットテストの利点"></a>ユニットテストの利点</h2><p>コンポーネントが結合された状態でのテストが巨大になるといくつか問題がある。</p>
+<ul>
+<li>エラーがどこで起きているのかパッと見でわからない</li>
+<li>実行速度の増加</li>
+<li>カバレッジが下がる。コンポーネントが結合された状態だけではすべてをテストするのは難しい。</li>
+</ul>
+<p>ユニットテストは結合テストではできないことをカバーできると述べている。ユニットテストの利点としては以下がある。</p>
+<ul>
+<li>実行速度が早い</li>
+<li>エラーの特定が容易</li>
+</ul>
+<p>逆に、ユニットテストがこれらをみたせていない時は、テスト自体を見直したほうがいいと述べている。</p>
+<h3 id="引用"><a href="#引用-1" class="headerlink" title="引用"></a>引用</h3><blockquote>
+<ul>
+<li>(ユニットテストであっても)Some tests are larger, and they use several classes together. In fact, they may seem to be little integration</li>
+<li>Over time, the test might end up taking as long as 1/10th of a second to execute.</li>
+<li>When you start to notice that your tests are too large, you should break down the class that you are testing, to make smaller independent pieces that can be tested more easily.</li>
+</ul>
+</blockquote>
+<h2 id="単一責任の原則srp"><a href="#単一責任の原則-SRP" class="headerlink" title="単一責任の原則(SRP)"></a>単一責任の原則(SRP)</h2><p>単一責任の原則(SRP)について述べている。とある複雑なクラスに、実は複数の責任が押し付けられていることをコードを交えて説明がされる。複雑なクラスはテストができないし、テストのし易い単位でSRPに従ってコンポーネントをつくっていくことがレガシーコードの改善につながる。クラスやメソッドの責任が何であるかを見分ける方法を、多くのパターンによって説明している。</p>
+<p>実装する際も「いま何をしている？」と聞かれてひとつの答えにならなければ、それは考え直した方がいいということを言っている。また、必然的にシンプルな問題をとくことや、ビルドの速さなどから、それが実装速度にも直結すると述べている。</p>
+<h3 id="引用"><a href="#引用-2" class="headerlink" title="引用"></a>引用</h3><blockquote>
+<ul>
+<li>What are the problems with big classes? The first is confusion.</li>
+<li>The first issue to confront when we have big classes is this: How can we work without making things worse?</li>
+<li>The key questions I asked were “Why is this method here?” and “What is it doing for the class?” Then I grouped them into lists, putting together methods that had a similar reason for being there.</li>
+<li>Learning to see responsibilities is a key design skill, and it takes practice.</li>
+<li>if you have the urge to test a private method, the method shouldn’t be private</li>
+<li>The way to really get better at identification is to read more. Read books about design patterns.</li>
+<li>More important, read other people’s code. Look at open-source projects, and just take some time to browse and see how other people do things.</li>
+<li>I’m working: “Programming is the art of doing one thing at a time.”</li>
+<li>I always ask my partner to challenge me on that, to ask me “What are you doing?” If I answer</li>
+<li>Frankly, it’s just faster.</li>
+<li>When I first started using these techniques, it was tempting to do too much. When I needed to extract</li>
+</ul>
+</blockquote>
+<h2 id="seam"><a href="#Seam" class="headerlink" title="Seam"></a>Seam</h2><p>この本で出てくる重要なことばとして<code>Seam</code>というものがある。定義としては、<code>その場所を直接編集しなくても、プログラムの振る舞いを変えることができる場所</code>というものだ。この<code>Seam</code>を意識しながら、依存関係を排除していく例が詳しく示されている。</p>
+<p><code>Seam</code>にはいくつか種類があり、実装パターンによって、どのように依存関係を排除していくかが説明されている。</p>
+<h3 id="引用"><a href="#引用-3" class="headerlink" title="引用"></a>引用</h3><blockquote>
+<ul>
+<li>One of the biggest challenges in getting legacy code under test is breaking dependencies.</li>
+<li>When you have a seam, you have a place where behavior can change.</li>
+<li>In general, object seams are the best choice in object-oriented</li>
+<li>Preprocessing seams and link seams can be useful at times but they are not as explicit as object seams. In addition, tests that depend upon them can be hard to maintain. I like to reserve preprocessing seams and link seams for cases where dependencies are pervasive and there are no better alternatives.</li>
+</ul>
+</blockquote>
+<h2 id="sprout-method"><a href="#Sprout-Method" class="headerlink" title="Sprout Method"></a>Sprout Method</h2><p>テクニックのほんの一例だがSprout Methodを紹介しようと思う。</p>
+<p>Sprout Methodは、テストのないレガシーコードに追加で機能開発をする際に、新しくテスト済みのコードを実装して、徐々にカバレッジをふやしていく(レガシーコードをそれ以上増やさない)実装である。手順としては以下の様なものだ。</p>
+<ol>
+<li>どこを変更するのか明らかにする。</li>
+<li>既存ソースの修正したい箇所をコメントアウトする(コメントアウトしておくと、開発中にすぐに戻れる点が良い)。</li>
+<li>引数や戻り値を確認する。</li>
+<li>TDDを用いながら、新しく別の場所にメソッドを実装する。</li>
+<li>コメントアウトした箇所で、新しいメソッドを呼び出すよう置き換える。</li>
+</ol>
+<p>メソッドだけでなく、Sprout Classの手法も紹介されていた。このように、既存のコードを壊さずに新しくテストされたコードを追加していくのが本書では重要だとされていた。</p>
+<h2 id="依存関係の図化"><a href="#依存関係の図化" class="headerlink" title="依存関係の図化"></a>依存関係の図化</h2><p>テストのないコードでは、時に人力で、その依存関係や影響範囲を調べる必要がある。そのために、依存関係を図化することが重要とされていた。手順としては以下の様なものだ。この依存関係の洗い出しは、他の手法にも多々応用されている。</p>
+<ol>
+<li>変更をあたえるメソッドを明らかにする。</li>
+<li>そのメソッドに戻り値があるのなら、メソッドの呼び出し先も確認する。</li>
+<li>メソッドが変更する値がひとつでもあれば確認する。その値を使用するメソッド、また、その先があればさらに確認する。</li>
+<li>クラスの継承元やインスタンスも確認する。</li>
+<li>パラメータがどこから来ているのかを確認する。</li>
+<li>グローバルな値や静的なデータが変更されていないか確認する。</li>
+</ol>
+<h4 id="引用"><a href="#引用-4" class="headerlink" title="引用"></a>引用</h4><blockquote>
+<ul>
+<li>How do we know that these are the right methods to use? In this case, the problem is simple. When we’ve identified those as the points of change, we can start to sketch effects.</li>
+<li>Try to analyze effects in code whenever you get a chance.</li>
+<li>it’s important to know what can be affected by the changes we are making.</li>
+<li>Extract Method is a core technique for working with legacy code. You can use it to extract duplication, separate responsibilities, and break down long methods.</li>
+</ul>
+</blockquote>
+<h2 id="ちょっといい話"><a href="#ちょっといい話" class="headerlink" title="ちょっといい話"></a>ちょっといい話</h2><h3 id="引用"><a href="#引用-5" class="headerlink" title="引用"></a>引用</h3><blockquote>
+<ul>
+<li>For some people, it is a paycheck, and there isn’t anything wrong with that—we all have to make a living. But there really ought to be some other reason why you are programming.</li>
+<li>it really doesn’t matter what kind of system you are working on. You can do neat things with it.</li>
+<li>The key to thriving in legacy code is finding what motivates you.</li>
+<li>TDD some code outside of work. Program for fun a little bit. Start to feel the difference between the</li>
+</ul>
+</blockquote>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>少々ストレートすぎる言い回しが多いと感じたが、その分モチベーションはあがるし、勉強になる点、今後取り入れていきたい点も非常に多い書籍だった。JavaやC++でのサンプルもいい勉強になった(面白かった)と思う。既存のレガシーコードへの向き合い方だけでなく、どうすればレガシーコードにならないか、綺麗なコードを保てるかという側面も大きいので、直近でレガシーコード開発案件がない人にもオススメだと思った。</p>
+<p>以上、レガシーコード改善ガイドの内容メモでした。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/10/27/working-effectively-with-legacy-code/" data-text="レガシーコード改善ガイド内容メモ" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/10/27/working-effectively-with-legacy-code/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/10/27/working-effectively-with-legacy-code/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/10/27/working-effectively-with-legacy-code/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/10/27/working-effectively-with-legacy-code/" class="hatena-bookmark-button" data-hatena-bookmark-title="レガシーコード改善ガイド内容メモ" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TDD/">TDD</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Test/">Test</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/テスト/">テスト</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/リファクタリング/">リファクタリング</a></li></ul>
+
+
+      <p class="article-footer__author">by okp</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

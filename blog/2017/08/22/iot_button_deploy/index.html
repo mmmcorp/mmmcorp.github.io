@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AWS IoTボタンでWebアプリの監視一時停止〜本番デプロイ〜監視再開ができるようにした | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="※本記事内のAWS IoTボタンの検証は米国にて行いました。 AWS IoTボタンの概要米国など幾つかの国ではAWS IoTボタン (以下IoTボタンと略します) というものが売られています。見た目は日本で売られている特定の商品の注文をボタンひとつで行えるAmazon Dashボタンと同様ですが、IoTボタンでは、ボタンが押されたことをトリガーにLambdaを呼び出すなどして自由に処理を作りこむ">
+<meta name="keywords" content="AWS,運用・監視,IoT">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWS IoTボタンでWebアプリの監視一時停止〜本番デプロイ〜監視再開ができるようにした">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2017/08/22/iot_button_deploy/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="※本記事内のAWS IoTボタンの検証は米国にて行いました。 AWS IoTボタンの概要米国など幾つかの国ではAWS IoTボタン (以下IoTボタンと略します) というものが売られています。見た目は日本で売られている特定の商品の注文をボタンひとつで行えるAmazon Dashボタンと同様ですが、IoTボタンでは、ボタンが押されたことをトリガーにLambdaを呼び出すなどして自由に処理を作りこむ">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/iot_button_deploy/iot_button.jpg">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/iot_button_deploy/1.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/iot_button_deploy/2.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/iot_button_deploy/3.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/iot_button_deploy/4.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.150Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AWS IoTボタンでWebアプリの監視一時停止〜本番デプロイ〜監視再開ができるようにした">
+<meta name="twitter:description" content="※本記事内のAWS IoTボタンの検証は米国にて行いました。 AWS IoTボタンの概要米国など幾つかの国ではAWS IoTボタン (以下IoTボタンと略します) というものが売られています。見た目は日本で売られている特定の商品の注文をボタンひとつで行えるAmazon Dashボタンと同様ですが、IoTボタンでは、ボタンが押されたことをトリガーにLambdaを呼び出すなどして自由に処理を作りこむ">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/iot_button_deploy/iot_button.jpg">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-amazon-iot-button-deploy" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2017-08-22T09:00:00.000Z" itemprop="datePublished">2017-08-22</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2017/08/22/iot_button_deploy/">AWS IoTボタンでWebアプリの監視一時停止〜本番デプロイ〜監視再開ができるようにした</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/08/22/iot_button_deploy/" data-text="AWS IoTボタンでWebアプリの監視一時停止〜本番デプロイ〜監視再開ができるようにした" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/08/22/iot_button_deploy/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/08/22/iot_button_deploy/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/08/22/iot_button_deploy/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/08/22/iot_button_deploy/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS IoTボタンでWebアプリの監視一時停止〜本番デプロイ〜監視再開ができるようにした" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/iot_button_deploy/iot_button.jpg" alt=""></p>
+<p>※本記事内のAWS IoTボタンの検証は米国にて行いました。</p>
+<h2 id="aws-iotボタンの概要"><a href="#AWS-IoTボタンの概要" class="headerlink" title="AWS IoTボタンの概要"></a>AWS IoTボタンの概要</h2><p>米国など幾つかの国ではAWS IoTボタン (以下IoTボタンと略します) というものが売られています。見た目は日本で売られている特定の商品の注文をボタンひとつで行えるAmazon Dashボタンと同様ですが、IoTボタンでは、ボタンが押されたことをトリガーにLambdaを呼び出すなどして自由に処理を作りこむことができるようになっています。</p>
+<h2 id="活用する上で考慮すべきポイント"><a href="#活用する上で考慮すべきポイント" class="headerlink" title="活用する上で考慮すべきポイント"></a>活用する上で考慮すべきポイント</h2><p>可能性を秘めているIoTボタンですが、何に活用しようかと考えた時に悩ましいポイントもいくつかあります。</p>
+<h3 id="wifi環境が必須"><a href="#WiFi環境が必須" class="headerlink" title="WiFi環境が必須"></a>WiFi環境が必須</h3><p>WiFi環境が必須であり、常に携帯してどこでも押せるということは基本的には実現できません。例えば子どもに携帯させて、何かあったときに緊急通報的に押してもらうといったことはこのボタンだけでは実現できません。そういう意味では携帯回線を使えて、かつGPSで位置が取れたりすればもっと色々と夢が広がるなーという部分はあります。<br>ただ、ポケットWiFiを持ち歩けば常に携帯することも可能かもしれません。</p>
+<h3 id="iotボタン自体には何の表示もできない"><a href="#IoTボタン自体には何の表示もできない" class="headerlink" title="IoTボタン自体には何の表示もできない"></a>IoTボタン自体には何の表示もできない</h3><p>IoTボタンは本当にシンプルな1つのボタンだけであり、何らかの表示をしたり、通知をしたりすることはできません。</p>
+<h3 id="クリック種別を利用者が覚えることが難しい"><a href="#クリック種別を利用者が覚えることが難しい。" class="headerlink" title="クリック種別を利用者が覚えることが難しい。"></a>クリック種別を利用者が覚えることが難しい。</h3><p>シングルクリック、ダブルクリック、長押しの3つのクリック種別を判別できるようになっているのですが、利用者側がそれぞれの種別で何が起きるかを覚えておくことが難しいということも挙げられます。</p>
+<p>これに関してはいくつかのアプローチが考えられると思います。</p>
+<h4 id="シングルクリック-もしくは他のひとつのクリック種別-でしかアクションを起こさない"><a href="#シングルクリック-もしくは他のひとつのクリック種別-でしかアクションを起こさない" class="headerlink" title="シングルクリック (もしくは他のひとつのクリック種別) でしかアクションを起こさない"></a>シングルクリック (もしくは他のひとつのクリック種別) でしかアクションを起こさない</h4><p>これであれば利用者は一つだけ覚えておけばよいので問題ないでしょう。</p>
+<h4 id="まずはシングルクリックして-その次のアクションを通知する"><a href="#まずはシングルクリックして、その次のアクションを通知する" class="headerlink" title="まずはシングルクリックして、その次のアクションを通知する"></a>まずはシングルクリックして、その次のアクションを通知する</h4><p>ちょっと発想を変え、まずはとりあえずシングルクリックをする。そして次の操作を何かしらの方法で利用者に通知し、それに従い操作してもらうという方法です。例えば、</p>
+<ul>
+<li>まずは利用者はシングルクリックする。シングルクリックすると、SlackやスマートフォンへのPush通知などで次の操作の指示が飛ぶようにします。例えば以下のような通知が飛ぶようにします。</li>
+</ul>
+<p>「IoTボタンがシングルクリックされました。◯◯したい場合はダブルクリック、✕✕したい場合は長押ししてください。」</p>
+<ul>
+<li>その上で、ダブルクリックまたは長押しをすることで希望する操作ができるようにする。</li>
+</ul>
+<p>これは、ボタン1つだけで何かできるというIoTボタンの特長を若干薄めている部分はあるのですが、3つの種別を有効活用したいのであれば取り得るアプローチかと思います。</p>
+<h2 id="活用案出し"><a href="#活用案出し" class="headerlink" title="活用案出し"></a>活用案出し</h2><p>日本では現状IoTボタンを利用することはできませんが、弊社ではせっかく国外で仕事をしているメンバーもいることから、IoTボタンを使った仕組みを作ってみようということでアイデア出しをしたところ以下のような案がでました。</p>
+<h3 id="イライラしたときに押して-イライラ度が見えるようにする"><a href="#イライラしたときに押して、イライラ度が見えるようにする" class="headerlink" title="イライラしたときに押して、イライラ度が見えるようにする"></a>イライラしたときに押して、イライラ度が見えるようにする</h3><p>リモートワークだと普段の皆の表情が見えないため、感情を共有することができればコミュニケーションに役立つかもしれません。</p>
+<h3 id="社内webアプリケーションの本番デプロイ"><a href="#社内Webアプリケーションの本番デプロイ" class="headerlink" title="社内Webアプリケーションの本番デプロイ"></a>社内Webアプリケーションの本番デプロイ</h3><p>GitHubにpushすることでデプロイ処理が走るようになっているWebアプリケーションがあり、ブランチ操作に慣れていないようなデザイナーの人でも簡単にデプロイができるようになりそうです。</p>
+<h3 id="クラウド上にある検証用マシンの起動停止"><a href="#クラウド上にある検証用マシンの起動・停止" class="headerlink" title="クラウド上にある検証用マシンの起動・停止"></a>クラウド上にある検証用マシンの起動・停止</h3><p>普段料金節約のために落としている検証用マシンをボタンで起動・停止できたら便利です。</p>
+<h3 id="ステージング環境の起動停止"><a href="#ステージング環境の起動・停止" class="headerlink" title="ステージング環境の起動・停止"></a>ステージング環境の起動・停止</h3><p>上記と似ていますが、本番環境とステージング環境があるWebアプリケーションにおいて、普段は料金節約のためにステージング環境を止めておきたいけれども、必要になったら立ち上げたいという場合があります。それをボタンひとつで実行できれば便利です。</p>
+<h3 id="監視の一時停止再開"><a href="#監視の一時停止・再開" class="headerlink" title="監視の一時停止・再開"></a>監視の一時停止・再開</h3><p>弊社では<a href="https://mmmcorp.co.jp/services/datadog/" target="_blank" rel="noopener">AWS監視・ハイブリッドクラウド監視サービス「Datadog」</a>を利用しいろいろなサービスを監視していますが、サービスメンテナンスやデプロイの際には一時的に監視を止めたいというシチュエーションが発生します。その際にコンソールなどからチクチクと設定を変更するのは面倒なので、ボタンで監視の停止および再開を実現できれば便利でカッコイイです。</p>
+<p>このようにいろいろと案が出た中で、今回は社内Webアプリケーションの本番デプロイおよび監視の一時停止・再開の仕組みを作ってみることにしました。</p>
+<h2 id="iotボタンで社内webアプリケーションの監視一時停止本番デプロイ監視再開ができるようにした"><a href="#IoTボタンで社内Webアプリケーションの監視一時停止〜本番デプロイ〜監視再開ができるようにした" class="headerlink" title="IoTボタンで社内Webアプリケーションの監視一時停止〜本番デプロイ〜監視再開ができるようにした"></a>IoTボタンで社内Webアプリケーションの監視一時停止〜本番デプロイ〜監視再開ができるようにした</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>背景についてもう少し詳細にご説明します。<br>該当Webアプリケーションにおいては、ステージング環境での動作を確認してから、本番デプロイをするというフローになっています。デプロイ作業自体はGitHubの特定のブランチにソースコードをコマンドラインからpushするだけの操作となっているのですが、例えばコマンドラインにあまり精通していないデザイナーの人が実施するには若干危険な操作であるという事情があります。<br>デザインの変更だけであれば、デザイナーの人が修正してステージングで修正確認後、その人が本番までデプロイできれば便利です。ここでまさにIoTボタンの出番と考えました。</p>
+<p>また、上記Webアプリケーションは監視されており、デプロイ時に一時的に監視でエラーが発生する場合があります。したがって、デプロイ時には一時的に監視を止めたいという状況もありました。</p>
+<h3 id="ボタン設計"><a href="#ボタン設計" class="headerlink" title="ボタン設計"></a>ボタン設計</h3><p>本番デプロイだけであればダブルクリックでデプロイといった操作でもよいのですが、上記背景のように監視を止めて再開したいという事情があるため、IoTボタンを以下の流れで操作することににより本番のデプロイを可能とするフローを考えました。</p>
+<ul>
+<li>本番デプロイしたいとなった時点で、IoTボタンをまずはシングルクリックします。すると、Slackに以下のような通知が来ます。</li>
+</ul>
+<blockquote>
+<p>本番デプロイボタンがクリックされました。本番デプロイする前に監視を無効とする必要があります。長押しをして監視を無効にしてください。</p>
+</blockquote>
+<ul>
+<li>指示に従い、長押しします。</li>
+</ul>
+<blockquote>
+<p>本番デプロイボタンが長押しされました。現在、サイトの監視が有効になっています。少々お待ちください。</p>
+<p>監視を無効に変更しました。<br>ダブルクリックして、サイトの本番デプロイしてください。<br>本番デプロイをしない場合は、再度長押しし、監視を有効にしてください。」</p>
+</blockquote>
+<ul>
+<li>指示に従い、ダブルクリックします。</li>
+</ul>
+<blockquote>
+<p>本番デプロイボタンがダブルクリックされました。本番デプロイを実行します。</p>
+<p>本番デプロイが完了しました。<br>現在、サイトの監視が無効になっています。</p>
+</blockquote>
+<p>重要なのは、まずはシングルクリックすればよいとだけ覚えてよくて、残りは指示通りにボタンを押せばいいという点です。ユーザに優しいですね。</p>
+<p>注意点:<br>これは経験上なのですが、ダブルクリックについては、一回ダブルクリックしただけなのにも関わらず、何度もLambda関数が呼ばれてしまうという現象がしばしば発生しています。したがって現状では、特にダブルクリックは冪等性が保たれる操作に割り当てるのがよいのではないかというのが印象です。</p>
+<h2 id="実装"><a href="#実装" class="headerlink" title="実装"></a>実装</h2><p>それでは実装の説明です。<br>IoTボタンのセットアップについては<a href="http://docs.aws.amazon.com/ja_jp/iot/latest/developerguide/iot-button-quickstart.html" target="_blank" rel="noopener">公式ドキュメント</a>が充実していますので省略します。<br>今回の場合では、処理を実際に実装するのはLambda関数となります。留意事項は以下です。</p>
+<ul>
+<li>IoTボタンでのクリック種別はLambdaに渡されるイベントの中に文字列で入ってきます。イベントは以下のような形式です。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;serialNumber&quot; : &quot;ABCDEFG12345&quot;,</span><br><span class="line">    &quot;clickType&quot; : &quot;SINGLE&quot;,</span><br><span class="line">    &quot;batteryVoltage&quot; : &quot;2000 mV&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><a href="http://docs.aws.amazon.com/ja_jp/iot/latest/developerguide/iot-lambda-rule.html" target="_blank" rel="noopener">http://docs.aws.amazon.com/ja_jp/iot/latest/developerguide/iot-lambda-rule.html</a> より。</p>
+<p>したがって、 <code>clickType</code> の文字列を判定して処理を分けるようにしています。</p>
+<ul>
+<li>監視にはDatadogを利用しているため、Datadogの監視の無効化・有効化を実施するコードとなっています。</li>
+<li>git.pyは記載していませんが、 <a href="http://qiita.com/shibataka000/items/910754486ba2585209b2" target="_blank" rel="noopener">http://qiita.com/shibataka000/items/910754486ba2585209b2</a> を参考にさせていただいています。</li>
+<li>これはLambda自体の注意点となりますが、Paramikoがネイティブビルドを必要とするため、Linux上 (Amazon Linux推奨) でライブラリのインストールをする必要があります。</li>
+</ul>
+<p>上記を踏まえ、以下のようなLambda関数を作成しました。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><span class="line"># coding:utf-8</span><br><span class="line"></span><br><span class="line">from datadog import initialize, api</span><br><span class="line">from urllib2 import Request, urlopen, URLError, HTTPError</span><br><span class="line">import os</span><br><span class="line">import sys</span><br><span class="line">import shutil</span><br><span class="line">import json</span><br><span class="line">import logging</span><br><span class="line">import slackweb</span><br><span class="line"></span><br><span class="line">from dulwich.errors import (</span><br><span class="line">    SendPackError,</span><br><span class="line">    UpdateRefsError,</span><br><span class="line">    )</span><br><span class="line">from dulwich.objectspec import (</span><br><span class="line">    parse_object,</span><br><span class="line">    parse_reftuples,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">import dulwich</span><br><span class="line">from dulwich import server</span><br><span class="line">from dulwich import porcelain</span><br><span class="line">from dulwich.repo import Repo</span><br><span class="line"></span><br><span class="line">import git</span><br><span class="line"></span><br><span class="line">HOOK_URL = &quot;some_slack_hook_url&quot;</span><br><span class="line">slack = slackweb.Slack(url=HOOK_URL)</span><br><span class="line"></span><br><span class="line">options = &#123;</span><br><span class="line">    &apos;api_key&apos;: &apos;some_api_key&apos;,</span><br><span class="line">    &apos;app_key&apos;: &apos;some_app_key&apos;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 関連するモニターのIDを記述</span><br><span class="line">monitors = [1111111, 2222222]</span><br><span class="line"></span><br><span class="line">def single_click():</span><br><span class="line">  # ret = api.Monitor.get(2304121, group_states=&apos;all&apos;)</span><br><span class="line">  enabled = True</span><br><span class="line">  for monitor in monitors:</span><br><span class="line">    ret = api.Monitor.get(monitor, group_states=&apos;all&apos;)</span><br><span class="line">    # 1つでも無効になっていたら無効と判定</span><br><span class="line">    if len(str(ret[&apos;options&apos;][&apos;silenced&apos;])) &gt; 2:</span><br><span class="line">      enabled = False</span><br><span class="line">      break</span><br><span class="line">  else:</span><br><span class="line">    enabled = True</span><br><span class="line"></span><br><span class="line">  if enabled:</span><br><span class="line">    slack.notify(text=&apos;現在サイトの監視が有効になっています。監視を停止する場合はボタンを長押しして下さい。本番デプロイする場合はボタンをダブルクリックしてください。&apos;)</span><br><span class="line">  else:</span><br><span class="line">    slack.notify(text=&apos;現在サイトの監視が無効になっています。監視を再開する場合はボタンを長押しして下さい。本番デプロイする場合はボタンをダブルクリックしてください。&apos;)</span><br><span class="line"></span><br><span class="line">def long_click():</span><br><span class="line">  enabled = True</span><br><span class="line">  for monitor in monitors:</span><br><span class="line">    ret = api.Monitor.get(monitor, group_states=&apos;all&apos;)</span><br><span class="line">    # 1つでも無効になっていたら無効と判定</span><br><span class="line">    if len(str(ret[&apos;options&apos;][&apos;silenced&apos;])) &gt; 2:</span><br><span class="line">      enabled = False</span><br><span class="line">      break</span><br><span class="line">  else:</span><br><span class="line">    enabled = True</span><br><span class="line"></span><br><span class="line">  if enabled:</span><br><span class="line">    slack.notify(text=&apos;サイトの監視が有効になっています。&apos;)</span><br><span class="line">    for monitor in monitors:</span><br><span class="line">      api.Monitor.mute(monitor)</span><br><span class="line">    slack.notify(text=&apos;サイトの監視を無効に設定しました。&apos;)</span><br><span class="line">  else:</span><br><span class="line">    slack.notify(text=&apos;サイトの監視が無効になっています。&apos;)</span><br><span class="line">    for monitor in monitors:</span><br><span class="line">      api.Monitor.unmute(monitor)</span><br><span class="line">    slack.notify(text=&apos;サイトの監視を有効に設定しました。&apos;)</span><br><span class="line"></span><br><span class="line">def double_click():</span><br><span class="line">    github_repo = &apos;some_repository&apos;</span><br><span class="line">    release_branch = &quot;release&quot;</span><br><span class="line">    author = &apos;Masatsugu SHIMOJO &lt;shimojo.masatsugu@mmmcorp.co.jp&gt;&apos;</span><br><span class="line">    tmp_dir = &quot;/tmp/repo&quot;</span><br><span class="line">    dulwich.client.get_ssh_vendor = git.KeyParamikoSSHVendor</span><br><span class="line">    if os.path.exists(tmp_dir):</span><br><span class="line">      shutil.rmtree(tmp_dir)</span><br><span class="line">    slack.notify(text=&apos;GitHubからcloneします&apos;)</span><br><span class="line">    repo = porcelain.clone(</span><br><span class="line">        github_repo,</span><br><span class="line">        tmp_dir</span><br><span class="line">    )</span><br><span class="line">    dulwich.porcelain.branch_create(repo, release_branch)</span><br><span class="line">    dulwich.porcelain.symbolic_ref(repo, release_branch)</span><br><span class="line">    slack.notify(text=&apos;ブランチをpushします&apos;)</span><br><span class="line">    dulwich.porcelain.push(repo, github_repo, (&apos;refs/heads/&apos; + release_branch))</span><br><span class="line">    slack.notify(text=&apos;GitHubにpushしました :exclamation: デプロイ完了までしばらくお待ちください。&apos;)</span><br><span class="line"></span><br><span class="line">def lambda_handler(event, context):</span><br><span class="line">  initialize(**options)</span><br><span class="line"></span><br><span class="line">  if event[&apos;clickType&apos;] == &quot;SINGLE&quot;:</span><br><span class="line">    slack.notify(text=&quot;スーパーデプロイボタンがシングルクリックされました :exclamation: &quot;)</span><br><span class="line">    single_click()</span><br><span class="line">  elif event[&apos;clickType&apos;] == &quot;DOUBLE&quot;:</span><br><span class="line">    slack.notify(text=&apos;スーパーデプロイボタンがダブルクリックされました。本番デプロイします :exclamation: &apos;)</span><br><span class="line">    double_click()</span><br><span class="line">  elif event[&apos;clickType&apos;] == &quot;LONG&quot;:</span><br><span class="line">    slack.notify(text=&quot;スーパーデプロイボタンが長押しされました :exclamation: &quot;)</span><br><span class="line">    long_click()</span><br><span class="line">  else:</span><br><span class="line">  </span><br><span class="line">  return</span><br></pre></td></tr></table></figure>
+<h2 id="実際に実行してみた"><a href="#実際に実行してみた" class="headerlink" title="実際に実行してみた"></a>実際に実行してみた</h2><p>実際に実行してみた結果です。</p>
+<p>まずはともあれシングルクリック！<br><img src="/images/iot_button_deploy/1.png" alt=""></p>
+<p>いったん監視を止めたいので長押しします。<br><img src="/images/iot_button_deploy/2.png" alt=""></p>
+<p>デプロイするためダブルクリックします。<br><img src="/images/iot_button_deploy/3.png" alt=""></p>
+<p>デプロイ完了を確認後、監視を再開するため長押しします。<br><img src="/images/iot_button_deploy/4.png" alt=""></p>
+<p>このように、監視の無効・デプロイ・監視の有効の一連の作業が実現できました。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>AWS IoTボタンの紹介から活用案、そして実際に活用してみた例までご紹介いたしました。<br>日本で使えるようになるのが待ち遠しいですね！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/08/22/iot_button_deploy/" data-text="AWS IoTボタンでWebアプリの監視一時停止〜本番デプロイ〜監視再開ができるようにした" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/08/22/iot_button_deploy/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/08/22/iot_button_deploy/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/08/22/iot_button_deploy/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/08/22/iot_button_deploy/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS IoTボタンでWebアプリの監視一時停止〜本番デプロイ〜監視再開ができるようにした" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/IoT/">IoT</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/運用・監視/">運用・監視</a></li></ul>
+
+
+      <p class="article-footer__author">by 下條 真嗣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>秋の夜長にActive Support | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="RailsのActive Supportのソースは比較的読みやすいものが多く、お役立ちメソッドもいろいろとあるので、最近酒のつまみ代わりに夜な夜な読み始めた下條です。 特に、Rubyの組み込みクラスを拡張するCore Extensionsのソースを読んでいると、知らなかったお役立ちメソッドがあったり、こんなもの使うんかいなってメソッドもけっこうあったりでおもしろい。実際、非常に役に立つメソッドもあ">
+<meta name="keywords" content="サーバーサイド,Ruby on Rails">
+<meta property="og:type" content="article">
+<meta property="og:title" content="秋の夜長にActive Support">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2014/10/14/active-support/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="RailsのActive Supportのソースは比較的読みやすいものが多く、お役立ちメソッドもいろいろとあるので、最近酒のつまみ代わりに夜な夜な読み始めた下條です。 特に、Rubyの組み込みクラスを拡張するCore Extensionsのソースを読んでいると、知らなかったお役立ちメソッドがあったり、こんなもの使うんかいなってメソッドもけっこうあったりでおもしろい。実際、非常に役に立つメソッドもあ">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.130Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="秋の夜長にActive Support">
+<meta name="twitter:description" content="RailsのActive Supportのソースは比較的読みやすいものが多く、お役立ちメソッドもいろいろとあるので、最近酒のつまみ代わりに夜な夜な読み始めた下條です。 特に、Rubyの組み込みクラスを拡張するCore Extensionsのソースを読んでいると、知らなかったお役立ちメソッドがあったり、こんなもの使うんかいなってメソッドもけっこうあったりでおもしろい。実際、非常に役に立つメソッドもあ">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-active-support" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2014-10-14T09:50:03.000Z" itemprop="datePublished">2014-10-14</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2014/10/14/active-support/">秋の夜長にActive Support</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2014/10/14/active-support/" data-text="秋の夜長にActive Support" data-counturl="https://blog.mmmcorp.co.jp/blog/2014/10/14/active-support/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2014/10/14/active-support/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2014/10/14/active-support/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2014/10/14/active-support/" class="hatena-bookmark-button" data-hatena-bookmark-title="秋の夜長にActive Support" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>RailsのActive Supportのソースは比較的読みやすいものが多く、お役立ちメソッドもいろいろとあるので、最近酒のつまみ代わりに夜な夜な読み始めた下條です。</p>
+<p>特に、Rubyの組み込みクラスを拡張するCore Extensionsのソースを読んでいると、知らなかったお役立ちメソッドがあったり、こんなもの使うんかいなってメソッドもけっこうあったりでおもしろい。実際、非常に役に立つメソッドもある。Object#tryなど。<br><a href="https://github.com/rails/rails/blob/master/guides/source/active_support_core_extensions.md" target="_blank" rel="noopener">ガイド</a>にまとまっているのだが、全部の機能が書いてあるわけではないので、ソースを読んでみるのもオツなものである。今回は、ざっと目に留まったものをとりとめなく紹介させていただきたいと思う。</p>
+<h2 id="stringクラス"><a href="#Stringクラス" class="headerlink" title="Stringクラス"></a>Stringクラス</h2><p>Stringクラスの拡張。文字列操作は概して汚いコードになりがちだが、ここのメソッドを使うと簡単に書ける場合がある。</p>
+<h3 id="railsactivesupportlibactive_supportcore_extstringaccessrb"><a href="#rails-activesupport-lib-active-support-core-ext-string-access-rb" class="headerlink" title="rails/activesupport/lib/active_support/core_ext/string/access.rb"></a>rails/activesupport/lib/active_support/core_ext/string/access.rb</h3><h4 id="stringat"><a href="#String-at" class="headerlink" title="String#at"></a>String#at</h4><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'hello'</span>.at(<span class="number">0</span>) <span class="comment"># =&gt; "h"</span></span><br><span class="line"><span class="string">'hello'</span>.at(<span class="number">1</span>..<span class="number">3</span>) <span class="comment"># =&gt; "ell"</span></span><br><span class="line"><span class="string">'hello'</span>.at(<span class="regexp">/lo/</span>) <span class="comment"># =&gt; "lo"</span></span><br><span class="line"><span class="string">'hello'</span>.at(<span class="regexp">/ol/</span>) <span class="comment"># =&gt; nil</span></span><br></pre></td></tr></table></figure>
+<p>指定箇所の文字列を取得する以外にも、正規表現を指定するとマッチしなかったらnilが返ることを利用して、文字列の存在チェックに使うことも可能。</p>
+<h4 id="stringfrom-stringto"><a href="#String-from-String-to" class="headerlink" title="String#from, String#to"></a>String#from, String#to</h4><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'hello'</span>.from(<span class="number">1</span>).to(-<span class="number">2</span>) <span class="comment"># =&gt; "ell"</span></span><br></pre></td></tr></table></figure>
+<p>fromとtoを組み合わせることで、始めから2文字目から、終わりから2文字目をとるといったことがきれいに書ける。</p>
+<h3 id="railsactivesupportlibactive_supportcore_extstringconversionsrb"><a href="#rails-activesupport-lib-active-support-core-ext-string-conversions-rb" class="headerlink" title="rails/activesupport/lib/active_support/core_ext/string/conversions.rb"></a>rails/activesupport/lib/active_support/core_ext/string/conversions.rb</h3><h4 id="stringto_time"><a href="#String-to-time" class="headerlink" title="String#to_time"></a>String#to_time</h4><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"13-12-2012"</span>.to_time               <span class="comment"># =&gt; 2012-12-13 00:00:00 +0900</span></span><br><span class="line"><span class="string">"06:12"</span>.to_time                    <span class="comment"># =&gt; 2014-10-14 06:12:00 +0900</span></span><br><span class="line"><span class="string">"2012-12-13 06:12"</span>.to_time         <span class="comment"># =&gt; 2012-12-13 06:12:00 +0900</span></span><br><span class="line"><span class="string">"2012-12-13T06:12"</span>.to_time         <span class="comment"># =&gt; 2012-12-13 06:12:00 +0000</span></span><br><span class="line"><span class="string">"2012-12-13T06:12"</span>.to_time(<span class="symbol">:utc</span>)   <span class="comment"># =&gt; 2012-12-13 06:12:00 UTC</span></span><br></pre></td></tr></table></figure>
+<p>いろいろな形式の文字列をよろしくTime型に変換してくれるので、文字列をTime型に変換したくなったときにはこのメソッドが使えるかをチェックするのがよいと思う。<br>また、Time型のフォーマットメソッド（to_formatted_s）と組み合わせると、</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"13-12-2012"</span>.to_time(<span class="symbol">:utc</span>).to_formatted_s(<span class="symbol">:iso8601</span>) <span class="comment"># =&gt; "2012-12-13T00:00:00Z"</span></span><br></pre></td></tr></table></figure>
+<p>このように、ISO8601形式の文字列にできたりするので、APIなどで日時情報を返すときなど使えそうである。</p>
+<p>同様にDate型やDateTime型への変換も可能。</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"1-1-2012"</span>.to_date <span class="comment"># =&gt; Sun, 01 Jan 2012</span></span><br><span class="line"><span class="string">"1-1-2012"</span>.to_datetime <span class="comment"># =&gt; Sun, 01 Jan 2012 00:00:00 +0000</span></span><br></pre></td></tr></table></figure>
+<h3 id="railsactivesupportlibactive_supportcore_extstringfiltersrb"><a href="#rails-activesupport-lib-active-support-core-ext-string-filters-rb" class="headerlink" title="rails/activesupport/lib/active_support/core_ext/string/filters.rb"></a>rails/activesupport/lib/active_support/core_ext/string/filters.rb</h3><h4 id="stringremove"><a href="#String-remove" class="headerlink" title="String#remove"></a>String#remove</h4><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"hoge\r\nhoge"</span>.remove!(<span class="regexp">/\r|\r\n|\n/</span>) <span class="comment"># =&gt; "hogehoge"</span></span><br></pre></td></tr></table></figure>
+<p>正規表現でマッチした文字列を取り除く。<br>上記例は改行コードを取り除くコード。str.gsub!(/\r|\r\n|\n/, ‘’)よりもちょっときれい。</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'Once upon a time in a world far far away'</span>.truncate(<span class="number">27</span>) <span class="comment"># =&gt; "Once upon a time in a wo..."</span></span><br><span class="line"><span class="string">'Once upon a time in a world far far away'</span>.truncate(<span class="number">27</span>, <span class="symbol">separator:</span> <span class="string">' '</span>) <span class="comment"># =&gt; "Once upon a time in a..."</span></span><br><span class="line"><span class="string">'むかしむかしあるところにおじいさんと'</span>.truncate(<span class="number">15</span>, <span class="symbol">omission:</span> <span class="string">'。。。'</span>) <span class="comment"># =&gt; "むかしむかしあるところに。。。"</span></span><br></pre></td></tr></table></figure>
+<p>文字列を切り取って、最後に’…’を付加する。セパレータを指定すると、単語の区切りまでで切ってくれる。また、最後に付加する文字列（omission）も変更可能である。けっこう使える場面はあるかもしれないと思う。昔、Twitter投稿用に文字列を’…’終端の140文字に切り詰める処理を書いたことがあるのだが、これを知っていれば一瞬で書けたところである。</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'Once&lt;br&gt;upon&lt;br&gt;a&lt;br&gt;time&lt;br&gt;in&lt;br&gt;a&lt;br&gt;world'</span>.truncate_words(<span class="number">5</span>, <span class="symbol">separator:</span> <span class="string">'&lt;br&gt;'</span>)   <span class="comment">#=&gt; "Once&lt;br&gt;upon&lt;br&gt;a&lt;br&gt;time&lt;br&gt;in..."</span></span><br></pre></td></tr></table></figure>
+<p>4.2で追加されるメソッド。セパレータで単語ごとに区切って指定の数までを返す。使う機会はあるかな。。。</p>
+<h3 id="railsactivesupportlibactive_supportcore_extstringinflectionsrb"><a href="#rails-activesupport-lib-active-support-core-ext-string-inflections-rb" class="headerlink" title="rails/activesupport/lib/active_support/core_ext/string/inflections.rb"></a>rails/activesupport/lib/active_support/core_ext/string/inflections.rb</h3><p>Railsっぽい重要なメソッドがいろいろ入っているソース。単数複数を変換するメソッドpuluralize, singularize, 外部キー名を生成するforeign_key, Camel Caseに変換するcamelizeなどなど。</p>
+<h4 id="stringpluralize-stringsingularize"><a href="#String-pluralize-String-singularize" class="headerlink" title="String#pluralize, String#singularize"></a>String#pluralize, String#singularize</h4><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'car'</span>.pluralize <span class="comment"># =&gt; "cars"</span></span><br><span class="line"><span class="string">'person'</span>.pluralize <span class="comment"># =&gt; "people"</span></span><br><span class="line"><span class="string">'people'</span>.singularize <span class="comment"># =&gt; "person"</span></span><br></pre></td></tr></table></figure>
+<p>単語を複数形にするメソッドと、その逆のメソッド。ガイドにも書いてある通り、Active Recordではpluralizeメソッドを使用して、モデルに対応するテーブル名を取得している。</p>
+<p>なお、ここの変換ルールは難しそうに思えるけれども意外とシンプルで、以下のソースに書いてある。<br><a href="https://github.com/rails/rails/blob/master/activesupport/lib/active_support/inflections.rb" target="_blank" rel="noopener">https://github.com/rails/rails/blob/master/activesupport/lib/active_support/inflections.rb</a></p>
+<p>ただ、微妙な変換がされることがあるようで、例えば<a href="https://github.com/rails/rails/pull/13993" target="_blank" rel="noopener">このPull Request</a>は以下のようなおかしな変換を修正するものである。</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'waves'</span>.singularize <span class="comment"># =&gt; 'wafe' ※本来は'wave'が返るべき！</span></span><br></pre></td></tr></table></figure>
+<p>しかし、このPull Requestはマージされていない。というのも、Inflectorの単数複数変換のコアルールを変えてしまうと既存アプリケーションへの影響が大きいために、単数複数変換のルールは凍結されているためである。そのため、必要な場合にはアプリケーションごとにカスタムルールで変更してくれとのことである。調べてみると他にも同様にルールを修正するPull Requestが何個もあった。（全てマージされずにクローズ。）</p>
+<p><a href="https://github.com/rails/rails/pull/17134" target="_blank" rel="noopener">https://github.com/rails/rails/pull/17134</a><br><a href="https://github.com/rails/rails/pull/15740" target="_blank" rel="noopener">https://github.com/rails/rails/pull/15740</a><br><a href="https://github.com/rails/rails/pull/13065" target="_blank" rel="noopener">https://github.com/rails/rails/pull/13065</a><br><a href="https://github.com/rails/rails/pull/10812" target="_blank" rel="noopener">https://github.com/rails/rails/pull/10812</a>  </p>
+<p>現在のソースでは、「この変換ルールは完全なものでないが、既存アプリケーションへの影響を避けるために修正することはない」ことが以下のようにコメントで記載されている。<br><a href="https://github.com/rails/rails/commit/07c70245a128cfe42f134be8759963dc98f1a63e" target="_blank" rel="noopener">https://github.com/rails/rails/commit/07c70245a128cfe42f134be8759963dc98f1a63e</a></p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Define the standard inflection rules. These define a starting point for</span></span><br><span class="line"><span class="comment"># new projects and are not considered complete. The current set of inflection</span></span><br><span class="line"><span class="comment"># rules is frozen. This means, we do not change them to become more complete.</span></span><br><span class="line"><span class="comment"># This is a safety measure to keep existing applications from breaking.</span></span><br></pre></td></tr></table></figure>
+<p>まあ、いずれにせよ、開発者としては、不自然な変換がされる場合があるというところを意識しておけばよいとおもう。</p>
+<h2 id="numericクラス"><a href="#Numericクラス" class="headerlink" title="Numericクラス"></a>Numericクラス</h2><h3 id="railsactivesupportlibactive_supportcore_extnumericbytesrb"><a href="#rails-activesupport-lib-active-support-core-ext-numeric-bytes-rb" class="headerlink" title="rails/activesupport/lib/active_support/core_ext/numeric/bytes.rb"></a>rails/activesupport/lib/active_support/core_ext/numeric/bytes.rb</h3><h4 id="numericbyte-numerickilobyte"><a href="#Numeric-byte-Numeric-kilobyte-…" class="headerlink" title="Numeric#byte, Numeric#kilobyte, …"></a>Numeric#byte, Numeric#kilobyte, …</h4><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>.byte                    <span class="comment"># =&gt; 1</span></span><br><span class="line"><span class="number">2</span>.kilobytes               <span class="comment"># =&gt; 2048</span></span><br><span class="line"><span class="number">45</span>.bytes + <span class="number">2.6</span>.megabytes  <span class="comment"># =&gt; 2726342.6</span></span><br></pre></td></tr></table></figure>
+<p>最後の例はソースのコメントに書いてある例。<br>なお、1kilobyte = 1024 * 1byteである。</p>
+<h3 id="railsactivesupportlibactive_supportcore_extnumericconversionsrb"><a href="#rails-activesupport-lib-active-support-core-ext-numeric-conversions-rb" class="headerlink" title="rails/activesupport/lib/active_support/core_ext/numeric/conversions.rb"></a>rails/activesupport/lib/active_support/core_ext/numeric/conversions.rb</h3><p>電話番号、通貨、パーセンテージなどのフォーマットをするメソッドが入っている。例えば、</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1235551234</span>.to_s(<span class="symbol">:phone</span>, <span class="symbol">area_code:</span> <span class="literal">true</span>) <span class="comment"># =&gt; "(123) 555-1234"</span></span><br></pre></td></tr></table></figure>
+<p>電話番号のフォーマット。しかし、Numericクラスのメソッドなので、電話番号についていえば、当然ながら先頭がゼロだと使えない。日本に限らず電話番号がゼロから始まるパターンは多いので、あまり使えないかもしれない。</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1234567890.5</span>.to_s(<span class="symbol">:currency</span>, <span class="symbol">locale:</span> <span class="symbol">:ja</span>) <span class="comment"># =&gt; "1,234,567,891円"</span></span><br><span class="line"><span class="number">1234567890.4</span>.to_s(<span class="symbol">:currency</span>, <span class="symbol">locale:</span> <span class="symbol">:ja</span>) <span class="comment"># =&gt; "1,234,567,890円"</span></span><br><span class="line"><span class="number">1234567890.4</span>.to_s(<span class="symbol">:currency</span>, <span class="symbol">locale:</span> <span class="symbol">:ja</span>, <span class="symbol">delimiter:</span> <span class="string">''</span>) <span class="comment"># =&gt; "1234567890円"</span></span><br></pre></td></tr></table></figure>
+<p>通貨の形式に変換。</p>
+<p>他にも、例えば</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">12345</span>.to_s(<span class="symbol">:human</span>, <span class="symbol">locale:</span> <span class="symbol">:en</span>) <span class="comment"># =&gt; "12.3 Thousand"</span></span><br><span class="line"><span class="number">12345</span>.to_s(<span class="symbol">:human</span>) <span class="comment"># =&gt; "12.3 千"</span></span><br></pre></td></tr></table></figure>
+<p>日本語の場合は、ちょっと微妙である。ここらへんのフォーマットは欧米系の言語に特化した部分があるので、使いづらい部分もある。<br>その他、ソースにたくさんの例が書いてあるのでご参照ください。</p>
+<h3 id="railsactivesupportlibactive_supportcore_extnumerictimerb"><a href="#rails-activesupport-lib-active-support-core-ext-numeric-time-rb" class="headerlink" title="rails/activesupport/lib/active_support/core_ext/numeric/time.rb"></a>rails/activesupport/lib/active_support/core_ext/numeric/time.rb</h3><h4 id="numericsecond-numericminute"><a href="#Numeric-second-Numeric-minute-…" class="headerlink" title="Numeric#second, Numeric#minute, …"></a>Numeric#second, Numeric#minute, …</h4><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2</span>.seconds    <span class="comment"># =&gt; 2</span></span><br><span class="line"><span class="number">2</span>.minutes    <span class="comment"># =&gt; 120</span></span><br><span class="line"><span class="number">2</span>.hours      <span class="comment"># =&gt; 7200</span></span><br><span class="line"><span class="number">1</span>.fortnight  <span class="comment"># =&gt; 1209600</span></span><br></pre></td></tr></table></figure>
+<p>secondsやminutesなどは、全てaliasで単数形とも紐付けられているので、1.secondでも1.secondsでもどっちでもよいけれども、一応1.second、2.seconds、一般的にはsecondsと使うのがRails流だろうか。</p>
+<p>また、Numeric#fortnightは2週間の秒数を返す。2.fortnightsだったら4週間。<br>ていうか2週間のことを英語でfortnightって言うことを知らなかった。。。日本では二週間を一単位にするというのは馴染みがないと思うのだが、欧米だとけっこう当たり前なのかな？</p>
+<p>ちなみに、Numeric#ago, Numeric#until, Numeric#since, Numeric#from_nowというメソッドもある。<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2</span>.ago <span class="comment"># =&gt; Sun, 12 Oct 2014 14:29:22 JST +09:00</span></span><br></pre></td></tr></table></figure></p>
+<p>が、Numericクラスのagoなどは、秒だということが分かりにくく誤使用を招くことから、deprecatedとなっており、Rails 4.2では削除されるので、2.agoではなく2.seconds.agoを使うようにとのこと。</p>
+<p>参考：<br><a href="https://github.com/rails/rails/commit/1f1613604925823be4b15893fbb8f957a38dd0b8" target="_blank" rel="noopener">https://github.com/rails/rails/commit/1f1613604925823be4b15893fbb8f957a38dd0b8</a><br><a href="https://github.com/rails/rails/commit/f1eddea1e3f6faf93581c43651348f48b2b7d8bb" target="_blank" rel="noopener">https://github.com/rails/rails/commit/f1eddea1e3f6faf93581c43651348f48b2b7d8bb</a></p>
+<h2 id="arrayクラス"><a href="#Arrayクラス" class="headerlink" title="Arrayクラス"></a>Arrayクラス</h2><h3 id="railsactivesupportlibactive_supportcore_extarrayprepend_and_appendrb"><a href="#rails-activesupport-lib-active-support-core-ext-array-prepend-and-append-rb" class="headerlink" title="rails/activesupport/lib/active_support/core_ext/array/prepend_and_append.rb"></a>rails/activesupport/lib/active_support/core_ext/array/prepend_and_append.rb</h3><h4 id="arrayappend-arrayprepend"><a href="#Array-append-Array-prepend" class="headerlink" title="Array#append, Array#prepend"></a>Array#append, Array#prepend</h4><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">array &lt;&lt; <span class="string">'1'</span></span><br><span class="line">array.append(<span class="string">'1'</span>)</span><br></pre></td></tr></table></figure>
+<p>配列に要素を追加するメソッド。<br>個人的には「&lt;&lt;」は分かりにくいなあといつも感じるので、appendはむしろ本体に入って欲しいぐらいの感じである。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>まだまだ読み始めたばかりですが、IssueやPull Requestを読んでいくのもおもしろいので、Active Supportに限らず引き続き夜な夜な読んでいこうと思います。</p>
+<p><a href="https://mmmcorp.co.jp/services/remote_system_engineering_service/ruby" target="_blank" rel="noopener">Ruby on Railsを活用したWebサービスや業務システム開発</a>をご検討の企業様は、是非MMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2014/10/14/active-support/" data-text="秋の夜長にActive Support" data-counturl="https://blog.mmmcorp.co.jp/blog/2014/10/14/active-support/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2014/10/14/active-support/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2014/10/14/active-support/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2014/10/14/active-support/" class="hatena-bookmark-button" data-hatena-bookmark-title="秋の夜長にActive Support" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby-on-Rails/">Ruby on Rails</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーサイド/">サーバーサイド</a></li></ul>
+
+
+      <p class="article-footer__author">by 下條 真嗣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

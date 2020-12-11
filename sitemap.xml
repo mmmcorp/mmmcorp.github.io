@@ -1,0 +1,4141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/css/custom-mnmlpress.css</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/12/04/aws_lambda_container_image_support_cicd_pipeline/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/12/11/life_with_apple_watch/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/12/02/aws_lambda_container_image_support_jp/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/12/02/migration-from-azure-functions-to-aws-lambda-with-aws-lambda-container-image-support/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/12/05/recommend-esa/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/11/21/google-play-console-role/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/11/20/vim-basic/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/11/13/old-document/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/10/27/value_and_framework_mmm_provide_in_corporate_dx/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/09/24/aws_competency_program_devops/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/10/31/catch-up-on-the-updates/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/09/26/amazon-inspector/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/09/13/sso-saml-multiple-idp/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/09/04/carrierwave-upload-pages/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/12/09/deactivate-aws-access-key/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/09/08/uchiko-diet-2/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/09/04/about-setapp-3/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/08/28/corporate_isucon/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/08/30/aws-terraform-sate/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.170Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/05/29/Started_diet_competition_with_MMM_members/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/08/20/How_to_make_a_High-Availability_WordPress_on_AWS/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/08/18/synthetics-with-cfn/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/08/14/baby-goods2/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/08/10/sso-saml-relay-state/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/07/26/project_management/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/08/07/lambda-wget/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/07/31/login-alert-of-aws-console/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/07/29/Cloud_Industry_News_Vol11_by_MMM/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/07/21/ruby-on-jets-problem/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/07/19/remote-work-cooking/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/07/15/Cloud_Industry_News_Vol10_by_MMM/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/07/11/reading-club/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/07/07/Six_Strategies_Migrating_to_AWS_ProsandCons/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/07/06/amazon-rds-proxy-ga/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/07/06/How_to_Measure_Web_Scrolling_Rate_in_GTM/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/06/26/perf-prog/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/08/20/blue_green_deployment_eb_cli/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/06/28/try-deno/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/06/17/lambda_efs/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/06/21/remote_work_environment/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/06/14/python-sort/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/06/19/baby_goods/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/06/17/Cloud_Industry_News_Vol8_by_MMM/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/06/07/aws-lambda-with-golang-gin/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/06/03/Cloud_Industry_News_Vol7_by_MMM/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/06/06/mmm-action-guideline-and-tacos/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/08/19/Cloud_Industry_News_Vol12_by_MMM/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/06/01/Key_Successful_Telework_is_chat_visualization/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/05/24/try-eks-on-fargate/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/05/25/vagrant-docker-mac/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/05/18/interview-with-remote-worker/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/05/18/gatsby-social-button/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/04/25/wp-docker/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/05/01/remote_party/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/05/13/Cloud_Industry_News_Vol6_by_MMM/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/04/28/Cloud_Industry_News_Vol5_by_MMM/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/04/15/Cloud_Industry_News_Vol4_by_MMM/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/04/15/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/04/22/yassan-1st-aniversary/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/04/17/supplements_really_have_health_benefits/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/04/12/positive-line-bot/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/04/11/serverless-component-deploy/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/04/03/lambda-rds-proxy/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/04/03/url_normalization_of_s3_website_with_lambda_at_edge/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/03/29/lambda-handlers/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/04/07/how-to-improvement-accuracy-of-pull-request/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/04/01/Cloud_Industry_News_Vol3_by_MMM/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/03/27/serverless_demerit/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/03/18/Cloud_Industry_News_Vol2_by_MMM/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/03/20/pair_programming/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/03/16/Secure_telework_with_Amazon_WorkSpaces/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/03/13/Compare_accuracy_seven_calibration_tools/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/03/08/pair-programming-mindset/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/07/01/Cloud_Industry_News_Vol9_by_MMM/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/02/13/Thinking_the_Impact_of_Serverless_computing_on_Business/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/03/06/sls-step-functions/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/02/28/remotework-bussiness-efficiency/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/02/26/Cloud_Industry_News_Vol1_by_MMM/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/02/15/lambda-mysql2-rds/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/02/12/Why-Serverless-Becomes-Core-Technology-in-DX/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/02/02/compare-vscode-intellij/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/01/31/yum-lambda/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/01/19/aws-sam-golang/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/01/19/lambda_at_edge_redirect/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/01/27/lambda-node/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/01/24/my-blog-way/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/01/11/localwork-2020/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/01/06/MMMcorp_themes_for_2020/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/12/25/lambda-cloud-bankruptcy/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/12/26/aws-certified-cloud-practitioner/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/12/13/aws-wordpress-plugin-cloudfront-feature-2/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/12/19/serverless-performance-tuning/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/12/07/serverless_monitoring/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/12/16/react_hook/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/12/06/hazui/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/11/30/ecr-image-scan-slack/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/11/14/personalize-article-recommend/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/11/15/aws_service_delivery_program_aws_lambda/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/11/25/2019_retrospective_of_MMM/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/11/22/usability_engineering/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/11/11/aws-wordpress-plugin-cloudfront-feature/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/11/24/aws-cfn-import/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/11/08/tech_book_type/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/10/28/sc_exam/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/10/20/aws-glacier-deep-archive/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/10/25/integrate_datadog_lambda_ssm/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/10/10/go-mod/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/10/18/corporate-site-renewal/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/09/26/how_to_do_workation/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/09/19/aws_ssm_ssh/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/10/07/my-mac-stands/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/10/04/gatsby_environment/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/09/15/api-gateway-resources/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/09/18/AWS_Lambda_Service_Delivery_Program_Consulting_Partner_Validation_Checklist/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/09/16/shinjuku_ramen/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/09/19/cqrs-dynamodb/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/09/02/for-first-baby-care/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/08/30/cloud9-with-vscode/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/08/24/software_license/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/08/17/mmm-action-guidelines/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/08/11/communication-stack/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/08/13/mmm-action-agenda-2019/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/08/01/serverless-meetup/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/07/26/interesting_comments/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/08/10/amazon_prime_video/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/07/31/step_functions_local/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/07/26/echo-and-hue/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/07/18/two_commnets_from_managers/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/07/18/recommend-toggl/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/11/16/mlt-tec/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/07/01/metago/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/07/05/api-gateway-aws-sam-golang-websocket/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/07/13/m2m/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/07/06/mickey_amazon_best5/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/06/30/javascript-concurrency-model/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/06/21/about-setapp-2/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/06/11/send_result_of_AWS_Systems_Manager_Run_Command_To_slack/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/05/31/remotework-fukuoka/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/06/08/redirect_to_country_specific_uri/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/06/10/kpt_method_how_to/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/05/24/good-git-commit/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/05/31/breeding_of_crickets/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/06/06/optimizing_total_cost_of_ownership/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/05/17/recruit_task/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/05/24/mokumoku-pr/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/05/07/smart_home/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/04/23/peer_bonus/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/05/07/kogawa/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/04/18/nested-applications/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/04/27/datadog-browser-test/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/04/19/sakaue/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/04/12/three_virtues/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/04/05/kpt/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/04/05/basic-auth-with-s3-and-cloudfront/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/03/23/goods_bought/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/04/12/working-environment/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/03/28/shimojo_recruit_point/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/03/20/MMM_Project_management_using_Backlog/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/03/17/pipeline-resolver/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/03/10/uchiko-recruit-point/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/03/01/luck/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/02/21/java11_springboot_docker/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/02/19/meeting/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/03/01/apps-i-use-to-improve-environment/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/02/16/time_management/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/02/13/employee_satisfaction/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/02/09/appsync-lambda-golang/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2020/02/09/micronaut-serverless/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/01/31/uchiko_2019/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/01/30/aws-batch-terraform/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/01/27/about-setapp/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/01/25/doi_2019/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/01/18/apn_advanced_consulting_partner/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/01/19/java11_springboot_docker/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/01/08/MMM_management_policy_in_2019/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/01/17/code_review_skillup/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/01/12/mini-habits/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/12/19/uchiko_2018/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/12/14/s3-cloudfront-awswaf/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/12/17/p12-to-pem-with-js/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/12/02/AWS_reInvent_2018/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/12/13/browser-compatible/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/12/06/shimojo_5th_years/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/12/08/postman/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/12/01/mmmblog_comments/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/11/29/dynamo-transaction/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/11/16/markdown-to-pdf-document/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2019/07/09/aws_service_delivery_program_cloud_front/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/11/11/postman/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/11/03/mmmblog-tags/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.158Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/07/19/linux_operation/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/10/29/testing-nuxtjs/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/10/26/go-duck-typing/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/10/19/importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/10/29/MMM_Employee_Selection_Process/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/10/20/okayama-spot/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/10/13/fuki201809/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/10/06/s3s3staticweb_cf_basic_auth/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/10/12/system_operation_skill_transfer/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/10/02/MMM_first_half_of_2018/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/10/01/assets-for-nuxt-storybook/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/09/27/join-new-project/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/09/24/tech-read-meeting/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/09/19/my-first-time-engineers-event/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/09/13/mmm_good_points/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/09/08/recruitment/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/09/14/fuki/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/09/03/Important_things_in_conversation_at_business_negotiation/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/08/30/uchiko-diet/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/08/31/state-management-pull-request/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/08/24/mob_programming/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/08/16/troubleshooting_flow/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/08/24/sho-saito/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/08/09/Technology_Stack_of_Participating_Projects_Aug_2018/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/08/11/4day_workweek_trial/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/08/06/terraform-rds-lambda/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/07/26/recruit-question/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/08/06/concentrate-uchiko/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/10/29/chat_communication/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/07/15/Questions_raised_at_the_company_information_session/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/07/09/scraping_aws_billing/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/07/14/online_interview/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/06/29/local_work_recruit/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/07/06/how_to_pass_saa/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/06/11/What-is-cloud-computing-and-its-advantages/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/06/27/local_work/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/06/16/discord_and_remote_work/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/06/08/aws-sam-go/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/05/25/web_application_logging/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/06/03/seminar_presentation/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/06/07/learn-new-prog-lang/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/06/01/AWS-study/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/05/21/localstack-lambda/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/05/19/cloudwatch_custom_metrics/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/05/15/Value_gained_in_MMM_work/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/05/09/node-express/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/05/14/shader-picture/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/04/18/recommend_bar/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/05/01/corporate-site_contacts/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/04/16/introduce-assembly/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/04/14/circleci2codebuild/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/04/10/Why_Free_Time_are_Important/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/04/01/doi_2017/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/03/17/becoming_a_ddo/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/03/22/sql_order_by/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/03/30/ikeshima_2017/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.154Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/08/16/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/03/16/MMM_Solution_Sales/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/02/23/slash_cmd_for_prs/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/03/13/uchiko/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/03/02/designer_wanted/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/03/05/test_code/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/02/17/squid_ecs/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/02/20/how_to_review_code/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/02/15/MMM_Team_of_2018/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/01/30/adobe-xd_archives-pdf/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/01/18/api_blueprint_dredd/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/02/02/remotework_good_points/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/01/26/How_to_AWS_sol-arch-pro/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/01/26/acm_dns_validation/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/01/16/MMM_Mission_in_2018/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/01/14/adobe-xd_requirements-definition/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2018/01/11/work-together/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/12/20/doi/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/12/14/remotework_communication/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/12/09/mmm-interview/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/12/11/shimojo-2017/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/11/30/amazon-machine-learning/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/12/06/look_back_at_the_2017/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/11/09/amazon-connect-customer-support/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/11/30/adobe_max_japan_2017/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/11/16/chat-with-customer/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/11/15/aws_privatelink/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/11/11/aws_step_functions/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/11/02/amazon-connect-skills-based-routing/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/11/07/One_Meal_a_Day/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/10/27/develop-application-using-awssdk/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/11/01/teaser_research/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/10/19/people-suitable-for-remote-work/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/10/13/amazon-ai/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/10/20/number_of_goroutine/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/10/14/nice-esa/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/10/10/Second_half_of_FY2017_MMM/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/09/27/study_group_after_work/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/09/29/information_sharing/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/10/04/storybook/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/07/28/golang-ses/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/09/19/ecs_instance_type_change/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/09/22/twilio_escalation_lambda/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/08/04/css_shapes/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/08/04/entered_gorm/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/08/09/redux-with-rest-api/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/08/19/reading_books/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/08/23/golang-s3-zip/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/09/16/single_task/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/08/31/easily_build_an_asynchronous_job_system_on_aws_batch/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/08/22/iot_button_deploy/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/09/04/disaster_measures/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/09/11/AWS_Certified_Solutions_Architect_Professional/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/09/07/remote-work-mexico/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/01/26/cho-my-goal-for-2017/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/07/19/System_migration_to_AWS/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/07/14/serverless-dev-flow/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/07/12/motoko_nakatsu/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/06/30/integrate_datadog_lambda/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/07/07/pass_parameter_from_jenkins_job_to_ansible/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/07/10/web_marketing/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/06/21/Readablecode/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/06/29/aws_autocomplete_api/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/06/22/flow/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/06/24/reading_circle/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/05/30/ecmascript02/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/06/20/keynote_tips/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/06/11/layout_block_objects/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/06/09/readable_pull_request_2/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/06/02/starting-datadog/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/06/02/reading_sql_antipatterns_1_4/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/05/27/aws_study_group_2017-05-27/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/05/25/Customize_JIRA_in_MMM/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/05/12/troubleshooting_linux_command/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/05/19/ServerlessFrameworkWithNode/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/05/19/ecmascript01/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/05/12/unapproved_facebook_ad/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/05/12/my_way_to_pass_aws_certified_solutions_architect_associate/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/05/01/study-first/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/04/24/problem-solving/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/04/29/corporate_web_ecs/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/04/30/Using_JIRA_for_Project_Management/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/04/14/kids_phone/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/04/22/mysqljstest/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/04/14/readable_pull_request/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/04/01/remote_party/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/04/10/remote_team_geek/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/03/24/ReactVR/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/04/07/vim-java/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/03/30/goal_for_2017/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/03/17/ng_words/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/03/24/AprilFool/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/03/17/ikeshima-workspace/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/03/10/E2ETest/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/03/10/remote_work_in_bangkok/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/03/04/zone_defence/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/03/03/important_topics_in_marketing/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/02/24/packing/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/02/24/english/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/02/08/yaginuma/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/02/17/drowing-tools/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/02/17/study-for-aws-exam/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/02/08/aws_opsworks_mistakes/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/07/22/working_remotely/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/07/26/amazon_workspaces_virus_removal/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/02/03/mini_mlt/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/01/25/learn-rxjs/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/02/03/esa_document_base_maintenance/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.146Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/09/30/isucon6/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/01/20/far-sightedness/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/01/07/my-goal-for-2017/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/01/04/happy-new-year-2017-greetings/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/12/22/JavaScript/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/12/26/cho-time-mmm/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/12/18/overcome_firstyear_wall/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/12/15/develop_on_remote_server/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/12/07/development-enviroment-with-flow/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/12/09/shimojo-look-back-2016/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/12/05/cho/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/12/03/mmm-aws-total-pack/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/12/03/look-back-2016/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/11/24/NativeScriptPushNotification/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/11/18/how_I_screwed_up/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/11/11/sequencial-response-with-rxjs/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/11/05/process_losses_and_process_gains/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/11/01/mmm-staff-action-agenda/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/11/11/rails-initial-settting/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/10/24/showwin-mmm-person/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/10/27/working-effectively-with-legacy-code/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/10/21/github-project/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/10/20/input_date_style/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/10/11/aws_ftp/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/10/10/compare-maybe-monad/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/10/08/alliance/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/10/08/mmm-mission-vision-code_of_conduct/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/01/13/shimojo-my-goal-for-2017/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/09/23/learn-foreign-language-support-system/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/09/23/android_smartphone/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/09/16/rubykaigi_2016/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/09/29/design-pattern/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/09/14/implementation-pattern-with-reactive-programming-library-tail/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/09/11/asked_questions_on_interviewer/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/09/08/implementation-pattern-with-reactive-programming-library-head/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/09/01/ishocon_2016/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/09/10/recruit/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/08/30/brazil/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/08/26/join-aws-study-meeting/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/08/27/consumer_electronics_iot/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/08/13/the_five_dysfunctions_of_a_team/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/08/18/github_issue_how_to_write/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/08/14/an_important_build_a_good_relationship_of_trust/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/08/05/isucon_in_house_study_2016/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/07/29/three_reasons_not_to_use_hashie/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/08/05/firstimpressionsofrxjs/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/07/29/summer-vacation/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/07/22/why-rx/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/07/21/rails-db-schema-migration/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/07/16/teaming/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/07/15/obstacle_to_introduce_AWS/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/07/07/rails_auto_gen_db_schema/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2017/01/18/maeda-my-goal-for-2017/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.142Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/04/08/hybrid-app/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/07/01/maeda-desk/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/07/01/family_calendar/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/06/24/shimojo_kumonosuke/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/06/18/github_label/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/06/09/ito-time-management/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/06/18/aws_operation_monitoring_service_kumonosuke/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/06/10/ns/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/06/03/web-image-file/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/05/24/web_api_guideline_supplement/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/06/02/deploy-rails-to-opsworks-chef11-with-custom-layer/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/05/28/kogai-desk/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/05/21/slack_custom_emoji/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/04/29/blog_pageview/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/05/19/failure_pattern_of_enterprise_cloud_introduction/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/05/13/flux-blue-light/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/04/27/deploy-rails-to-opsworks-chef12-2/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/04/20/component-base-TDD-with-karma/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/04/17/project_failure_patterns/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/04/18/active_admin_design/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/04/16/ide-docker-container/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/04/05/blog-recommendation/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/02/12/blue-light/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/03/31/deploy-rails-to-opsworks-chef12/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/03/25/static-type-check-with-flow-type/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/03/30/refresh/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/03/22/source_code_review/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/03/09/showwin-1st-year/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/02/26/add-unit-test-to-angular/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/03/19/goal_of_the_2016/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/03/18/mlt/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/03/11/lanta/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/03/04/remote_book_reading_club/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/03/02/css_balloon/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/02/20/developers_summit_2016_report/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/02/20/communication/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/02/24/rails-db-schema/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/06/25/testing-rxjs-5/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/02/05/css_arrow/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/01/25/shimojo-desk/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/02/08/okp-2015-2016/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/01/25/read-virtual-dom-library-deku/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/02/04/insert_mock_data/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/01/23/recruit/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/01/23/MMM_Technology_Stack_January_2016/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.138Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/07/18/aws-solution-architect/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/01/13/blog-search/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/01/12/company_system/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/12/22/health-of-remote-worker/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/01/07/about2015/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/12/20/prepare-to-rxjs/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/12/26/phuket-work-cation/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/12/21/redux-test/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/12/12/aws_lambda/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/12/15/aurora_transaction_isolation_level/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/12/12/2015_summary_MMM/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/12/08/remote-work-in-SV/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/12/04/how-to-make-rack-middleware/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/12/03/vue-with-redux/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/12/07/js/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/11/27/sketch3_nogood/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/11/23/remote_work_davao/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/11/16/try-lambda-scheduled-event-job/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/11/16/nock-with-mocha/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/11/08/play_with_go/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/11/14/github_mention/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/11/11/DDD_Alliance_report/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/10/23/unicorn-auto-start/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/11/04/sinon/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/10/30/google_analytics/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/10/02/camp2015report/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/10/29/health-management/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/10/20/favorite-node-modules/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/10/08/remote-job/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/10/16/team_geek/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/10/16/task_management_tools/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/10/06/isucon5_and_ishocon/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/09/29/atom_pair/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/09/25/healthy_programmer/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/09/24/use-nightwatch/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/09/19/qiita_vs_esa/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/09/07/work_cation_scheduling/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/09/05/management-custom-scripts/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/09/11/work-cation-remote-work/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/09/19/anonymous_slack_room2/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/08/28/work_cation_belongings/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/09/05/firstyear_wall/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/08/22/anonymous_slack_room/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/08/24/kogai/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/08/21/aws_certified-solutions-architect-associate/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/08/11/pull_request_format/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/08/14/work-place/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/08/08/command_line_application_recommend/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/07/30/rails_gem_recommend/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/08/07/development_camp/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/07/25/team_development/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/07/11/rails_web_api_validation/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/07/25/happy_workplace/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2016/01/12/ito-desk/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/07/16/js-trend-2015-6/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.134Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/04/04/writing_rule/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/07/10/ie_check/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/06/27/recruitment/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/06/27/opsworks_nginx_cors/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/06/19/remoteworklist/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/06/12/readable_code/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/05/21/frontrend/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/06/18/shanghai_remote_work/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/06/13/higi_speed_page/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/06/03/rails_test_policy/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/05/30/cherish_in_entrusted_development/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/05/30/working-remotely/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/05/15/sketch3/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/05/20/one-to-one-meeting/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/05/15/heroku-practice/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/04/30/bangkok_remote_work/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/05/02/for_website_design/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/04/23/docker-tips/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/04/22/habitual_power/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/04/15/ito/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/04/15/slack-hipchat/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/04/12/rspec-ckeditor/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/03/27/2014_summary_2015_goal/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/04/01/remotework-bcp/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/04/10/svg/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/07/01/web_api_guideline/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/03/13/workingmother-remote-works/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/03/23/circleci-protractor-parallel/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/03/18/okp/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/03/06/cebu/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/02/27/h-0227/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/02/18/activeadmin/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/02/10/hubot-hipchat/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/02/13/okamoto/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/02/04/mmm-team-development/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/01/27/ikeshima/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/12/19/look-back-2014/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/12/10/angularjs-xdomain-for-ie9/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/01/05/happy-new-year/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/01/16/color/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2015/01/21/octopress/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/11/19/coworking/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/12/01/logo1/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/12/05/android-draggable-panel/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/11/13/recruit/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/10/14/active-support/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/11/07/mmm-profile/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/10/30/active-resourrce-patch/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/10/24/book1024/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/10/07/protractor-circleci/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/10/07/book5/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.130Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/10/04/ikumen-remote-works/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/09/24/book3/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/03/29/post-title/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/09/22/active-record/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/09/24/book2/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/09/19/book/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/09/02/angularjs-tips/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/09/10/local-work/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/08/25/enviroments-specific-configuration-in-angular/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/08/12/title/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/08/22/remote-working/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/08/07/apple-company-store/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/07/31/tools/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/07/25/prott-and-balsamiq/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/07/08/line03/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/07/18/maeda/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/06/27/failcon/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/06/28/line-ranking/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/06/03/git-branch-model/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/06/19/streaming/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/06/13/line02/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/05/30/express_angularjs_csrf/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/05/20/recruit/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/05/02/wercker/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/05/16/line-stamp/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/05/09/shimojo/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/04/25/kunimoto/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/04/18/horikawa/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/04/15/shimojo/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/04/02/shimojo1/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/404.html</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmmcorp.co.jp/blog/2014/04/01/zi-ji-shao-jie/</loc>
+    
+    <lastmod>2020-12-11T04:55:28.126Z</lastmod>
+    
+  </url>
+  
+</urlset>

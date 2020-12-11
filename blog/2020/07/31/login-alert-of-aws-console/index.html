@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AWSマネジードサービスだけを使ってAWSコンソールのログインアラートを実装しよう | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="はじめに西藤です。 AWSを利用する際にはAWSアカウントを開設して、コンソールにログインすることでAWS各サービスを利用できます。このブログをご覧になっている方も、そのようにしてなんらかの形でAWSに触れている方も多くいると思います。 さて、その際にはアカウントのセキュリティ対策をどのようにされていますか？ もし、セキュリティ対策を怠るとAWSアカウントに不正にアクセス、過剰なリソースを作成・使">
+<meta name="keywords" content="AWS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWSマネジードサービスだけを使ってAWSコンソールのログインアラートを実装しよう">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/07/31/login-alert-of-aws-console/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="はじめに西藤です。 AWSを利用する際にはAWSアカウントを開設して、コンソールにログインすることでAWS各サービスを利用できます。このブログをご覧になっている方も、そのようにしてなんらかの形でAWSに触れている方も多くいると思います。 さて、その際にはアカウントのセキュリティ対策をどのようにされていますか？ もし、セキュリティ対策を怠るとAWSアカウントに不正にアクセス、過剰なリソースを作成・使">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-07-31-login-alert-of-aws-console/image1.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-07-31-login-alert-of-aws-console/image2.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-07-31-login-alert-of-aws-console/image3.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-07-31-login-alert-of-aws-console/image4.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AWSマネジードサービスだけを使ってAWSコンソールのログインアラートを実装しよう">
+<meta name="twitter:description" content="はじめに西藤です。 AWSを利用する際にはAWSアカウントを開設して、コンソールにログインすることでAWS各サービスを利用できます。このブログをご覧になっている方も、そのようにしてなんらかの形でAWSに触れている方も多くいると思います。 さて、その際にはアカウントのセキュリティ対策をどのようにされていますか？ もし、セキュリティ対策を怠るとAWSアカウントに不正にアクセス、過剰なリソースを作成・使">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/2020-07-31-login-alert-of-aws-console/image1.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-login-alert-of-aws-console" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-07-31T17:00:00.000Z" itemprop="datePublished">2020-07-31</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/07/31/login-alert-of-aws-console/">AWSマネジードサービスだけを使ってAWSコンソールのログインアラートを実装しよう</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/07/31/login-alert-of-aws-console/" data-text="AWSマネジードサービスだけを使ってAWSコンソールのログインアラートを実装しよう" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/07/31/login-alert-of-aws-console/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/07/31/login-alert-of-aws-console/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/07/31/login-alert-of-aws-console/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/07/31/login-alert-of-aws-console/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWSマネジードサービスだけを使ってAWSコンソールのログインアラートを実装しよう" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="はじめに"><a href="#はじめに" class="headerlink" title="はじめに"></a>はじめに</h2><p>西藤です。</p>
+<p>AWSを利用する際にはAWSアカウントを開設して、コンソールにログインすることでAWS各サービスを利用できます。このブログをご覧になっている方も、そのようにしてなんらかの形でAWSに触れている方も多くいると思います。</p>
+<p>さて、その際にはアカウントのセキュリティ対策をどのようにされていますか？</p>
+<p>もし、セキュリティ対策を怠るとAWSアカウントに不正にアクセス、過剰なリソースを作成・使用されて、後になって高額なAWS利用料の請求が来るという事態になりかねません。</p>
+<p>対策方法の代表的な例では</p>
+<ul>
+<li>権限が強いアカウントのrootユーザーは日常的な操作に使わない</li>
+<li>コンソールにログインするユーザーにはMFAを設定する</li>
+<li>CloudTrailを有効化しておき、不正なアクティビティを検出できるようにする</li>
+</ul>
+<p>などがありますが、今回は3つ目のCloudTrailを利用しつつ</p>
+<ul>
+<li>コンソールログインが行われたらそのタイミングで通知をする</li>
+</ul>
+<p>という仕組みを簡易的に実装する方法をご紹介いたします。</p>
+<ul>
+<li>AWSの各サービスへの理解はあるが設定を行うまでの余裕がない（手っ取り早く設定したい）</li>
+</ul>
+<p>という方へ、プログラム開発なしで「ログインが行われた時には必ず通知が来る。仮に不正ログインされたとしてもすぐに気がつける」という安心を得られるためのレシピ紹介としてご参考にいただければと思います。</p>
+<h2 id="構成概略"><a href="#構成概略" class="headerlink" title="構成概略"></a>構成概略</h2><p>今回構成する内容としては次のようなサービス構成です。</p>
+<p><img src="/images/2020-07-31-login-alert-of-aws-console/image1.png" alt="構成イメージ図"></p>
+<p>前提としては以下の設定があらかじめ必要です。</p>
+<ul>
+<li>AWS CloudTrailの有効化</li>
+</ul>
+<p>これによりAWSアカウント内における各APIの呼び出しを検出できるようにします。</p>
+<ul>
+<li>Amazon SNSの通知先登録</li>
+</ul>
+<p>これによりマネジメントコンソールへのログインが検出された時にメール通知を送れるようになります。<br>通知を受け取りたいメールアドレスを追加したトピックを作成しておいてください。</p>
+<h2 id="cloudwatch-eventsでの設定"><a href="#CloudWatch-Eventsでの設定" class="headerlink" title="CloudWatch Eventsでの設定"></a>CloudWatch Eventsでの設定</h2><p>以上の設定を行った上で、今回のポイントとなるCloudWatch Eventsでの設定を見ていきます。</p>
+<h3 id="イベントソース"><a href="#イベントソース" class="headerlink" title="イベントソース"></a>イベントソース</h3><p>ここでは「どのイベントが検出されたら後続のアクションを実施するのか」を選択しています。</p>
+<p><img src="/images/2020-07-31-login-alert-of-aws-console/image2.png" alt="CloudWatch Eventsルールイベントソース設定"></p>
+<p>サービス名：「AWSコンソールのサインイン」<br>イベントタイプ：「サインインイベント」</p>
+<p>という選択をすることで、AWSコンソールにサインインしたのを起点に後述するAmazon SNSを使った通知を呼び出せます。</p>
+<h3 id="ターゲット"><a href="#ターゲット" class="headerlink" title="ターゲット"></a>ターゲット</h3><p>次に、「イベントソース」でイベントが検出されたら「何を対象にどのようなアクションを実施するのか」を決めていきます。</p>
+<p><img src="/images/2020-07-31-login-alert-of-aws-console/image3.png" alt="CloudWatch Eventsルールターゲット設定"></p>
+<p>今回は、Amazon SNSを介してメール通知を行いたいので、対象となるAWSリソースとして「SNSトピック」を選択<br>そして「トピック」としてはあらかじめAmazon SNSで通知をしたいメールアドレスが登録されているものを選択します。</p>
+<p>そして、Amazon SNSでメールを飛ばすために文言を整形したいので、「入力の設定」欄に「インプットトランスフォーマー」を選択します。<br>入力欄が2つありますが、前者が「検出されたイベントの値を使えるよう取得」するための欄で、後者が「取得した値を用いて通知したいメッセージ文言の内容」つまりメール文面そのものを形成する欄です。</p>
+<p>内容としては以下の通り、コピーしてご利用ください。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;detailType&quot;:&quot;$.detail-type&quot;,&quot;responseElements&quot;:&quot;$.detail.responseElements&quot;,&quot;sourceIPAddress&quot;:&quot;$.detail.sourceIPAddress&quot;,&quot;userArn&quot;:&quot;$.detail.userIdentity.arn&quot;,&quot;userAgent&quot;:&quot;$.detail.userAgent&quot;,&quot;id&quot;:&quot;$.id&quot;,&quot;time&quot;:&quot;$.time&quot;,&quot;userType&quot;:&quot;$.detail.userIdentity.type&quot;,&quot;additionalEventData&quot;:&quot;$.detail.additionalEventData&quot;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&quot;AWSコンソールのサインインイベントが発生しました。    DetailType:&lt;detailType&gt;    ID:&lt;id&gt;    Time:&lt;time &gt;    User-type:&lt;userType&gt;    User-arn:&lt;userArn&gt;    sourceIPAddress:&lt;sourceIPAddress&gt;    userAgent:&lt;userAgent&gt;    responseElements:&lt;responseElements&gt;    additionalEventData:&lt;additionalEventData&gt;    &quot;</span><br></pre></td></tr></table></figure>
+<p>以上の設定でCloudWatch Eventルールを作成します。</p>
+<h2 id="実施結果"><a href="#実施結果" class="headerlink" title="実施結果"></a>実施結果</h2><p>では、以上の設定を行った上でAWSマネジメントコンソールにログインしたらどうなるでしょうか？</p>
+<p>ログインを行った直後に届いたメールが次のような形です。</p>
+<p><img src="/images/2020-07-31-login-alert-of-aws-console/image4.png" alt="メール受信例"></p>
+<p>このうちの一部をピックアップすると</p>
+<ul>
+<li><code>Time</code>→ログインが行われた時刻</li>
+<li><code>User</code>→どのユーザーでサインインが行われたのか</li>
+<li><code>sourceIPAddress</code>→どのIPアドレスからサインインが行われたのか</li>
+</ul>
+<p>などを知ることができます。</p>
+<p>コンソール画面を開いたらほぼリアルタイムにメールが届くので「ちゃんと検出しているな」ということが分かりますし、もしコンソール画面を開いておらず覚えのないタイミングにメールが来た場合は該当のユーザーの無効化など速やかな対応をとることができます。</p>
+<p>（私の場合、携帯電話を含む3つのメールアドレスを登録しているので、どれかいずれかのメールサービスにトラブルがあっても、他で受け取れる体制をとっています。）</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>以上、CloudTrailとCloudWatch Eventsルール、そしてAmazon SNSを活用したAWSコンソールのログイン通知の実装でした。<br>メール本文の体裁は改善の余地があるかと思いますが、ニーズに合わせて修正しながら、AWSのマネージドサービスだけでさくっと実装できるログインアラートとして参考になれば幸いです。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/07/31/login-alert-of-aws-console/" data-text="AWSマネジードサービスだけを使ってAWSコンソールのログインアラートを実装しよう" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/07/31/login-alert-of-aws-console/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/07/31/login-alert-of-aws-console/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/07/31/login-alert-of-aws-console/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/07/31/login-alert-of-aws-console/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWSマネジードサービスだけを使ってAWSコンソールのログインアラートを実装しよう" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li></ul>
+
+
+      <p class="article-footer__author">by 西藤翔太朗</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

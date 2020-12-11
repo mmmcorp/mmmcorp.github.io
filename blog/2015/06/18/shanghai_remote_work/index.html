@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>上海でのリモートワーク ~VPNと共に過ごす日々~ | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="6月6日から上海に来て、リモートワークをしている伊藤です。なぜ上海に来たのかは会社情報の[役員・社員紹介]の紹介文を読んで頂ければと思います… 今回は上海でのリモートワーク事情をお伝えできればと思っています。前半にVPNの話、後半にリモートワークの話をしますが、結論を先に言っておくと、かなり大変です… VPNは必須ご存知な方も多いと思いますが、中国政府がGFW(Great Fire Wall,">
+<meta name="keywords" content="リモートワーク,テレワーク,上海,VPN">
+<meta property="og:type" content="article">
+<meta property="og:title" content="上海でのリモートワーク ~VPNと共に過ごす日々~">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2015/06/18/shanghai_remote_work/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="6月6日から上海に来て、リモートワークをしている伊藤です。なぜ上海に来たのかは会社情報の[役員・社員紹介]の紹介文を読んで頂ければと思います… 今回は上海でのリモートワーク事情をお伝えできればと思っています。前半にVPNの話、後半にリモートワークの話をしますが、結論を先に言っておくと、かなり大変です… VPNは必須ご存知な方も多いと思いますが、中国政府がGFW(Great Fire Wall,">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/shanghai-remote-work/head.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.130Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="上海でのリモートワーク ~VPNと共に過ごす日々~">
+<meta name="twitter:description" content="6月6日から上海に来て、リモートワークをしている伊藤です。なぜ上海に来たのかは会社情報の[役員・社員紹介]の紹介文を読んで頂ければと思います… 今回は上海でのリモートワーク事情をお伝えできればと思っています。前半にVPNの話、後半にリモートワークの話をしますが、結論を先に言っておくと、かなり大変です… VPNは必須ご存知な方も多いと思いますが、中国政府がGFW(Great Fire Wall,">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/shanghai-remote-work/head.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-shanghai-remote-work" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2015-06-18T10:09:29.000Z" itemprop="datePublished">2015-06-18</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2015/06/18/shanghai_remote_work/">上海でのリモートワーク ~VPNと共に過ごす日々~</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/06/18/shanghai_remote_work/" data-text="上海でのリモートワーク ~VPNと共に過ごす日々~" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/06/18/shanghai_remote_work/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/06/18/shanghai_remote_work/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/06/18/shanghai_remote_work/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/06/18/shanghai_remote_work/" class="hatena-bookmark-button" data-hatena-bookmark-title="上海でのリモートワーク ~VPNと共に過ごす日々~" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/shanghai-remote-work/head.png" alt=""></p>
+<p>6月6日から上海に来て、リモートワークをしている伊藤です。<br>なぜ上海に来たのかは<a href="http://mmmcorp.co.jp/company.html" target="_blank" rel="noopener">会社情報</a>の[役員・社員紹介]の紹介文を読んで頂ければと思います…</p>
+<p>今回は上海でのリモートワーク事情をお伝えできればと思っています。<br>前半にVPNの話、後半にリモートワークの話をしますが、結論を先に言っておくと、かなり大変です…</p>
+<h2 id="vpnは必須"><a href="#VPNは必須" class="headerlink" title="VPNは必須"></a>VPNは必須</h2><p>ご存知な方も多いと思いますが、中国政府がGFW(Great Fire Wall, 金盾)というネットワーク閲覧システムを構えていて、中国国内からはFacebookやTwitterはもちろん、Googleまでも使えません。(google.com.hkは使えます)</p>
+<p>GFWを回避するために私は中国国外にVPNサーバーを構築して、そこに常時VPN接続をする形で仕事をしています。<br>今回用意したVPNサーバーは以下の6つです。</p>
+<ol>
+<li>さくらVPSのサーバー(東京)</li>
+<li>AWSのEC2インスタンス(東京リージョン)</li>
+<li>DigitalOceanのVPS(サンフランシスコリージョン)</li>
+<li>DigitalOceanのVPS(シンガポールリージョン)</li>
+<li>大学のVPNサーバー(京都, 昨年卒業したばかりなので7/1まで利用可能)</li>
+<li>自宅のVPNルーター(静岡, not サーバー)</li>
+</ol>
+<p>5番以外はL2TP over IPsec、5番はPPTPによるVPNの構築です。<br>3番はさすがに物理的距離が遠すぎて、実用的な速度は出ませんでした。</p>
+<h2 id="vpnは必ずしも繋がらない"><a href="#VPNは必ずしも繋がらない" class="headerlink" title="VPNは必ずしも繋がらない"></a>VPNは必ずしも繋がらない</h2><p>なぜこんなにたくさんのVPN環境を用意しているかというと、中国のネットワークはプロバイダによってVPN接続ができるサーバーとできないサーバーがあるからです。また、さっきまで普通にVPN接続できていたのに突然繋がらなくなったりする謎な現象も頻繁に起きるためです。</p>
+<p>現在上海で確認できているプロバイダ毎の差異は</p>
+<ul>
+<li>中国电信(固定回線): 1~6すべて繋がる</li>
+<li>中国联通(固定回線): 5のみ繋がる</li>
+<li>长城互联网(固定回線): 1~6のすべて繋がらない</li>
+<li>中国移动(移動通信4G): 5のみ繋がる</li>
+</ul>
+<p>という感じです。<br>私の住んでいるアパートでは、长城互联网が標準で契約されていましたが、VPNが繋がらないので最大手の中国电信に契約を変えました。</p>
+<h2 id="日本までの回線速度"><a href="#日本までの回線速度" class="headerlink" title="日本までの回線速度"></a>日本までの回線速度</h2><p>中国と日本との間でどれだけのスピードが出るかは、場所に依存しています。<br>例えば、同じ場所で10Mbpsの固定回線を契約しても、100Mbpsの回線を契約しても、日本までの回線はほとんど変わりません。つまりボトルネックは家からインターネットに繋がる部分ではなくて、 <strong>中国と日本の間のネットワークのどこか</strong> になっていることがほとんどです。<br>つまり、快適なネット環境が必要であれば、いろいろな場所をまわって速度が出る場所を見つけるしかないのです。</p>
+<p>場所に依存しない(しにくい)ものとして、移動通信システムを使うという方法もあります。上海の中国移动の4Gは中国国内で30~40Mbpsとかなり速いのですが、日本まで繋ぐと1Mbps弱になってしまい、仕事をするにはかなりキツイ速度です。<br>上海のいろいろな場所で試してみましたが、だいたいどこでも1Mbpsぐらいで、VPNも5番のものしか繋がりませんでした。</p>
+<h2 id="ネット環境探しに最適なregus"><a href="#ネット環境探しに最適なRegus" class="headerlink" title="ネット環境探しに最適なRegus"></a>ネット環境探しに最適なRegus</h2><p>ここからやっとコワーキングスペースの話なのですが、上記のように様々な場所を探しまわる必要があるので<a href="http://www.regus.co.jp/" target="_blank" rel="noopener">Regus</a>を契約しました。Regusはレンタルオフィスのようなサービスを世界中で展開しており、メンバーになるとビジネスラウンジやプライベートオフィスが使えるようになります。</p>
+<p>上海には現在32拠点があり、毎月180元(3600円)のゴールドプラン会員になるとその32拠点のビジネスラウンジという共用スペースが使いたい放題になります。<br>(全世界の拠点を使いたい場合には毎月320元のゴールドプランの契約が必要です。)</p>
+<h2 id="日本との通信に適した上海のregusオフィス"><a href="#日本との通信に適した上海のRegusオフィス" class="headerlink" title="日本との通信に適した上海のRegusオフィス"></a>日本との通信に適した上海のRegusオフィス</h2><p>住んでいるアパート周辺のRegusで、VPN接続の可否と日本までの回線速度を計測したので、それを以下にまとめます。<br>※ 日本までの回線速度: VPN接続をした状態で、<a href="http://speedtest.net/" target="_blank" rel="noopener">speedtest.net</a>にて速度計測。</p>
+<ul>
+<li><a href="http://www.regus.cn/locations/business-centre/shanghai-silver-centre" target="_blank" rel="noopener">上海银座企业中心</a><ul>
+<li>VPN: 5のみOK</li>
+<li>速度: 0.01Mbps以下</li>
+</ul>
+</li>
+<li><a href="http://www.regus.cn/locations/business-centre/shanghai-shanghai-centre" target="_blank" rel="noopener">上海商城</a><ul>
+<li>VPN: 1~6すべてOK</li>
+<li>速度: 0.5Mbps</li>
+</ul>
+</li>
+<li><a href="http://www.regus.cn/locations/business-centre/shanghai-eco-city" target="_blank" rel="noopener">1788国际中心</a><ul>
+<li>VPN: 5以外OK</li>
+<li>速度: 1.0Mbps弱</li>
+</ul>
+</li>
+<li><a href="http://www.regus.cn/locations/business-centre/shanghai-yueda-889" target="_blank" rel="noopener">悦达889中心</a><ul>
+<li>VPN: 1~6すべてOK (かなり不安定で頻繁に繋がらなくなる)</li>
+<li>速度: 昼間0.5Mbps, 夕方2Mbps</li>
+</ul>
+</li>
+<li><a href="http://www.regus.cn/locations/business-centre/shanghai-plaza-66" target="_blank" rel="noopener">上海恒隆广场</a><ul>
+<li>VPN: 1~6すべてOK</li>
+<li>速度: 2.5~4Mbps</li>
+</ul>
+</li>
+</ul>
+<p>5つめに行った上海恒隆广场のオフィスで安定して比較的高速なネット環境を見つけることができたので、現在はここで仕事をしています。<br>ずっと同じVPNを使っていると時々繋がらなくなったりするので、その時は別のVPNを使っています。</p>
+<p>ちなみに上海にもいくつかコワーキングスペースがあるのですが、利用料は毎月4~7万円ぐらいが相場で、聞いた話だと潰れてしまうことも少なくないようなので、あまりオススメではありません。<br>私が通う予定だったコワーキングスペースは、4月に確かめた時には営業していましたが、6月には潰れていました。</p>
+<h2 id="杭州で仕事をするという選択肢"><a href="#杭州で仕事をするという選択肢" class="headerlink" title="杭州で仕事をするという選択肢"></a>杭州で仕事をするという選択肢</h2><p>仕事場はRegusをまわって快適なネット環境を探せばよかったのですが、住むところはそう簡単に引っ越しできないので、もしその場所で速度が出なければ諦めるしかありません。<br>私は中国电信の100Mbpsのプランを契約しましたが、中国国内で20~30Mbps、日本との間では0.3Mbpsぐらいしか速度が出ません。なので結局家では4Gでテザリング(上述したように1Mbsp弱)をしています。</p>
+<p>上海から南に電車で1時間ぐらいのところに杭州という都市があります。中国のシリコンバレーと呼ばれていて、アリババなどのIT大企業の本社がいくつかある都市です。<br>私の恋人が杭州出身で、先週実家に帰る用事があったので、ついでに杭州のRegusと4Gの速度を測ってもらいました。<br><a href="http://www.regus.cn/locations/business-centre/hangzhou-foreign-economy-trade-plaza" target="_blank" rel="noopener">杭州外经贸中心</a>のRegusでVPNを使って11Mbps、中国移动の4GもVPNが1~6すべて繋がって3Mbps前後でした。家では4Gテザリングで良いので、杭州に引っ越そうかなぁとも考えています…</p>
+<p>※日本とは異なり、中国では移動通信のプロバイダは省ごとに管轄が違うので、上海と杭州の中国移动で速度/VPNの接続可否に差が出たのではないかと考えられます。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/06/18/shanghai_remote_work/" data-text="上海でのリモートワーク ~VPNと共に過ごす日々~" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/06/18/shanghai_remote_work/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/06/18/shanghai_remote_work/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/06/18/shanghai_remote_work/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/06/18/shanghai_remote_work/" class="hatena-bookmark-button" data-hatena-bookmark-title="上海でのリモートワーク ~VPNと共に過ごす日々~" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/VPN/">VPN</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/テレワーク/">テレワーク</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/リモートワーク/">リモートワーク</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/上海/">上海</a></li></ul>
+
+
+      <p class="article-footer__author">by 伊藤 勝梧</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

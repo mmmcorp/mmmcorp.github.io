@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>クラウド・コンピューティングとは？そのメリットと注意点について | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="“茶色い炭水化物”の積極的な摂取のために、新たに玄米食を最近初めてみた MMM代表 国本です。 「クラウド(クラウド・コンピューティング)」は日進月歩で進化を遂げるIT業界の中でも、特に大きな転換点(パラダイムシフト)として取り上げられる、非常に重要なサービスです。 「クラウド」は一般用語としても昨今浸透していますが「クラウド」の定義そのものはマーケティング的に曖昧に使われる事も多々あり、企業や">
+<meta name="keywords" content="ビジネス,クラウド,AWS,MMM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="クラウド・コンピューティングとは？そのメリットと注意点について">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2018/06/11/What-is-cloud-computing-and-its-advantages/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="“茶色い炭水化物”の積極的な摂取のために、新たに玄米食を最近初めてみた MMM代表 国本です。 「クラウド(クラウド・コンピューティング)」は日進月歩で進化を遂げるIT業界の中でも、特に大きな転換点(パラダイムシフト)として取り上げられる、非常に重要なサービスです。 「クラウド」は一般用語としても昨今浸透していますが「クラウド」の定義そのものはマーケティング的に曖昧に使われる事も多々あり、企業や">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/What-is-cloud-computing-and-its-advantages/cloud_solution.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.154Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="クラウド・コンピューティングとは？そのメリットと注意点について">
+<meta name="twitter:description" content="“茶色い炭水化物”の積極的な摂取のために、新たに玄米食を最近初めてみた MMM代表 国本です。 「クラウド(クラウド・コンピューティング)」は日進月歩で進化を遂げるIT業界の中でも、特に大きな転換点(パラダイムシフト)として取り上げられる、非常に重要なサービスです。 「クラウド」は一般用語としても昨今浸透していますが「クラウド」の定義そのものはマーケティング的に曖昧に使われる事も多々あり、企業や">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/What-is-cloud-computing-and-its-advantages/cloud_solution.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-What-is-cloud-computing-and-its-advantages" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2018-06-11T14:48:00.000Z" itemprop="datePublished">2018-06-11</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2018/06/11/What-is-cloud-computing-and-its-advantages/">クラウド・コンピューティングとは？そのメリットと注意点について</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2018/06/11/What-is-cloud-computing-and-its-advantages/" data-text="クラウド・コンピューティングとは？そのメリットと注意点について" data-counturl="https://blog.mmmcorp.co.jp/blog/2018/06/11/What-is-cloud-computing-and-its-advantages/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2018/06/11/What-is-cloud-computing-and-its-advantages/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2018/06/11/What-is-cloud-computing-and-its-advantages/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2018/06/11/What-is-cloud-computing-and-its-advantages/" class="hatena-bookmark-button" data-hatena-bookmark-title="クラウド・コンピューティングとは？そのメリットと注意点について" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/What-is-cloud-computing-and-its-advantages/cloud_solution.png" alt=""></p>
+<p>“茶色い炭水化物”の積極的な摂取のために、新たに玄米食を最近初めてみた MMM代表 国本です。</p>
+<p>「クラウド(クラウド・コンピューティング)」は日進月歩で進化を遂げるIT業界の中でも、特に大きな転換点(パラダイムシフト)として取り上げられる、非常に重要なサービスです。</p>
+<p>「クラウド」は一般用語としても昨今浸透していますが「クラウド」の定義そのものはマーケティング的に曖昧に使われる事も多々あり、企業や人によって理解・解釈の幅が異なっているように強く感じます。</p>
+<p>そこで今回は、クラウドの基礎、種類、提供サービスモデルの形態や違い、クラウドのメリット、そしてクラウドを利用する際の注意点を理解することで <strong>クラウドをビジネスに活用できる基礎知識を身につけること</strong> をゴールに、わかりやすくクラウドを紹介してみようと思います。</p>
+<h2 id="目次"><a href="#目次" class="headerlink" title="目次"></a>目次</h2><!-- toc -->
+<ul>
+<li><a href="#そもそもクラウドとは">そもそもクラウドとは？</a></li>
+<li><a href="#クラウドの提供形態と実装の種類について">クラウドの提供形態と実装の種類について</a><ul>
+<li><a href="#クラウドの3つのサービスモデル">クラウドの3つのサービスモデル</a><ul>
+<li><a href="#1saassoftware-as-a-service">1．SaaS(Software as a Service)</a></li>
+<li><a href="#2paasplatform-as-a-service">2．PaaS(Platform as a Service)</a></li>
+<li><a href="#3iaasinfrastructure-as-a-service">3．IaaS(Infrastructure as a Service)</a></li>
+<li><a href="#クラウドサービスモデルの比較表">クラウドサービスモデルの比較表</a></li>
+</ul>
+</li>
+<li><a href="#クラウドの3つの実装モデル">クラウドの3つの実装モデル</a><ul>
+<li><a href="#1パブリッククラウド">1．パブリック・クラウド</a></li>
+<li><a href="#2プライベートクラウド">2．プライベート・クラウド</a></li>
+<li><a href="#3ハイブリッドクラウド">3．ハイブリッド・クラウド</a></li>
+<li><a href="#クラウド実装モデルの比較表">クラウド実装モデルの比較表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#クラウドのメリット">クラウドのメリット</a><ul>
+<li><a href="#俊敏性を大幅に向上できる">俊敏性を大幅に向上できる</a></li>
+<li><a href="#しなやかな柔軟性を常時確保できる">しなやかな柔軟性を常時確保できる</a></li>
+<li><a href="#進化し続ける機能追加コスト削減の恩恵が得られる">進化し続ける機能追加・コスト削減の恩恵が得られる</a></li>
+<li><a href="#システムの総所有コストtcoの削減">システムの総所有コスト(TCO)の削減</a></li>
+</ul>
+</li>
+<li><a href="#クラウド利用時の注意点">クラウド利用時の注意点</a><ul>
+<li><a href="#システムのクラウド対応最適化を実施する">システムのクラウド対応・最適化を実施する</a></li>
+<li><a href="#従量課金の金額を把握しておく">従量課金の金額を把握しておく</a></li>
+<li><a href="#エンジニアのクラウドスキル習得枠組みを整備する">エンジニアのクラウドスキル習得・枠組みを整備する</a></li>
+</ul>
+</li>
+<li><a href="#まとめ">まとめ</a></li>
+</ul>
+<!-- tocstop -->
+<h2 id="そもそもクラウドとは"><a href="#そもそもクラウドとは？" class="headerlink" title="そもそもクラウドとは？"></a>そもそもクラウドとは？</h2><p>クラウド(クラウド・コンピューティング)サービスとは、非常に大規模な共用コンピューティングリソース(設備)を保有する事業者から、インターネットを経由して、コンピューティング(サーバー)、データーベース、ストレージや業務アプリケーションなどのITリソースを従量課金(使った分だけ支払う形)で利用できるセルフサービスの総称です。</p>
+<p>クラウドの大きな特徴として</p>
+<ul>
+<li>「必要な時」に</li>
+<li>「必要な量(ITリソース)」を</li>
+<li>「すぐ利用」でき</li>
+<li>「不要になれば廃棄」できる</li>
+</ul>
+<p>このような <strong>セルフサービス前提のオンデマンド化をITリソースにおいて実現した</strong> という点があり、ここが旧来の情報システムのサービスと根本的に異なっている重要なポイントです。</p>
+<p>クラウドが誕生する以前、サーバーやデータベースなどのITリソースを利用したい場合、まずサーバー・ストレージハードウェアを購入(もしくはリース)後、データセンターで備え付けるラックを準備し、ハードウェアをキッティングして、OS(WindowsやLinux)などの必要なアプリケーションをセットアップする必要があり、ハードウェア・人件費含めて多大な初期コストと長いリードタイムを要していました。</p>
+<p>セルフサービスでのオンデマンド化を実現したクラウドの誕生によって、これらの問題を解し、<strong>小さいコストで、素早くビジネスに適用できる</strong>という点が、業界・業種を問わずクラウドがここまで普及している大きな要因と言えます。</p>
+<h2 id="クラウドの提供形態と実装の種類について"><a href="#クラウドの提供形態と実装の種類について" class="headerlink" title="クラウドの提供形態と実装の種類について"></a>クラウドの提供形態と実装の種類について</h2><p>クラウド・コンピューティングは複数のサービス提供の形(サービスモデル)と、その実装種別(実装モデル)があり、それぞれの特性を把握した上で、用途に適したサービスや実装モデルを選択することが非常に重要です。</p>
+<h3 id="クラウドの3つのサービスモデル"><a href="#クラウドの3つのサービスモデル" class="headerlink" title="クラウドの3つのサービスモデル"></a>クラウドの3つのサービスモデル</h3><p>クラウドのサービスモデルは、従量課金のITリソースの提供形態によって、一般的に大きく下記3つに分類されます。</p>
+<h4 id="1saassoftware-as-a-service"><a href="#1．SaaS-Software-as-a-Service" class="headerlink" title="1．SaaS(Software as a Service)"></a>1．SaaS(Software as a Service)</h4><p>“ソフトウェア・アズ・ア・サービス”と呼ばれ、クラウド事業者から提供される<strong>アプリケーションをインターネット経由で利用する</strong>サービスモデルの形態を指します。</p>
+<p>Webブラウザで電子メールが利用できるGoogle社のGmailや、オンラインストレージを提供しているDropbox、法人企業で広く利用されているCRMや顧客管理などで有名なセールスフォース(Salesforce)などは、SaaSに分類されるクラウドサービスです。</p>
+<p>SaaSの利用者は、クラウド上に展開されているサーバーやネットワーク・ストレージなどを一切管理不要で意識せずに、必要なアプリケーションの機能のみをネットワーク越しに利用できるため、社内のセキュリティポリシーなどの理由を除けば、クラウドサービス利用・導入の敷居については最も低いサービスモデルとなります。</p>
+<h4 id="2paasplatform-as-a-service"><a href="#2．PaaS-Platform-as-a-Service" class="headerlink" title="2．PaaS(Platform as a Service)"></a>2．PaaS(Platform as a Service)</h4><p>“プラットフォーム・アズ・ア・サービス”と呼ばれ、クラウド事業者が提供・サポートするプログラミング言語・ライブラリやツールを用いて、<strong>サービス利用者が独自にアプリケーションを開発・運営することが可能</strong>なサービスモデルの形態を指します。</p>
+<p>PaaSは、クラウド上に展開されているサーバーやネットワーク・ストレージなどのハードウェア機器とインフラを直接管理する必要はなく(この点は1．SaaSと共通)、アプリケーションについては、必要な機能をクラウド事業者が展開するルール内で自由に開発・運用することができます。</p>
+<p>よって、自社でハードウェアを含めたシステムインフラを購入・運用せずに、アプリケーションの開発・運用にのみ専念できるというメリットがあり、スタートアップ企業を初め、比較的小規模なサービスを迅速に立ち上げたいというような用途にフィットするケースが多いです。</p>
+<p>メジャー所では、HerokuやGoogle App Engine(GAE)、AWS Elastic Beanstalkの他、国産ではKintoneなどのサービスがPaaSモデルに分類されます。</p>
+<h4 id="3iaasinfrastructure-as-a-service"><a href="#3．IaaS-Infrastructure-as-a-Service" class="headerlink" title="3．IaaS(Infrastructure as a Service)"></a>3．IaaS(Infrastructure as a Service)</h4><p>“インフラストラクチャ・アズ・ア・サービス”と呼ばれ、<strong>利用者はサーバーコンピューティング(CPUやメモリなど)やストレージ、ネットワークなどのITリソースをクラウド事業者が運営するサービス上に自由に配置</strong>し、その上でオペレーティング・システムを含む、任意のソフトウェアを稼働させたり、独自のアプリケーションを開発・配備・リリースすることが可能な、サービスモデルの形態を指します。</p>
+<p>IaaSではサーバー機器・ストレージやネットワークなどのハードウェアの管理はクラウド事業者となりますが、自身で展開したオペレーティング・システムやソフトウェア、及びストレージ、仮想サーバーなどのITリソースについては、全ての管理権限・責任を持つという点が、SaaS/PaaSと大きく異る点です。</p>
+<p>3つのサービスモデルの中で最も自由度が高く・制限も少ないため、自社のこれまでの運用方式やセキュリティ・ポリシーへの準拠など柔軟なカスタマイズが可能となりますが、反面、基本的には自前でITリソースのインフラ管理(サーバー管理など)が必要となるため、他のサービスモデルと比較して運用・管理コストが増加する傾向にあります。</p>
+<p>Amazon Web Services(AWS)、Google Cloud Computing(GCP)、Azureが3大メガクラウドと称され、頻繁に新機能・サービスの追加やサービス料金の引き下げなどが行われ、日々激しい競争を繰り広げています。</p>
+<h4 id="クラウドサービスモデルの比較表"><a href="#クラウドサービスモデルの比較表" class="headerlink" title="クラウドサービスモデルの比較表"></a>クラウドサービスモデルの比較表</h4><table>
+<thead>
+<tr>
+<th>モデル名</th>
+<th>提供ITリソース</th>
+<th>クラウドインフラ管理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SaaS</td>
+<td>特定機能を提供するアプリケーション</td>
+<td>クラウドサービス事業者</td>
+</tr>
+<tr>
+<td>PaaS</td>
+<td>独自アプリケーションの開発及び実行環境</td>
+<td>クラウドサービス事業者</td>
+</tr>
+<tr>
+<td>IaaS</td>
+<td>コンピューティングエンジン・サーバーやストレージ・ネットワーク</td>
+<td>ハードウェアを除き全て利用者管理</td>
+</tr>
+</tbody>
+</table>
+<h3 id="クラウドの3つの実装モデル"><a href="#クラウドの3つの実装モデル" class="headerlink" title="クラウドの3つの実装モデル"></a>クラウドの3つの実装モデル</h3><p>クラウドは、実装及びその運用・所有の方式により、一般的に下記3つの実装モデルがあります。</p>
+<h4 id="1パブリッククラウド"><a href="#1．パブリック・クラウド" class="headerlink" title="1．パブリック・クラウド"></a>1．パブリック・クラウド</h4><p>個人・法人を問わずオンラインで手続きすることで即座に利用でき、インターネットを経由して、自由にITリソースを従量課金で利用できるクラウドサービスを指します。</p>
+<p>パブリック・クラウドの所有や管理はクラウドサービス事業者(特定企業や政府)によって行われ、サービス提供に必要となるデータセンターやハードウェアはサービス運営事業者が管轄する施設に配備されており、大規模なパブリック・クラウド事業者では世界中にデーターセンターを保有しているケースも少なくありません。</p>
+<p>代表的なパブリック・クラウドとしては、Amazon Web Services(AWS)、Google Cloud Computing(GCP)、Azureなどがよくあげられます。</p>
+<h4 id="2プライベートクラウド"><a href="#2．プライベート・クラウド" class="headerlink" title="2．プライベート・クラウド"></a>2．プライベート・クラウド</h4><p>特定の事業組織・関連法人など、限られた利用者をターゲットとして提供される専有クラウドサービスを指します。</p>
+<p>プライベート・クラウドの所有・管理は、基本的にサービスを利用する事業組織・法人によって行われ、サービス提供に必要なデータセンターやハードウェアも運営組織の施設内や関連データーセンターなどに限定されています。</p>
+<h4 id="3ハイブリッドクラウド"><a href="#3．ハイブリッド・クラウド" class="headerlink" title="3．ハイブリッド・クラウド"></a>3．ハイブリッド・クラウド</h4><p>上述のパブリック・クラウドやプライベート・クラウドのように、異なる実装モデルを組み合わせて(ハイブリッドに)構成されるクラウドを指します。</p>
+<p>異なるクラウド間はサービスに必要なデータをやりとりするため、ネットワークによって相互接続が必要となります。</p>
+<p>クラウド間のネットワークは、セキュリティ確保や通信品質の安定化を目的に、一般的にはインターネットは使わず、物理的な専用線での接続や、仮想的な専用回線技術によるVirtual Private Network(VPN)などを用いて接続されるケースなどがあります。</p>
+<h4 id="クラウド実装モデルの比較表"><a href="#クラウド実装モデルの比較表" class="headerlink" title="クラウド実装モデルの比較表"></a>クラウド実装モデルの比較表</h4><p>上述の3つの実装モデルを簡単にまとめると以下のようになります。</p>
+<table>
+<thead>
+<tr>
+<th>実装モデル</th>
+<th>サービス利用者</th>
+<th>クラウドインフラ管理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>パブリック・クラウド</td>
+<td>不特定多数・だれでも利用可</td>
+<td>クラウドサービス事業者</td>
+</tr>
+<tr>
+<td>プライベート・クラウド</td>
+<td>特定組織・企業に限定</td>
+<td>利用組織・関連法人</td>
+</tr>
+<tr>
+<td>ハイブリッド・クラウド</td>
+<td>用途によって様々</td>
+<td>クラウドサービス事業者 + 利用組織・関連法人</td>
+</tr>
+</tbody>
+</table>
+<h2 id="クラウドのメリット"><a href="#クラウドのメリット" class="headerlink" title="クラウドのメリット"></a>クラウドのメリット</h2><p>ハードウェアを自社保有のデータセンター等の設備に設置・導入し、自社で運用する「オンプレミス(自社保有設備でのシステム運用)」と比較し、主にパブリック・クラウドを活用することで、得られるビジネス的なメリットについて考えてみます。</p>
+<h3 id="俊敏性を大幅に向上できる"><a href="#俊敏性を大幅に向上できる" class="headerlink" title="俊敏性を大幅に向上できる"></a>俊敏性を大幅に向上できる</h3><p>オンプレミスではハードウェア調達からスタートした場合、実際にインフラを利用できるまで数週間〜数ヶ月のリードタイムが発生しますが、パブリック・クラウドは、アカウント開設から実際にサーバーを利用するまでのリードタイムは存在せず、即時に利用が開始できます。</p>
+<p>企業規模を問わず、昨今のビジネスではスピードが非常に重要視されており、パブリック・クラウド利用時にリードタイムを削減できるという点は、非常に大きなビジネスメリットと考えられます。</p>
+<h3 id="しなやかな柔軟性を常時確保できる"><a href="#しなやかな柔軟性を常時確保できる" class="headerlink" title="しなやかな柔軟性を常時確保できる"></a>しなやかな柔軟性を常時確保できる</h3><p>オンプレミスでは後々の拡張がハードウェア制約によって難しく、最終的に必要となる(であろう)スペックを事前に見積もり、ある程度オーバースペックを見越し、調達するケースがどうしても多くなりがちですが。</p>
+<p>クラウドでは利用したい時に、必要なITリソースだけをオンデマンドで利用できるため、ビジネスの成長に合わせて「小さく初めて、大きく育てる」ということが実現可能です。</p>
+<p>ビジネスの初期段階ではシステムインフラへの投資をなるべく抑えながら、ビジネスが大きく成長した段階で、大規模なスケーリングが可能という柔軟性を保持できるというのはクラウドならでは大きな強みであると言えます。</p>
+<h3 id="進化し続ける機能追加コスト削減の恩恵が得られる"><a href="#進化し続ける機能追加・コスト削減の恩恵が得られる" class="headerlink" title="進化し続ける機能追加・コスト削減の恩恵が得られる"></a>進化し続ける機能追加・コスト削減の恩恵が得られる</h3><p>機能・コストが初期段階でほぼ固定化されるオンプレミスとは異なり、クラウドは日進月歩で進化を続けており、様々な新しいサービス・機能追加が実施され、また「規模の経済」がもたらすスケールメリットによって、ITリソースの利用料金引き下げも頻繁に実施されます。</p>
+<p>サーバレス、AI、IoTなどの先進技術についても、適切なクラウドを選定しておくことで、任意のタイミングで必要なサービスを活用し、ビジネスに新しい価値を投入できるという恩恵が得られます。</p>
+<h3 id="システムの総所有コストtcoの削減"><a href="#システムの総所有コスト-TCO-の削減" class="headerlink" title="システムの総所有コスト(TCO)の削減"></a>システムの総所有コスト(TCO)の削減</h3><p>システムにおけるコストは初期の導入費用(イニシャル)はもちろん、運用(ランニング)に必要な経費も含めて算出する必要があり、これら導入時の初期コスト + 運用のランニングコスト・経費を含めた総保有コストをTCO(Total Cost of Ownership)と呼びます。</p>
+<p>具体的なコスト項目を挙げると</p>
+<ul>
+<li>サーバー・ネットワークハードウェア本体</li>
+<li>ハードウェアの保守(機器故障の交換など)</li>
+<li>ハードウェアを稼働させるために必要な電源・空調設備一式</li>
+<li>データセンターのスペース(コロケーション)</li>
+<li>人件費(ハードウェア・ソフトウェア運用保守)</li>
+</ul>
+<p>などがあり、予算作成・稟議時に、サーバー機器などの初期投資のみに着目し、ランニングコストを見落としがちですが、本質的なコスト算出では、これらをすべて考慮した形で、長期的な視野も観点に入れてTCOを算出することがとても重要です。</p>
+<p>クラウドでは、まずハードウェアに掛かる初期投資は0円となり、ハードウェア保守・稼働設備や初期のキッティングは月額のITリソース利用料に内包されています。</p>
+<p>仮に3年という時間軸で運用試算してみても、必要な時に必要なリソースだけ調達というオンデマンドをフル活用することで、イニシャルとランニングの両面でコストを調整でき、規模の経済による値下げの恩恵も強く期待できるため、中長期的な観点で見た場合、クラウドを採用することで、TCO削減に劇的な貢献が得られるケースも少なくありません。</p>
+<h2 id="クラウド利用時の注意点"><a href="#クラウド利用時の注意点" class="headerlink" title="クラウド利用時の注意点"></a>クラウド利用時の注意点</h2><p>オンプレミス前提でのシステム導入・運用方式をそのまま正としてクラウドへ持ち込んでしまうと、ビジネス的なメリットが薄れ、場合によってはコスト増となってしまう場合もあるため注意が必要です。</p>
+<p>俊敏性の向上、柔軟性の確保そしてTCO削減を実現するためにも、導入前に入念な検討が必要な事項について触れていきます。</p>
+<h3 id="システムのクラウド対応最適化を実施する"><a href="#システムのクラウド対応・最適化を実施する" class="headerlink" title="システムのクラウド対応・最適化を実施する"></a>システムのクラウド対応・最適化を実施する</h3><p>クラウドではデータベースやストレージ、認証機構やメッセージ配信基盤など、システムを構成する上で汎用性の高い機能について、クラウドサービス事業者側で一元的に運用・管理をしてくれる「マネージドサービス」という形で提供されています。</p>
+<p>クラウドでシステムを稼働させる際は、マネージドサービスの積極的な活用が上述のクラウドメリットを享受できる一つのキーとなり、マネージドサービスを利用せず、オンプレミスのシステム構成やアプリケーションをそのまま単にクラウドへ移行・踏襲した場合、クラウドメリットが半減してしまう恐れがあります。</p>
+<p>よってオンプレミスの延長で、画一的に仮想サーバーを並べるようにクラウドを利用するのではなく、アプリケーションまで含めてクラウドにフィットするように最適化することで、初期の移行や改修コストが発生しても、中長期的にはTCOの削減を含んだクラウドメリットを享受できるようになります。</p>
+<h3 id="従量課金の金額を把握しておく"><a href="#従量課金の金額を把握しておく" class="headerlink" title="従量課金の金額を把握しておく"></a>従量課金の金額を把握しておく</h3><p>オンデマンドであるクラウドは従量課金が前提となりますが、仮想サーバー、ストレージ容量に対する課金の他、サービス提供に必須となる外部・内部のネットワーク通信量、マネージドサービスに対するAPI(Application Programming Interface)の呼び出しなど様々な課金ポイントがあります。</p>
+<p>セルフサービスで非常に簡単にITリソースが起動できてしまうこともあり、意図せず高額な利用料を支払うことになってしまう「クラウド破産」を防ぐためにも、利用するITリソースに対する大枠の利用料を把握しておくことが重要です。</p>
+<p>AWSが提供している<a href="http://calculator.s3.amazonaws.com/index.html" target="_blank" rel="noopener">SIMPLE MONTHLY CALCULATOR</a>のように、月額想定利用料を見積もりできるサービスもありますが、クラウドの見積もりに不慣れな場合、難解な部分もあるため、実際に利用するITリソースとアプリケーションを数時間〜数日でもクラウドで稼働させて検証を行い、その間の実際の課金額を把握しておくという方法もおすすめです。</p>
+<h3 id="エンジニアのクラウドスキル習得枠組みを整備する"><a href="#エンジニアのクラウドスキル習得・枠組みを整備する" class="headerlink" title="エンジニアのクラウドスキル習得・枠組みを整備する"></a>エンジニアのクラウドスキル習得・枠組みを整備する</h3><p>クラウドが持つ俊敏性や柔軟性を活かすためには、実際にシステム開発や日々の運用に携わるエンジニアが、クラウド特有の技術・アーキテクチャ(構成パターン)について正しく理解・把握しておくことが重要になってきます。</p>
+<ul>
+<li>ビジネスに求められる可用性・性能要件に対するクラウドでの実装方法</li>
+<li>顧客要望を素早くサービスに取り込むためのクラウドでの自動化方式</li>
+<li>ビジネス要求の増大に併せて拡張できるクラウドシステムの配備方式</li>
+<li>TCOの最適化に向けたクラウドでのマネージドサービスの選択</li>
+</ul>
+<p>など、社内のエンジニアがこれまでオンプレミスで培ったスキル・経験以外にも、クラウド特有のスキルをエンジニアが習得し、かつ、日々進化するクラウドサービスに追従できるよう、常にキャッチアップできる学習環境の枠組みを整えておきましょう。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>いかがでしたでしょうか？ クラウドの基礎から、クラウドならではメリットを享受するために必要な事項などをサラッとまとめてみましたが。</p>
+<p>より具体的なクラウドのビジネス活用に関するご相談や、Amazon Web Services(AWS)などパブリック・クラウドの技術的な支援などは、お気軽に<a href="https://mmmcorp.co.jp/contacts/new/" target="_blank" rel="noopener">株式会社MMMお問い合わせページ</a>からご連絡いただければ、私が1営業日以内に回答いたします。</p>
+<p>それでは、皆様からのお問い合わせをお待ちしております！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2018/06/11/What-is-cloud-computing-and-its-advantages/" data-text="クラウド・コンピューティングとは？そのメリットと注意点について" data-counturl="https://blog.mmmcorp.co.jp/blog/2018/06/11/What-is-cloud-computing-and-its-advantages/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2018/06/11/What-is-cloud-computing-and-its-advantages/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2018/06/11/What-is-cloud-computing-and-its-advantages/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2018/06/11/What-is-cloud-computing-and-its-advantages/" class="hatena-bookmark-button" data-hatena-bookmark-title="クラウド・コンピューティングとは？そのメリットと注意点について" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MMM/">MMM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/クラウド/">クラウド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ビジネス/">ビジネス</a></li></ul>
+
+
+      <p class="article-footer__author">by 国本 廷宣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

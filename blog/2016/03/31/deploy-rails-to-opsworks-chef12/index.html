@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Chef12に対応したAWS OpsWorksにRailsアプリをデプロイする① | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="昨日の社内年度末ローカルミーティングでニックネームが「マニラ」になった前田です。 弊社ではAWSでアプリケーションをデプロイする際、インフラ構築の自動化&amp;amp;省力化の為のDevOpsツールとして主にAWSのOpsWorksを利用しています。昨年12月にAmazonからアナウンスがあった通り、AWS OpsWorksでChef12を利用することが出来るようになりました。将来的にChef11サポー">
+<meta name="keywords" content="AWS,Ruby on Rails,OpsWorks,Chef12">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Chef12に対応したAWS OpsWorksにRailsアプリをデプロイする①">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2016/03/31/deploy-rails-to-opsworks-chef12/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="昨日の社内年度末ローカルミーティングでニックネームが「マニラ」になった前田です。 弊社ではAWSでアプリケーションをデプロイする際、インフラ構築の自動化&amp;amp;省力化の為のDevOpsツールとして主にAWSのOpsWorksを利用しています。昨年12月にAmazonからアナウンスがあった通り、AWS OpsWorksでChef12を利用することが出来るようになりました。将来的にChef11サポー">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/deploy-rails-to-opsworks-chef12/chef11_berks.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/deploy-rails-to-opsworks-chef12/chef12_berks.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/deploy-rails-to-opsworks-chef12/upload_cookbook.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/deploy-rails-to-opsworks-chef12/set_stack_1.jpg">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/deploy-rails-to-opsworks-chef12/set_stack_2.jpg">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.138Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chef12に対応したAWS OpsWorksにRailsアプリをデプロイする①">
+<meta name="twitter:description" content="昨日の社内年度末ローカルミーティングでニックネームが「マニラ」になった前田です。 弊社ではAWSでアプリケーションをデプロイする際、インフラ構築の自動化&amp;amp;省力化の為のDevOpsツールとして主にAWSのOpsWorksを利用しています。昨年12月にAmazonからアナウンスがあった通り、AWS OpsWorksでChef12を利用することが出来るようになりました。将来的にChef11サポー">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/deploy-rails-to-opsworks-chef12/chef11_berks.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-deploy-rails-to-opsworks-chef12" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2016-03-31T11:49:11.000Z" itemprop="datePublished">2016-03-31</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2016/03/31/deploy-rails-to-opsworks-chef12/">Chef12に対応したAWS OpsWorksにRailsアプリをデプロイする①</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/03/31/deploy-rails-to-opsworks-chef12/" data-text="Chef12に対応したAWS OpsWorksにRailsアプリをデプロイする①" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/03/31/deploy-rails-to-opsworks-chef12/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/03/31/deploy-rails-to-opsworks-chef12/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/03/31/deploy-rails-to-opsworks-chef12/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/03/31/deploy-rails-to-opsworks-chef12/" class="hatena-bookmark-button" data-hatena-bookmark-title="Chef12に対応したAWS OpsWorksにRailsアプリをデプロイする①" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>昨日の社内年度末ローカルミーティングでニックネームが「マニラ」になった前田です。</p>
+<p>弊社ではAWSでアプリケーションをデプロイする際、<a href="https://mmmcorp.co.jp/services/aws/consulting" target="_blank" rel="noopener">インフラ構築の自動化&amp;省力化の為のDevOpsツールとして主にAWSのOpsWorksを利用しています。</a><br>昨年12月にAmazonからアナウンスがあった通り、AWS OpsWorksでChef12を利用することが出来るようになりました。<br>将来的にChef11サポートが終了することを見越して、Chef12に対応したOpsWorksで動くRailsアプリケーションCookbookの骨組みを作成する、というミッションを与えられましたので今回取り組みました。</p>
+<p>Chef12になり大きく変わる点は、まずはbuilt-inで用意されていたLayerが無くなる、ということで、自分達でCookbookを一から用意する必要があるということです。<br>また、スタック情報やデータバッグの取得方法が変わった為、<a href="https://github.com/aws/opsworks-cookbooks" target="_blank" rel="noopener">opsworks-cookbooks</a>をそのまま使用することなどは出来ません。<br>全く一から作り直す、ということになります。</p>
+<p>まずはCookbookをどのようにOpsWorksに配置するか、ということから考えました。</p>
+<h2 id="opsworksへcookbook配備設計"><a href="#OpsWorksへCookbook配備設計" class="headerlink" title="OpsWorksへCookbook配備設計"></a>OpsWorksへCookbook配備設計</h2><p>Chef12バージョンのOpsWorksでは、Chef11バージョンの時にあった<code>Manage Berkshelf</code>の項目が無くなりました。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Chef11バージョン</th>
+<th style="text-align:center">Chef12バージョン</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><img src="/images/deploy-rails-to-opsworks-chef12/chef11_berks.png" alt=""></td>
+<td style="text-align:center"><img src="/images/deploy-rails-to-opsworks-chef12/chef12_berks.png" alt=""></td>
+</tr>
+</tbody>
+</table>
+<p>今まではBerkshelfレシピ使う時は、Berksfileに使いたいレシピを記載し、アップロードするだけでOpsworks上で使用できたのですが、これからはローカルでレシピをインストールしてアップロードしなければなりません。<br>Berkshelfとカスタムで使用するレシピを上手く統合して使いたいので、<a href="http://docs.aws.amazon.com/ja_jp/opsworks/latest/userguide/best-practices-packaging-cookbooks-locally.html" target="_blank" rel="noopener">AWSドキュメントのベストプラクティス</a>を参考に下記のような手順でクックブックをアップロードする設計にしました。</p>
+<p><img src="/images/deploy-rails-to-opsworks-chef12/upload_cookbook.png" alt=""></p>
+<p>ポイントは、<strong>ローカルでBerkshelfレシピをインストールせず、CirclCIでBerksehlfレシピインストール・カスタムCookbookとの統合、などを実行する</strong>ことと、<strong>Custom jsonをレポジトリ内で管理して、合わせてアップデートする</strong>、というところです。<br>サービス毎にCookbookレポジトリを作成する、という方針で設計しているので、Stackに設定するCustom Jsonは、Cookbooksレポジトリの中に入れてしまおう、ということです。</p>
+<h2 id="stack作成"><a href="#Stack作成" class="headerlink" title="Stack作成"></a>Stack作成</h2><p>あらかじめVPCやSSH_key、S3レポジトリ、S3レポジトリのGET権限を持つIAMを作成しておきます。<br>OpsWorksの画面で真ん中の <strong>Chef 12 Stack</strong> を選択し、作成していきます。<br><code>Use custom Chef cookbooks</code>で、<code>Repository type</code>を<code>S3 Archive</code>にします。</p>
+<p><img src="/images/deploy-rails-to-opsworks-chef12/set_stack_1.jpg" alt=""></p>
+<p><img src="/images/deploy-rails-to-opsworks-chef12/set_stack_2.jpg" alt=""></p>
+<h2 id="cookbookレポジトリのディレクトリ構成"><a href="#Cookbookレポジトリのディレクトリ構成" class="headerlink" title="Cookbookレポジトリのディレクトリ構成"></a>Cookbookレポジトリのディレクトリ構成</h2><p>Cookbookのディレクトリ構成は下記のようにしました。</p>
+<pre><code>├── Berksfile
+├── berks_cookbooks
+│   └── Berksfile
+├── custom_cookbooks
+│   └── 自分で作成するカスタムレシピ郡
+├── config
+│  └── custom_json.yml
+├── circle.yml
+└── circleci
+    ├── .aws
+    │ └── credentials
+    └── scripts
+      └── install_berks_cookbooks.sh
+      └── update_stack.rb
+</code></pre><h5 id="berksfile"><a href="#Berksfile" class="headerlink" title="Berksfile"></a>Berksfile</h5><p><code>berks package cookbooks.tar.gz</code>コマンドで、各Cookbookを圧縮するための読込先パスを書きます。</p>
+<pre><code>source &apos;https://supermarket.chef.io&apos;
+# Berkshelf Cookbooks
+cookbook &apos;yum-epel&apos;,          path: &quot;./berks_cookbooks/cookbooks/yum-epel&quot;
+cookbook &apos;ruby_build&apos;,        path: &quot;./berks_cookbooks/cookbooks/ruby_build&quot;
+cookbook &apos;mysql&apos;,             path: &quot;./berks_cookbooks/cookbooks/mysql&quot;
+cookbook &apos;nginx&apos;,             path: &quot;./berks_cookbooks/cookbooks/nginx&quot;
+# Custome Cookbooks
+cookbook &apos;time-zone&apos;,         path: &quot;./custom_cookbooks/time-zone&quot;
+cookbook &apos;rbenv&apos;,             path: &quot;./custom_cookbooks/rbenv&quot;
+cookbook &apos;ruby&apos;,              path: &quot;./custom_cookbooks/ruby&quot;
+cookbook &apos;setup&apos;,             path: &quot;./custom_cookbooks/setup&quot;
+cookbook &apos;deploy&apos;,            path: &quot;./custom_cookbooks/deploy&quot;
+</code></pre><h5 id="berks_cookbooksberksfile"><a href="#berks-cookbooks-Berksfile" class="headerlink" title="berks_cookbooks/Berksfile"></a>berks_cookbooks/Berksfile</h5><p><code>berks install</code>コマンドで、Berksehlf Cookbookをダウンロードする為のBerksfileです。</p>
+<pre><code>source &apos;https://supermarket.chef.io&apos;
+cookbook &apos;yum-epel&apos;
+cookbook &apos;ruby_build&apos;
+cookbook &apos;rbenv&apos;
+cookbook &apos;ruby&apos;
+cookbook &apos;nginx&apos;
+cookbook &apos;mysql&apos;, &apos;~&gt; 5.3.6&apos;
+</code></pre><h5 id="circleyml"><a href="#circle-yml" class="headerlink" title="circle.yml"></a>circle.yml</h5><p>CircleCI上で、<strong>BerkshelfコミュニティCookbookインストール</strong>、<strong>Custom CookbookとコミュニティCookbookを圧縮</strong>、<strong>S3にアップロード</strong>、<strong>インスタンスにCookbookアップデート</strong>、<strong>StackのCustom Jsonアップデート</strong>を実行します。</p>
+<pre><code>machine:
+  ruby:
+    version: 2.0.0
+general:
+  branches:
+    ignore:
+      - master
+deployment:
+  master
+    branch: master
+    commands:
+      - gem install berkshelf
+      - bash ./circleci/scripts/install_berks_cookbooks.sh
+      - sudo pip install awscli
+      - mv ./circleci/.aws ~/
+      - echo &apos;[opsworks_iam]&apos; &gt;&gt; ~/.aws/credentials
+      - echo &apos;aws_access_key_id = &apos;$AWS_OPS_WORKS_ACCESS_KEY_ID &gt;&gt; ~/.aws/credentials
+      - echo &apos;aws_secret_access_key = &apos;$AWS_OPS_WORKS_SECRET_ACCESS_KEY &gt;&gt; ~/.aws/credentials
+      - echo &apos;[s3_iam]&apos; &gt;&gt; ~/.aws/credentials
+      - echo &apos;aws_access_key_id = &apos;$AWS_S3_ACCESS_KEY_ID &gt;&gt; ~/.aws/credentials
+      - echo &apos;aws_secret_access_key = &apos;$AWS_S3_SECRET_ACCESS_KEY &gt;&gt; ~/.aws/credentials
+      - berks package cookbooks.tar.gz
+      - aws --profile s3_iam s3 cp cookbooks.tar.gz s3://rails-application-cookbooks/
+      - aws --profile opsworks_iam opsworks --region us-east-1 create-deployment --stack-id $STACK_ID --command &quot;{\&quot;Name\&quot;:\&quot;update_custom_cookbooks\&quot;}&quot;
+      - ruby ./circleci/scripts/update_stack.rb
+</code></pre><h5 id="circleciscriptsinstall_berks_cookbookssh"><a href="#circleci-scripts-install-berks-cookbooks-sh" class="headerlink" title="circleci/scripts/install_berks_cookbooks.sh"></a>circleci/scripts/install_berks_cookbooks.sh</h5><p>BerkshelfコミュニティCookbookインストールスクリプト。</p>
+<pre><code>#!/bin/bash
+echo &quot;install berkshelf cookbooks.&quot;
+cd berks_cookbooks
+berks vendor cookbooks
+</code></pre><h5 id="circleciscriptsupdate_stacksh"><a href="#circleci-scripts-update-stack-sh" class="headerlink" title="circleci/scripts/update_stack.sh"></a>circleci/scripts/update_stack.sh</h5><p><code>config/custom_json.yml</code>をjsonに変換してStackのCustom Jsonにアップデートするスクリプト。</p>
+<pre><code>require &apos;json&apos;
+require &apos;yaml&apos;
+puts &apos;update stack custom json.&apos;
+custom_json = &quot;&apos;#{YAML.load_file(&apos;config/custom_json.yml&apos;).to_json}&apos;&quot;
+system(&quot;aws --profile opsworks_iam opsworks --region us-east-1 update-stack --stack-id #{ENV[&apos;STACK_ID&apos;]} --custom-json #{custom_json}&quot;)
+</code></pre><h5 id="configcustom_jsonyml"><a href="#config-custom-json-yml" class="headerlink" title="config/custom_json.yml"></a>config/custom_json.yml</h5><p>Json形式でも良いかもしれませんが、yaml形式のほうが見やすいかと思い、yamlからJsonに変換するようにしました。<br>Custom Jsonは、アプリ固有の値などを設定し、カスタムレシピ内でCustom Jsonにセットした値を使用する設計です。<br>例えばAPIサーバではCORS対応、CMSサーバではimagemagickをインストールする、などです。<br>Custom Jsonの値だけを修正すれば別のRailsアプリケーションが配備されたスタックでもこのCookbookをコピーするだけで使うことが出来るようにしました。</p>
+<pre><code>---
+  stack:
+    stack_name: &quot;rails_application_stack&quot;
+    layers:
+      -
+        layer_name: &quot;web-server&quot;
+        deploy_layer_name: &quot;deploy-server&quot;
+        app_name: &quot;web_application&quot;
+        ruby:
+          versions:
+            -
+              version: &quot;2.3.0&quot;
+              global: &quot;true&quot;
+      -
+        layer_name: &quot;cms-server&quot;
+        deploy_layer_name: &quot;deploy-server&quot;
+        app_name: &quot;api_application&quot;
+        nginx:
+          cors: true
+        ruby:
+          versions:
+            -
+              version: &quot;2.3.0&quot;
+              global: &quot;true&quot;
+        imagemagick: true
+      -
+        layer_name: &quot;deploy-server&quot;
+        ruby:
+          versions:
+            -
+              version: &quot;2.3.0&quot;
+              global: &quot;true&quot;
+</code></pre><h2 id="circleciに環境変数設定"><a href="#CircleCIに環境変数設定" class="headerlink" title="CircleCIに環境変数設定"></a>CircleCIに環境変数設定</h2><p><code>AWS_OPS_WORKS_ACCESS_KEY_ID</code> <code>AWS_OPS_WORKS_SECRET_ACCESS_KEY</code> <code>AWS_S3_ACCESS_KEY_ID</code> <code>AWS_S3_SECRET_ACCESS_KEY</code><br>S3のIAMユーザー、OpsWorksのIAMユーザを作成しておき、上記にセットします。</p>
+<p>以上でGitHubにプッシュし、OpsWorksにCookbookを配備するところまでが出来ました。</p>
+<h2 id="次回へ続く"><a href="#次回へ続く" class="headerlink" title="次回へ続く"></a>次回へ続く</h2><p>今回はCookbookをOpsWorks上に配置するところまでをつらつらと書きました。<br>全体設計やレシピを書く前にやったことなどを次回書きたいと思います。<br><a href="https://mmmcorp.co.jp/services/aws/" target="_blank" rel="noopener">AWSを活用したスケーラブルなサービス構築をお考えの際は、是非MMMにお声がけ下さい！</a></p>
+<p>追記 : 記事をアップしました。<br>-&gt; <a href="/blog/2016/04/27/deploy-rails-to-opsworks-chef12-2/">Chef12に対応したAWS OpsWorksにRailsアプリをデプロイする②</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/03/31/deploy-rails-to-opsworks-chef12/" data-text="Chef12に対応したAWS OpsWorksにRailsアプリをデプロイする①" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/03/31/deploy-rails-to-opsworks-chef12/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/03/31/deploy-rails-to-opsworks-chef12/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/03/31/deploy-rails-to-opsworks-chef12/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/03/31/deploy-rails-to-opsworks-chef12/" class="hatena-bookmark-button" data-hatena-bookmark-title="Chef12に対応したAWS OpsWorksにRailsアプリをデプロイする①" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Chef12/">Chef12</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpsWorks/">OpsWorks</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby-on-Rails/">Ruby on Rails</a></li></ul>
+
+
+      <p class="article-footer__author">by 前田 正樹</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

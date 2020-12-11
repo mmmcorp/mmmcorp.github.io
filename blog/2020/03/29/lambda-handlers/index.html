@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>[AWS Lambda 入門] 簡単な関数をサポートされている全言語で紹介 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="AWS Lambdaでサポートされている言語2020年3月29日現在、AWS Lambdaでは 最新のサポート対象 として以下の言語が挙がっています。  .NET Core 2.1(C#/PowerShell) Go 1.x Java 11 Node.js 12.x Python 3.8 Ruby 2.7  ※上記のうち、AWSコンソール上で直接コードを記述できるのはNode.js, Python">
+<meta name="keywords" content="AWS,サーバーレス">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[AWS Lambda 入門] 簡単な関数をサポートされている全言語で紹介">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/03/29/lambda-handlers/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="AWS Lambdaでサポートされている言語2020年3月29日現在、AWS Lambdaでは 最新のサポート対象 として以下の言語が挙がっています。  .NET Core 2.1(C#/PowerShell) Go 1.x Java 11 Node.js 12.x Python 3.8 Ruby 2.7  ※上記のうち、AWSコンソール上で直接コードを記述できるのはNode.js, Python">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[AWS Lambda 入門] 簡単な関数をサポートされている全言語で紹介">
+<meta name="twitter:description" content="AWS Lambdaでサポートされている言語2020年3月29日現在、AWS Lambdaでは 最新のサポート対象 として以下の言語が挙がっています。  .NET Core 2.1(C#/PowerShell) Go 1.x Java 11 Node.js 12.x Python 3.8 Ruby 2.7  ※上記のうち、AWSコンソール上で直接コードを記述できるのはNode.js, Python">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-all-runtimes-supported-by-lambda" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-03-29T22:33:21.000Z" itemprop="datePublished">2020-03-29</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/03/29/lambda-handlers/">[AWS Lambda 入門] 簡単な関数をサポートされている全言語で紹介</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/03/29/lambda-handlers/" data-text="[AWS Lambda 入門] 簡単な関数をサポートされている全言語で紹介" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/03/29/lambda-handlers/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/03/29/lambda-handlers/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/03/29/lambda-handlers/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/03/29/lambda-handlers/" class="hatena-bookmark-button" data-hatena-bookmark-title="[AWS Lambda 入門] 簡単な関数をサポートされている全言語で紹介" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="aws-lambdaでサポートされている言語"><a href="#AWS-Lambdaでサポートされている言語" class="headerlink" title="AWS Lambdaでサポートされている言語"></a>AWS Lambdaでサポートされている言語</h2><p>2020年3月29日現在、AWS Lambdaでは <code>最新のサポート対象</code> として以下の言語が挙がっています。</p>
+<ul>
+<li>.NET Core 2.1(C#/PowerShell)</li>
+<li>Go 1.x</li>
+<li>Java 11</li>
+<li>Node.js 12.x</li>
+<li>Python 3.8</li>
+<li>Ruby 2.7</li>
+</ul>
+<p>※上記のうち、AWSコンソール上で直接コードを記述できるのは<code>Node.js</code>, <code>Python</code>, <code>Ruby</code>のみ</p>
+<p>今回は、AWS Lambdaでサポートされている全言語で関数を実装していきます。</p>
+<p>処理内容は、以下のJSON形式のeventを受け取ると<code>Hello Daisaku Hazui!</code> と出力する、というものです。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;firstName&quot;: &quot;Daisaku&quot;,</span><br><span class="line">  &quot;lastName&quot;: &quot;Hazui&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>それでは1つずつ関数を作成してAWS Lambdaにデプロイしていきましょう。</p>
+<h2 id="net-core-21cpowershell"><a href="#NET-Core-2-1-C-PowerShell" class="headerlink" title=".NET Core 2.1(C#/PowerShell)"></a>.NET Core 2.1(C#/PowerShell)</h2><h3 id="開発環境にaws-tools-for-powershellをインストール"><a href="#開発環境にAWS-Tools-for-PowerShellをインストール" class="headerlink" title="開発環境にAWS Tools for PowerShellをインストール"></a>開発環境にAWS Tools for PowerShellをインストール</h3><p>LinuxまたはmacOSのPCにAWS Tools for PowerShellをインストールする方法は2つあります。</p>
+<p><a href="https://docs.aws.amazon.com/powershell/latest/userguide/pstools-getting-set-up-linux-mac.html#install-aws.tools-on-linux-macos" target="_blank" rel="noopener">ユーザーガイド PowerShell用AWSツール</a></p>
+<p>今回は<code>AWS.Tools</code>をインストールしていきます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ pwsh</span><br><span class="line">PowerShell 7.0.0</span><br><span class="line">Copyright (c) Microsoft Corporation. All rights reserved.</span><br><span class="line"></span><br><span class="line">https://aka.ms/powershell</span><br><span class="line">Type &apos;help&apos; to get help.</span><br><span class="line"></span><br><span class="line">PS /Users/daisakuhazui/mmmcorp/serverless-blog&gt;Install-Module -Name AWS.Tools.Installer</span><br><span class="line">Untrusted repository</span><br><span class="line">You are installing the modules from an untrusted repository. If you trust this repository, change its InstallationPolicy value by running the Set-PSRepository cmdlet. Are you sure you want to</span><br><span class="line">install the modules from &apos;PSGallery&apos;?</span><br><span class="line">[Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is &quot;N&quot;): A</span><br></pre></td></tr></table></figure>
+<p><code>install the modules from &#39;PSGallery&#39;?</code>と聞かれるので、<code>A</code>と入力してEnterキーを押します。</p>
+<h3 id="テンプレートから関数の雛形を作成"><a href="#テンプレートから関数の雛形を作成" class="headerlink" title="テンプレートから関数の雛形を作成"></a>テンプレートから関数の雛形を作成</h3><p><code>AWS.Tools</code>がインストールできたら、関数テンプレートの一覧を取得してみましょう。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">PS /Users/daisakuhazui/mmmcorp/serverless-blog&gt; Get-AWSPowerShellLambdaTemplate</span><br><span class="line"></span><br><span class="line">Template                     Description</span><br><span class="line">Basic                        Bare bones script</span><br><span class="line">CloudFormationCustomResource PowerShell handler base for use with CloudFormation custom resource events</span><br><span class="line">CodeCommitTrigger            Script to process AWS CodeCommit Triggers</span><br><span class="line">DetectLabels                 Use Amazon Rekognition service to tag image files in S3 with detected labels.</span><br><span class="line">KinesisStreamProcessor       Script to be process a Kinesis Stream</span><br><span class="line">S3Event                      Script to process S3 events</span><br><span class="line">S3EventToSNS                 Script to process SNS Records triggered by S3 events</span><br><span class="line">S3EventToSNSToSQS            Script to process SQS Messages, subscribed to an SNS Topic that is triggered by S3 events</span><br><span class="line">S3EventToSQS                 Script to process SQS Messages triggered by S3 events</span><br><span class="line">SNSSubscription              Script to be subscribed to an SNS Topic</span><br><span class="line">SNSToSQS                     Script to be subscribed to an SQS Queue, that is subscribed to an SNS Topic</span><br><span class="line">SQSQueueProcessor            Script to be subscribed to an SQS Queue</span><br></pre></td></tr></table></figure>
+<p>現時点でこれだけのテンプレートがあります。</p>
+<p>個々のテンプレートの詳細については省きますが、今回は<code>Basic</code>テンプレートをもとに<code>HelloPowerShell</code>という名前の関数を作成していきます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">PS /Users/daisakuhazui/mmmcorp/serverless-blog&gt; mkdir powershell &amp;&amp; cd powershell</span><br><span class="line"></span><br><span class="line">PS /Users/daisakuhazui/mmmcorp/serverless-blog/powershell&gt; New-AWSPowerShellLambda -ScriptName HelloPower -Template Basic</span><br><span class="line"></span><br><span class="line">PS /Users/daisakuhazui/mmmcorp/serverless-blog/powershell&gt; tree</span><br><span class="line">.</span><br><span class="line">└── HelloPowerShell</span><br><span class="line">    ├── HelloPowerShell.ps1</span><br><span class="line">    └── readme.txt</span><br></pre></td></tr></table></figure>
+<p>これで関数の雛形が作成されました。</p>
+<h3 id="関数の修正"><a href="#関数の修正" class="headerlink" title="関数の修正"></a>関数の修正</h3><p>次にお好きなエディタで<code>HelloPowerShell.ps1</code>を開き、最下部に下記のコードを追加していきます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$firstName = $LambdaInput.FirstName</span><br><span class="line">$lastName = $LambdaInput.LastName</span><br><span class="line"></span><br><span class="line">Write-Output (&quot;Hello &#123;0&#125; &#123;1&#125;!&quot; -f $firstName, $lastName)</span><br></pre></td></tr></table></figure>
+<p><code>$LambdaInput</code>が入力値を受け取り、<code>$firstName</code>と<code>$lastName</code>にそれぞれ値が格納されます。</p>
+<p><code>Write-Output</code>によって、最終的に<code>&quot;Hello Daisaku Hazui!&quot;</code>と出力してくれます。</p>
+<h3 id="関数のデプロイ"><a href="#関数のデプロイ" class="headerlink" title="関数のデプロイ"></a>関数のデプロイ</h3><p>関数を修正したらAWS Lambdaにデプロイしていきましょう。</p>
+<p>以下のコマンドを実行します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PS /Users/daisakuhazui/mmmcorp/serverless-blog/powershell/HelloPowerShell&gt; Publish-AWSPowerShellLambda -ScriptPath .\HelloPowerShell.ps1 -Name HelloPowerShell -Region ap-northeast-1 -Profile DaisakuHazui</span><br></pre></td></tr></table></figure>
+<p>デプロイ中に<code>Select IAM Role that to provide AWS credentials to your code:</code>と聞かれるので、<code>*** Create new IAM Role ***</code>に該当する数字を入力しましょう。</p>
+<p><code>Enter name of the new IAM Role:</code>と聞かれたら<code>HelloPowerShellRole</code>と入力します。</p>
+<h3 id="関数をテストする"><a href="#関数をテストする" class="headerlink" title="関数をテストする"></a>関数をテストする</h3><p>AWSコンソールからLambdaを開きます。</p>
+<p>関数の一覧から、先ほど作成した<code>HelloPowerShell</code>を選択したら早速動作テストしてきましょう。</p>
+<p>関数の詳細画面右上の<code>テストイベントの設定</code>を選択し、テストイベントを下記のように修正して保存します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;firstName&quot;: &quot;Daisaku&quot;,</span><br><span class="line">  &quot;lastName&quot;: &quot;Hazui&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>保存できたら<code>テスト</code>をクリックして、成功したら実行結果のログを確認してみましょう。</p>
+<p>関数の実行結果として<code>&quot;Hello Daisaku Hazui!&quot;</code>が返ってきているはずです。</p>
+<h2 id="go-1x"><a href="#Go-1-x" class="headerlink" title="Go 1.x"></a>Go 1.x</h2><h3 id="関数を作成"><a href="#関数を作成" class="headerlink" title="関数を作成"></a>関数を作成</h3><p>※Go言語は1.11以前の場合、<code>GOPATH</code>を意識したディレクトリにGoファイルを作成する必要があります。ご自身の開発環境に合ったディレクトリに配置してください。</p>
+<p><code>main.go</code>というファイルを作成し、以下のように記述します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;context&quot;</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">	&quot;github.com/aws/aws-lambda-go/lambda&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">type MyEvent struct &#123;</span><br><span class="line">	FirstName string `json:&quot;firstName&quot;`</span><br><span class="line">	LastName  string `json:&quot;lastName&quot;`</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func HandleRequest(ctx context.Context, name MyEvent) (string, error) &#123;</span><br><span class="line">	return fmt.Sprintf(&quot;Hello %s %s!&quot;, name.FirstName, name.LastName), nil</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	lambda.Start(HandleRequest)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>eventを受け取るために<code>MyEvent</code>という構造体を定義し、<code>main()</code>から<code>HandleRequest</code>を呼び出して目的の文字列を出力させています。</p>
+<p>※<code>import</code>内のモジュールですが、必要に応じてお使いの依存管理モジュールでインストールしてください。</p>
+<h3 id="関数をデプロイする"><a href="#関数をデプロイする" class="headerlink" title="関数をデプロイする"></a>関数をデプロイする</h3><p>先ほど作成したGoファイルを実行可能な状態にコンパイルした上で、ZIPファイルとしてデプロイパッケージを作成していきます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ GOOS=linux GOARCH=amd64 go build -o main</span><br><span class="line"></span><br><span class="line">$ zip main.zip ./main</span><br></pre></td></tr></table></figure>
+<p>デプロイパッケージを作成したら、AWSコンソール上でランタイムがGoの関数を作成し、<code>関数パッケージ</code>から上記のZIPファイルをアップロードします。</p>
+<h3 id="関数をテストする"><a href="#関数をテストする-1" class="headerlink" title="関数をテストする"></a>関数をテストする</h3><p>ZIPファイルが正常にアップロードできたら関数をテストしていきましょう。</p>
+<p>関数の詳細画面右上の<code>テストイベントの設定</code>を選択し、テストイベントを下記のように修正して保存します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;firstName&quot;: &quot;Daisaku&quot;,</span><br><span class="line">  &quot;lastName&quot;: &quot;Hazui&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>保存できたら<code>テスト</code>をクリックして、成功したら実行結果のログを確認してみましょう。</p>
+<p>関数の実行結果として<code>&quot;Hello Daisaku Hazui!&quot;</code>が返ってきているはずです。</p>
+<h2 id="java-11"><a href="#Java-11" class="headerlink" title="Java 11"></a>Java 11</h2><h3 id="ディレクトリとファイルの作成"><a href="#ディレクトリとファイルの作成" class="headerlink" title="ディレクトリとファイルの作成"></a>ディレクトリとファイルの作成</h3><p>下記のようなディレクトリ構成になるようファイルを作成します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">java-lambda</span><br><span class="line">├── pom.xml</span><br><span class="line">└── src</span><br><span class="line">    └── main</span><br><span class="line">        └── java</span><br><span class="line">            └── com</span><br><span class="line">                └── example</span><br><span class="line">                    ├── HelloWorld.java</span><br><span class="line">                    └── Request.java</span><br></pre></td></tr></table></figure>
+<p>ファイルを作成できたら、<code>Request.java</code>を下記のように修正します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">package com.example;</span><br><span class="line"></span><br><span class="line">public class Request &#123;</span><br><span class="line">    String firstName;</span><br><span class="line">    String lastName;</span><br><span class="line"></span><br><span class="line">    public String getFirstName() &#123;</span><br><span class="line">        return firstName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setFirstName(String firstName) &#123;</span><br><span class="line">        this.firstName = firstName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getLastName() &#123;</span><br><span class="line">        return lastName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setLastName(String lastName) &#123;</span><br><span class="line">        this.lastName = lastName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public Request(String firstName, String lastName) &#123;</span><br><span class="line">        this.firstName = firstName;</span><br><span class="line">        this.lastName = lastName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public Request() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>次に、<code>Hello.java</code>を下記のように修正します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">package com.example;</span><br><span class="line"></span><br><span class="line">import com.amazonaws.services.lambda.runtime.Context;</span><br><span class="line">import com.amazonaws.services.lambda.runtime.RequestHandler;</span><br><span class="line"></span><br><span class="line">import java.util.HashMap;</span><br><span class="line">import java.util.Map;</span><br><span class="line"></span><br><span class="line">//   /**</span><br><span class="line">//    * AWS Lambda のハンドラーメソッド</span><br><span class="line">//    *</span><br><span class="line">//    * @param input   入力データ</span><br><span class="line">//    * @param context AWS Lambda Context オブジェクト</span><br><span class="line">//    * @return 出力データ</span><br><span class="line">//    */</span><br><span class="line">public class Hello implements RequestHandler&lt;Request, String&gt; &#123;</span><br><span class="line"></span><br><span class="line">    public String handleRequest(Request request, Context context) &#123;</span><br><span class="line">        String greetingString = String.format(&quot;Hello %s %s !&quot;, request.firstName, request.lastName);</span><br><span class="line">        return greetingString;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最後に、<code>pom.xml</code>を下記のように修正します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;</span><br><span class="line">         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;</span><br><span class="line">  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</span><br><span class="line"></span><br><span class="line">  &lt;groupId&gt;com.example&lt;/groupId&gt;</span><br><span class="line">  &lt;artifactId&gt;lambda-hello-world&lt;/artifactId&gt;</span><br><span class="line">  &lt;packaging&gt;jar&lt;/packaging&gt;</span><br><span class="line">  &lt;version&gt;1.0&lt;/version&gt;</span><br><span class="line">  &lt;name&gt;lambda-hello-world&lt;/name&gt;</span><br><span class="line"></span><br><span class="line">  &lt;properties&gt;</span><br><span class="line">    &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;</span><br><span class="line">    &lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;</span><br><span class="line">    &lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;</span><br><span class="line">  &lt;/properties&gt;</span><br><span class="line"></span><br><span class="line">  &lt;dependencies&gt;</span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">      &lt;groupId&gt;com.amazonaws&lt;/groupId&gt;</span><br><span class="line">      &lt;artifactId&gt;aws-lambda-java-core&lt;/artifactId&gt;</span><br><span class="line">      &lt;version&gt;1.2.0&lt;/version&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line">  &lt;/dependencies&gt;</span><br><span class="line"></span><br><span class="line">  &lt;build&gt;</span><br><span class="line">    &lt;plugins&gt;</span><br><span class="line">      &lt;plugin&gt;</span><br><span class="line">        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;maven-shade-plugin&lt;/artifactId&gt;</span><br><span class="line">        &lt;version&gt;3.2.1&lt;/version&gt;</span><br><span class="line">        &lt;configuration&gt;</span><br><span class="line">          &lt;createDependencyReducedPom&gt;false&lt;/createDependencyReducedPom&gt;</span><br><span class="line">        &lt;/configuration&gt;</span><br><span class="line">        &lt;executions&gt;</span><br><span class="line">          &lt;execution&gt;</span><br><span class="line">            &lt;phase&gt;package&lt;/phase&gt;</span><br><span class="line">            &lt;goals&gt;</span><br><span class="line">              &lt;goal&gt;shade&lt;/goal&gt;</span><br><span class="line">            &lt;/goals&gt;</span><br><span class="line">          &lt;/execution&gt;</span><br><span class="line">        &lt;/executions&gt;</span><br><span class="line">      &lt;/plugin&gt;</span><br><span class="line">    &lt;/plugins&gt;</span><br><span class="line">  &lt;/build&gt;</span><br><span class="line"></span><br><span class="line">&lt;/project&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="関数をデプロイする"><a href="#関数をデプロイする-1" class="headerlink" title="関数をデプロイする"></a>関数をデプロイする</h3><p><code>Hello.java</code>, <code>Request.java</code>, <code>pom.xml</code>の修正が完了したら、AWS LambdaにデプロイするJARファイルを作成します。</p>
+<p>先程作成したディレクトリ中の、<code>java-lambda</code>直下で以下のコマンドを実行していきましょう。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ mvn package</span><br><span class="line"></span><br><span class="line">$ ls -l target/*.jar</span><br><span class="line">-rw-r--r--  1 daisakuhazui  staff  10535  3 29 12:34 target/lambda-hello-world-1.0.jar</span><br><span class="line">-rw-r--r--  1 daisakuhazui  staff   3164  3 29 12:34 target/original-lambda-hello-world-1.0.jar</span><br></pre></td></tr></table></figure>
+<p>今回、AWS Lambdaにデプロイするのは<code>lambda-hello-world-1.0.jar</code>の方です。</p>
+<p>AWSコンソールからランタイムがJava11のLambda関数を作成し、<code>関数パッケージ</code>から<code>lambda-hello-world-1.0.jar</code>をアップロードします。</p>
+<h3 id="関数をテストする"><a href="#関数をテストする-2" class="headerlink" title="関数をテストする"></a>関数をテストする</h3><p>JARファイルが正常にアップロードできたら関数をテストしていきましょう。</p>
+<p>これまでと同様に、関数の詳細画面右上の<code>テストイベントの設定</code>を選択し、テストイベントを下記のように修正して保存します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;firstName&quot;: &quot;Daisaku&quot;,</span><br><span class="line">  &quot;lastName&quot;: &quot;Hazui&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>保存できたら<code>テスト</code>をクリックして、成功したら実行結果のログを確認してみましょう。</p>
+<p>今回も、関数の実行結果として<code>&quot;Hello Daisaku Hazui!&quot;</code>が返ってきます。</p>
+<h2 id="awsコンソール上でインライン編集可能な言語"><a href="#AWSコンソール上でインライン編集可能な言語" class="headerlink" title="AWSコンソール上でインライン編集可能な言語"></a>AWSコンソール上でインライン編集可能な言語</h2><p>ここまで <code>.NET Core 2.1(C#/PowerShell)</code>, <code>Go 1.x</code>, <code>Java 11</code>についてご紹介してきました。</p>
+<p>これからご紹介する <code>Node.js</code>, <code>Python</code>, <code>Ruby</code>については、ローカル開発環境で関数コードを用意する必要がありません。AWSコンソール上でLambda関数を作成後、そのまま関数コードをインライン編集することができるからです。</p>
+<p>動作テストについてはこれまでと同様に、<code>テストイベントの設定</code>から以下をイベントとして設定して頂ければOKです。AWSコンソール上の<code>テスト</code>をクリックすると関数の出力結果が表示されます。</p>
+<h3 id="nodejs-12x"><a href="#Node-js-12-x" class="headerlink" title="Node.js 12.x"></a>Node.js 12.x</h3><p>AWSコンソールでLambda関数を作成時に、<code>ランタイム</code>で<code>Node.js 12.x</code>を選択してください。</p>
+<p>関数が作成できたら、自動生成されている<code>index.js</code>を下記のように修正します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">exports.handler = async (event, context) =&gt; &#123;</span><br><span class="line">    return &apos;Hello &apos; + event.firstName + &apos; &apos; + event.lastName;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="python-38"><a href="#Python-3-8" class="headerlink" title="Python 3.8"></a>Python 3.8</h3><p>AWSコンソールでLambda関数を作成時に、<code>ランタイム</code>で<code>Python 3.8</code>を選択すると、<code>lambda_function.py</code>というファイルが自動生成されています。</p>
+<p>上記ファイルを以下のように修正してください。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">def lambda_handler(event, context):</span><br><span class="line">    message = &apos;Hello &#123;&#125; &#123;&#125;!&apos;.format(event[&apos;firstName&apos;],</span><br><span class="line">                                    event[&apos;lastName&apos;])</span><br><span class="line">    return message</span><br></pre></td></tr></table></figure>
+<h3 id="ruby-27"><a href="#Ruby-2-7" class="headerlink" title="Ruby 2.7"></a>Ruby 2.7</h3><p><code>Ruby 2.7</code>をランタイムに選択した場合も、Lambda関数をインライン編集する事が可能です。</p>
+<p>Rubyの場合、<code>lambda_function.rb</code>というファイルが自動生成されているので、以下のように修正してください。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">require &apos;json&apos;</span><br><span class="line"></span><br><span class="line">def lambda_handler(event:, context:)</span><br><span class="line">    first_name = event[&quot;firstName&quot;]</span><br><span class="line">    last_name = event[&quot;lastName&quot;]</span><br><span class="line">    return &quot;Hello #&#123;first_name&#125; #&#123;last_name&#125;!&quot;</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<h2 id="おわりに"><a href="#おわりに" class="headerlink" title="おわりに"></a>おわりに</h2><p>以上、AWS Lambdaでサポートされている全言語について、簡単な文字列を返す関数を実装していきました。</p>
+<p>参考にして頂ければ幸いです。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/03/29/lambda-handlers/" data-text="[AWS Lambda 入門] 簡単な関数をサポートされている全言語で紹介" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/03/29/lambda-handlers/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/03/29/lambda-handlers/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/03/29/lambda-handlers/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/03/29/lambda-handlers/" class="hatena-bookmark-button" data-hatena-bookmark-title="[AWS Lambda 入門] 簡単な関数をサポートされている全言語で紹介" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li></ul>
+
+
+      <p class="article-footer__author">by Daisaku Hazui</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

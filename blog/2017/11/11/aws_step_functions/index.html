@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AWS Step Functions を触ってみた | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="先日、Serverlessconf Tokyo 2017に参加して、いろいろなサーバーレスアーキテクチャの話を聞き、 AWS Step Functions を使って複数の AWS Lambda を管理しているという話がいろいろと便利そうだったので、触ってみた。 Step Functions を使うと、Lambda のアプリケーションを一連のステップとして視覚的に定義し、複数の Lambda をワー">
+<meta name="keywords" content="サーバーサイド,AWS,プログラミング,サーバーレス">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWS Step Functions を触ってみた">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2017/11/11/aws_step_functions/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="先日、Serverlessconf Tokyo 2017に参加して、いろいろなサーバーレスアーキテクチャの話を聞き、 AWS Step Functions を使って複数の AWS Lambda を管理しているという話がいろいろと便利そうだったので、触ってみた。 Step Functions を使うと、Lambda のアプリケーションを一連のステップとして視覚的に定義し、複数の Lambda をワー">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/step_functions/step0.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/step_functions/step1.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/step_functions/step2.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/step_functions/step3.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/step_functions/step4.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/step_functions/step8.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/step_functions/step5.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/step_functions/step6.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/step_functions/step7.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.150Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AWS Step Functions を触ってみた">
+<meta name="twitter:description" content="先日、Serverlessconf Tokyo 2017に参加して、いろいろなサーバーレスアーキテクチャの話を聞き、 AWS Step Functions を使って複数の AWS Lambda を管理しているという話がいろいろと便利そうだったので、触ってみた。 Step Functions を使うと、Lambda のアプリケーションを一連のステップとして視覚的に定義し、複数の Lambda をワー">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/step_functions/step0.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-aws-step-functions" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2017-11-11T10:11:38.000Z" itemprop="datePublished">2017-11-11</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2017/11/11/aws_step_functions/">AWS Step Functions を触ってみた</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/11/11/aws_step_functions/" data-text="AWS Step Functions を触ってみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/11/11/aws_step_functions/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/11/11/aws_step_functions/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/11/11/aws_step_functions/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/11/11/aws_step_functions/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS Step Functions を触ってみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>先日、<a href="http://tokyo.serverlessconf.io/home.html" target="_blank" rel="noopener">Serverlessconf Tokyo 2017</a>に参加して、いろいろなサーバーレスアーキテクチャの話を聞き、 <a href="https://aws.amazon.com/jp/step-functions/" target="_blank" rel="noopener">AWS Step Functions</a> を使って複数の <a href="https://aws.amazon.com/jp/lambda/" target="_blank" rel="noopener">AWS Lambda</a> を管理しているという話がいろいろと便利そうだったので、触ってみた。</p>
+<p>Step Functions を使うと、Lambda のアプリケーションを一連のステップとして視覚的に定義し、複数の Lambda をワークフローとして管理することができるとのこと。</p>
+<p><img src="/images/step_functions/step0.png" alt=""></p>
+<p>さっそくやってみた。</p>
+<h2 id="ステップ-1-ステートマシンに名前を付ける"><a href="#ステップ-1-ステートマシンに名前を付ける" class="headerlink" title="ステップ 1: ステートマシンに名前を付ける"></a>ステップ 1: ステートマシンに名前を付ける</h2><p>ダッシュボードの <code>ステートマシンの作成</code> をクリック。</p>
+<p><img src="/images/step_functions/step1.png" alt=""></p>
+<p>ステートマシンに名前を付ける。とりあえず、定番の <code>Helloworld</code> で。</p>
+<h2 id="ステップ-2-設計図を選択する"><a href="#ステップ-2-設計図を選択する" class="headerlink" title="ステップ 2: 設計図を選択する"></a>ステップ 2: 設計図を選択する</h2><p>Lambda の結果による分岐ステップを試してみたかったので、 <code>Choice ステート</code> を選択。</p>
+<p><img src="/images/step_functions/step2.png" alt=""></p>
+<h2 id="ステップ-3-コードとビジュアルワークフローを確認する"><a href="#ステップ-3-コードとビジュアルワークフローを確認する" class="headerlink" title="ステップ 3: コードとビジュアルワークフローを確認する"></a>ステップ 3: コードとビジュアルワークフローを確認する</h2><p>ものすごく簡単な Lambda をいくつか作ってみて、 <code>コード</code> の部分にテンプレートとして準備されている JSON をベースに、ワークフローとして設定する。</p>
+<p>下記の JSON を入力して、</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"Comment"</span>: <span class="string">"test"</span>,</span><br><span class="line">  <span class="attr">"StartAt"</span>: <span class="string">"hello"</span>,</span><br><span class="line">  <span class="attr">"States"</span>: &#123;</span><br><span class="line">    <span class="attr">"hello"</span>: &#123;</span><br><span class="line">      <span class="attr">"Type"</span>: <span class="string">"Task"</span>,</span><br><span class="line">      <span class="attr">"Resource"</span>: <span class="string">"arn:aws:lambda:ap-northeast-1:123456789012:function:hello"</span>,</span><br><span class="line">      <span class="attr">"Next"</span>: <span class="string">"how are you"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"how are you"</span>: &#123;</span><br><span class="line">      <span class="attr">"Type"</span>: <span class="string">"Task"</span>,</span><br><span class="line">      <span class="attr">"Resource"</span>: <span class="string">"arn:aws:lambda:ap-northeast-1:123456789012:function:how_are_you"</span>,</span><br><span class="line">      <span class="attr">"Next"</span>: <span class="string">"ChoiceState"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"ChoiceState"</span>: &#123;</span><br><span class="line">      <span class="attr">"Type"</span> : <span class="string">"Choice"</span>,</span><br><span class="line">      <span class="attr">"Choices"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">"Variable"</span>: <span class="string">"$.response"</span>,</span><br><span class="line">          <span class="attr">"StringEquals"</span>: <span class="string">"Great"</span>,</span><br><span class="line">          <span class="attr">"Next"</span>: <span class="string">"response_good"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">"Variable"</span>: <span class="string">"$.response"</span>,</span><br><span class="line">          <span class="attr">"StringEquals"</span>: <span class="string">"Not so good"</span>,</span><br><span class="line">          <span class="attr">"Next"</span>: <span class="string">"response_bad"</span></span><br><span class="line">        &#125;</span><br><span class="line">      ],</span><br><span class="line">      <span class="attr">"Default"</span>: <span class="string">"DefaultState"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"response_good"</span>: &#123;</span><br><span class="line">      <span class="attr">"Type"</span> : <span class="string">"Task"</span>,</span><br><span class="line">      <span class="attr">"Resource"</span>: <span class="string">"arn:aws:lambda:ap-northeast-1:123456789012:function:response_good"</span>,</span><br><span class="line">      <span class="attr">"Next"</span>: <span class="string">"bye"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"response_bad"</span>: &#123;</span><br><span class="line">      <span class="attr">"Type"</span> : <span class="string">"Task"</span>,</span><br><span class="line">      <span class="attr">"Resource"</span>: <span class="string">"arn:aws:lambda:ap-northeast-1:123456789012:function:response_bad"</span>,</span><br><span class="line">      <span class="attr">"Next"</span>: <span class="string">"bye"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"DefaultState"</span>: &#123;</span><br><span class="line">      <span class="attr">"Type"</span>: <span class="string">"Fail"</span>,</span><br><span class="line">      <span class="attr">"Error"</span>: <span class="string">"DefaultStateError"</span>,</span><br><span class="line">      <span class="attr">"Cause"</span>: <span class="string">"No Matches!"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"bye"</span>: &#123;</span><br><span class="line">      <span class="attr">"Type"</span>: <span class="string">"Task"</span>,</span><br><span class="line">      <span class="attr">"Resource"</span>: <span class="string">"arn:aws:lambda:ap-northeast-1:123456789012:function:bye"</span>,</span><br><span class="line">      <span class="attr">"End"</span>: <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>ビジュアルワークフロー</code> の右側にあるリロードアイコンをクリックして、 グラフのプレビューを更新すると、</p>
+<p><img src="/images/step_functions/step3.png" alt=""></p>
+<p>ちゃんと反映された。</p>
+<p>ちなみに、作った Lambda は下記のとおり。</p>
+<p>【hello.py】</p>
+<p><code>event</code> の <code>name</code> を受け取り、 <code>hello, &lt;name&gt;</code> と表示して、そのまま <code>name</code> を返す。</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># hello.py</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">lambda_handler</span><span class="params">(event, context)</span>:</span></span><br><span class="line">    <span class="keyword">print</span> <span class="string">"hello, %s"</span> % event[<span class="string">u'name'</span>]</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">u'name'</span>: event[<span class="string">u'name'</span>]&#125;</span><br></pre></td></tr></table></figure>
+<p>【how_are_you.py】</p>
+<p><code>event</code> の <code>name</code> を受け取って、 <code>Bob</code> だったら、 <code>name</code> と、 <code>response</code> として <code>Great</code> を返す。<br><code>event</code> の <code>name</code> を受け取って、 <code>Bob</code> 以外だったら、 <code>name</code> と、 <code>response</code> として <code>Not so good</code> を返す。</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># how_are_you.py</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">lambda_handler</span><span class="params">(event, context)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> event[<span class="string">u'name'</span>] == <span class="string">'Bob'</span>:</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">u'name'</span>: event[<span class="string">u'name'</span>], <span class="string">u'response'</span>: <span class="string">u'Great'</span>&#125;</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">u'name'</span>: event[<span class="string">u'name'</span>], <span class="string">u'response'</span>: <span class="string">u'Not so good'</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>【response_good.py】 【response_bad.py】 【bye.py】</p>
+<p>それぞれ、固定の文字列を返すだけ。</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># response_good.py</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">lambda_handler</span><span class="params">(event, context)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">'Good!'</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># response_bad.py</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">lambda_handler</span><span class="params">(event, context)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">"What's wrong?"</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># bye.py</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">lambda_handler</span><span class="params">(event, context)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">'Bye!'</span></span><br></pre></td></tr></table></figure>
+<p><code>ステートマシンの作成</code> をクリックすると、 <code>ステートマシン実行の IAM ロール</code> を指定するダイアログが出てくるので、指定して <code>OK</code> をクリックする。<br>(ロールがない場合はここで作成)</p>
+<p><img src="/images/step_functions/step4.png" alt=""></p>
+<p>これだけで、ワークフローが作れてしまった。</p>
+<h2 id="コードのポイント"><a href="#コードのポイント" class="headerlink" title="コードのポイント"></a>コードのポイント</h2><p><code>コード</code> の部分に入力するJSONは、 <a href="https://states-language.net/spec.html" target="_blank" rel="noopener">JSON ベースの Amazon ステートメント言語 (ASL)</a> で記述する。  </p>
+<h3 id="type"><a href="#Type" class="headerlink" title="Type"></a>Type</h3><p><code>Type</code> として設定できるのは、 <code>Pass</code> <code>Task</code> <code>Choice</code> <code>Wait</code> <code>Succeed</code> <code>Fail</code> <code>Parallel</code> があり、</p>
+<p><img src="/images/step_functions/step8.png" alt=""></p>
+<p>フィールドとしては上記の表のとおり、設定ができる。<br>今回は主に、 <code>Task</code> と <code>Choice</code> を使用した。</p>
+<h3 id="task"><a href="#Task" class="headerlink" title="Task"></a>Task</h3><p><code>Task</code> には、 <code>Next</code> もしくは <code>&quot;End&quot;: true</code> が必要で、 <code>Next</code> で指定した文字列のタスクが次に実行される。<br><code>Resource</code> には、 Lambda の ARN などを指定する。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">"hello": &#123;</span><br><span class="line">  "Type": "Task",</span><br><span class="line">  "Resource": "arn:aws:lambda:ap-northeast-1:123456789012:function:hello",</span><br><span class="line">  "Next": "how are you"</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+<h3 id="choicestate"><a href="#ChoiceState" class="headerlink" title="ChoiceState"></a>ChoiceState</h3><p><code>ChoiceState</code> としては、 <code>StringEquals</code> や <code>BooleanEquals</code> や <code>TimestampGreaterThan</code> などの条件を設定できる。  </p>
+<p>今回の JSON の <code>ChoiceState</code> の部分では、 <code>Variable</code> で <code>$.response</code> を見て、 <code>StringEquals</code> で指定した文字列と一致するかの判別をしている。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">"ChoiceState": &#123;</span><br><span class="line">  "Type" : "Choice",</span><br><span class="line">  "Choices": [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">"Variable"</span>: <span class="string">"$.response"</span>,</span><br><span class="line">      <span class="attr">"StringEquals"</span>: <span class="string">"Great"</span>,</span><br><span class="line">      <span class="attr">"Next"</span>: <span class="string">"response_good"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">"Variable"</span>: <span class="string">"$.response"</span>,</span><br><span class="line">      <span class="attr">"StringEquals"</span>: <span class="string">"Not so good"</span>,</span><br><span class="line">      <span class="attr">"Next"</span>: <span class="string">"response_bad"</span></span><br><span class="line">    &#125;</span><br><span class="line">  ],</span><br><span class="line">  "Default": "DefaultState"</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+<p><code>Variable</code> として、 <code>$</code> で結果を受け取ることができる。<br>例えば、JSON が下記のようなもので結果として渡ってきたら、</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"foo"</span>: <span class="number">123</span>,</span><br><span class="line">    <span class="attr">"bar"</span>: [<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>],</span><br><span class="line">    <span class="attr">"car"</span>: &#123;</span><br><span class="line">        <span class="attr">"cdr"</span>: <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下記のような形で、値が取得できる。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$.foo =&gt; 123</span><br><span class="line">$.bar =&gt; [<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>]</span><br><span class="line">$.car.cdr =&gt; <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<h2 id="実際に実行してみる"><a href="#実際に実行してみる" class="headerlink" title="実際に実行してみる"></a>実際に実行してみる</h2><p><img src="/images/step_functions/step5.png" alt=""></p>
+<p><code>新しい実行</code> をクリックして、 <code>実行 ID</code> に <code>Bob</code> を入れ、 <code>event</code> として下記のように設定して、 <code>実行の開始</code> をクリック。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">"name"</span>: <span class="string">"Bob"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/images/step_functions/step6.png" alt=""></p>
+<p>無事、実行された。<br><code>Bob</code> なので、 <code>response_good</code> の方が実行されているのが分かる。  </p>
+<p>今度は、 <code>name</code> に <code>Tom</code> を入れて実行してみたら、想定どおり <code>response_bad</code> の方が実行され、ちゃんと分岐処理が実行されていることが確認できた。</p>
+<p><img src="/images/step_functions/step7.png" alt=""></p>
+<h2 id="料金"><a href="#料金" class="headerlink" title="料金"></a>料金</h2><p>AWS Step Functions の料金としては、アプリケーションワークフローのあるステップから次のステップに移行すると、状態間を遷移したことになり、 <strong>各状態遷移に対して料金が発生する</strong>。<br>毎月 4,000 回までの状態遷移は無料で、それ以降は、状態遷移 1,000 回あたり 0.025 USD (状態遷移 1 回あたり 0.000025 USD)となっている。  </p>
+<p>【参考】<br><a href="https://aws.amazon.com/jp/step-functions/pricing/" target="_blank" rel="noopener">料金 - AWS Step Functions | AWS</a></p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>今回 AWS Step Functions を初めて触ってみたが、比較的簡単にワークフローが作れて、Lambda が管理できることがわかった。<br>Lambda の制限として、実行時間が5分までというものがあるので、細かい機能で複数の Lambda に分割するケースがよくあると思う。そういった場合に、 AWS Step Functions をうまく活用してやれば管理が楽になりそうなので、社内でも積極的に使っていきたい。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/11/11/aws_step_functions/" data-text="AWS Step Functions を触ってみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/11/11/aws_step_functions/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/11/11/aws_step_functions/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/11/11/aws_step_functions/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/11/11/aws_step_functions/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS Step Functions を触ってみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーサイド/">サーバーサイド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/プログラミング/">プログラミング</a></li></ul>
+
+
+      <p class="article-footer__author">by 佐々木 悠人</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

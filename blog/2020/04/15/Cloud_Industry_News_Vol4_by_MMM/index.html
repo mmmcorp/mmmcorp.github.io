@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>快適なテレワークを行うためのノウハウとは？　クラウド業界ニュースまとめvol.4 by MMM | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="こんにちは、MMMです。 緊急事態宣言が発令され、外出自粛の要請や、公共施設の休業が行われています。多くの民間企業も、イベントの休止やテレワークへの移行など、様々な対応を迫られています。はやく平穏な日常が戻ってきて欲しいですね。 今回のクラウド業界ニュースでは、AWSやDocker、GitHubなどの大手IT企業のサービス展開に関するニュースや、GamesIndustry.bizによる在宅ワーク">
+<meta name="keywords" content="ビジネス,クラウド,AWS,ニュース">
+<meta property="og:type" content="article">
+<meta property="og:title" content="快適なテレワークを行うためのノウハウとは？　クラウド業界ニュースまとめvol.4 by MMM">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/04/15/Cloud_Industry_News_Vol4_by_MMM/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="こんにちは、MMMです。 緊急事態宣言が発令され、外出自粛の要請や、公共施設の休業が行われています。多くの民間企業も、イベントの休止やテレワークへの移行など、様々な対応を迫られています。はやく平穏な日常が戻ってきて欲しいですね。 今回のクラウド業界ニュースでは、AWSやDocker、GitHubなどの大手IT企業のサービス展開に関するニュースや、GamesIndustry.bizによる在宅ワーク">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/Cloud_Industry_News_Vol4_by_MMM/homework.jpg">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="快適なテレワークを行うためのノウハウとは？　クラウド業界ニュースまとめvol.4 by MMM">
+<meta name="twitter:description" content="こんにちは、MMMです。 緊急事態宣言が発令され、外出自粛の要請や、公共施設の休業が行われています。多くの民間企業も、イベントの休止やテレワークへの移行など、様々な対応を迫られています。はやく平穏な日常が戻ってきて欲しいですね。 今回のクラウド業界ニュースでは、AWSやDocker、GitHubなどの大手IT企業のサービス展開に関するニュースや、GamesIndustry.bizによる在宅ワーク">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/Cloud_Industry_News_Vol4_by_MMM/homework.jpg">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-Cloud-Industry-News-Vol4-by-MMM" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-04-15T03:52:17.000Z" itemprop="datePublished">2020-04-15</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/04/15/Cloud_Industry_News_Vol4_by_MMM/">快適なテレワークを行うためのノウハウとは？　クラウド業界ニュースまとめvol.4 by MMM</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/04/15/Cloud_Industry_News_Vol4_by_MMM/" data-text="快適なテレワークを行うためのノウハウとは？　クラウド業界ニュースまとめvol.4 by MMM" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/04/15/Cloud_Industry_News_Vol4_by_MMM/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/04/15/Cloud_Industry_News_Vol4_by_MMM/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/04/15/Cloud_Industry_News_Vol4_by_MMM/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/04/15/Cloud_Industry_News_Vol4_by_MMM/" class="hatena-bookmark-button" data-hatena-bookmark-title="快適なテレワークを行うためのノウハウとは？　クラウド業界ニュースまとめvol.4 by MMM" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/Cloud_Industry_News_Vol4_by_MMM/homework.jpg" alt=""></p>
+<p>こんにちは、MMMです。</p>
+<p>緊急事態宣言が発令され、外出自粛の要請や、公共施設の休業が行われています。多くの民間企業も、イベントの休止やテレワークへの移行など、様々な対応を迫られています。はやく平穏な日常が戻ってきて欲しいですね。</p>
+<p>今回のクラウド業界ニュースでは、AWSやDocker、GitHubなどの大手IT企業のサービス展開に関するニュースや、GamesIndustry.bizによる在宅ワークに関するインタビュー記事を紹介します。</p>
+<h3 id="クラウド技術"><a href="#クラウド技術" class="headerlink" title="クラウド技術"></a>クラウド技術</h3><h4 id="amazon-elastic-file-system-が-汎用モードのファイルシステムで読み取り操作が-400-増加したことを発表202041"><a href="#Amazon-Elastic-File-System-が、汎用モードのファイルシステムで読み取り操作が-400-増加したことを発表（2020-4-1）" class="headerlink" title="Amazon Elastic File System が、汎用モードのファイルシステムで読み取り操作が 400% 増加したことを発表（2020/4/1）"></a><a href="https://aws.amazon.com/jp/about-aws/whats-new/2020/04/amazon-elastic-file-system-announces-increase-in-read-operations-for-general-purpose-file-systems/" target="_blank" rel="noopener">Amazon Elastic File System が、汎用モードのファイルシステムで読み取り操作が 400% 増加したことを発表（2020/4/1）</a></h4><p><a href="https://aws.amazon.com/jp/about-aws/whats-new/2020/04/amazon-elastic-file-system-announces-increase-in-read-operations-for-general-purpose-file-systems/" target="_blank" rel="noopener"><span style="font-size:80%">https://aws.amazon.com/jp/about-aws/whats-new/2020/04/amazon-elastic-file-system-announces-increase-in-read-operations-for-general-purpose-file-systems/</span></a></p>
+<p>AWSのファイルシステム「Amazon Elastic File System（Amazon EFS）」が大幅に性能を向上。汎用モードの1秒あたり読み取り操作が7,000から35,000（+400%）になりました。AWSを利用する数多くのアプリケーションのパフォーマンス改善に繋がりそうです。</p>
+<p><br></p>
+<h4 id="amazon-personalize-が推奨アイテムのスコアの提供を開始202046"><a href="#Amazon-Personalize-が推奨アイテムのスコアの提供を開始（2020-4-6）" class="headerlink" title="Amazon Personalize が推奨アイテムのスコアの提供を開始（2020/4/6）"></a><a href="https://aws.amazon.com/jp/about-aws/whats-new/2020/04/amazon-personalize-now-provides-scores-for-recommended-items/" target="_blank" rel="noopener">Amazon Personalize が推奨アイテムのスコアの提供を開始（2020/4/6）</a></h4><p><a href="https://aws.amazon.com/jp/about-aws/whats-new/2020/04/amazon-personalize-now-provides-scores-for-recommended-items/" target="_blank" rel="noopener"><span style="font-size:80%">https://aws.amazon.com/jp/about-aws/whats-new/2020/04/amazon-personalize-now-provides-scores-for-recommended-items/</span></a></p>
+<p>AWSの「Amazon Personalize」は、Amazon.comでも利用されている機械学習技術を用いて、ユーザーごとにパーソナライズな推奨を行うことができるサービスです。この度、推奨アイテムごとの「推奨スコア」の提供が開始されました。よりユーザーのためになる、優れた推奨ロジックの開発が可能になります。</p>
+<p><br></p>
+<h4 id="マルチコンテナ環境を構成するためのオープン仕様compose-specification登場-docker-aws-マイクロソフトらが協力して仕様拡張へ202049"><a href="#マルチコンテナ環境を構成するためのオープン仕様「Compose-Specification」登場。Docker、AWS、マイクロソフトらが協力して仕様拡張へ（2020-4-9）" class="headerlink" title="マルチコンテナ環境を構成するためのオープン仕様「Compose Specification」登場。Docker、AWS、マイクロソフトらが協力して仕様拡張へ（2020/4/9）"></a><a href="https://www.publickey1.jp/blog/20/compose_specificationdockeraws.html" target="_blank" rel="noopener">マルチコンテナ環境を構成するためのオープン仕様「Compose Specification」登場。Docker、AWS、マイクロソフトらが協力して仕様拡張へ（2020/4/9）</a></h4><p><a href="https://www.publickey1.jp/blog/20/compose_specificationdockeraws.html" target="_blank" rel="noopener"><span style="font-size:80%">https://www.publickey1.jp/blog/20/compose_specificationdockeraws.html</span></a></p>
+<p>Docker社が、複数のDockerコンテナをまとめて構成する機能を「Compose Specification」としてオープン化し、AWSやマイクロソフトと共に仕様の拡張を行っていくと発表しました。Docker社の他のツールと合わせて、デベロッパーの利便性を高めていくことが目的だとしています。</p>
+<p><br></p>
+<h4 id="google-sre本の第三弾building-secure-and-reliable-systemsを無料公開2020413"><a href="#Google、SRE本の第三弾「Building-Secure-and-Reliable-Systems」を無料公開（2020-4-13）" class="headerlink" title="Google、SRE本の第三弾「Building Secure and Reliable Systems」を無料公開（2020/4/13）"></a><a href="https://www.publickey1.jp/blog/20/googlesrebuilding_secure_and_reliable_systems.html" target="_blank" rel="noopener">Google、SRE本の第三弾「Building Secure and Reliable Systems」を無料公開（2020/4/13）</a></h4><p><a href="https://www.publickey1.jp/blog/20/googlesrebuilding_secure_and_reliable_systems.html" target="_blank" rel="noopener"><span style="font-size:80%">https://www.publickey1.jp/blog/20/googlesrebuilding_secure_and_reliable_systems.html</span></a></p>
+<p>Googleは今まで、Site Reliability Engineering（SRE）に関連する書籍を無料公開してきましたが、この度、その第三弾「Building Secure and Reliable Systems」が公開されました。セキュアで信頼性の高い、スケーラブルなシステムを構築するためのベストプラクティスを紹介されています。</p>
+<p><br></p>
+<h4 id="github-is-now-free-for-teams2020414"><a href="#GitHub-is-now-free-for-teams（2020-4-14）" class="headerlink" title="GitHub is now free for teams（2020/4/14）"></a><a href="https://github.blog/2020-04-14-github-is-now-free-for-teams/" target="_blank" rel="noopener">GitHub is now free for teams（2020/4/14）</a></h4><p><a href="https://github.blog/2020-04-14-github-is-now-free-for-teams/" target="_blank" rel="noopener"><span style="font-size:80%">https://github.blog/2020-04-14-github-is-now-free-for-teams/</span></a></p>
+<p>GitHubがサービス刷新を行い、無料プランのユーザーにもプライベートリポジトリ機能が解放されました。従来は、チームで開発するとき基本的に有料プランに登録する必要がありましたが、今後は無料プランでもGitHubのコア機能が利用可能になります。世界中の小規模な開発チームに、大きな影響を与えそうです。</p>
+<h3 id="働き方"><a href="#働き方" class="headerlink" title="働き方"></a>働き方</h3><h4 id="在宅ワークをリモートスタジオにするための移行ノウハウ202041"><a href="#在宅ワークをリモートスタジオにするための移行ノウハウ（2020-4-1）" class="headerlink" title="在宅ワークをリモートスタジオにするための移行ノウハウ（2020/4/1）"></a><a href="https://jp.gamesindustry.biz/article/2004/20040101/" target="_blank" rel="noopener">在宅ワークをリモートスタジオにするための移行ノウハウ（2020/4/1）</a></h4><p><a href="https://jp.gamesindustry.biz/article/2004/20040101/" target="_blank" rel="noopener"><span style="font-size:80%">https://jp.gamesindustry.biz/article/2004/20040101/</span></a></p>
+<p>在宅ワーク（テレワーク）を実践しているIT企業へインタビュー集です。快適な在宅ワークを行うために利用するツール、コミュニケーションの工夫、各メンバーが用意するべき通信環境など、様々な知見を学ぶことができます。</p>
+<p><br></p>
+<h4 id="cioは新型コロナ対応でどのように行動すべきかガートナーが提言202046"><a href="#CIOは新型コロナ対応でどのように行動すべきか–ガートナーが提言（2020-4-6）" class="headerlink" title="CIOは新型コロナ対応でどのように行動すべきか–ガートナーが提言（2020/4/6）"></a><a href="https://japan.zdnet.com/article/35151841/" target="_blank" rel="noopener">CIOは新型コロナ対応でどのように行動すべきか–ガートナーが提言（2020/4/6）</a></h4><p><a href="https://japan.zdnet.com/article/35151841/" target="_blank" rel="noopener"><span style="font-size:80%">https://japan.zdnet.com/article/35151841/</span></a></p>
+<p>ガートナージャパンが、新型コロナウイルス感染症への対応として企業の最高情報責任者（CIO）がすぐに行うべき項目を発表しました。多くの日本企業は、非常事態に対する事業継続管理（BCM）プログラムの準備が不完全なために、適切に対応できていないと指摘されています。</p>
+<hr>
+<p>今後も面白く役に立つクラウド業界ニュースをお届けします。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/04/15/Cloud_Industry_News_Vol4_by_MMM/" data-text="快適なテレワークを行うためのノウハウとは？　クラウド業界ニュースまとめvol.4 by MMM" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/04/15/Cloud_Industry_News_Vol4_by_MMM/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/04/15/Cloud_Industry_News_Vol4_by_MMM/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/04/15/Cloud_Industry_News_Vol4_by_MMM/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/04/15/Cloud_Industry_News_Vol4_by_MMM/" class="hatena-bookmark-button" data-hatena-bookmark-title="快適なテレワークを行うためのノウハウとは？　クラウド業界ニュースまとめvol.4 by MMM" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/クラウド/">クラウド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ニュース/">ニュース</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ビジネス/">ビジネス</a></li></ul>
+
+
+      <p class="article-footer__author">by 株式会社MMM（エムエムエム）</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

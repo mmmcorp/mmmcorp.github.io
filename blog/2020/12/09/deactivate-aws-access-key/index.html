@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>夜中になったらAWSアクセスキーを自動的に無効化する仕組みを作ろう | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="はじめに 西藤です。 みなさんはAWSの各種サービスを使った開発を行う際、AWSの各種操作の権限を取得するための「アクセスキー」の取り扱いはどのようにしていますか？ アクセスキー（とシークレットキー）は漏洩した場合、不正にAWSリソースを作成・利用されてしまう恐れなどがあります。 そのため、不正利用を防ぐために  アクセスキーを用いず、「ロール」ベースでの権限付与 アクセスキー自体に付与する権限を">
+<meta name="keywords" content="AWS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="夜中になったらAWSアクセスキーを自動的に無効化する仕組みを作ろう">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/12/09/deactivate-aws-access-key/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="はじめに 西藤です。 みなさんはAWSの各種サービスを使った開発を行う際、AWSの各種操作の権限を取得するための「アクセスキー」の取り扱いはどのようにしていますか？ アクセスキー（とシークレットキー）は漏洩した場合、不正にAWSリソースを作成・利用されてしまう恐れなどがあります。 そのため、不正利用を防ぐために  アクセスキーを用いず、「ロール」ベースでの権限付与 アクセスキー自体に付与する権限を">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-12-09-deactivate-aws-access-key/IAM.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-12-09-deactivate-aws-access-key/1.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-12-09-deactivate-aws-access-key/2.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-12-09-deactivate-aws-access-key/3.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-12-09-deactivate-aws-access-key/4.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-12-09-deactivate-aws-access-key/5.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.170Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="夜中になったらAWSアクセスキーを自動的に無効化する仕組みを作ろう">
+<meta name="twitter:description" content="はじめに 西藤です。 みなさんはAWSの各種サービスを使った開発を行う際、AWSの各種操作の権限を取得するための「アクセスキー」の取り扱いはどのようにしていますか？ アクセスキー（とシークレットキー）は漏洩した場合、不正にAWSリソースを作成・利用されてしまう恐れなどがあります。 そのため、不正利用を防ぐために  アクセスキーを用いず、「ロール」ベースでの権限付与 アクセスキー自体に付与する権限を">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/2020-12-09-deactivate-aws-access-key/IAM.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-deactivate-aws-access-key" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-12-09T12:23:02.000Z" itemprop="datePublished">2020-12-09</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/12/09/deactivate-aws-access-key/">夜中になったらAWSアクセスキーを自動的に無効化する仕組みを作ろう</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/12/09/deactivate-aws-access-key/" data-text="夜中になったらAWSアクセスキーを自動的に無効化する仕組みを作ろう" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/12/09/deactivate-aws-access-key/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/12/09/deactivate-aws-access-key/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/12/09/deactivate-aws-access-key/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/12/09/deactivate-aws-access-key/" class="hatena-bookmark-button" data-hatena-bookmark-title="夜中になったらAWSアクセスキーを自動的に無効化する仕組みを作ろう" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="はじめに"><a href="#はじめに" class="headerlink" title="はじめに"></a>はじめに</h2><p><img src="/images/2020-12-09-deactivate-aws-access-key/IAM.png" alt="Identity-and-Access-Management"></p>
+<p>西藤です。</p>
+<p>みなさんはAWSの各種サービスを使った開発を行う際、AWSの各種操作の権限を取得するための「アクセスキー」の取り扱いはどのようにしていますか？</p>
+<p>アクセスキー（とシークレットキー）は漏洩した場合、不正にAWSリソースを作成・利用されてしまう恐れなどがあります。</p>
+<p>そのため、不正利用を防ぐために</p>
+<ul>
+<li>アクセスキーを用いず、「ロール」ベースでの権限付与</li>
+<li>アクセスキー自体に付与する権限を必要最低限のものにする</li>
+</ul>
+<p>などの対策が考えられます。</p>
+<p>しかし、「個人的に何かAWSを使って検証したい」というようなときには「権限を最小限に絞って….」などの調整は後回しにしてしまいがちです。<br>「AWSを使った検証」が目的なのですから、「権限の調整」に時間を取られたくはありませんよね。<br>とはいえ、不正利用されないためのなんらかの措置は講じておきたいもの….</p>
+<p>今回はそんな開発者の方に使っていただきたい自動化設定の実装例を紹介いたします。</p>
+<h2 id="実装想定"><a href="#実装想定" class="headerlink" title="実装想定"></a>実装想定</h2><p>今回は次のような場面を想定しています。</p>
+<ul>
+<li>IAMユーザーを発行しており、それに紐づくアクセスキーを使用している</li>
+</ul>
+<p>仮にこのIAMユーザー名を <code>access-key-user</code>としましょう。<br>AWSマネジメントコンソールの画面で言うとこんな感じでしょうか</p>
+<p><img src="/images/2020-12-09-deactivate-aws-access-key/1.png" alt="IAMユーザーの例"></p>
+<p>そして、今回は</p>
+<ul>
+<li>日本時刻0:00になったら <code>access-key-user</code>のアクセスキーを無効化する。</li>
+</ul>
+<p>という仕組みを実装します。<br>（”Serverless Framework”を使用しますが、デプロイ自体の解説は割愛いたします。）</p>
+<h2 id="実装用のコード内容"><a href="#実装用のコード内容" class="headerlink" title="実装用のコード内容"></a>実装用のコード内容</h2><h3 id="lambda関数"><a href="#Lambda関数" class="headerlink" title="Lambda関数"></a>Lambda関数</h3><p>Lambda関数はPythonで実装して、コードは次の通りです。</p>
+<p>handler.py</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> boto3</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">deactivate_access_key</span><span class="params">(access_key)</span>:</span></span><br><span class="line">    responce = access_key.deactivate()</span><br><span class="line">    print(responce)</span><br><span class="line">    HTTPStatusCode = responce[<span class="string">'ResponseMetadata'</span>][<span class="string">'HTTPStatusCode'</span>]</span><br><span class="line">    print(<span class="string">"HTTPStatusCode:"</span>)</span><br><span class="line">    print(HTTPStatusCode)</span><br><span class="line">    accessKeyId = access_key.access_key_id</span><br><span class="line">    print(accessKeyId + <span class="string">" is deactivated."</span>)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">(event, context)</span>:</span></span><br><span class="line">    <span class="comment"># 環境変数から取得</span></span><br><span class="line">    targetAccessKeyUserName = os.environ[<span class="string">'TARGET_ACCESS_KEY_USER_NAME'</span>]</span><br><span class="line">    targetAccessKeyId = os.environ[<span class="string">'TARGET_ACCESS_KEY_ID'</span>]</span><br><span class="line">    <span class="comment"># IAMのリソース作成</span></span><br><span class="line">    iamResource = boto3.resource(<span class="string">'iam'</span>)</span><br><span class="line">    access_key = iamResource.AccessKey(targetAccessKeyUserName, targetAccessKeyId)</span><br><span class="line">    <span class="comment"># アクセスキーの無効化</span></span><br><span class="line">    deactivate_access_key(access_key)</span><br><span class="line">    <span class="keyword">return</span></span><br></pre></td></tr></table></figure>
+<p>コード内には環境変数が2つありますが、それぞれ<br><code>TARGET_ACCESS_KEY_USER_NAME</code>は無効化を行いたいアクセスキーが紐づくIAMユーザー名（今回の例では <code>access-key-user</code>）<br><code>TARGET_ACCESS_KEY_ID</code>は無効化を行いたいアクセスキー（<code>AKIAIOSFODNN7EXAMPLE</code>のような英数字で表される）<br>を適用します。<br>※もし、Serverless Frameworkを使わない場合はLambdaの環境変数設定にて記載してください。</p>
+<p>そして、このLambda関数が実行されるとターゲットとなるアクセスキーが無効化されます。</p>
+<h3 id="serverless-frameworkの実装準備"><a href="#Serverless-Frameworkの実装準備" class="headerlink" title="Serverless Frameworkの実装準備"></a>Serverless Frameworkの実装準備</h3><p>次に、上記のLambda関数を毎日0:00に自動実行する設定を行なっていきます。<br>Serverless Frameworkでの実装で使う<code>.env</code>ファイルと<code>serverless.yml</code>ファイルは次のようになります。</p>
+<p>.env</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">AWS_ACCESS_KEY_ID=&lt;Serverless Frameworkでデプロイを行う用のアクセスキー&gt;</span><br><span class="line">AWS_SECRET_ACCESS_KEY=&lt;Serverless Frameworkでデプロイを行う用のシークレットキー&gt;</span><br><span class="line">TARGET_ACCESS_KEY_USER_NAME=access-key-user</span><br><span class="line">TARGET_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE</span><br></pre></td></tr></table></figure>
+<p>serverless.yml</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">service:</span> <span class="string">deactivate-access-key</span></span><br><span class="line"></span><br><span class="line"><span class="attr">plugins:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">serverless-dotenv-plugin</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">serverless-prune-plugin</span></span><br><span class="line"></span><br><span class="line"><span class="attr">custom:</span></span><br><span class="line"><span class="attr">  dotenv:</span></span><br><span class="line"><span class="attr">    include:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">TARGET_ACCESS_KEY_USER_NAME</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">TARGET_ACCESS_KEY_ID</span></span><br><span class="line"><span class="attr">  prune:</span></span><br><span class="line"><span class="attr">    automatic:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">    number:</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="attr">package:</span></span><br><span class="line"><span class="attr">  exclude:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">./**</span></span><br><span class="line"><span class="attr">  include:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">./handler.py</span></span><br><span class="line"></span><br><span class="line"><span class="attr">provider:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">aws</span></span><br><span class="line"><span class="attr">  runtime:</span> <span class="string">python3.8</span></span><br><span class="line"><span class="attr">  region:</span> <span class="string">ap-northeast-1</span></span><br><span class="line"><span class="attr">  stage:</span> <span class="string">dev</span></span><br><span class="line"><span class="attr">  memorySize:</span> <span class="number">128</span></span><br><span class="line"><span class="attr">  iamRoleStatements:</span></span><br><span class="line"><span class="attr">    - Effect:</span> <span class="string">Allow</span></span><br><span class="line"><span class="attr">      Action:</span></span><br><span class="line"><span class="bullet">        -</span> <span class="string">"iam:UpdateAccessKey"</span></span><br><span class="line"><span class="attr">      Resource:</span></span><br><span class="line"><span class="bullet">        -</span> <span class="string">"*"</span></span><br><span class="line"></span><br><span class="line"><span class="attr">functions:</span></span><br><span class="line"><span class="attr">  deactivate-access-key:</span></span><br><span class="line"><span class="attr">    description:</span> <span class="string">アクセスキーの無効化</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">deactivate-access-key</span></span><br><span class="line"><span class="attr">    handler:</span> <span class="string">handler.main</span></span><br><span class="line"><span class="attr">    events:</span></span><br><span class="line"><span class="attr">      - schedule:</span></span><br><span class="line"><span class="attr">          name:</span> <span class="string">deactivate-access-key</span></span><br><span class="line"><span class="attr">          description:</span> <span class="string">JST</span> <span class="number">0</span><span class="string">:00にアクセスキーを無効化する</span></span><br><span class="line"><span class="attr">          rate:</span> <span class="string">cron(00</span> <span class="number">15</span> <span class="string">*</span> <span class="string">*</span> <span class="string">?</span> <span class="string">*)</span></span><br></pre></td></tr></table></figure>
+<p>注目していただきたいのは、最後、数行分の部分です。<br>cronでの指定がありますがこれにより上記のLambda関数が毎日JST 0:00に実行されるようにCloudWatch Eventsルールの設定が付きますので、<br>「夜になったらAWSアクセスキーを自動的に無効化」が実現します。</p>
+<p>あと、Dockerベースでデプロイできるようにしましょう。<br><code>Dockerfile</code>と<code>docker-compose.yml</code>は次の通りです。</p>
+<p>Dockerfile</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> node:<span class="number">15.3</span>.<span class="number">0</span>-alpine</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> npm update -g</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash"><span class="comment"># install serverless framework</span></span></span><br><span class="line"><span class="bash">RUN npm install -g serverless</span></span><br><span class="line"><span class="bash"><span class="comment"># install serverless plugins</span></span></span><br><span class="line"><span class="bash">RUN npm i -D serverless-dotenv-plugin</span></span><br><span class="line"><span class="bash">RUN npm install --save-dev serverless-prune-plugin</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash"><span class="comment"># change work directory</span></span></span><br><span class="line"><span class="bash">WORKDIR /app</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">COPY . /app/</span></span><br></pre></td></tr></table></figure>
+<p>docker-compose.yml</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">"3.8"</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line"><span class="attr">  serverless:</span></span><br><span class="line"><span class="attr">    build:</span></span><br><span class="line"><span class="attr">      context:</span> <span class="string">.</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">.:/app</span></span><br><span class="line"><span class="attr">    env_file:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">.env</span></span><br></pre></td></tr></table></figure>
+<h2 id="実装結果"><a href="#実装結果" class="headerlink" title="実装結果"></a>実装結果</h2><p>以上を踏まえて、デプロイすると次のようになります。</p>
+<p>Lambda関数<br><img src="/images/2020-12-09-deactivate-aws-access-key/2.png" alt="Lambda関数"></p>
+<p>CloudWatch Eventsルール<br><img src="/images/2020-12-09-deactivate-aws-access-key/3.png" alt="CloudWatch Eventsルール"></p>
+<p>JST 0:00になるとアクセスキーを無効化するLambda関数が実行される。と言う形です。</p>
+<p>そして、この設定を終えて、Lambda実行ログを見ますと</p>
+<p><img src="/images/2020-12-09-deactivate-aws-access-key/4.png" alt="Lambdaの実行ログ"></p>
+<p>と言うようにアクセスキーの無効化が実行された旨表示されており、アクセスキーのあるIAMユーザーの情報を見にいくと</p>
+<p><img src="/images/2020-12-09-deactivate-aws-access-key/5.png" alt="無効化されたアクセスキー"></p>
+<p>ちゃんと、アクセスキーが無効になっています。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>以上でAWSアクセスキーを自動的に無効化する実装の完了です。</p>
+<p>このようにしておけば、仮にAWSアクセスキーに強力な権限を付与したまま残してしまっていても、少なくとも毎日0:00になったらアクセスキー自体が無効化されるので、「強い権限付与した状態を忘れたまま放置してしまっていた」と言うような場面は回避できます。</p>
+<p>本来は最小権限の原則に則って必要な権限を必要なだけ付与する、アクセスキーの漏洩に注意しキー自体も定期的なローテーションを行うなど、IAMのベストプラクティスに沿った運用を行うことが大原則ではありますが、安全にアクセスキーを使うための1つのアイディアとして参考になれば幸いです。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/12/09/deactivate-aws-access-key/" data-text="夜中になったらAWSアクセスキーを自動的に無効化する仕組みを作ろう" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/12/09/deactivate-aws-access-key/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/12/09/deactivate-aws-access-key/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/12/09/deactivate-aws-access-key/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/12/09/deactivate-aws-access-key/" class="hatena-bookmark-button" data-hatena-bookmark-title="夜中になったらAWSアクセスキーを自動的に無効化する仕組みを作ろう" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li></ul>
+
+
+      <p class="article-footer__author">by 西藤翔太朗</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

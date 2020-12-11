@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>機械学習で東京都の不動産の取引価格を予測する (Amazon Machine Learning) | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="re:InventでさまざまなAWSの新サービスが発表されましたが、機械学習モデルの開発、学習、メンテナンスのライフサイクルに使える、Amazon SageMakerもありました。また、Amazon Rekognition VideoやAWS DeepLens、Amazon ComprehendなどのAIサービスもいくつか発表されています。 機械学習導入への需要が高まる中、今回は、Amazon M">
+<meta name="keywords" content="AWS,ソリューション・サービス">
+<meta property="og:type" content="article">
+<meta property="og:title" content="機械学習で東京都の不動産の取引価格を予測する (Amazon Machine Learning)">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2017/11/30/amazon-machine-learning/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="re:InventでさまざまなAWSの新サービスが発表されましたが、機械学習モデルの開発、学習、メンテナンスのライフサイクルに使える、Amazon SageMakerもありました。また、Amazon Rekognition VideoやAWS DeepLens、Amazon ComprehendなどのAIサービスもいくつか発表されています。 機械学習導入への需要が高まる中、今回は、Amazon M">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/datasource/1.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/datasource/2.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/datasource/3.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/datasource/4.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/model/1.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/evaluation/1.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/evaluation/2.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/evaluation/3.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/evaluation/4.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/evaluation-fix/1.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/evaluation-fix/2.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/evaluation-fix/3.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/evaluation-fix/4.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/evaluation-fix/5.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/evaluation-fix/6.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/evaluation-fix/7.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/prediction/1.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/prediction/2.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/prediction/3.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/prediction/4.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/prediction/5.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.150Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="機械学習で東京都の不動産の取引価格を予測する (Amazon Machine Learning)">
+<meta name="twitter:description" content="re:InventでさまざまなAWSの新サービスが発表されましたが、機械学習モデルの開発、学習、メンテナンスのライフサイクルに使える、Amazon SageMakerもありました。また、Amazon Rekognition VideoやAWS DeepLens、Amazon ComprehendなどのAIサービスもいくつか発表されています。 機械学習導入への需要が高まる中、今回は、Amazon M">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/amazon-machine-learning/datasource/1.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-Amazon-Machine-Learning" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2017-11-30T16:14:07.000Z" itemprop="datePublished">2017-11-30</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2017/11/30/amazon-machine-learning/">機械学習で東京都の不動産の取引価格を予測する (Amazon Machine Learning)</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/11/30/amazon-machine-learning/" data-text="機械学習で東京都の不動産の取引価格を予測する (Amazon Machine Learning)" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/11/30/amazon-machine-learning/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/11/30/amazon-machine-learning/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/11/30/amazon-machine-learning/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/11/30/amazon-machine-learning/" class="hatena-bookmark-button" data-hatena-bookmark-title="機械学習で東京都の不動産の取引価格を予測する (Amazon Machine Learning)" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>re:InventでさまざまなAWSの新サービスが発表されましたが、機械学習モデルの開発、学習、メンテナンスのライフサイクルに使える、Amazon SageMakerもありました。また、Amazon Rekognition VideoやAWS DeepLens、Amazon ComprehendなどのAIサービスもいくつか発表されています。</p>
+<p>機械学習導入への需要が高まる中、今回は、Amazon Machine Learningを実際に使用しながら、東京都の不動産の取引価格を予測してみたので、ご紹介させていただきます。</p>
+<h2 id="目次"><a href="#目次" class="headerlink" title="目次"></a>目次</h2><!-- toc -->
+<ul>
+<li><a href="#amazon-machine-learningについて">Amazon Machine Learningについて</a><ul>
+<li><a href="#二項分類">二項分類</a></li>
+<li><a href="#多項分類">多項分類</a></li>
+<li><a href="#回帰分析">回帰分析</a></li>
+</ul>
+</li>
+<li><a href="#機械学習とは">機械学習とは</a></li>
+<li><a href="#実践">実践</a><ul>
+<li><a href="#データの準備">データの準備</a></li>
+<li><a href="#入力データの作成">入力データの作成</a></li>
+<li><a href="#機械学習モデルの作成">機械学習モデルの作成</a></li>
+<li><a href="#評価の確認">評価の確認</a></li>
+</ul>
+</li>
+<li><a href="#チューニング">チューニング</a><ul>
+<li><a href="#外れ値を除外">外れ値を除外</a></li>
+<li><a href="#データシャッフル">データシャッフル</a></li>
+<li><a href="#データ型の調整">データ型の調整</a></li>
+<li><a href="#結果">結果</a></li>
+<li><a href="#その他レシピの編集">その他(レシピの編集)</a></li>
+</ul>
+</li>
+<li><a href="#予測">予測</a><ul>
+<li><a href="#千代田区のデータa">千代田区のデータA</a></li>
+<li><a href="#大田区のデータb">大田区のデータB</a></li>
+<li><a href="#値段が高めのデータc">値段が高めのデータC</a></li>
+</ul>
+</li>
+<li><a href="#まとめ">まとめ</a></li>
+<li><a href="#参考">参考</a></li>
+</ul>
+<!-- tocstop -->
+<h2 id="amazon-machine-learningについて"><a href="#Amazon-Machine-Learningについて" class="headerlink" title="Amazon Machine Learningについて"></a>Amazon Machine Learningについて</h2><p>Amazon Machine Learningとは、データ解析の専門的な知識がなくても機械学習によるデータ分析が行えるAWSマネージドサービスです。データ統計やモデルの作成、評価、予測などで手間のかかる部分を自動化してくれます。</p>
+<p>現在利用できる学習アルゴリズムには以下があります。</p>
+<h3 id="二項分類"><a href="#二項分類" class="headerlink" title="二項分類　"></a>二項分類　</h3><p>入力値データを2つの選択肢のどちらかに分類します。</p>
+<blockquote>
+<p>例.このEメールはスパムか否か？</p>
+</blockquote>
+<h3 id="多項分類"><a href="#多項分類" class="headerlink" title="多項分類　"></a>多項分類　</h3><p>入力値データを3つ以上の選択肢のうちいずれかに分類します。</p>
+<blockquote>
+<p>例.顧客が興味を示す製品のカテゴリはどのカテゴリ？</p>
+</blockquote>
+<h3 id="回帰分析"><a href="#回帰分析" class="headerlink" title="回帰分析"></a>回帰分析</h3><p>値の予測を行います。</p>
+<blockquote>
+<p>例.明日のシアトルの温度は何度？</p>
+</blockquote>
+<h2 id="機械学習とは"><a href="#機械学習とは" class="headerlink" title="機械学習とは"></a>機械学習とは</h2><p>機械学習の元の定義は、</p>
+<blockquote>
+<p>the field of study that gives computers the ability to learn without being explicitly programmed.</p>
+</blockquote>
+<p>というのが有名で、「明示的なプログラミングをせず、コンピューターに学習能力を持たせる学問」とのことです。言い換えると、過去のデータを元に将来の予測を行う分析手法で、活用例としては以下のようなものが考えられます。</p>
+<ul>
+<li>自社サイトユーザーのコンバージョンへの行動分析/属性分類</li>
+<li>ネットワークへの不正侵入検知</li>
+<li>従業員の健康状態の予測</li>
+<li>プロジェクトの遅延予測</li>
+<li>株価予測</li>
+</ul>
+<p>従来は人力でデータ分析を行なっていましたが、機械学習により分析、モデル生成を行い、分析結果も自動で算出してくれます。これにより、既存のデータを活用して、よりビジネス価値のある判断を下しやすくなります。</p>
+<p>Amazon Machine Learningを使うと、この機械学習モデルを自作することなく、素早く実装を行うことができるのが特徴です。</p>
+<h2 id="実践"><a href="#実践" class="headerlink" title="実践"></a>実践</h2><p>今回は、Amazon Machine Learningを使って、東京都の不動産の取引価格を予測するモデルを作成しましたので、その紹介をしていこうと思います。</p>
+<h3 id="データの準備"><a href="#データの準備" class="headerlink" title="データの準備"></a>データの準備</h3><p>国土交通省土地総合情報システムのデータを使用し、東京都の不動産の取引価格を予測します。</p>
+<ul>
+<li><a href="http://www.land.mlit.go.jp/webland/" target="_blank" rel="noopener">地価公示・地価調査・取引価格情報｜国土交通省土地総合情報システム</a></li>
+</ul>
+<p>今回は、平成17年第3四半期から平成29年第2四半期までの、東京都の全市区町村のデータを使用しました。データの内容例としましては、以下のようになっています。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">No|種類|地域|市区町村コード|都道府県名|市区町村名|地区名|最寄駅：名称|最寄駅：距離(分)| <span class="strong">**取引価格(総額)**</span> |坪単価|間取り|面積(㎡)|取引価格(㎡単価)|土地の形状|間口|延床面積(㎡)|建築年|建物の構造|建物の用途|今後の利用目的|前面道路：方位|前面道路：種類|前面道路：幅員(ｍ)|都市計画|建ぺい率(％)|容積率(％)|取引時点|備考</span><br><span class="line">--|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|--</span><br><span class="line">1|中古マンション等|商業地|13101|東京都|千代田区|一番町|半蔵門|3| <span class="strong">**64000000(ターゲット)**</span> |2500000|２ＬＤＫ|55|740000|ほぼ正方形|6.4|500|昭和47年|ＳＲＣ|住宅|住宅|北東|区道|4|第１種住居地域|60|400|平成29年第２四半期|改装済を購入</span><br></pre></td></tr></table></figure>
+<p>この中から、データ量が少ないものや、意味を持たないカラムを除外して、最終的に以下のようなデータに整形をしました。データの数は全部で約6万件となります。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">種類|都道府県名|市区町村名|地区名|最寄駅：名称|最寄駅：距離(分)| <span class="strong">**取引価格(総額)**</span> |間取り|面積(㎡)|建築年|建物の構造|建物の用途|今後の利用目的|都市計画|建ぺい率(％)|容積率(％)|取引時点</span><br><span class="line">--|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|--</span><br><span class="line">中古マンション等|東京都|千代田区|一番町|半蔵門|3| <span class="strong">**64000000(ターゲット)**</span> |２ＬＤＫ|55|昭和47年=&gt;西暦に変換|ＳＲＣ|住宅|住宅|第１種住居地域|60|400|平成29年第２四半期=&gt;西暦に変換</span><br></pre></td></tr></table></figure>
+<p>CSVをS3バケットにアップロードして、データの準備は完了です。</p>
+<h3 id="入力データの作成"><a href="#入力データの作成" class="headerlink" title="入力データの作成"></a>入力データの作成</h3><p>Amazon Machine Learningでは<code>データソース</code>というオブジェクトがあります。</p>
+<p>ここに入力データに関する情報を定義できて、S3にアップしたCSVの場所、スキーマ、ターゲットなどを設定してゆきます。<code>取引価格(総額)</code>を予測したいので、ターゲットに設定します。</p>
+<p>スキーマは、ひとまず、Amazon ML側でサジェストされた型を採用しました。5つの項目が数値型となっており、その他はカテゴリ型になっています。</p>
+<p><img src="/images/amazon-machine-learning/datasource/1.png" alt=""></p>
+<p><img src="/images/amazon-machine-learning/datasource/2.png" alt=""></p>
+<p>その他にも、Amazon MLにデータを登録するだけで、欠けている値、カラムごとの分布図などの統計情報、ターゲットとの相関の強さなどを確認することができます。</p>
+<p><img src="/images/amazon-machine-learning/datasource/3.png" alt=""></p>
+<p><img src="/images/amazon-machine-learning/datasource/4.png" alt=""></p>
+<h3 id="機械学習モデルの作成"><a href="#機械学習モデルの作成" class="headerlink" title="機械学習モデルの作成"></a>機械学習モデルの作成</h3><p>先程作成したデータソースを入力データとして、機械学習モデルを作成します。</p>
+<p>ターゲットの型によってAmazon MLが自動的に学習アルゴリズムを決定するのですが、今回は<code>取引価格(総額)=数値</code>をターゲットとするので、<code>回帰分析</code>が使用されていることが確認できます。</p>
+<p><img src="/images/amazon-machine-learning/model/1.png" alt=""></p>
+<p>また、デフォルトで作成されたレシピは以下のようになりました。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"groups"</span>: &#123;</span><br><span class="line">    <span class="attr">"NUMERIC_VARS_QB_500"</span>: <span class="string">"group('建築年','最寄駅：距離（分）','面積（㎡）','取引時点')"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"assignments"</span>: &#123;&#125;,</span><br><span class="line">  <span class="attr">"outputs"</span>: [</span><br><span class="line">    <span class="string">"ALL_CATEGORICAL"</span>,</span><br><span class="line">    <span class="string">"quantile_bin(NUMERIC_VARS_QB_500,500)"</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="評価の確認"><a href="#評価の確認" class="headerlink" title="評価の確認"></a>評価の確認</h3><p>評価が完了したら確認してゆきます。回帰分析の場合、RMSE(二乗平均平方根誤差)が評価の基準となっています。</p>
+<p><img src="/images/amazon-machine-learning/evaluation/1.png" alt=""></p>
+<p>RMSE baselineは「常にターゲットの平均値を予測の回答とする架空の回帰モデルのRMSE」となっており、このベースラインを基準に、機械学習モデルとしての精度を判断することができます。</p>
+<p>この結果を見ると、ベースラインよりは精度が高いモデルを作成できていますが、誤差もそんなに変わらないので、あまりいいモデルとはいえない気がします。また、平均取引価格が<code>82,335,616円</code>と、大きな値をとることを考慮に入れても、誤差の絶対値が大きいように見えます。</p>
+<p>誤差のばらつきを確認することもできます。</p>
+<p><img src="/images/amazon-machine-learning/evaluation/2.png" alt=""></p>
+<p><img src="/images/amazon-machine-learning/evaluation/3.png" alt=""></p>
+<p><img src="/images/amazon-machine-learning/evaluation/4.png" alt=""></p>
+<p>縦軸がデータの数、横軸が実際の値と予測値の誤差となっており、真ん中の緑の線のときが、誤差0で予測が的中した時となります。これをみると、このモデルでは、実際の値よりも高い値を予測してしまっているデータの方が多いとわかります。</p>
+<h2 id="チューニング"><a href="#チューニング" class="headerlink" title="チューニング"></a>チューニング</h2><p>傾向はなんとなくでていますが、精度はあまりよくないので、モデルをチューニングしてゆきます。</p>
+<h3 id="外れ値を除外"><a href="#外れ値を除外" class="headerlink" title="外れ値を除外"></a>外れ値を除外</h3><p>まず、ターゲットの分布を見ると、極端に数が少ないデータがあることがわかります。この図だと、100億円以上の物件は100レコードほどしかなく、アンバランスな分布になっていることがわかります。</p>
+<p><img src="/images/amazon-machine-learning/evaluation-fix/1.png" alt=""></p>
+<p><img src="/images/amazon-machine-learning/evaluation-fix/2.png" alt="全体でみると100億円以上のレコードが殆ど無い"></p>
+<p>このような外れ値を除外することで精度をあげてゆきます。何度かデータを加工したあと、最終的に、以下のような分布になりました。</p>
+<p><img src="/images/amazon-machine-learning/evaluation-fix/3.png" alt=""></p>
+<p>具体的には、取引価格1億円以上のデータを除外しています。この時点でのデータ件数は57,000件ほどとなりました。</p>
+<h3 id="データシャッフル"><a href="#データシャッフル" class="headerlink" title="データシャッフル"></a>データシャッフル</h3><p>Amazon Machine Learningでは、デフォルトで、入力データの最初の70%をトレーニング用データに使用し、残り30%を評価用データに使用します。今回用意したデータの順序はランダムではないので、モデル作成時にランダムでデータを選ぶようにしてあげます。</p>
+<p><img src="/images/amazon-machine-learning/evaluation-fix/4.png" alt=""></p>
+<h3 id="データ型の調整"><a href="#データ型の調整" class="headerlink" title="データ型の調整"></a>データ型の調整</h3><p>ここで最初のモデルのレシピを確認してみます</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"groups"</span>: &#123;</span><br><span class="line">    <span class="attr">"NUMERIC_VARS_QB_500"</span>: <span class="string">"group('建築年','最寄駅：距離（分）','面積（㎡）','取引時点')"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"assignments"</span>: &#123;&#125;,</span><br><span class="line">  <span class="attr">"outputs"</span>: [</span><br><span class="line">    <span class="string">"ALL_CATEGORICAL"</span>,</span><br><span class="line">    <span class="string">"quantile_bin(NUMERIC_VARS_QB_500,500)"</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>これをみると、数値型がすべて<a href="http://docs.aws.amazon.com/ja_jp/machine-learning/latest/dg/data-transformations-reference.html#quantile-binning-transformation" target="_blank" rel="noopener">四分位ビニング変換</a>されていることがわかります。これは、例えば、取引時点などは、2005年からの西暦をデータとして持っているだけで、細かいばらつきはないので、binの数が<code>500</code>が正しいとは思えません。そこで今回のデータでは、いくつかデータ型を修正し、数値型のカラムは以下に、他のカラムはカテゴリー型にしました。</p>
+<p><img src="/images/amazon-machine-learning/evaluation-fix/5.png" alt=""></p>
+<p>レシピはこちらのようになります。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"groups"</span> : &#123;</span><br><span class="line">    <span class="attr">"NUMERIC_VARS_QB_500"</span> : <span class="string">"group('建築年','面積（㎡）')"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"assignments"</span> : &#123; &#125;,</span><br><span class="line">  <span class="attr">"outputs"</span> : [ <span class="string">"ALL_CATEGORICAL"</span>, <span class="string">"quantile_bin(NUMERIC_VARS_QB_500,500)"</span> ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="結果"><a href="#結果" class="headerlink" title="結果"></a>結果</h3><p>上記を行なった結果、最終的な評価は以下のようになりました。</p>
+<p><img src="/images/amazon-machine-learning/evaluation-fix/6.png" alt="RMSE"></p>
+<p><img src="/images/amazon-machine-learning/evaluation-fix/7.png" alt="誤差のばらつき"></p>
+<p><code>476,966,249</code>だったRMSEは、<code>9,636,617</code>となり、最初と比べると大幅に精度を改善したことがわかります。ベースラインRMSEと比べると、約55%誤差を削ることができました。取引価格は平均値が<code>37,163,239円</code>と大きな値をとるデータなので、一旦機械学習モデルとしては成立するのではないでしょうか。</p>
+<h3 id="その他レシピの編集"><a href="#その他-レシピの編集" class="headerlink" title="その他(レシピの編集)"></a>その他(レシピの編集)</h3><p>その他にも、チューニング方法として、パラメーターの正規化、デカルト積の追加など、Amazon ML側でレシピが用意されています。</p>
+<p>例えば、すべての数値を正規化したい場合は、以下のようなレシピを書くことができます。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"groups"</span> : &#123; &#125;,</span><br><span class="line">  <span class="attr">"assignments"</span> : &#123; &#125;,</span><br><span class="line">  <span class="attr">"outputs"</span> : [ <span class="string">"ALL_CATEGORICAL"</span>, <span class="string">"normalize(ALL_NUMERIC)"</span> ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>本来、正規化をするには、プログラムを書いた上でクレンジングを実行する必要がありますが、Amazon MLではこのように書くだけであとはいい感じにやってくれます。面倒な作業をする必要がなくなりますし、バグを埋め込むリスクも減らすことができます。</p>
+<p>同じように、デカルト積を使って、変数同士の相互作用を確かめるパラメーターを追加することもできます。</p>
+<p>例えば、収入を予測するモデルを作成したいとします。パラメーターに<code>職業</code>と<code>大学</code>がある場合、それぞれ個別での影響に加えて、<code>職業+大学</code>と組み合わせたときの影響を考慮するパラメーターを解析に追加することができます。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"groups"</span> : &#123; &#125;,</span><br><span class="line">  <span class="attr">"assignments"</span> : &#123; &#125;,</span><br><span class="line">  <span class="attr">"outputs"</span> : [ <span class="string">"ALL_CATEGORICAL"</span>, <span class="string">"cartesian('職業','大学')"</span> ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>このように、自作データクレンジングのコストやリスクをAmazon Machine Learning側で吸収することができます。他にもいろいろな調整ができるので、詳しくは<a href="https://qiita.com/okmttdhr/items/669f35049fa8abe030dd#%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88%E7%B7%A8" target="_blank" rel="noopener">ドキュメント</a>を参考にしてみてください。</p>
+<h2 id="予測"><a href="#予測" class="headerlink" title="予測"></a>予測</h2><p>Amazon Machine Learningでは、特定のデータに対して、同期的な予測(リアルタイム予測)をすることができます。</p>
+<h3 id="千代田区のデータa"><a href="#千代田区のデータA" class="headerlink" title="千代田区のデータA"></a>千代田区のデータA</h3><p>例えば、以下の千代田区のデータ(<code>A</code>とする)を元に予測をしてみます。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">種類|都道府県名|市区町村名|地区名|最寄駅：名称|最寄駅：距離(分)| <span class="strong">**取引価格(総額)**</span> |間取り|面積(㎡)|建築年|建物の構造|建物の用途|今後の利用目的|都市計画|建ぺい率(％)|容積率(％)|取引時点</span><br><span class="line">--|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|--</span><br><span class="line">中古マンション等|東京都|千代田区|飯田橋|飯田橋|1|51000000|２ＬＤＫ|55|昭和59年|ＳＲＣ|住宅|住宅|商業地域|80|600|平成28年第３四半期</span><br></pre></td></tr></table></figure>
+<p>該当モデルの、<code>Try real-time predictions</code>でデータを入力します。</p>
+<p><img src="/images/amazon-machine-learning/prediction/1.png" alt=""></p>
+<p>結果は以下のようになりました。</p>
+<p><img src="/images/amazon-machine-learning/prediction/2.png" alt=""></p>
+<p>予測値が<code>48,814,088円</code>で、実際の値は<code>51,000,000円</code>だったので、誤差は約200万円となります。</p>
+<h3 id="大田区のデータb"><a href="#大田区のデータB" class="headerlink" title="大田区のデータB"></a>大田区のデータB</h3><p>次に、場所を変えて、大田区のデータ(<code>B</code>とする)を元に予測をしてみます。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">種類|都道府県名|市区町村名|地区名|最寄駅：名称|最寄駅：距離(分)| <span class="strong">**取引価格(総額)**</span> |間取り|面積(㎡)|建築年|建物の構造|建物の用途|今後の利用目的|都市計画|建ぺい率(％)|容積率(％)|取引時点</span><br><span class="line">--|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|--</span><br><span class="line">中古マンション等|東京都|大田区|大森北|平和島|5| <span class="strong">**25000000**</span> |１ＬＤＫ|45|昭和59年|ＲＣ|住宅|住宅|商業地域|80|400|平成29年第１四半期</span><br></pre></td></tr></table></figure>
+<p>結果は以下のようになりました。</p>
+<p><img src="/images/amazon-machine-learning/prediction/3.png" alt=""></p>
+<p>予測値が<code>24,440,086円</code>で、実際の値は<code>25,000,000円</code>だったので、誤差は約50万円となります。<code>A</code> <code>B</code>の結果をみると、そこそこの精度がでているように思えます。</p>
+<h3 id="値段が高めのデータc"><a href="#値段が高めのデータC" class="headerlink" title="値段が高めのデータC"></a>値段が高めのデータC</h3><p>では、最後に、以下の値段が高めのデータ(<code>C</code>とする)を元に予測をしてみます。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">種類|都道府県名|市区町村名|地区名|最寄駅：名称|最寄駅：距離(分)| <span class="strong">**取引価格(総額)**</span> |間取り|面積(㎡)|建築年|建物の構造|建物の用途|今後の利用目的|都市計画|建ぺい率(％)|容積率(％)|取引時点</span><br><span class="line">--|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|--</span><br><span class="line">中古マンション等|東京都|千代田区|飯田橋|飯田橋|4| <span class="strong">**99000000**</span> |３ＬＤＫ|70|平成19年|ＲＣ|住宅|住宅|商業地域|80|500|平成28年第１四半期</span><br></pre></td></tr></table></figure>
+<p>結果は以下のようになりました。</p>
+<p><img src="/images/amazon-machine-learning/prediction/4.png" alt=""></p>
+<p>予測値が<code>74,181,424円</code>で、実際の値は<code>99,000,000円</code>だったので、誤差は約2400万円となりました。<code>A</code> <code>B</code>と比べると誤差が大きいように見えます。ここで今一度、データの分布に戻ってみると、</p>
+<p><img src="/images/amazon-machine-learning/prediction/5.png" alt=""></p>
+<p><code>C</code>のデータは、取引価格9900万円なので、この分布でいうと最もデータの少ない範囲にあるということがわかります。そのため、学習するデータが少なく、誤差も生まれやすいと考えられます。ただし、分布が少ないデータでも、全体としてモデルの精度向上に影響を及ぼしている場合もあるので、一概にはいえません。</p>
+<p>このように、作成したモデルが得意とする予測しやすいデータ、しにくいデータはありますが、専門的な知識を必要とせずに、そこそこ精度のある機械学習モデルを作成することができます。</p>
+<p>このリアルタイム予測を、API Gatewayなどのエンドポイントと組み合わせれば、独自の価格予測APIを作成することも可能です。また、多数の観測値をあわせて予測する、非同期なバッチ予測をすることもできます。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>今回はAmazon Machine Learningを実際に使いながら、その機能を紹介させていただきました。</p>
+<p>このように、機械学習に関してほぼ素人な私でも、素早く、それなりの結果を出すことができました。より凝ったことをしようとすると知識が必然となってきますが、本来時間がかかる部分をAmazon Machine Learningで自動化することができるので、本格的な機械学習に際しても、その導入の支援をすることができます。</p>
+<p>また、データサイエンティストへの採用と投資にコストをかけることなく、そこそこ精度のある機械学習をビジネスに導入することもできます。(※もちろん独自のカスタマイズが難しいことや、データ解析が一部ブラックボックス化するというデメリットはあります)。</p>
+<p>re:InventでAmazon SageMakerも発表されましたが、機械学習にかかるコストを自動化してゆけるのは、ビジネスサイドにとっても、データサイエンティストや機械学習エンジニアにとっても嬉しいのではないでしょうか。</p>
+<p>弊社ではAWSを使用した機械学習の導入支援も行っておりますので、ぜひお気軽にお問い合わせください。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://qiita.com/okmttdhr/items/669f35049fa8abe030dd" target="_blank" rel="noopener">参考リンクまとめ</a></li>
+</ul>
+<style>
+.article .article-entry img {
+  max-height: 500px;  
+}  
+</style>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/11/30/amazon-machine-learning/" data-text="機械学習で東京都の不動産の取引価格を予測する (Amazon Machine Learning)" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/11/30/amazon-machine-learning/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/11/30/amazon-machine-learning/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/11/30/amazon-machine-learning/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/11/30/amazon-machine-learning/" class="hatena-bookmark-button" data-hatena-bookmark-title="機械学習で東京都の不動産の取引価格を予測する (Amazon Machine Learning)" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li></ul>
+
+
+      <p class="article-footer__author">by okp</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

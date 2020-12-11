@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AWS LambdaでGolangのWebフレームワークGinを利用してみた | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="最近は体調管理に一番困っているやっさんでございます。頭痛や肩こり、そして腰痛。年齢が上がると人には話しにくい悩みが増えていきますね。 さて、今回はAWS LambdaでGolangのWebフレームワークGinを利用してみました。 GinとはGinはGo（Golang）で記述されたWebフレームワークです。 パフォーマンスと優れた生産性が必要な場合は、Ginが気に入るはずです。 AWS Lambda">
+<meta name="keywords" content="AWS,サーバーレス">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWS LambdaでGolangのWebフレームワークGinを利用してみた">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/06/07/aws-lambda-with-golang-gin/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="最近は体調管理に一番困っているやっさんでございます。頭痛や肩こり、そして腰痛。年齢が上がると人には話しにくい悩みが増えていきますね。 さて、今回はAWS LambdaでGolangのWebフレームワークGinを利用してみました。 GinとはGinはGo（Golang）で記述されたWebフレームワークです。 パフォーマンスと優れた生産性が必要な場合は、Ginが気に入るはずです。 AWS Lambda">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-06-06-try-lambda-with-golang-gin/01.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AWS LambdaでGolangのWebフレームワークGinを利用してみた">
+<meta name="twitter:description" content="最近は体調管理に一番困っているやっさんでございます。頭痛や肩こり、そして腰痛。年齢が上がると人には話しにくい悩みが増えていきますね。 さて、今回はAWS LambdaでGolangのWebフレームワークGinを利用してみました。 GinとはGinはGo（Golang）で記述されたWebフレームワークです。 パフォーマンスと優れた生産性が必要な場合は、Ginが気に入るはずです。 AWS Lambda">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/2020-06-06-try-lambda-with-golang-gin/01.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-try-lambda-with-golang-gin" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-06-07T10:00:00.000Z" itemprop="datePublished">2020-06-07</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/06/07/aws-lambda-with-golang-gin/">AWS LambdaでGolangのWebフレームワークGinを利用してみた</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/06/07/aws-lambda-with-golang-gin/" data-text="AWS LambdaでGolangのWebフレームワークGinを利用してみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/06/07/aws-lambda-with-golang-gin/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/06/07/aws-lambda-with-golang-gin/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/06/07/aws-lambda-with-golang-gin/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/06/07/aws-lambda-with-golang-gin/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS LambdaでGolangのWebフレームワークGinを利用してみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近は体調管理に一番困っているやっさんでございます。<br>頭痛や肩こり、そして腰痛。<br>年齢が上がると人には話しにくい悩みが増えていきますね。</p>
+<p>さて、今回はAWS Lambdaで<br>GolangのWebフレームワークGinを利用してみました。</p>
+<h2 id="ginとは"><a href="#Ginとは" class="headerlink" title="Ginとは"></a>Ginとは</h2><p>GinはGo（Golang）で記述されたWebフレームワークです。<br> パフォーマンスと優れた生産性が必要な場合は、Ginが気に入るはずです。</p>
+<h2 id="aws-lambda-ginのメリット"><a href="#AWS-Lambda-×-Ginのメリット" class="headerlink" title="AWS Lambda × Ginのメリット"></a>AWS Lambda × Ginのメリット</h2><p>AWS LambdaでGinを利用することのメリットを考えてみます。</p>
+<h3 id="再利用性と可搬性の向上"><a href="#再利用性と可搬性の向上" class="headerlink" title="再利用性と可搬性の向上"></a>再利用性と可搬性の向上</h3><p>Ginを利用することで、再利用性と可搬性が向上します。<br>GinはWebフレームワークですので、サーバーでも動かすことができます。<br>少しの修正でAWS Lamdaからコンテナアーキテクチャに変更することも可能になります。</p>
+<h3 id="フレームワークの恩恵を享受できる"><a href="#フレームワークの恩恵を享受できる" class="headerlink" title="フレームワークの恩恵を享受できる"></a>フレームワークの恩恵を享受できる</h3><p>GolangではAWS Lambdaに特化したフレームワークはありません。<br>他の言語であれば、以下のようなフレームワークが存在します。</p>
+<ul>
+<li>Ruby：Ruby on Jets</li>
+<li>Python：Chalice</li>
+</ul>
+<p><strong>「LambdaでSpring Bootを使えるか」</strong>という話を勉強会で耳にしました。<br>コミュニティから信頼されているフレームワークをLambdaで利用できれば、<br>生産性も上がり、コミュニティから多くの技術的知見も得られる …<br>このような話が出るのは当然です。<br>（LambdaでSpring Bootを使うのが本番ワークロードに適しているかは、別の話ですが。）</p>
+<p>Ginも人気のあるWebフレームワークで、スター数は30,000を超えています。<br><strong>LambdaでWebフレームワークに必要な機能をフルスクラッチで作るより、<br>Ginなどの有名なフレームワークを利用したほうが生産性は上がるでしょう。</strong></p>
+<p>このようなアプローチは他にもあります。</p>
+<ul>
+<li>LambdaでExpress（Node.js）を利用する</li>
+<li>LambdaでFlask（Python）を利用する</li>
+</ul>
+<h2 id="aws-lambdaでginを利用してみる"><a href="#AWS-LambdaでGinを利用してみる" class="headerlink" title="AWS LambdaでGinを利用してみる"></a>AWS LambdaでGinを利用してみる</h2><p>以下の前提条件で構築しました。</p>
+<ul>
+<li>Golang : 1.14.3</li>
+<li>Serverless Framework : 1.67.1</li>
+</ul>
+<h3 id="ディレクトリ構成"><a href="#ディレクトリ構成" class="headerlink" title="ディレクトリ構成"></a>ディレクトリ構成</h3><p>今回はServerless Frameworkを利用します。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- src</span><br><span class="line">  - hanlder</span><br><span class="line">    - main.go</span><br><span class="line">- Makefile</span><br><span class="line">- serverless.yml</span><br></pre></td></tr></table></figure></p>
+<h3 id="maingoの内容"><a href="#main-goの内容" class="headerlink" title="main.goの内容"></a>main.goの内容</h3><p>awslabsが提供しているaws-lambda-go-api-proxyを利用して、<br>Lambdaのリクエスト情報をGinの機能に受け渡します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;log&quot;</span><br><span class="line">	&quot;context&quot;</span><br><span class="line"></span><br><span class="line">	&quot;github.com/aws/aws-lambda-go/events&quot;</span><br><span class="line">	&quot;github.com/aws/aws-lambda-go/lambda&quot;</span><br><span class="line">	&quot;github.com/awslabs/aws-lambda-go-api-proxy/gin&quot;</span><br><span class="line">	&quot;github.com/gin-gonic/gin&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">var ginLambda *ginadapter.GinLambda</span><br><span class="line"></span><br><span class="line">func init() &#123;</span><br><span class="line">	// stdout and stderr are sent to AWS CloudWatch Logs</span><br><span class="line">	log.Printf(&quot;Gin cold start&quot;)</span><br><span class="line">	r := gin.Default()</span><br><span class="line">	r.GET(&quot;/ping&quot;, func(c *gin.Context) &#123;</span><br><span class="line">		c.JSON(200, gin.H&#123;</span><br><span class="line">			&quot;message&quot;: &quot;pong&quot;,</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	ginLambda = ginadapter.New(r)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) &#123;</span><br><span class="line">	// If no name is provided in the HTTP request body, throw an error</span><br><span class="line">	return ginLambda.ProxyWithContext(ctx, req)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	lambda.Start(Handler)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="serverlessymlの内容"><a href="#serverless-ymlの内容" class="headerlink" title="serverless.ymlの内容"></a>serverless.ymlの内容</h3><p>記述内容にGin特有の変更は<strong>ありません。</strong><br>普段通り記述します。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">service: aws-lambda-go-api-proxy-gin</span><br><span class="line"></span><br><span class="line">provider:</span><br><span class="line">  name: aws</span><br><span class="line">  runtime: go1.x</span><br><span class="line">  stage: $&#123;opt:stage, self:custom.defaultStage&#125;</span><br><span class="line">  region: ap-northeast-1</span><br><span class="line">  iamRoleStatements:</span><br><span class="line">    - Effect: &quot;Allow&quot;</span><br><span class="line">      Action:</span><br><span class="line">        - &quot;logs:*&quot;</span><br><span class="line">      Resource: &quot;*&quot;</span><br><span class="line"></span><br><span class="line">package:</span><br><span class="line">  exclude:</span><br><span class="line">    - ./**</span><br><span class="line">  include:</span><br><span class="line">    - ./bin/**</span><br><span class="line"></span><br><span class="line">custom:</span><br><span class="line">  defaultStage: dev</span><br><span class="line"></span><br><span class="line">functions:</span><br><span class="line">  api:</span><br><span class="line">    handler: bin/main</span><br><span class="line">    timeout: 900</span><br><span class="line">    events:</span><br><span class="line">      - http:</span><br><span class="line">          path: ping</span><br><span class="line">          method: get</span><br></pre></td></tr></table></figure></p>
+<h3 id="デプロイ"><a href="#デプロイ" class="headerlink" title="デプロイ"></a>デプロイ</h3><p>以下のコマンドをMakefileに用意しました。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">build:</span><br><span class="line">	go mod download</span><br><span class="line">	env GOOS=linux go build -ldflags=&quot;-s -w&quot; -o bin/main src/handler/main.go</span><br><span class="line"></span><br><span class="line">deploy: build</span><br><span class="line">	sls deploy --verbose --aws-profile $(PROFILE)</span><br></pre></td></tr></table></figure></p>
+<h3 id="実行してみる"><a href="#実行してみる" class="headerlink" title="実行してみる"></a>実行してみる</h3><p>実行できました！</p>
+<p><img src="/images/2020-06-06-try-lambda-with-golang-gin/01.png" alt=""></p>
+<h3 id="パフォーマンスを測ってみる"><a href="#パフォーマンスを測ってみる" class="headerlink" title="パフォーマンスを測ってみる"></a>パフォーマンスを測ってみる</h3><p>Heyというツールを使って測ってみました。<br>コールドスタートで<strong>0.4秒</strong>ならよさそうです！<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">Summary:</span><br><span class="line">  Total:	0.5447 secs</span><br><span class="line">  Slowest:	0.4115 secs</span><br><span class="line">  Fastest:	0.0246 secs</span><br><span class="line">  Average:	0.1200 secs</span><br><span class="line">  Requests/sec:	367.1871</span><br><span class="line"></span><br><span class="line">  Total data:	3600 bytes</span><br><span class="line">  Size/request:	18 bytes</span><br><span class="line"></span><br><span class="line">Response time histogram:</span><br><span class="line">  0.025 [1]	|</span><br><span class="line">  0.063 [145]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■</span><br><span class="line">  0.102 [1]	|</span><br><span class="line">  0.141 [2]	|■</span><br><span class="line">  0.179 [2]	|■</span><br><span class="line">  0.218 [0]	|</span><br><span class="line">  0.257 [0]	|</span><br><span class="line">  0.295 [1]	|</span><br><span class="line">  0.334 [8]	|■■</span><br><span class="line">  0.373 [32]	|■■■■■■■■■</span><br><span class="line">  0.411 [8]	|■■</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Latency distribution:</span><br><span class="line">  10% in 0.0328 secs</span><br><span class="line">  25% in 0.0381 secs</span><br><span class="line">  50% in 0.0442 secs</span><br><span class="line">  75% in 0.1740 secs</span><br><span class="line">  90% in 0.3583 secs</span><br><span class="line">  95% in 0.3691 secs</span><br><span class="line">  99% in 0.3913 secs</span><br><span class="line"></span><br><span class="line">Details (average, fastest, slowest):</span><br><span class="line">  DNS+dialup:	0.0151 secs, 0.0246 secs, 0.4115 secs</span><br><span class="line">  DNS-lookup:	0.0030 secs, 0.0000 secs, 0.0124 secs</span><br><span class="line">  req write:	0.0000 secs, 0.0000 secs, 0.0010 secs</span><br><span class="line">  resp wait:	0.1048 secs, 0.0245 secs, 0.3504 secs</span><br><span class="line">  resp read:	0.0000 secs, 0.0000 secs, 0.0002 secs</span><br><span class="line"></span><br><span class="line">Status code distribution:</span><br><span class="line">  [200]	200 responses</span><br></pre></td></tr></table></figure></p>
+<p>いとも簡単にLambdaでGinを利用できました。<br>ここからにさらにデータソースをDynamoDBからRDBに変更しやすい設計とすれば<br>より再利用性と可搬性が向上しますね。</p>
+<p>今回試したコードは以下にあります。<br><a href="https://github.com/x-blood/aws-lambda-go-api-proxy-gin" target="_blank">x-blood / aws-lambda-go-api-proxy-gin</a></p>
+<p>よろしければご覧になってみてください。</p>
+<p>以上です！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/06/07/aws-lambda-with-golang-gin/" data-text="AWS LambdaでGolangのWebフレームワークGinを利用してみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/06/07/aws-lambda-with-golang-gin/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/06/07/aws-lambda-with-golang-gin/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/06/07/aws-lambda-with-golang-gin/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/06/07/aws-lambda-with-golang-gin/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS LambdaでGolangのWebフレームワークGinを利用してみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li></ul>
+
+
+      <p class="article-footer__author">by yassan</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

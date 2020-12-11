@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>ReadableなPull Requestを作る為に心がけていること | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="前田です。何故かニックネームがダンプ前田になってしまいました。昨日突然Slackに「ダンプ前田」リアクションが出来たからで、今プチ流行しています。私がよくダンプファイルを作るかららしいです。文章の接尾語に使ったり返事に使ったりなど、なかなかハイコンテキストな感じになっています。   弊社ではGitHubのPull Request(以下PR)機能を利用して機能単位ごとに必ずソースコードをレビューして">
+<meta name="keywords" content="Pull Request,GitHub,Review">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ReadableなPull Requestを作る為に心がけていること">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2017/04/14/readable_pull_request/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="前田です。何故かニックネームがダンプ前田になってしまいました。昨日突然Slackに「ダンプ前田」リアクションが出来たからで、今プチ流行しています。私がよくダンプファイルを作るかららしいです。文章の接尾語に使ったり返事に使ったりなど、なかなかハイコンテキストな感じになっています。   弊社ではGitHubのPull Request(以下PR)機能を利用して機能単位ごとに必ずソースコードをレビューして">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/readable_pull_request/dumpmaeda.jpg">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.146Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ReadableなPull Requestを作る為に心がけていること">
+<meta name="twitter:description" content="前田です。何故かニックネームがダンプ前田になってしまいました。昨日突然Slackに「ダンプ前田」リアクションが出来たからで、今プチ流行しています。私がよくダンプファイルを作るかららしいです。文章の接尾語に使ったり返事に使ったりなど、なかなかハイコンテキストな感じになっています。   弊社ではGitHubのPull Request(以下PR)機能を利用して機能単位ごとに必ずソースコードをレビューして">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/readable_pull_request/dumpmaeda.jpg">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-reviewable-code" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2017-04-14T11:49:45.000Z" itemprop="datePublished">2017-04-14</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2017/04/14/readable_pull_request/">ReadableなPull Requestを作る為に心がけていること</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/04/14/readable_pull_request/" data-text="ReadableなPull Requestを作る為に心がけていること" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/04/14/readable_pull_request/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/04/14/readable_pull_request/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/04/14/readable_pull_request/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/04/14/readable_pull_request/" class="hatena-bookmark-button" data-hatena-bookmark-title="ReadableなPull Requestを作る為に心がけていること" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>前田です。<br>何故かニックネームがダンプ前田になってしまいました。<br>昨日突然Slackに「ダンプ前田」リアクションが出来たからで、今プチ流行しています。<br>私がよくダンプファイルを作るかららしいです。<br>文章の接尾語に使ったり返事に使ったりなど、なかなかハイコンテキストな感じになっています。</p>
+<p><img src="/images/readable_pull_request/dumpmaeda.jpg" alt=""></p>
+<hr>
+<p>弊社ではGitHubのPull Request(以下PR)機能を利用して機能単位ごとに必ずソースコードをレビューしています。<br>以前、弊社下條が<a href="/blog/2016/03/22/source_code_review">ソースコードレビュー時に意識していること</a>としてレビューア側目線の記事を書いていましたが、レビューイ側目線でリーダブルなPRを作る為に心がけていることについて書いてみようかと思います。</p>
+<p>PRをリーダブルにするのが大事だと思っているのは以下の理由からです。</p>
+<ul>
+<li>レビュー時間の削減</li>
+<li>実装した機能にフォーカス出来るのでバグや機能漏れを見つけ出しやすい</li>
+</ul>
+<p>プロジェクトを進めていく時、機能単位で開発していくと思いますが、ソースコードを書いたらそこで終わりではなく、その後に必ずレビューをします。<br>そして、レビューによって、実装者には気づかなかったバグが見つかったり、仕様を誤認識していたり、などを修正し、品質を担保していきます。</p>
+<p>プロダクトの品質を維持し高めていくためにレビューは必須ですが、レビューアが多いとそれだけ時間(コスト)がかかっていることになります。<br>コスト削減の為にもレビュー時間は少ないにこしたことはないと思います。</p>
+<p>また、PRが散らかった感じになっていると、レビューして欲しいロジックにフォーカスしてもらえなかったり、そのことによってバグを見逃したり仕様が違ったままリリースしてしまったり、などということが発生する可能性が高くなると思います。<br>本質的な間違いを指摘してもらいやすいようなPRを作ることによって、質の高いディスカッションが出来るのではと思っています。</p>
+<p>では以下から具体的に私が普段から心がけて実施していることを書いていきます。</p>
+<h3 id="実装背景を記載する"><a href="#実装背景を記載する" class="headerlink" title="実装背景を記載する"></a>実装背景を記載する</h3><p>その機能がどのような経緯で必要になったか、詳細な仕様はどう定義されているか、などを記載します。<br>URLリンクなどを貼っておいて、後で見返した時に辿りやすくしておくのが良いと思います。<br>ただ実際には、GitHubはPRとIssueを紐付けることが出来るので、Issueにしっかり書いて、PRにはリンクだけ貼る、というパターンが結構多いです。</p>
+<h3 id="検証結果を記載する"><a href="#検証結果を記載する" class="headerlink" title="検証結果を記載する"></a>検証結果を記載する</h3><p>PRは何か実現したい機能があって、それが期待通り実装されているかどうかが一番のポイントです。</p>
+<p>私の場合はそれらを示す為に、ローカルの開発環境で検証した過程と結果などを示します。<br>具体的には以下のようなものを示したりしています。</p>
+<ul>
+<li>どのような検証データを準備したか</li>
+<li>どのような検証動作を行ったか(リクエストを投げたか)</li>
+<li>期待する結果はどのような結果か</li>
+<li>結果画面</li>
+</ul>
+<p>データを準備する際のSQLを添付したりなどもしています。<br>レビューアがレビューする時は、コードを見るだけでなく実際に動かしてみてレビューすることがあると思いますが、自分が検証した過程を共有したほうが時間の節約になると思うからです。</p>
+<p>ただし、上記はテストがしっかり書けていればそれほど親切に書いてあげる必要はないかと思います。</p>
+<h3 id="適度な粒度にする"><a href="#適度な粒度にする" class="headerlink" title="適度な粒度にする"></a>適度な粒度にする</h3><p>ファイル変更数が膨大な数のPRがたまにあります。<br>私も昔はそんなPRを出したりしていました。<br>差分が大きいPRはレビューアの負担が大きいです。</p>
+<p>どうしても大きくなってしまう場合もあるかと思いますが、無理にでも適切に機能を分割してPRを出していくようにしたほうがいいと思っています。<br>機能を適切に分割して実装していくのは難しいですが、慣れるしかないかなと思います。</p>
+<p>-&gt; PRを分割する時のtipsを追加しました。 <a href="/blog/2017/06/09/readable_pull_request_2">ReadableなPull Requestを作る為に心がけていること②</a></p>
+<h3 id="リーダブルコードで書く"><a href="#リーダブルコードで書く" class="headerlink" title="リーダブルコードで書く"></a>リーダブルコードで書く</h3><p>リーダブルにする為にはそもそもリーダブルなコードになっている必要があると思います。<br>最近は実装した後で自分のコードを見直す時間を結構多く取っています。<br>コードを見直す時の目線として、ここは説明コメントを付けないと分かりづらいロジックになっているなとか、説明コメントを自分で書いている場合、そのコメントは何故必要なのか、とか考えながら見直しています。<br>ビジネスロジックの背景などをコードにコメントとして残しておくのは良いかと思いますが、それ以外はすべてソースコードで表現出来る、もしくは出来ていない場合(説明が必要なコードになっている場合)は、何かロジックやオブジェクト名・メソッド名・クラスの定義の仕方・役割の持たせ方・分割方法などが悪いのではと疑ったほうがいいと思うからです。<br>説明が必要なロジックになっているようなら何か見直しが必要なサインだ、という目線で見て改善していくと、読みやすいコードになっていくのではと思っています。<br><a href="https://www.oreilly.co.jp/books/9784873115658/" target="_blank" rel="noopener">リーダブルコード</a>に書かれていたことが、最近ようやく肌感覚で分かってきた気がしています。<br>ここをこうしたい、ああしたい、と色々考えるとキリがなくなってくるのですが、読みやすいコードに出来たと思った時はとても気持ちがいいです。</p>
+<hr>
+<p>間違いを指摘してもらいやすいようにPRを作る、というのはもしかしたら少し嫌な作業かもしれません。<br><a href="https://www.oreilly.co.jp/books/9784873116303/" target="_blank" rel="noopener">チームギーク</a>で書かれていたことですが、</p>
+<blockquote>
+<p>批判を耳にする側としては、それを受け入れる方法を学ばなければいけない。<br>自分のスキルに謙虚になるだけでなく、他の人があなた(とプロジェクト!)に恩恵をもたらしてくれると心から信頼し、自分がバカだと思わないことである。<br>プログラミングはスキルなので、練習すれば向上する。<br>ジャグリングの改善点を指摘されたときに、自分の性格や人間としての価値が攻撃されたと思うだろうか?<br>自分の価値を自分の書いたコードと結び付けてはいけない。<br>繰り返しになるが、君は君の書いたコードではない。<br>大事なことなので何度でも言うが、君は君の書いたコードではない。<br>君がそう思うだけでなく、同僚にもそう思ってもらうようにしよう。</p>
+</blockquote>
+<p>にならって自分が書いたコードに対して謙虚に意見を受け止め、積極的に改善出来るようにしていく為にももっと「ReadableなPull Request」を作れるように努力していきます。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/04/14/readable_pull_request/" data-text="ReadableなPull Requestを作る為に心がけていること" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/04/14/readable_pull_request/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/04/14/readable_pull_request/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/04/14/readable_pull_request/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/04/14/readable_pull_request/" class="hatena-bookmark-button" data-hatena-bookmark-title="ReadableなPull Requestを作る為に心がけていること" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GitHub/">GitHub</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pull-Request/">Pull Request</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Review/">Review</a></li></ul>
+
+
+      <p class="article-footer__author">by 前田 正樹</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

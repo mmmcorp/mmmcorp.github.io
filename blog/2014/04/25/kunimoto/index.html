@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Balsamiq Mockupsを使ったモックアップのコラボレーション環境 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="今年の手強い花粉症を前に、かれこれ2ヶ月以上薬漬けの日々を送っている国本です。 突然ですが、皆さんモックアップツール使ってますか?もちろん色々使ってますよね? 日本だとCacooなどがWeb上のコラボレーションドローツールとしてメジャーですが、今回は弊社で利用しているBalsamiq Mockupsをご紹介したいと思います。 Balsamiq Mockupsとは? 優しいタッチの手書き風モックアッ">
+<meta name="keywords" content="フロントエンド,開発ツール">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Balsamiq Mockupsを使ったモックアップのコラボレーション環境">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2014/04/25/kunimoto/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="今年の手強い花粉症を前に、かれこれ2ヶ月以上薬漬けの日々を送っている国本です。 突然ですが、皆さんモックアップツール使ってますか?もちろん色々使ってますよね? 日本だとCacooなどがWeb上のコラボレーションドローツールとしてメジャーですが、今回は弊社で利用しているBalsamiq Mockupsをご紹介したいと思います。 Balsamiq Mockupsとは? 優しいタッチの手書き風モックアッ">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/balsamiq/portal_top_mockup.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/balsamiq/menu_sample.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/balsamiq/menu_sample2.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/balsamiq/mybalsamiq.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/balsamiq/mybalsamiq2.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.126Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Balsamiq Mockupsを使ったモックアップのコラボレーション環境">
+<meta name="twitter:description" content="今年の手強い花粉症を前に、かれこれ2ヶ月以上薬漬けの日々を送っている国本です。 突然ですが、皆さんモックアップツール使ってますか?もちろん色々使ってますよね? 日本だとCacooなどがWeb上のコラボレーションドローツールとしてメジャーですが、今回は弊社で利用しているBalsamiq Mockupsをご紹介したいと思います。 Balsamiq Mockupsとは? 優しいタッチの手書き風モックアッ">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/balsamiq/portal_top_mockup.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-kunimoto" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2014-04-25T04:07:13.000Z" itemprop="datePublished">2014-04-25</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2014/04/25/kunimoto/">Balsamiq Mockupsを使ったモックアップのコラボレーション環境</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2014/04/25/kunimoto/" data-text="Balsamiq Mockupsを使ったモックアップのコラボレーション環境" data-counturl="https://blog.mmmcorp.co.jp/blog/2014/04/25/kunimoto/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2014/04/25/kunimoto/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2014/04/25/kunimoto/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2014/04/25/kunimoto/" class="hatena-bookmark-button" data-hatena-bookmark-title="Balsamiq Mockupsを使ったモックアップのコラボレーション環境" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今年の手強い花粉症を前に、かれこれ2ヶ月以上薬漬けの日々を送っている国本です。</p>
+<p>突然ですが、皆さんモックアップツール使ってますか?もちろん色々使ってますよね?</p>
+<p>日本だと<a href="https://cacoo.com/lang/ja/" title="Cacoo" target="_blank" rel="noopener">Cacoo</a>などがWeb上のコラボレーション<br>ドローツールとしてメジャーですが、今回は弊社で利用している<a href="http://balsamiq.com/products/mockups/" title="Balsamiq Mockups" target="_blank" rel="noopener">Balsamiq Mockups</a>をご紹介したいと思います。</p>
+<h2 id="balsamiq-mockupsとは"><a href="#Balsamiq-Mockupsとは" class="headerlink" title="Balsamiq Mockupsとは?"></a>Balsamiq Mockupsとは?</h2><ul>
+<li>優しいタッチの手書き風モックアップが簡単に作れるモックアップ作成ツール</li>
+<li>ツール内に基本パーツがビルトインされており、それらを組み合わせてモックアップを作る</li>
+<li>Windows、Mac、Linux環境それぞれの専用アプリケーションが準備されている</li>
+<li><a href="http://balsamiq.com/products/mockups/mybalsamiq/" title="myBalsamiq" target="_blank" rel="noopener">myBalsamiq</a>というブラウザのみで利用できるWebサービスもあり</li>
+<li>シングルユーザライセンスで$79(myBalsamiqと併用時は$40にディスカウント)</li>
+</ul>
+<h2 id="どんな感じのモックアップが作れるの"><a href="#どんな感じのモックアップが作れるの" class="headerlink" title="どんな感じのモックアップが作れるの?"></a>どんな感じのモックアップが作れるの?</h2><p>仮のポータルサイトTOPページをサンプルとして作成してみました。<br>日本語入力もOKですが、見た目を重視しあえて英語で作りましたw</p>
+<p>手書きでも同じようなモックアップを書くことは可能ですが、ビルトインされているパーツを組み合わせるだけで手描きの手軽さと同じように、サクサクっとそれなりのモックアップが<br>作れちゃうのがBalsamiq Mockupsの魅力だと思います。</p>
+<p><img src="/images/balsamiq/portal_top_mockup.png" alt="mockup_sample"></p>
+<p>Webサイトでよくあるリストボックスやメニューバーの作成も「-」を使ってディレクトリ階層を表現できるので、例えばこんな感じに記述すると↓</p>
+<p><img src="/images/balsamiq/menu_sample.png" alt="menu_sample1"></p>
+<p>↓このように2階層のリストボックスを生成してくれます。</p>
+<p><img src="/images/balsamiq/menu_sample2.png" alt="menu_sample2"></p>
+<h2 id="使えるテンプレートパーツ集mockups-to-go"><a href="#使えるテンプレート・パーツ集「Mockups-To-Go」" class="headerlink" title="使えるテンプレート・パーツ集「Mockups To Go」"></a>使えるテンプレート・パーツ集「Mockups To Go」</h2><p>デフォルトでビルトインされているパーツでも十分モックアップは作れますが<br><a href="https://mockupstogo.mybalsamiq.com/projects" title="Mockups To Go" target="_blank" rel="noopener">Mockups To Go</a>というサイトでは、沢山のテンプレートがユーザによって<br>アップされており、自由にダウンロードすることができます。</p>
+<p>個人的にオススメしたいのは<br><a href="https://mockupstogo.mybalsamiq.com/projects/web/Bootstrap" title="Bootstrap" target="_blank" rel="noopener">Bootstrap</a>や<a href="https://mockupstogo.mybalsamiq.com/projects/icons/grid" title="Icons &amp; Pictographs" target="_blank" rel="noopener">Icons &amp; Pictographs</a>それに<a href="https://mockupstogo.mybalsamiq.com/projects/ios/iPad%20Controls" title="iPad Controls" target="_blank" rel="noopener">iPad Controls</a>なども、便利に利用できる良いテンプレートだと思います。</p>
+<p>一からモックアップを作らずとも、こういった既存テンプレートをベースにモバイルアプリやWebサービスのイメージ共有を行うのも大いにありですよね。</p>
+<h2 id="コラボレーションサービスmybalsamiq"><a href="#コラボレーションサービスmyBalsamiq" class="headerlink" title="コラボレーションサービスmyBalsamiq"></a>コラボレーションサービスmyBalsamiq</h2><p>モックアップを作るからには、必ずクライアントや開発メンバー間での共有が必要になります。</p>
+<p>Balsamiq Mockupsは作成したモックアップをPDFなどにもエクスポート可能な為、<br>エクスポートしたファイルをメールやチャットツールで共有するのも一つの手ですが<br><a href="http://balsamiq.com/products/mockups/mybalsamiq/" title="myBalsamiq" target="_blank" rel="noopener">myBalsamiq</a>というコラボレーションサービスを利用することで、よりスマートにモックアップのコラボレーションを実現できます。</p>
+<p>myBalsamiqではプロジェクトという単位でモックアップを管理し、myBalsamiq内のプロジェクトのメンバーにアサインされているユーザであればオンライン上で自由にモックアップファイルの閲覧・編集やコメントが可能です。</p>
+<p><img src="/images/balsamiq/mybalsamiq.png" alt="myBasamiq"></p>
+<p>プロジェクト内のモックアップをクリックすると、コメントの入力やファイルのダウンロードが可能なページヘ遷移し、Cacooのようにモックアップの編集をブラウザから行うこともできます。</p>
+<p><img src="/images/balsamiq/mybalsamiq2.png" alt="myBasamiq"></p>
+<p>サービス利用料ですが、<strong>アクティブなプロジェクト数に応じて課金</strong>される形となっており<br>最安プランのPersonal($12/月額)で、最大3つのアクティブプロジェクトを運用可能です。</p>
+<p>ユーザ数に対する課金は現状無いため、モックアップを確認して欲しいクライアントや開発メンバーはとりあえず招待してユーザを作成してもらうフローを確立しておけば<br>情報共有もスムーズに行えるのではないでしょうか。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>いかがでしたでしょうか? モックアップツールはWebサービス系や、アプリケーション型含めて多数のプロダクトが乱立し、また進化のスピードも非常に速いため、今後も継続的にチェックし、<br>開発現場で活用していきたいと考えています。</p>
+<p>近い内に、Balsamiq Mockupsとグッドパッチさんが提供されている「<a href="https://prottapp.com/" title="Bootstrap" target="_blank" rel="noopener">Prott</a>」を組み合わせたモバイルアプリのモックアップなんかをご紹介できればなーっと思っています。</p>
+<p>皆さんのオススメツールなどありましたら<a href="https://twitter.com/k_kuninori" title="@k_kuninori" target="_blank" rel="noopener">@k_kuninori</a>まで教えていただけると嬉しいです。</p>
+<p>ではでは、良きモックアップライフをお送りください。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2014/04/25/kunimoto/" data-text="Balsamiq Mockupsを使ったモックアップのコラボレーション環境" data-counturl="https://blog.mmmcorp.co.jp/blog/2014/04/25/kunimoto/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2014/04/25/kunimoto/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2014/04/25/kunimoto/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2014/04/25/kunimoto/" class="hatena-bookmark-button" data-hatena-bookmark-title="Balsamiq Mockupsを使ったモックアップのコラボレーション環境" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/開発ツール/">開発ツール</a></li></ul>
+
+
+      <p class="article-footer__author">by 国本 廷宣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AWS LambdaからRuby + Mysql2でAmazon RDSにつないでみた | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="これまで Amazon EC2 で動かしていた1日1回動作する Ruby で書かれたバッチを、主にコストダウンを目的として AWS Lambda に移行し、サーバーレス化した。 バッチの内容としては、RDS で稼働している MySQL のデータベースから必要なデータを取得する必要がある。   バッチの内容をできるだけ書き換えずに AWS Lambda から Amazon RDS へ接続する際に、少">
+<meta name="keywords" content="AWS,サーバーレス,AWS Lambda">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWS LambdaからRuby + Mysql2でAmazon RDSにつないでみた">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/02/15/lambda-mysql2-rds/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="これまで Amazon EC2 で動かしていた1日1回動作する Ruby で書かれたバッチを、主にコストダウンを目的として AWS Lambda に移行し、サーバーレス化した。 バッチの内容としては、RDS で稼働している MySQL のデータベースから必要なデータを取得する必要がある。   バッチの内容をできるだけ書き換えずに AWS Lambda から Amazon RDS へ接続する際に、少">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/lambda-mysql2-rds/mylambda.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.162Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AWS LambdaからRuby + Mysql2でAmazon RDSにつないでみた">
+<meta name="twitter:description" content="これまで Amazon EC2 で動かしていた1日1回動作する Ruby で書かれたバッチを、主にコストダウンを目的として AWS Lambda に移行し、サーバーレス化した。 バッチの内容としては、RDS で稼働している MySQL のデータベースから必要なデータを取得する必要がある。   バッチの内容をできるだけ書き換えずに AWS Lambda から Amazon RDS へ接続する際に、少">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/lambda-mysql2-rds/mylambda.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-lambda-mysql2-rds" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-02-15T11:22:13.000Z" itemprop="datePublished">2020-02-15</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/02/15/lambda-mysql2-rds/">AWS LambdaからRuby + Mysql2でAmazon RDSにつないでみた</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/02/15/lambda-mysql2-rds/" data-text="AWS LambdaからRuby + Mysql2でAmazon RDSにつないでみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/02/15/lambda-mysql2-rds/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/02/15/lambda-mysql2-rds/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/02/15/lambda-mysql2-rds/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/02/15/lambda-mysql2-rds/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS LambdaからRuby + Mysql2でAmazon RDSにつないでみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>これまで <code>Amazon EC2</code> で動かしていた1日1回動作する <code>Ruby</code> で書かれたバッチを、主にコストダウンを目的として <code>AWS Lambda</code> に移行し、サーバーレス化した。</p>
+<p>バッチの内容としては、<code>RDS</code> で稼働している <code>MySQL</code> のデータベースから必要なデータを取得する必要がある。  </p>
+<p>バッチの内容をできるだけ書き換えずに <code>AWS Lambda</code> から <code>Amazon RDS</code> へ接続する際に、少し手順が複雑だったので、今回はその方法を備忘録も兼ねて整理しながらやってみる。</p>
+<h3 id="作業ディレクトリ作成"><a href="#作業ディレクトリ作成" class="headerlink" title="作業ディレクトリ作成"></a>作業ディレクトリ作成</h3><p>まずは作業ディレクトリの作成。<br>今回は、<code>mysql2_test</code> とした。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir mysql2_test</span><br><span class="line">$ <span class="built_in">cd</span> mysql2_test</span><br></pre></td></tr></table></figure>
+<h3 id="dockerfile-作成"><a href="#Dockerfile-作成" class="headerlink" title="Dockerfile 作成"></a>Dockerfile 作成</h3><p><code>Mysql2</code> の <code>gem</code> を動かすためには、<code>mysql-devel</code> のインストールが必要となる。<br><code>Dockerfile</code> を下記のように作成する。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> lambci/lambda:build-ruby2.<span class="number">5</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /var/task</span></span><br><span class="line"><span class="bash">RUN yum -y install mysql-devel</span></span><br><span class="line"><span class="bash">RUN gem update bundler</span></span><br><span class="line"><span class="bash">CMD <span class="string">"/bin/bash"</span></span></span><br></pre></td></tr></table></figure>
+<p>上記で利用している <code>lambci/lambda</code> のコンテナイメージは、<a href="https://github.com/lambci/docker-lambda" target="_blank" rel="noopener">https://github.com/lambci/docker-lambda</a> に以下のような説明があるとおり、</p>
+<blockquote>
+<p>A sandboxed local environment that replicates the live AWS Lambda environment almost identically – including installed software and libraries, file structure and permissions, environment variables, context objects and behaviors – even the user and running process are the same.</p>
+</blockquote>
+<p>ローカルマシンで、<code>AWS Lambda</code> 環境をほぼ同じように再現するものとなっている。<br>今回は <code>Ruby</code> 環境を使うので、<code>build-ruby2.5</code> のタグを指定した。  </p>
+<h3 id="dockerコンテナをビルド"><a href="#Dockerコンテナをビルド" class="headerlink" title="Dockerコンテナをビルド"></a>Dockerコンテナをビルド</h3><p>以下のコマンドを実行し、コンテナをビルドする。<br><code>my-lambda</code> とタグ付けした。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker build -t my-lambda .</span><br></pre></td></tr></table></figure>
+<h3 id="handlerrb-作成"><a href="#handler-rb-作成" class="headerlink" title="handler.rb 作成"></a>handler.rb 作成</h3><p><code>Mysql2</code> が動作しているか確認するための <code>handler.rb</code> を作成。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">require &apos;mysql2&apos;</span><br><span class="line"></span><br><span class="line">def main(event:, context:)</span><br><span class="line">  &#123;</span><br><span class="line">    mysql2_version: Mysql2::VERSION</span><br><span class="line">  &#125;</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>うまく動作すれば <code>Mysql2</code> のバージョンが表示されるもの。</p>
+<h3 id="gemfile-作成"><a href="#Gemfile-作成" class="headerlink" title="Gemfile 作成"></a>Gemfile 作成</h3><p><code>Gemfile</code> を作成する。  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">source &apos;https://rubygems.org&apos;</span><br><span class="line"></span><br><span class="line">gem &apos;mysql2&apos;</span><br></pre></td></tr></table></figure>
+<h3 id="bundle-install-処理のスクリプト作成"><a href="#bundle-install-処理のスクリプト作成" class="headerlink" title="bundle install 処理のスクリプト作成"></a><code>bundle install</code> 処理のスクリプト作成</h3><p>コンテナで <code>bundle install</code> を実行するのだが、<code>bundle config</code> でいろいろとオプションを設定しないといけないので、スクリプト化する。<br><code>bundle_install.sh</code> を下記の内容で作成した。  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">bundle config --local build.mysql2 --with-mysql2-config=/usr/lib64/mysql/mysql_config</span><br><span class="line">bundle config --local silence_root_warning true</span><br><span class="line">bundle install --path vendor/bundle --clean</span><br><span class="line">mkdir -p /var/task/lib</span><br><span class="line">cp -a /usr/lib64/mysql/*.so.* /var/task/lib/</span><br></pre></td></tr></table></figure>
+<h3 id="作成したスクリプトファイルに実行権限付与"><a href="#作成したスクリプトファイルに実行権限付与" class="headerlink" title="作成したスクリプトファイルに実行権限付与"></a>作成したスクリプトファイルに実行権限付与</h3><p>作成したスクリプトに、実行権限を付与する。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ chmod 755 ./bundle_install.sh</span><br></pre></td></tr></table></figure>
+<h3 id="bundle_installsh-実行"><a href="#bundle-install-sh-実行" class="headerlink" title="bundle_install.sh 実行"></a><code>bundle_install.sh</code> 実行</h3><p><code>bundle_install.sh</code> を最初の方でビルドした <code>Docker</code> コンテナ内(<code>my-lambda</code>)で実行する。<br>作業ディレクトリを <code>/var/task</code> にボリュームマウントして実行。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker run --rm -it -v <span class="variable">$PWD</span>:/var/task my-lambda ./bundle_install.sh</span><br></pre></td></tr></table></figure>
+<p>実行すると、下記のような結果が出て正常に <code>gem</code> がインストールされるはず。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[DEPRECATED] The `--clean` flag is deprecated because it relies on being remembered across bundler invocations, <span class="built_in">which</span> bundler will no longer <span class="keyword">do</span> <span class="keyword">in</span> future versions. Instead please use `bundle config <span class="built_in">set</span> clean <span class="string">'true'</span>`, and stop using this flag</span><br><span class="line">[DEPRECATED] The `--path` flag is deprecated because it relies on being remembered across bundler invocations, <span class="built_in">which</span> bundler will no longer <span class="keyword">do</span> <span class="keyword">in</span> future versions. Instead please use `bundle config <span class="built_in">set</span> path <span class="string">'vendor/bundle'</span>`, and stop using this flag</span><br><span class="line">Fetching gem metadata from https://rubygems.org/.</span><br><span class="line">Resolving dependencies...</span><br><span class="line">Using bundler 2.1.4</span><br><span class="line">Fetching mysql2 0.5.3</span><br><span class="line">Installing mysql2 0.5.3 with native extensions</span><br><span class="line">Bundle complete! 1 Gemfile dependency, 2 gems now installed.</span><br><span class="line">Bundled gems are installed into `./vendor/bundle</span><br></pre></td></tr></table></figure>
+<p>合わせて作業ディレクトリに <code>lib</code> や <code>vendor/bundle</code> ができていることを確認する。  </p>
+<h3 id="関数をテスト実行"><a href="#関数をテスト実行" class="headerlink" title="関数をテスト実行"></a>関数をテスト実行</h3><p>前述の、ローカルマシンで <code>AWS Lambda</code> 環境をほぼ同じように再現可能な <code>lambci/lambda</code> のコンテナを使って実際に動作をテストしてみる。<br>コマンドは下記の通り。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker run --rm -v <span class="variable">$PWD</span>:/var/task lambci/lambda:ruby2.5 handler.main</span><br></pre></td></tr></table></figure>
+<p>問題なく動作していれば下記のような結果が表示される。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">START RequestId: 7e30ee66-2d38-1ade-6e49-a2f107f206b4 Version: <span class="variable">$LATEST</span></span><br><span class="line">END RequestId: 7e30ee66-2d38-1ade-6e49-a2f107f206b4</span><br><span class="line">REPORT RequestId: 7e30ee66-2d38-1ade-6e49-a2f107f206b4	Init Duration: 1859.26 ms	Duration: 25.85 ms	Billed Duration: 100 ms	Memory Size: 1536 MB	Max Memory Used: 22 MB</span><br><span class="line"></span><br><span class="line">&#123;<span class="string">"mysql2_version"</span>:<span class="string">"0.5.3"</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>ちゃんと <code>Mysql2</code> が動作できているのが確認できた。</p>
+<h3 id="aws-環境に合わせて-handlerrb-を修正"><a href="#AWS-環境に合わせて-handler-rb-を修正" class="headerlink" title="AWS 環境に合わせて handler.rb を修正"></a>AWS 環境に合わせて <code>handler.rb</code> を修正</h3><p>ここまで確認できれば、<code>Amazon RDS</code> へ接続する情報を入れて実際の環境で試す。  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">require &apos;mysql2&apos;</span><br><span class="line"></span><br><span class="line">def main(event:, context:)</span><br><span class="line">  client = Mysql2::Client.new(host: ENV[&quot;DB_HOST&quot;],</span><br><span class="line">                              username: ENV[&quot;DB_USER&quot;],</span><br><span class="line">                              password: ENV[&quot;DB_PASSWORD&quot;],</span><br><span class="line">                              database: ENV[&quot;DB_NAME&quot;])</span><br><span class="line">  results = client.query(&quot;SHOW DATABASES;&quot;).to_a</span><br><span class="line">  puts results</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>ホスト名、ユーザー名、パスワード、データベース名などは、環境変数から取得できるようにしておくと良い。</p>
+<h3 id="zip-ファイル作成"><a href="#zip-ファイル作成" class="headerlink" title="zip ファイル作成"></a>zip ファイル作成</h3><p><code>AWS Lambda</code> にアップロードするために、<code>deploy.zip</code> という名前で <code>zip</code> ファイルを作成する。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zip -q -r deploy.zip .</span><br></pre></td></tr></table></figure>
+<h3 id="実行"><a href="#実行" class="headerlink" title="実行"></a>実行</h3><p><code>AWS Lambda</code> を <code>VPC</code> 内のプライベートサブネットに作成、環境変数やセキュリティーグループを適切に設定した上で、先程の <code>deploy.zip</code> をアップロードする。<br>実行してみると、下記のように接続できた。</p>
+<p><img src="/images/lambda-mysql2-rds/mylambda.png" alt=""></p>
+<h2 id="参考url"><a href="#参考URL" class="headerlink" title="参考URL"></a>参考URL</h2><ul>
+<li><a href="https://medium.com/@hsdeekshith/using-mysql2-gem-in-aws-lambda-for-ruby-7f9456bf2ca5" target="_blank" rel="noopener">Using Mysql2 gem in AWS Lambda for Ruby</a></li>
+<li><a href="https://github.com/lambci/docker-lambda" target="_blank" rel="noopener">lambci/docker-lambda: Docker images and test runners that replicate the live AWS Lambda environment</a></li>
+<li><a href="https://github.com/brianmario/mysql2" target="_blank" rel="noopener">brianmario/mysql2: A modern, simple and very fast Mysql library for Ruby - binding to libmysql</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/02/15/lambda-mysql2-rds/" data-text="AWS LambdaからRuby + Mysql2でAmazon RDSにつないでみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/02/15/lambda-mysql2-rds/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/02/15/lambda-mysql2-rds/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/02/15/lambda-mysql2-rds/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/02/15/lambda-mysql2-rds/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS LambdaからRuby + Mysql2でAmazon RDSにつないでみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS-Lambda/">AWS Lambda</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li></ul>
+
+
+      <p class="article-footer__author">by 佐々木 悠人</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

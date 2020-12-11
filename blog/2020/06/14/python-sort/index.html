@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Pythonでソート処理を実装してみた | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="筈井です。 先週から弊社ではアルゴリズム勉強会を実施しています。 教材に使用しているのは「アルゴリズムとデータ構造」という書籍です。 各章ごとに担当メンバーを割り振り、内容のサマリーを解説しながらメンバー同士でディスカッションするという形で進めています。 第1回目のお題は「ソート」ということで、データをプログラム自身で整理する基本的な方法について学びました。 せっかく学んだので、今回はバブルソー">
+<meta name="keywords" content="勉強会,アルゴリズム,ソート">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pythonでソート処理を実装してみた">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/06/14/python-sort/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="筈井です。 先週から弊社ではアルゴリズム勉強会を実施しています。 教材に使用しているのは「アルゴリズムとデータ構造」という書籍です。 各章ごとに担当メンバーを割り振り、内容のサマリーを解説しながらメンバー同士でディスカッションするという形で進めています。 第1回目のお題は「ソート」ということで、データをプログラム自身で整理する基本的な方法について学びました。 せっかく学んだので、今回はバブルソー">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-06-14-python-sort/sorted.jpg">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Pythonでソート処理を実装してみた">
+<meta name="twitter:description" content="筈井です。 先週から弊社ではアルゴリズム勉強会を実施しています。 教材に使用しているのは「アルゴリズムとデータ構造」という書籍です。 各章ごとに担当メンバーを割り振り、内容のサマリーを解説しながらメンバー同士でディスカッションするという形で進めています。 第1回目のお題は「ソート」ということで、データをプログラム自身で整理する基本的な方法について学びました。 せっかく学んだので、今回はバブルソー">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/2020-06-14-python-sort/sorted.jpg">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-python-sort" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-06-14T20:00:00.000Z" itemprop="datePublished">2020-06-14</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/06/14/python-sort/">Pythonでソート処理を実装してみた</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/06/14/python-sort/" data-text="Pythonでソート処理を実装してみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/06/14/python-sort/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/06/14/python-sort/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/06/14/python-sort/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/06/14/python-sort/" class="hatena-bookmark-button" data-hatena-bookmark-title="Pythonでソート処理を実装してみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/2020-06-14-python-sort/sorted.jpg" alt=""></p>
+<p>筈井です。</p>
+<p>先週から弊社ではアルゴリズム勉強会を実施しています。</p>
+<p>教材に使用しているのは「アルゴリズムとデータ構造」という書籍です。</p>
+<p>各章ごとに担当メンバーを割り振り、内容のサマリーを解説しながらメンバー同士でディスカッションするという形で進めています。</p>
+<p>第1回目のお題は「ソート」ということで、データをプログラム自身で整理する基本的な方法について学びました。</p>
+<p>せっかく学んだので、今回はバブルソート、クイックソート、マージソートという3種類のソートをPythonで実装していこうと思います。</p>
+<h2 id="バブルソート"><a href="#バブルソート" class="headerlink" title="バブルソート"></a>バブルソート</h2><p>最も単純なソートの手法がバブルソートと呼ばれるものです。</p>
+<p>バブルソートは、次のような手順を繰り返すことでデータを整理する手法です。</p>
+<ul>
+<li>先頭から順番にデータをチェック</li>
+<li>左右の並びがおかしい箇所があれば入れ替える</li>
+<li>データの最後までたどり着いたら再び先頭から順序をチェックする</li>
+<li>データの先頭から最後まで1度も入れ替えが発生しなければ整理完了</li>
+</ul>
+<p>具体的に、1〜5の数字をもつリストでバブルソートの様子を見ていきましょう。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"># 先頭から順番に順序をチェックする</span><br><span class="line">[2, 3, 1, 5, 4]</span><br><span class="line"></span><br><span class="line"># 3と1の順序がおかしいので入れ替えた</span><br><span class="line">[2, 1, 3, 5, 4]</span><br><span class="line"></span><br><span class="line"># 次は5と4の順序もおかしいので入れ替えた</span><br><span class="line">[2, 1, 3, 4, 5]</span><br><span class="line"></span><br><span class="line"># 最後まで順序をチェックし終えたので、再び先頭からチェックする</span><br><span class="line">[2, 1, 3, 4, 5]</span><br><span class="line"></span><br><span class="line"># 2と1の順序がおかしいので入れ替えた</span><br><span class="line">[1, 2, 3, 4, 5]</span><br><span class="line"></span><br><span class="line"># 最後まで順序のチェックが完了</span><br><span class="line">[1, 2, 3, 4, 5]</span><br><span class="line"></span><br><span class="line"># 再び先頭から順序をチェックし、順序がおかしい箇所がないのでバブルソート完了</span><br><span class="line">[1, 2, 3, 4, 5]</span><br></pre></td></tr></table></figure>
+<p>バブルソートを実行する関数をPythonで実装してみると下記のようになります。<br>リスト内の値を隣の値と比較して、順序がおかしければ入れ替えます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"># coding: UTF-8</span><br><span class="line">import time</span><br><span class="line">import random</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def bubble_sort(list):</span><br><span class="line">    # リストの要素数が1より大きくなければソートの必要なし</span><br><span class="line">    if len(list) &lt;= 1:</span><br><span class="line">        return list</span><br><span class="line"></span><br><span class="line">    # 入れ替えループを抜けるフラグ</span><br><span class="line">    exchange_flg = True</span><br><span class="line">    while exchange_flg:</span><br><span class="line">        exchange_flg = False</span><br><span class="line">        for i in range(len(list) - 1):</span><br><span class="line">            if list[i] &gt; list[i + 1]:</span><br><span class="line">                # 左右の値を入れ替える</span><br><span class="line">                list[i], list[i + 1] = list[i + 1], list[i]</span><br><span class="line">                exchange_flg = True</span><br><span class="line">    return list</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    list = list(range(1000000))</span><br><span class="line">    src = random.sample(list, len(list))</span><br><span class="line"></span><br><span class="line">    start_time = time.time()</span><br><span class="line">    sorted_list = bubble_sort(list)</span><br><span class="line">    elapsed_time = time.time() - start_time</span><br><span class="line"></span><br><span class="line">    print(&quot;elapsed_time: &#123;0&#125;[sec]&quot;.format(elapsed_time))</span><br></pre></td></tr></table></figure>
+<h2 id="クイックソート"><a href="#クイックソート" class="headerlink" title="クイックソート"></a>クイックソート</h2><p>バブルソートは「隣の要素より値が大きいか小さいか」を1つずつ判別していくため、計算量が多くなりやすいという特徴があります。</p>
+<p>一方、クイックソートは「ある特定の値よりも大きいか小さいか」という観点で全体を一気に処理していくという手法です。クイックソートは実用上最も高速であるとされ、並べ替えのアルゴリズムとして多くのプログラムで利用されています。</p>
+<p>具体的なソートの流れは下記のようになります。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># クイックソート開始</span><br><span class="line"># 特定の値を基準に(今回は先頭の6を)、小さい数字は前に、大きい数字は後ろに移動</span><br><span class="line">[6, 9, 3, 5, 8, 1, 4, 7, 0, 2]</span><br><span class="line"></span><br><span class="line"># 6の左側には「6よりも小さい数字のグループ」</span><br><span class="line"># 6の右側には「6より大きい数字にグループ」</span><br><span class="line">[3, 5, 1, 4, 0, 2, 6, 9, 8, 7]</span><br><span class="line"></span><br><span class="line"># [3, 5, 1, 4, 0, 2]のグループでは3を基準に並び替え</span><br><span class="line">[1, 0, 2, 3, 5, 4, 6, 9, 8, 7]</span><br><span class="line"></span><br><span class="line"># [9, 8, 7]のグループでは9を基準に並び替え</span><br><span class="line">[1, 0, 2, 3, 5, 4, 6, 8, 7, 9]</span><br><span class="line"></span><br><span class="line">・・・</span><br><span class="line"></span><br><span class="line"># 細分化されるグループごとに基準を設けて並び替えを繰り返すことで最終的にソートが完了</span><br><span class="line">[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]</span><br></pre></td></tr></table></figure>
+<p>バブルソートと同様に、クイックソートを実行する関数もPythonで実装してみましょう。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"># coding: UTF-8</span><br><span class="line">import time</span><br><span class="line">import random</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def quick_sort(list):</span><br><span class="line">    # リストの要素数が1より大きくなければソートの必要なし</span><br><span class="line">    if len(list) &lt;= 1:</span><br><span class="line">        return list</span><br><span class="line"></span><br><span class="line">    left_list = []</span><br><span class="line">    right_list = []</span><br><span class="line"></span><br><span class="line">    # クイックソートする際の基準をランダムに選択</span><br><span class="line">    pivot = random.choice(list)</span><br><span class="line">    pivot_count = 0</span><br><span class="line"></span><br><span class="line">    for num in list:</span><br><span class="line">        if num &lt; pivot:</span><br><span class="line">            left_list.append(num)</span><br><span class="line">        elif num &gt; pivot:</span><br><span class="line">            right_list.append(num)</span><br><span class="line">        else:</span><br><span class="line">            pivot_count += 1</span><br><span class="line"></span><br><span class="line">    # 左右2つにリストを分割し、quick_sort()関数を再帰的に呼び出す</span><br><span class="line">    left_list = quick_sort(left_list)</span><br><span class="line">    right_list = quick_sort(right_list)</span><br><span class="line"></span><br><span class="line">    return left_list + [pivot] * pivot_count + right_list</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    list = list(range(1000000))</span><br><span class="line">    src = random.sample(list, len(list))</span><br><span class="line"></span><br><span class="line">    start_time = time.time()</span><br><span class="line">    sorted_list = quick_sort(list)</span><br><span class="line">    elapsed_time = time.time() - start_time</span><br><span class="line"></span><br><span class="line">    print(&quot;elapsed_time: &#123;0&#125;[sec]&quot;.format(elapsed_time))</span><br></pre></td></tr></table></figure>
+<h2 id="マージソート"><a href="#マージソート" class="headerlink" title="マージソート"></a>マージソート</h2><p>クイックソートはバブルソートよりも高効率なソート方法です。</p>
+<p>しかしソート対象のデータの並び順が悪いと、結局はバブルソートと変わらないソート効率になってしまいます。</p>
+<p>より確実に、効率よくソートする方法がマージソートです。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"># マージソート前のリスト</span><br><span class="line">[6, 9, 3, 5, 8, 1, 4, 7, 0, 2]</span><br><span class="line"></span><br><span class="line"># リストを半分に分割する</span><br><span class="line">[6, 9, 3, 5, 8][1, 4, 7, 0, 2]</span><br><span class="line"></span><br><span class="line"># それぞれを更に分割</span><br><span class="line">[6, 9, 3][5, 8][1, 4, 7][0, 2]</span><br><span class="line"></span><br><span class="line"># 全ての要素数が1になるまで分割を繰り返す</span><br><span class="line">[6][9][3][5][8][1][4][7][0][2]</span><br><span class="line"></span><br><span class="line"># 隣同士を整列しながら併合</span><br><span class="line">[6, 9][3, 5][1, 8][4, 7][0, 2]</span><br><span class="line"></span><br><span class="line"># 更に隣同士を整列・併合</span><br><span class="line">[3, 5, 6, 9][1, 4, 7, 8][0, 2]</span><br><span class="line"></span><br><span class="line">[1, 3, 4, 5, 6, 7, 8, 9][0, 2]</span><br><span class="line"></span><br><span class="line"># 全体が1つになるまで整列・併合を繰り返す</span><br><span class="line">[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]</span><br></pre></td></tr></table></figure>
+<p>マージソートもPythonで実装してみましょう。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"># coding: UTF-8</span><br><span class="line">import time</span><br><span class="line">import random</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def merge_sort(list):</span><br><span class="line">    # リストの要素数が1より大きくなければソートの必要なし</span><br><span class="line">    if len(list) &lt;= 1:</span><br><span class="line">        return list</span><br><span class="line"></span><br><span class="line">    # リストを2つのサブリストに分割</span><br><span class="line">    povit = int(round(len(list)/2))</span><br><span class="line">    left_sub_list = list[:povit]</span><br><span class="line">    right_sub_list = list[povit:]</span><br><span class="line"></span><br><span class="line">    # 分割したサブリストを、merge_sort()関数を再帰的に呼び出してソート</span><br><span class="line">    left = merge_sort(left_sub_list)</span><br><span class="line">    right = merge_sort(right_sub_list)</span><br><span class="line"></span><br><span class="line">    # 2つのサブリストをマージして1つのソート済みリストを作成</span><br><span class="line">    return merge_lists(left, right)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def merge_lists(left_list, right_list):</span><br><span class="line">    sorted_list = []</span><br><span class="line"></span><br><span class="line">    while (len(left_list) &gt; 0) and (len(right_list) &gt; 0):</span><br><span class="line">        if left_list[0] &lt; right_list[0]:</span><br><span class="line">            sorted_list.append(left_list[0])</span><br><span class="line">            del left_list[0]</span><br><span class="line">        else:</span><br><span class="line">            sorted_list.append(right_list[0])</span><br><span class="line">            del right_list[0]</span><br><span class="line"></span><br><span class="line">    if len(left_list) &gt; 0:</span><br><span class="line">        sorted_list.extend(left_list)</span><br><span class="line">    else:</span><br><span class="line">        sorted_list.extend(right_list)</span><br><span class="line"></span><br><span class="line">    return sorted_list</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    list = list(range(1000000))</span><br><span class="line">    src = random.sample(list, len(list))</span><br><span class="line"></span><br><span class="line">    start_time = time.time()</span><br><span class="line">    sorted_list = merge_sort(list)</span><br><span class="line">    elapsed_time = time.time() - start_time</span><br><span class="line"></span><br><span class="line">    print(&quot;elapsed_time: &#123;0&#125;[sec]&quot;.format(elapsed_time))</span><br></pre></td></tr></table></figure>
+<h2 id="実行速度"><a href="#実行速度" class="headerlink" title="実行速度"></a>実行速度</h2><p>ここまでバブルソート、クイックソート、マージソートを実行するPythonコードを作成してきました。</p>
+<p>最後に下記のコードとプログラム実行速度を比較してみます。参考に、Python組み込みのソート関数(sorted)も実行してみましょう。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># coding: UTF-8</span><br><span class="line">import time</span><br><span class="line">import random</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    list = list(range(1000000))</span><br><span class="line">    src = random.sample(list, len(list))</span><br><span class="line"></span><br><span class="line">    start_time = time.time()</span><br><span class="line">    sorted_list = sorted(list)</span><br><span class="line">    elapsed_time = time.time() - start_time</span><br><span class="line"></span><br><span class="line">    print(&quot;elapsed_time: &#123;0&#125;[sec]&quot;.format(elapsed_time))</span><br></pre></td></tr></table></figure>
+<p>実行結果は以下のようになりました。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ python bubble_sort.py</span><br><span class="line">elapsed_time: 0.0806891918182[sec]</span><br><span class="line"></span><br><span class="line">$ python quick_sort.py</span><br><span class="line">elapsed_time: 3.6704659462[sec]</span><br><span class="line"></span><br><span class="line">$ python merge_sort.py</span><br><span class="line">elapsed_time: 63.6543469429[sec]</span><br><span class="line"></span><br><span class="line">$ python sorted.py</span><br><span class="line">elapsed_time: 0.0241670608521[sec]</span><br></pre></td></tr></table></figure>
+<p>バブルソート、クイックソート、マージソートの中では、予想に反してバブルソートのPythonコードが最も速いという結果になりました。</p>
+<p>これはPythonでは再帰呼び出しに時間がかかるためだと考えられ、あまり速度が出ないそうです。</p>
+<p>それにしてもPythonのソートは早いですね。</p>
+<h2 id="終わりに"><a href="#終わりに" class="headerlink" title="終わりに"></a>終わりに</h2><p>アルゴリズム勉強会で学んだソートをPythonコードで実装してみました。</p>
+<p>実務でソートを自前実装する機会はレアケースですが、何かの参考になれば幸いです。</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p><a href="https://www.amazon.co.jp/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0%E3%81%AE%E5%AE%9D%E7%AE%B1-%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%A8%E3%83%87%E3%83%BC%E3%82%BF%E6%A7%8B%E9%80%A0-%E7%AC%AC2%E7%89%88-%E7%B4%80%E5%B9%B3-%E6%8B%93%E7%94%B7/dp/4797363282/ref=sr_1_1?__mk_ja_JP=%E3%82%AB%E3%82%BF%E3%82%AB%E3%83%8A&amp;dchild=1&amp;keywords=%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0%E3%81%AE%E5%AE%9D%E7%AE%B1+%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%A8%E3%83%87%E3%83%BC%E3%82%BF%E6%A7%8B%E9%80%A0&amp;qid=1592133674&amp;sr=8-1" target="_blank" rel="noopener">プログラミングコンテスト攻略のためのアルゴリズムとデータ構造</a></p>
+<h3 id="参考ページ"><a href="#参考ページ" class="headerlink" title="参考ページ"></a>参考ページ</h3><p><a href="https://docs.python.org/3/howto/sorting.html" target="_blank" rel="noopener">Sorting HOW TO</a><br><a href="http://rosettacode.org/wiki/Rosetta_Code" target="_blank" rel="noopener">Rosetta Code</a><br><a href="https://qiita.com/suecharo/items/30f5d817da4c948c3be6" target="_blank" rel="noopener">ソートアルゴリズムと Python での実装</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/06/14/python-sort/" data-text="Pythonでソート処理を実装してみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/06/14/python-sort/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/06/14/python-sort/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/06/14/python-sort/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/06/14/python-sort/" class="hatena-bookmark-button" data-hatena-bookmark-title="Pythonでソート処理を実装してみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/アルゴリズム/">アルゴリズム</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ソート/">ソート</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/勉強会/">勉強会</a></li></ul>
+
+
+      <p class="article-footer__author">by Daisaku Hazui</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

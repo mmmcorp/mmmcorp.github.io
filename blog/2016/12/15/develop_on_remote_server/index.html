@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>リモートのLinux開発用サーバで開発する | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="今日は夕方から会社の忘年会です。そして私は明日から年始の仕事初めまで長い休暇に入るので今日が仕事納めになります。 弊社は絶賛社員を募集しておりインターン生をちょくちょく迎えている。インターンで来られる方はスキルフルな方が多いが、それほどスキルフルでないこれから勉強する、という方もいらっしゃいます。その方たちの中にコマンドラインでの開発も初めてという方もいらっしゃった。そういう方にとっては、Dock">
+<meta name="keywords" content="リモートワーク,テレワーク,サーバーサイド,開発環境">
+<meta property="og:type" content="article">
+<meta property="og:title" content="リモートのLinux開発用サーバで開発する">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2016/12/15/develop_on_remote_server/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="今日は夕方から会社の忘年会です。そして私は明日から年始の仕事初めまで長い休暇に入るので今日が仕事納めになります。 弊社は絶賛社員を募集しておりインターン生をちょくちょく迎えている。インターンで来られる方はスキルフルな方が多いが、それほどスキルフルでないこれから勉強する、という方もいらっしゃいます。その方たちの中にコマンドラインでの開発も初めてという方もいらっしゃった。そういう方にとっては、Dock">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/develop_on_remote_server/strage.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.142Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="リモートのLinux開発用サーバで開発する">
+<meta name="twitter:description" content="今日は夕方から会社の忘年会です。そして私は明日から年始の仕事初めまで長い休暇に入るので今日が仕事納めになります。 弊社は絶賛社員を募集しておりインターン生をちょくちょく迎えている。インターンで来られる方はスキルフルな方が多いが、それほどスキルフルでないこれから勉強する、という方もいらっしゃいます。その方たちの中にコマンドラインでの開発も初めてという方もいらっしゃった。そういう方にとっては、Dock">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/develop_on_remote_server/strage.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-develop_on_remote_server" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2016-12-15T15:06:02.000Z" itemprop="datePublished">2016-12-15</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2016/12/15/develop_on_remote_server/">リモートのLinux開発用サーバで開発する</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/12/15/develop_on_remote_server/" data-text="リモートのLinux開発用サーバで開発する" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/12/15/develop_on_remote_server/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/12/15/develop_on_remote_server/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/12/15/develop_on_remote_server/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/12/15/develop_on_remote_server/" class="hatena-bookmark-button" data-hatena-bookmark-title="リモートのLinux開発用サーバで開発する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今日は夕方から会社の忘年会です。<br>そして私は明日から年始の仕事初めまで長い休暇に入るので今日が仕事納めになります。</p>
+<p>弊社は絶賛社員を募集しておりインターン生をちょくちょく迎えている。<br>インターンで来られる方はスキルフルな方が多いが、それほどスキルフルでないこれから勉強する、という方もいらっしゃいます。<br>その方たちの中にコマンドラインでの開発も初めてという方もいらっしゃった。<br>そういう方にとっては、Dockerをセットアップしたりなどのアプリケーションを作る為の開発環境の構築などはハードルが高い。<br>実際にアプリケーションを一緒に作ってチームに馴染めるかなどの本質的な素養を見たい、ということで開発環境の構築時間を省くべく、 弊社の佐々木がLinuxリモートサーバで開発できる環境を作った。<br>当初、そのインターン生の為に作成したリモートサーバの開発環境だったが、私も一緒に使っているうちに色々とたくさんメリットがあることに気付いたので共有したい。</p>
+<p>リモートサーバスペックはざっと下記のような感じ。</p>
+<ul>
+<li>AWS EC2インスタンス</li>
+<li>t2.medium</li>
+<li>EBS 100G</li>
+</ul>
+<p>セキュリティグループはいい感じに設定する。</p>
+<p>ではさっそくメリットから上げていきます。</p>
+<h2 id="dockerのファイル同期が早い"><a href="#Dockerのファイル同期が早い" class="headerlink" title="Dockerのファイル同期が早い"></a>Dockerのファイル同期が早い</h2><p>少し前にはてブで話題になっていたこちらの記事にもあるとおり、Docker for Macがとにかく遅い。<br> <a href="http://d.hatena.ne.jp/joker1007/20161125" target="_blank" rel="noopener">MacBook Proを捨ててThinkpad T460sを買ってgentooを入れた</a></p>
+<p>assetsに画像やCSSファイルが結構ある普通のRailsアプリケーションなどの場合、Web画面を表示するのにDocker for Macだとだいたい10秒ぐらい時間がかかっていた。<br>そういうRailsアプリケーションがLinuxのDocker上だと劇的に早くなる。<br>LinuxでDockerを使う場合は、なんといってもこれが一番のメリットだと思う。<br>Docker for Macがこのぐらい早ければなぁ、と本当に残念に思う。</p>
+<h2 id="ネットワークスピードが早い"><a href="#ネットワークスピードが早い" class="headerlink" title="ネットワークスピードが早い"></a>ネットワークスピードが早い</h2><p>今回はAWSに開発サーバを立てているが、クラウドサーバはだいたいとこでも早いんじゃないかな、と思う。<br>試しに計測してみると下記のような結果だった。</p>
+<pre><code># speedtest
+Retrieving speedtest.net configuration...
+Testing from Amazon (xx.xx.xx.)...
+Retrieving speedtest.net server list...
+Selecting best server based on ping...
+Hosted by Foxcore-LS (Sodegaura) [23.31 km]: 30.408 ms
+Testing download speed................................................................................
+Download: 246.99 Mbit/s
+Testing upload speed....................................................................................................
+Upload: 12.51 Mbit/s
+</code></pre><p>計測ツール<br><a href="https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py" target="_blank" rel="noopener">https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py</a></p>
+<p>ダウンロードスピードがやっぱり桁違いに早い。<br>普通の自宅やコワーキングでは出せない数字である。<br>Dockerの環境構築時などはイメージをダウンロードするのに時間がかかるので、ダウンロードスピードが早いのはメリットがでかい。</p>
+<h2 id="共同で作業できる"><a href="#共同で作業できる" class="headerlink" title="共同で作業できる"></a>共同で作業できる</h2><p>リモートなので、tmuxを入れるとリアルタイムで共同で開発出来る。<br>ローカルだとエラーなどをSlackに貼ってもらって、などで解決に時間がかかったりするが、エラー原因を直接調べることが出来るので解決が早い。<br>また純粋に、Skypeで話しながらtmuxで一緒にワイワイしながら作業するのが楽しい。<br>他の人がどんな感じで開発してるのかなども勉強になったりする。</p>
+<h2 id="時間のかかる作業を非同期で実行できる"><a href="#時間のかかる作業を非同期で実行できる" class="headerlink" title="時間のかかる作業を非同期で実行できる"></a>時間のかかる作業を非同期で実行できる</h2><p>たとえばDocker環境構築は時間がかかる。<br>そういうときはこのコマンドを打ち込んであとは放置する。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nohup docker-compose build &gt; out.log &amp;</span><br></pre></td></tr></table></figure>
+<p>リモートサーバのいいところはログアウトしても実行していてくれるところ。<br>Macだと構築時に電源を落とすことは出来ない。</p>
+<p>また、リモートサーバで構築しているので、ローカルのMacのCPUやネットワークスピードなどに影響がないのも有難い。</p>
+<h2 id="ローカルのストレージを圧迫しない"><a href="#ローカルのストレージを圧迫しない" class="headerlink" title="ローカルのストレージを圧迫しない"></a>ローカルのストレージを圧迫しない</h2><p>私のMacのストレージは現在こんな状況である。</p>
+<p><img src="/images/develop_on_remote_server/strage.png" alt=""></p>
+<p>空きが一応65Gあるが、Dockerイメージを構築するとすぐに枯渇してしまう。<br>256GのMacで開発してるのが悪い、と言われればそれまでなのですが。。<br>開発環境をローカルで作らなくてもいいのであれば、ストレージに余裕が出来るのでとても有難い。</p>
+<p>ちなみにMacでDockerのコンテナやイメージを削除しても一向にストレージが減らなかった。<br>何故かなぁ、と思ったらDockerが利用する<code>Docker.qcow2</code>というファイルのせいだった。</p>
+<p><a href="http://qiita.com/junkjunctions/items/ad971fd84fb8c30816d6" target="_blank" rel="noopener">Docker for mac でrmやrmiで消しまくってもストレージが開放されない</a><br><a href="http://easyramble.com/docker-for-mac-docker-qcow2.html" target="_blank" rel="noopener">Docker for MacでDocker.qcow2のサイズがどんどん大きくなる問題</a></p>
+<p>削除するとストレージが開放されるが、構築したイメージも当然消えてしまうので、ちょっとイケてないですよね。。</p>
+<h2 id="常にlinuxサーバ上で開発することで-linuxに慣れる"><a href="#常にLinuxサーバ上で開発することで、Linuxに慣れる" class="headerlink" title="常にLinuxサーバ上で開発することで、Linuxに慣れる"></a>常にLinuxサーバ上で開発することで、Linuxに慣れる</h2><p>Macではコピー&amp;ペーストやファイルの展開など、基本的にGUIでの操作で行うことが出来る。<br>しかし、リモートのLinuxサーバだとそうはいかない。<br>すべてコマンドで実行しなければならない。</p>
+<p>たまにステージング環境や本番環境のLinuxサーバに直接sshで入って色々操作したりすることがあるが、普段からコピペやファイル展開などの作業も常にコマンドで行う(行わざるを得ない)状況に慣れることによって、ステージングや本番サーバで作業する時に、コマンドの打ち間違えなどのミスが少なくなるのではないかと思う。<br>実は少し前に、ステージングサーバで少しコマンドの打ち間違えをしてしまって、ファイルを１つ修復出来ない状態にしてしまった経験がありまして。。（；^ω^）<br>そういう戒めも含めて、もっとLinuxの操作になれておかなければいけないなぁと思う今日このごろです。</p>
+<p>以上が私が感じたメリットです。<br>ではデメリットはないかというと、正直あまり見当たりませんでしたが、以下のようなことがデメリットかなと思います。</p>
+<h2 id="必要なファイルをscpで上げないといけない"><a href="#必要なファイルをscpで上げないといけない" class="headerlink" title="必要なファイルをscpで上げないといけない"></a>必要なファイルをscpで上げないといけない</h2><p>Macで開発しているとファイルをコピペして必要なディレクトリに持っていけるが、リモートだと毎回scpとかで上げてあげたりしなければいけない。<br>ちょっと面倒だが、ファイルをアップロードすることがそれほど頻繁にあるわけではないので苦にはならない。</p>
+<h2 id="コマンド実行にもたつく場合がある"><a href="#コマンド実行にもたつく場合がある" class="headerlink" title="コマンド実行にもたつく場合がある"></a>コマンド実行にもたつく場合がある</h2><p>普通のネットワーク速度なら問題ないと思うが、環境によってはリモートでのコマンド操作がもたつくことがある。<br>多少もたついてもメリットのほうが今のところは大きいと思っている。</p>
+<hr>
+<p>以上つらつらとメリット・デメリットを書いてみました。<br>結局のところ、Docker for Macがもっと早くなって欲しいということです(笑)。<br>ちなみにこのブログも開発サーバで書きました。<br>最近Macでデプロイする時に結構時間がかかっていたので、デーモン化してデプロイ出来るのは有難い。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/12/15/develop_on_remote_server/" data-text="リモートのLinux開発用サーバで開発する" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/12/15/develop_on_remote_server/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/12/15/develop_on_remote_server/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/12/15/develop_on_remote_server/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/12/15/develop_on_remote_server/" class="hatena-bookmark-button" data-hatena-bookmark-title="リモートのLinux開発用サーバで開発する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーサイド/">サーバーサイド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/テレワーク/">テレワーク</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/リモートワーク/">リモートワーク</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/開発環境/">開発環境</a></li></ul>
+
+
+      <p class="article-footer__author">by 前田 正樹</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

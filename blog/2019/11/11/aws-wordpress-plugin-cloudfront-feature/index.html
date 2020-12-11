@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AWS製WordPressプラグインの「CloudFrontワークフロー」を検証 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="“AWS for WordPress”プラグインのアップデート2019年10月30日のリリースにて“AWS for WordPress”プラグインにCloudFrontのディストリビューションの設定用の機能の追加が発表されました。発表内容や当該のプラグインのChange logを見ますと今回のCloudFront機能の追加に合わせて  Rebranding to “AWS for WordPres">
+<meta name="keywords" content="AWS,WordPress">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWS製WordPressプラグインの「CloudFrontワークフロー」を検証">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2019/11/11/aws-wordpress-plugin-cloudfront-feature/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="“AWS for WordPress”プラグインのアップデート2019年10月30日のリリースにて“AWS for WordPress”プラグインにCloudFrontのディストリビューションの設定用の機能の追加が発表されました。発表内容や当該のプラグインのChange logを見ますと今回のCloudFront機能の追加に合わせて  Rebranding to “AWS for WordPres">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/01.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/02.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/03.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/04.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/05.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/07.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/09.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/10.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/11.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/12.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/13.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/14.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/15.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/16.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/19.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/20.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/21.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/22.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/23.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/24.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/25.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.162Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AWS製WordPressプラグインの「CloudFrontワークフロー」を検証">
+<meta name="twitter:description" content="“AWS for WordPress”プラグインのアップデート2019年10月30日のリリースにて“AWS for WordPress”プラグインにCloudFrontのディストリビューションの設定用の機能の追加が発表されました。発表内容や当該のプラグインのChange logを見ますと今回のCloudFront機能の追加に合わせて  Rebranding to “AWS for WordPres">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/01.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-aws-wordpress-plugin-cloudfront-feature" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2019-11-11T09:00:00.000Z" itemprop="datePublished">2019-11-11</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2019/11/11/aws-wordpress-plugin-cloudfront-feature/">AWS製WordPressプラグインの「CloudFrontワークフロー」を検証</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/11/11/aws-wordpress-plugin-cloudfront-feature/" data-text="AWS製WordPressプラグインの「CloudFrontワークフロー」を検証" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/11/11/aws-wordpress-plugin-cloudfront-feature/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/11/11/aws-wordpress-plugin-cloudfront-feature/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/11/11/aws-wordpress-plugin-cloudfront-feature/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/11/11/aws-wordpress-plugin-cloudfront-feature/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS製WordPressプラグインの「CloudFrontワークフロー」を検証" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="aws-for-wordpressプラグインのアップデート"><a href="#“AWS-for-WordPress”プラグインのアップデート" class="headerlink" title="“AWS for WordPress”プラグインのアップデート"></a>“AWS for WordPress”プラグインのアップデート</h2><p><a href="https://aws.amazon.com/jp/about-aws/whats-new/2019/10/aws-for-wordpress-plugin-now-available-and-with-new-amazon-cloudfront-workflow/" title="2019年10月30日のリリース" target="_blank" rel="noopener">2019年10月30日のリリース</a>にて“AWS for WordPress”プラグインにCloudFrontのディストリビューションの設定用の機能の追加が発表されました。<br>発表内容や当該のプラグインのChange logを見ますと今回のCloudFront機能の追加に合わせて</p>
+<blockquote>
+<p>Rebranding to “AWS for WordPress”</p>
+</blockquote>
+<p>との記載もあることから、Amazon Pollyなどを活用したWordPressコンテンツのPodcast配信・Alexaスキルでの読み上げなどをサポートするプラグインが、今回のアップデートによりAWSサービス活用を支援する総合的なプラグインというような位置付けへとリブランディングされたもののようです。</p>
+<p>WordPress + CloudFrontの構成に接することが多く、「最適化されたAmazon CloudFrontのディストリビューションを設定」するものとなると、このプラグインによって構成される設定内容から参考になることが大いにありそうなので、まずはその導入方法を検証してみました。</p>
+<h2 id="検証における前提"><a href="#検証における前提" class="headerlink" title="検証における前提"></a>検証における前提</h2><p>今回の検証においては、<a href="https://aws.amazon.com/jp/blogs/networking-and-content-delivery/accelerating-wordpress-with-cloudfront-using-the-aws-for-wordpress-plugin/" target="_blank" rel="noopener">AWSによる解説記事</a>を参考にしつつ、</p>
+<ol>
+<li>独自ドメインは取得済みでRoute53にてホストゾーン管理している</li>
+<li>WordPressサイトを構築済み（なお、Amazon Lightsailを使って構築）</li>
+</ol>
+<p>という前提となります。<a href="https://aws.amazon.com/jp/blogs/networking-and-content-delivery/accelerating-wordpress-with-cloudfront-using-the-aws-for-wordpress-plugin/" target="_blank" rel="noopener">AWSによる解説記事</a>での <code>Step 5</code>までを終えた状態に相当します。<br>「すでに正常稼働するWordPressが存在する状態」と捉えていただければと思います。<br><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/01.png" alt=""></p>
+<p>Lightsailで構築完了直後のプラグインの一覧画面。今回の検証の上では使わないのでこれらプラグインは全削除しておきます。<br>※ちなみに”Amazon AI”が入っているのが見受けられます。最新版ではこれが“AWS for WordPress”になるようです。</p>
+<h2 id="導入手順"><a href="#導入手順" class="headerlink" title="導入手順"></a>導入手順</h2><h3 id="1-プラグインのインストール"><a href="#1-プラグインのインストール" class="headerlink" title="1. プラグインのインストール"></a>1. プラグインのインストール</h3><p>プラグインの新規追加画面にて「AWS for WordPress」を検索すると一番に出てきたのでインストールして有効化。</p>
+<p><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/02.png" alt=""></p>
+<p>（”Amazon AI”がインストールされていた時はアップデート用のボタンになっていました）</p>
+<h3 id="2-プラグインで使うためのiam設定"><a href="#2-プラグインで使うためのIAM設定" class="headerlink" title="2. プラグインで使うためのIAM設定"></a>2. プラグインで使うためのIAM設定</h3><h4 id="認証情報のエラー表示"><a href="#認証情報のエラー表示" class="headerlink" title="認証情報のエラー表示"></a>認証情報のエラー表示</h4><p><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/03.png" alt=""></p>
+<p>インストールして有効化すると、認証情報の確認を求める表示が出てきます。<br>次のようにプラグインで使うため認証情報を準備します。</p>
+<h4 id="iamユーザーを作成し-アクセスキーを発行"><a href="#IAMユーザーを作成し、アクセスキーを発行" class="headerlink" title="IAMユーザーを作成し、アクセスキーを発行"></a>IAMユーザーを作成し、アクセスキーを発行</h4><p>アクセスキーの発行しなくても、WordPressを動かしているEC2にroleの付与でも可能なようですが、今回はアクセスキーを発行する方法にしました。<br>プログラムアクセス用のアクセスキーに</p>
+<ul>
+<li><a href="https://aws.amazon.com/jp/blogs/networking-and-content-delivery/accelerating-wordpress-with-cloudfront-using-the-aws-for-wordpress-plugin/" target="_blank" rel="noopener">AWSによる解説記事</a> の記事に沿って作成した<code>AWSForWordPressDeleteCert</code> というポリシー</li>
+<li>AWSによるマネージドポリシー <code>AWSForWordPressPluginPolicy</code></li>
+</ul>
+<p>を付与します。<br><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/04.png" alt=""></p>
+<h4 id="プラグインの設定画面にアクセスキーを入力"><a href="#プラグインの設定画面にアクセスキーを入力" class="headerlink" title="プラグインの設定画面にアクセスキーを入力"></a>プラグインの設定画面にアクセスキーを入力</h4><p>アクセスキーの準備が完了したら、プラグインの管理画面にてキー情報を入力します。</p>
+<p><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/05.png" alt=""></p>
+<h3 id="3-cloudfrontで使うためのドメイン名設定と認証"><a href="#3-CloudFrontで使うためのドメイン名設定と認証" class="headerlink" title="3. CloudFrontで使うためのドメイン名設定と認証"></a>3. CloudFrontで使うためのドメイン名設定と認証</h3><h4 id="ドメイン名の設定"><a href="#ドメイン名の設定" class="headerlink" title="ドメイン名の設定"></a>ドメイン名の設定</h4><p>キー情報が入力されたら、プラグインのメニューの中から「CloudFront」の画面を開きます。<br>Origin Domain Nameにはすでに稼働中のWordPressのドメイン名が入っています。多分、WordPressの <code>WordPress Address (URL)</code>の値を取っているのですかね。<br>（※ただし、この通りに<code>https://</code>をつけた形で指定するとエラーになりますので、外した形で指定しましょう。）</p>
+<p><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/07.png" alt=""></p>
+<p>そして、CloudFront Alternate Domain Name:の欄の入力が求められます。<br><a href="https://aws.amazon.com/jp/blogs/networking-and-content-delivery/accelerating-wordpress-with-cloudfront-using-the-aws-for-wordpress-plugin/" target="_blank" rel="noopener">AWSによる解説記事</a> では、たとえば<code>example.com</code>にwwwをつけた、<code>www.example.com</code>のような形を推奨しています。（さらにサイト訪問者にはこの <code>CloudFront Alternate Domain Name</code> でのドメイン名にてアクセスするように促すことが推奨されています。）</p>
+<p>今回は <code>cdn.〜〜〜</code> の形にして設定を進めました。<br><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/09.png" alt=""></p>
+<h4 id="certificate-creation-and-validation"><a href="#Certificate-Creation-and-Validation" class="headerlink" title="Certificate Creation and Validation"></a>Certificate Creation and Validation</h4><p>設定を進めると<br><code>CloudFront Alternate Domain Name</code>の欄で設定したドメイン名の認証のためのDNSレコードが提示されます。<br><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/10.png" alt=""></p>
+<p>その内容に基づいてドメインを管理しているホストゾーンに追加します。<br><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/11.png" alt=""></p>
+<p>そして、Check status of SSL/TLS certificateを押して、認証の完了を待ちます。<br><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/12.png" alt=""></p>
+<h4 id="cloudfront-distribution-deployment"><a href="#CloudFront-Distribution-Deployment" class="headerlink" title="CloudFront Distribution Deployment"></a>CloudFront Distribution Deployment</h4><p><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/13.png" alt=""></p>
+<p>認証が完了すると「CloudFront Distribution Deployment」が自動的に始まります。</p>
+<p><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/14.png" alt=""></p>
+<p>そして、<code>cdn.〜〜〜</code> 用のCloudFrontディストリビューションの作成が始まります。（ここは結構時間がかかります）</p>
+<h4 id="map-alias-to-cloudfront"><a href="#Map-Alias-to-CloudFront" class="headerlink" title="Map Alias to CloudFront"></a>Map Alias to CloudFront</h4><p>CloudFrontディストリビューションの作成が完了しましたら、<code>cdn.〜〜〜</code> のドメイン用のDNSレコードが提示されます。<br><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/15.png" alt=""></p>
+<p>こちらも同様に、ホストゾーン上にDNSレコードの追加し、DNSレコードの反映を待ちます。<br><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/16.png" alt=""></p>
+<h4 id="activate-site-acceleration"><a href="#Activate-Site-Acceleration" class="headerlink" title="Activate Site Acceleration"></a>Activate Site Acceleration</h4><p>DNSレコードの反映がプラグインから確認されたら、「Activate Site Acceleration」のチェックボックスが表示されるので、オンにして”Save Changes”を押下。<br><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/19.png" alt=""></p>
+<p>これでCloudFrontを介したコンテンツ配信が有効になります。</p>
+<p><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/20.png" alt=""></p>
+<p>次のようにサイトにアクセスして、動作を確認しましょう。</p>
+<h2 id="動作確認"><a href="#動作確認" class="headerlink" title="動作確認"></a>動作確認</h2><h3 id="元のドメイン名"><a href="#元のドメイン名" class="headerlink" title="元のドメイン名"></a>元のドメイン名</h3><p>まずは元のドメイン名（<code>cdn.</code>をつけていない形）で、WordPressインストール時にデフォルトで生成されている記事のページ（<code>&lt;サイトのドメイン名&gt;/2019/07/25/hello-world/</code>）を開いた時の検証ツールの結果<br><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/21.png" alt=""><br>スタイルシートなどの静的なコンテンツ群は <code>cdn.</code> 付きのドメインを介して配信されていることがわかります。（つまりCloudFront経由で配信されている）<br><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/22.png" alt=""><br>そして、そのうち1つのファイルのレスポンスヘッダーの内容を見ると <code>Hit from cloudfront</code>になっており、CloudFrontによるキャッシュも効いていることがわかります。</p>
+<h3 id="指定したalternate-domain-nameでアクセス"><a href="#指定したAlternate-Domain-Nameでアクセス。" class="headerlink" title="指定したAlternate Domain Nameでアクセス。"></a>指定したAlternate Domain Nameでアクセス。</h3><p>次に同じページを <code>cdn.</code>をつけた形でアクセスした時<br><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/23.png" alt=""></p>
+<p>そして、先ほどと同じファイルのレスポンスヘッダーの内容は<br><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/24.png" alt=""><br>同様にキャッシュが効いていました。<br>ちなみに記事ページ自体のレスポンスヘッダーは以下の通り</p>
+<p><img src="/images/2019-11-11-aws-wordpress-plugin-cloudfront-feature/25.png" alt=""></p>
+<p><code>cdn.〜</code>のドメイン名になっていますが、<code>Hit from cloudfront</code>になることはなく、静的なコンテンツ群以外ではキャッシュが作用しないようになっていました。</p>
+<p>つまり、静的でないコンテンツはCloudFrontによるキャッシュは作用しない従来のままのコンテンツ配信が維持されつつ、静的なコンテンツはCloudFrontによるキャッシュが効く。という形のようです。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>以上の内容で“AWS for WordPress”プラグインの「CloudFrontワークフロー」の導入までとなります。<br>プラグインの導入までの手順をひたすら列挙する形になってしまいましたが、「どこを自分がやって、どこをプラグインがやってくれるのか」を把握するのに役立てれば幸いです。</p>
+<p>次は、このプラグインによって生成されたCloudFrontディストリビューションの詳細な設定を掘り下げていければと思います。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/11/11/aws-wordpress-plugin-cloudfront-feature/" data-text="AWS製WordPressプラグインの「CloudFrontワークフロー」を検証" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/11/11/aws-wordpress-plugin-cloudfront-feature/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/11/11/aws-wordpress-plugin-cloudfront-feature/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/11/11/aws-wordpress-plugin-cloudfront-feature/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/11/11/aws-wordpress-plugin-cloudfront-feature/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS製WordPressプラグインの「CloudFrontワークフロー」を検証" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WordPress/">WordPress</a></li></ul>
+
+
+      <p class="article-footer__author">by 西藤翔太朗</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

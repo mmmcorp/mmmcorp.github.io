@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Flowを使ってアプリケーション開発するためのエディタ環境いろいろ | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="これはフロントエンドエンジニア Advent Calendar 2016の第7日目の記事です。 今年はほぼずっとTypeScriptでコードを書いていたので、気分を変えてFlowでコードを書く時の環境について調べてみました。私は普段Visual Studio Codeでコードを書いているのですが、特に助かっているこの辺りの機能を踏襲した環境を基準にしてみます。 エディタ内で型エラーを表示何か間違い">
+<meta name="keywords" content="フロントエンド,JavaScript,開発環境,Flow">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flowを使ってアプリケーション開発するためのエディタ環境いろいろ">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2016/12/07/development-enviroment-with-flow/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="これはフロントエンドエンジニア Advent Calendar 2016の第7日目の記事です。 今年はほぼずっとTypeScriptでコードを書いていたので、気分を変えてFlowでコードを書く時の環境について調べてみました。私は普段Visual Studio Codeでコードを書いているのですが、特に助かっているこの辺りの機能を踏襲した環境を基準にしてみます。 エディタ内で型エラーを表示何か間違い">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/development-enviroment-with-flow/atom-setting.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/development-enviroment-with-flow/atom-result.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/development-enviroment-with-flow/atom-inferred.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/development-enviroment-with-flow/vscode-setting.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/development-enviroment-with-flow/vscode-result.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/development-enviroment-with-flow/idea-setting.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/development-enviroment-with-flow/idea-result.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.142Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Flowを使ってアプリケーション開発するためのエディタ環境いろいろ">
+<meta name="twitter:description" content="これはフロントエンドエンジニア Advent Calendar 2016の第7日目の記事です。 今年はほぼずっとTypeScriptでコードを書いていたので、気分を変えてFlowでコードを書く時の環境について調べてみました。私は普段Visual Studio Codeでコードを書いているのですが、特に助かっているこの辺りの機能を踏襲した環境を基準にしてみます。 エディタ内で型エラーを表示何か間違い">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/development-enviroment-with-flow/atom-setting.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-development-enviroment-with-flow" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2016-12-07T00:00:01.000Z" itemprop="datePublished">2016-12-07</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2016/12/07/development-enviroment-with-flow/">Flowを使ってアプリケーション開発するためのエディタ環境いろいろ</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/12/07/development-enviroment-with-flow/" data-text="Flowを使ってアプリケーション開発するためのエディタ環境いろいろ" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/12/07/development-enviroment-with-flow/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/12/07/development-enviroment-with-flow/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/12/07/development-enviroment-with-flow/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/12/07/development-enviroment-with-flow/" class="hatena-bookmark-button" data-hatena-bookmark-title="Flowを使ってアプリケーション開発するためのエディタ環境いろいろ" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>これは<a href="http://qiita.com/advent-calendar/2016/frontend-engineers" target="_blank" rel="noopener">フロントエンドエンジニア Advent Calendar 2016</a>の第7日目の記事です。</p>
+<p>今年はほぼずっと<code>TypeScript</code>でコードを書いていたので、気分を変えて<code>Flow</code>でコードを書く時の環境について調べてみました。<br>私は普段<code>Visual Studio Code</code>でコードを書いているのですが、特に助かっているこの辺りの機能を踏襲した環境を基準にしてみます。</p>
+<h3 id="エディタ内で型エラーを表示"><a href="#エディタ内で型エラーを表示" class="headerlink" title="エディタ内で型エラーを表示"></a>エディタ内で型エラーを表示</h3><p>何か間違いを起こしてしまったことを知るのは早ければ早いほど良いと思っているので、型エラーは常時エディタに表示されるようにしたいです。<br>(若干エディタの画面がうるさくなり過ぎる時もありますが…)</p>
+<h3 id="変数の型情報をツールチップとして表示"><a href="#変数の型情報をツールチップとして表示" class="headerlink" title="変数の型情報をツールチップとして表示"></a>変数の型情報をツールチップとして表示</h3><p>開発中に「あれ、この変数ってどんな型だっけな」と忘れることがよくあります。できるだけ簡単な操作で任意の変数の型を確認できると、ストレス無く開発できます。</p>
+<h3 id="型定義へのジャンプ"><a href="#型定義へのジャンプ" class="headerlink" title="型定義へのジャンプ"></a>型定義へのジャンプ</h3><p>主に外部ライブラリの型情報をパッと確認するのに使っています。<br>有名どころのライブラリであれば、詳しいコメントが付いていることも多いので、簡易ドキュメントへのショートカット的に使えるのが助かります。</p>
+<h3 id="バージョンを指定できる"><a href="#バージョンを指定できる" class="headerlink" title="バージョンを指定できる"></a>バージョンを指定できる</h3><p>特定のバージョンの<code>Flow</code>と紐付いてしまっていると、バージョンアップに追従していくのが大変です。<br><code>Atom</code>の<code>TypeScript</code>プラグインで<a href="https://github.com/TypeStrong/atom-typescript/issues/1003" target="_blank" rel="noopener">任意のバージョンのTypeScriptを用いることができなかった</a>ことで不便だったので。<br>自分で設定できなくても、プロジェクトのローカル<code>node_modules</code>にインストールされたバージョンを利用できるようになっていれば事足ります。</p>
+<h3 id="変数名の追跡変更などリファクタリング支援"><a href="#変数名の追跡変更などリファクタリング支援" class="headerlink" title="変数名の追跡変更などリファクタリング支援"></a>変数名の追跡変更などリファクタリング支援</h3><p>必須というわけでもないのですが、コードを全文検索しての置換よりエディタ備え付けの変数名変更の方が安心なので、出来れば付いていて欲しい機能です。</p>
+<hr>
+<p>私は普段<code>Visual Studio Code</code>で<code>TypeScript</code>を、<code>Scala</code>の勉強をするのに<code>Intellij IDEA</code>を、その他の言語やブログを書く時は<code>Atom</code>をそれぞれ使い分けてる感じなので、この3つのエディタ(とIDE)でどういう感じの環境になるのかを調べてみます。<br>サンプルコードには<a href="https://github.com/facebook/flow/tree/master/examples" target="_blank" rel="noopener">Flow公式のExample</a>を使いました。<br>(それ以外では<a href="https://github.com/flowtype/vim-flow" target="_blank" rel="noopener">vim</a>や<a href="https://github.com/lbolla/emacs-flycheck-flow" target="_blank" rel="noopener">emacs</a>向けのプラグインもあるようですが、普段使い慣れていないものなので割愛しました…)</p>
+<h2 id="atom"><a href="#Atom" class="headerlink" title="Atom"></a>Atom</h2><p><code>Flow</code>で拡張機能を検索すると、<a href="https://github.com/AtomLinter/linter-flow" target="_blank" rel="noopener">linter</a>や<a href="https://github.com/lukehoban/atom-ide-flow" target="_blank" rel="noopener">IDE Haskellに影響を受けた簡易IDE</a>が見つかりますが、どちらもあまりメンテナンスされていないようです。<br>おそらくFacebookが公開している<code>React</code>系アプリケーションの開発を支援する<a href="https://nuclide.io/" target="_blank" rel="noopener">Nuclide</a>という簡易IDE的な拡張機能があるからでしょう。<br><code>Flow</code>と同様に<code>Facebook</code>によって開発が牽引・公開されている辺りを考えると、<code>TypeScript</code>における<code>Visual Studio Code</code>相当と捉えても良いかも知れません。<br>ここでは<code>Nuclide</code>を試してみます。</p>
+<p>まずは<a href="https://nuclide.io/docs/quick-start/getting-started/" target="_blank" rel="noopener">導入方法</a>に基いて拡張機能をインストールします。<br>次に拡張機能の設定画面で、<code>Nuclide-Flow</code>の項にある<code>Use the Flow binary included in each project&#39;s flow-bin</code>を有効にします。</p>
+<p>これでプロジェクト毎にインストールされた、ローカルの<code>npm executable</code>を利用できます。<br><img src="/images/development-enviroment-with-flow/atom-setting.png" alt=""></p>
+<p>早速サンプルコードを読み込んでみます。<br>こんな感じでエラーが出ました。<br><img src="/images/development-enviroment-with-flow/atom-result.png" alt=""></p>
+<p>マウスホバーした時に、変数の型情報がツールチップとして表示されるのも良いですね。<br><img src="/images/development-enviroment-with-flow/atom-inferred.png" alt=""></p>
+<p>ただ、<code>Atom</code>のサイドツリーに独自の開発支援機能が入ってしまうので、別物のエディタみたいな使用感になってしまいそうなの気になりました(テーマごと変わっちゃう？)</p>
+<h2 id="visual-studio-code"><a href="#Visual-Studio-Code" class="headerlink" title="Visual Studio Code"></a>Visual Studio Code</h2><p><code>Flow</code>公式の<a href="https://github.com/flowtype/flow-for-vscode" target="_blank" rel="noopener">flow-for-vscode</a>という拡張機能が公開されています。</p>
+<p>拡張機能の検索タブで<code>Flow</code>で検索(<code>flow</code>だと出てこないので注意)してインストールします。<br>次に<code>setting.json</code>に<code>npm executable</code>へのパスをこんな感じで書きます。<br><img src="/images/development-enviroment-with-flow/vscode-setting.png" alt=""></p>
+<p>コードを読み込むと、こんな感じでエラーが出ます。<br><img src="/images/development-enviroment-with-flow/vscode-result.png" alt=""></p>
+<p>こちらはエラー箇所(赤波線)にマウスホバーすると、型エラーの情報と一緒に推論された型情報も表示してくれるようです。</p>
+<h2 id="intellij-idea"><a href="#Intellij-IDEA" class="headerlink" title="Intellij IDEA"></a>Intellij IDEA</h2><p>※ 基本的に<code>WebStorm</code>でも同じはず…</p>
+<p>もともと2016.2では<code>Intellij IDEA</code>では、<code>Flow</code>の基本的な文法解釈とシンタックスハイライトぐらいしかサポートされていなかったようですが、現行バージョンの2016.3で大幅にサポート内容が追加されたようです。<br><a href="https://www.youtube.com/watch?v=kScGj5C-Ekg" target="_blank" rel="noopener">紹介動画</a></p>
+<p>IDEにサポートが組み込まれているので、プラグインのインストールなどは不要です。</p>
+<p><a href="https://www.jetbrains.com/help/webstorm/2016.3/using-the-flow-type-checker.html" target="_blank" rel="noopener">導入方法</a>ページに従って<code>JavaScript</code>環境の設定を開き、<code>Languages&amp;Frameworks</code>で<code>Flow</code>を選択して、<code>Flow executable</code>にローカルの<code>npm executable</code>を設定します。<br><img src="/images/development-enviroment-with-flow/idea-setting.png" alt=""></p>
+<p>こんな感じでエラーが出ました。<br><img src="/images/development-enviroment-with-flow/idea-result.png" alt=""></p>
+<p>こちらはマウスホバーした変数の型情報をツールチップとして表示してはくれないようです。<br>※実は<code>TypeScript</code>にも<a href="https://youtrack.jetbrains.com/issue/WEB-19686#tab%3DComments" target="_blank" rel="noopener">同種の機能が備わっていません</a>。ひょっとしてあまり必要とされていない機能なのか。。。<br>(内部的に情報は持っているらしく、リファクタリングの時に型情報を出してくれるので、単に表示方法を知らないだけかもしれません。。。)</p>
+<h2 id="対応表"><a href="#対応表" class="headerlink" title="対応表"></a>対応表</h2><p>まとめるとこんな感じになりました。</p>
+<table>
+<thead>
+<tr>
+<th>–</th>
+<th>Atom</th>
+<th>VSC</th>
+<th>IDEA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>エディタ内で型エラーを表示</td>
+<td>◯</td>
+<td>◯</td>
+<td>◯</td>
+</tr>
+<tr>
+<td>エディタ内で型推論の結果を覗ける</td>
+<td>◯</td>
+<td>◯</td>
+<td>△</td>
+</tr>
+<tr>
+<td>型定義へのジャンプ</td>
+<td>◯</td>
+<td>◯</td>
+<td>◯</td>
+</tr>
+<tr>
+<td>バージョンを指定できる</td>
+<td>◯</td>
+<td>◯</td>
+<td>◯</td>
+</tr>
+<tr>
+<td>変数名の追跡変更などリファクタリング支援</td>
+<td>×</td>
+<td>×</td>
+<td>◯</td>
+</tr>
+</tbody>
+</table>
+<p><code>Atom</code>と<code>Visual Studio Code</code>は変数の型情報をツールチップとして表示できて、<code>Intellij IDEA</code>は変数名変更などのリファクタリング支援がある(これはどうも<code>Flow</code>の機能を用いてというより<code>Intellij IDEA</code>が元々独自に備えていたリファクタリング機能の一環という気がします)という感じのようです。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p><code>Flow</code>を用いたプロジェクトで、楽をしてコードを書くためにどんな選択肢があるのか簡単に調べてみました。<br>個人的には最近使っている<code>Visual Studio Code</code>に必要な機能が大体含まれていたので、<code>TypeScript</code>/<code>Flow</code>のいずれも<code>Visual Studio Code</code>で書いていこうかなと思っています。</p>
+<p>以上、参考になればうれしいです。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/12/07/development-enviroment-with-flow/" data-text="Flowを使ってアプリケーション開発するためのエディタ環境いろいろ" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/12/07/development-enviroment-with-flow/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/12/07/development-enviroment-with-flow/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/12/07/development-enviroment-with-flow/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/12/07/development-enviroment-with-flow/" class="hatena-bookmark-button" data-hatena-bookmark-title="Flowを使ってアプリケーション開発するためのエディタ環境いろいろ" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Flow/">Flow</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/開発環境/">開発環境</a></li></ul>
+
+
+      <p class="article-footer__author">by 小飼 慎一</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

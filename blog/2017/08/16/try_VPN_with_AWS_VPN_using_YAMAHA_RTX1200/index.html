@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>フレッツ光からYAMAHA RTX1200を使いAmazon VPCにハードウェアVPN接続する手順 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="最高に楽しかった8月上旬の二泊三日海キャンプを回想しながら、提案書をカキカキしているMMM代表の国本です。 AWSでEC2やRDS等のAWSリソースを利用する場合、AWSクラウド上に論理的に区分されたプライベートネットワーク空間であるAmazon Virtual Private Cloud(Amazon VPC)内に配備します。 Amazon VPC内に配備されている各種リソースへのアクセス(S">
+<meta name="keywords" content="クラウド,AWS,VPN,RTX1200,ネットワーク">
+<meta property="og:type" content="article">
+<meta property="og:title" content="フレッツ光からYAMAHA RTX1200を使いAmazon VPCにハードウェアVPN接続する手順">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2017/08/16/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="最高に楽しかった8月上旬の二泊三日海キャンプを回想しながら、提案書をカキカキしているMMM代表の国本です。 AWSでEC2やRDS等のAWSリソースを利用する場合、AWSクラウド上に論理的に区分されたプライベートネットワーク空間であるAmazon Virtual Private Cloud(Amazon VPC)内に配備します。 Amazon VPC内に配備されている各種リソースへのアクセス(S">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/top.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/VPN_diagram.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/pppoe_diagram.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/1_create_VPC.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/2_create_VPC_subnet.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/3_create_route_table.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/4_attached_subnet.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/VPN_diagram.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/5_create_CGW.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/6_create_VGW.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/7_attached_VGW.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/8_add_route_table.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/9_propagation.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/10_create_VPN.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/11_config_download.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/12_VPN_Status.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/VPN_diagram.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.150Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="フレッツ光からYAMAHA RTX1200を使いAmazon VPCにハードウェアVPN接続する手順">
+<meta name="twitter:description" content="最高に楽しかった8月上旬の二泊三日海キャンプを回想しながら、提案書をカキカキしているMMM代表の国本です。 AWSでEC2やRDS等のAWSリソースを利用する場合、AWSクラウド上に論理的に区分されたプライベートネットワーク空間であるAmazon Virtual Private Cloud(Amazon VPC)内に配備します。 Amazon VPC内に配備されている各種リソースへのアクセス(S">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/top.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-try-VPN-with-AWS-VPN-using-YAMAHA-RTX1200" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2017-08-16T09:00:00.000Z" itemprop="datePublished">2017-08-16</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2017/08/16/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/">フレッツ光からYAMAHA RTX1200を使いAmazon VPCにハードウェアVPN接続する手順</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/08/16/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/" data-text="フレッツ光からYAMAHA RTX1200を使いAmazon VPCにハードウェアVPN接続する手順" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/08/16/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/08/16/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/08/16/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/08/16/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/" class="hatena-bookmark-button" data-hatena-bookmark-title="フレッツ光からYAMAHA RTX1200を使いAmazon VPCにハードウェアVPN接続する手順" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/top.png" alt=""></p>
+<p>最高に楽しかった8月上旬の二泊三日海キャンプを回想しながら、提案書をカキカキしているMMM代表の国本です。</p>
+<p>AWSでEC2やRDS等のAWSリソースを利用する場合、AWSクラウド上に論理的に区分されたプライベートネットワーク空間であるAmazon Virtual Private Cloud(Amazon VPC)内に配備します。</p>
+<p>Amazon VPC内に配備されている各種リソースへのアクセス(SSHなど)は</p>
+<ol>
+<li>固定IPアドレスで接続制限を実施した踏み台サーバー(Bastionノード)経由</li>
+<li>Amazon VPCとのVPN(Virtual Private Network)接続経由</li>
+<li>AWS Direct Connectを利用した専用線接続</li>
+</ol>
+<p>のいずれかの方法を選択する形となりますが、今回は2.のAmazon VPCとのVPN接続(ハードウェアVPN)について、宅内のインターネット回線を活用した簡易的な接続検証の手順を簡単にご紹介しようと思います。</p>
+<h2 id="1前提とする検証環境"><a href="#1．前提とする検証環境" class="headerlink" title="1．前提とする検証環境"></a>1．前提とする検証環境</h2><p>今回は『Amazon VPCへの簡易的なVPN接続検証を実施し手順化する』事を第一の目的とし、検証環境は下記を準備しました。</p>
+<h3 id="接続回線"><a href="#接続回線" class="headerlink" title="接続回線"></a>接続回線</h3><p>宅内で契約済みの <code>フレッツ光ファミリー・ハイスピードタイプ</code> をそのまま利用する形とし、固定IPアドレスの取得は行いません。(検証完了後にVPN接続を即時削除するため)</p>
+<h3 id="vpn接続機器ルーター"><a href="#VPN接続機器-ルーター" class="headerlink" title="VPN接続機器(ルーター)"></a>VPN接続機器(ルーター)</h3><p>Amazon VPC公式FAQの <a href="https://aws.amazon.com/jp/vpc/faqs/" target="_blank" rel="noopener">Q: Amazon VPC で機能することが知られているカスタマーゲートウェイデバイスにはどのようなものがありますか?</a> で検証デバイスとして表記され、企業オフィスでも数多く採用されている <code>YAMAHA RTX1200</code> を利用します。</p>
+<p>よって、今回以降ご紹介するルーター側の設定ファイル(コンフィグレーションファイル)はYAMAHA RTX1200の利用を前提とした内容となります。</p>
+<p>余談：RTX1200は中古であれば15,000円前後で購入可能なので、検証用途としておすすめ…</p>
+<h3 id="ルーティング方式"><a href="#ルーティング方式" class="headerlink" title="ルーティング方式"></a>ルーティング方式</h3><p>Amazon VPCでは、VPN接続時のルーティング方式について、静的、動的を選択することが可能ですが、今回の検証はRTX1200もサポートしているBorder Gateway Protocol(BGP)を使った動的ルーティングを選択します。</p>
+<h3 id="ネットワーク構成イメージ"><a href="#ネットワーク構成-イメージ" class="headerlink" title="ネットワーク構成(イメージ)"></a>ネットワーク構成(イメージ)</h3><p>検証で利用するネットワークの構成イメージはこのような前提です。</p>
+<p><img src="/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/VPN_diagram.png" alt=""></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">対象</th>
+<th style="text-align:left">CIDR(Classless Inter-Domain Routing)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Amazon VPC CIDRブロック</td>
+<td style="text-align:left"><code>10.0.0.0/16</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Amazon VPC サブネット</td>
+<td style="text-align:left"><code>10.0.0.0/24</code></td>
+</tr>
+<tr>
+<td style="text-align:left">宅内サブネット</td>
+<td style="text-align:left"><code>192.168.0.0/24</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">機器</th>
+<th style="text-align:left">IPアドレス</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">YAMAHA RTX1200プライベートIPアドレス</td>
+<td style="text-align:left"><code>192.168.0.1</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Amazon VPCに配備のEC2プライベートIPアドレス</td>
+<td style="text-align:left"><code>10.0.0.100</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="vpnの接続検証方法"><a href="#VPNの接続検証方法" class="headerlink" title="VPNの接続検証方法"></a>VPNの接続検証方法</h3><p>VPNでの接続確認の方法は簡易的な形で、宅内に設置したRTX1200とWi-Fi接続しているMacbook Proから、VPNを経由し、プライベートIPアドレスでPing疎通ができることを確認します。</p>
+<h2 id="2rtx1200をpppoe接続"><a href="#2．RTX1200をPPPoE接続" class="headerlink" title="2．RTX1200をPPPoE接続"></a>2．RTX1200をPPPoE接続</h2><p>今回は、宅内検証用に<del>(中古で)</del>RTX1200を購入した為、YAMAHA公式サイトに記載されている <a href="http://jp.yamaha.com/products/network/solution/internet/opticalfiber_command/" target="_blank" rel="noopener">高速回線（光ファイバー）を利用する</a> を前提にRTX1200をPPPoE(Point-to-Point Protocol over Ethernet)経由でインターネット接続します。</p>
+<p>宅内の接続構成はこのような形とします。</p>
+<p><img src="/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/pppoe_diagram.png" alt=""></p>
+<p>まず、宅内に設置されている光回線終端装置(ONU)とRTX1200を接続し、RTX1200にWi-FiのアクセスポイントとしてAirMac Expressを繋げることで、Wi-Fi経由で1台のMacbook ProをNAT配下のインターネット接続とします。</p>
+<p>ONU側でPPPoE接続のルーター機能を有しているものが多いかと思いますが、今回はRTX1200からPPPoE接続を行うため、ONU側はPPPoEパススルーをセットします。</p>
+<p>RTX1200の最小設定ファイルは以下の通りです。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">ip route default gateway pp 1</span><br><span class="line">ip lan1 address 192.168.0.1/24</span><br><span class="line">pp select 1</span><br><span class="line">pp always-on on</span><br><span class="line">pppoe use lan2</span><br><span class="line">pp auth accept pap chap</span><br><span class="line">pp auth myname 契約プロバイダーから配布された接続用ID パスワード</span><br><span class="line">ppp lcp mru on 1454</span><br><span class="line">ppp ipcp ipaddress on</span><br><span class="line">ppp ipcp msext on</span><br><span class="line">ip pp mtu 1454</span><br><span class="line">ip pp nat descriptor 1</span><br><span class="line">pp enable 1</span><br><span class="line">nat descriptor type 1 masquerade</span><br><span class="line">dhcp service server</span><br><span class="line">dhcp server rfc2131 compliant except remain-silent</span><br><span class="line">dhcp scope 1 192.168.0.100-192.168.0.200/24</span><br><span class="line">dns server 8.8.8.8</span><br><span class="line">dns private address spoof on</span><br></pre></td></tr></table></figure>
+<p>LAN1ポートを宅内のプライベート用に、LAN2ポートをPPPoE接続の外部インターフェースにセットし、Wi-Fi接続向けのDHCPサーバー機能と、DNSは一旦Google社が公開しているサーバー(8.8.8.8)をセットしています。 <br><br>※フィルター設定に関してはコンフィグ表示が冗長になるため、一旦除外</p>
+<p>上記コンフィグを設定後、PPPoEの接続ステータスをRTX1200のコンソールから <code>show status pp 1</code> コマンドを使ってチェックします。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># show status pp 1</span><br><span class="line">PP[01]:</span><br><span class="line">説明:</span><br><span class="line">PPPoEセッションは接続されています</span><br><span class="line">接続相手: xxxxxxxxx-xxxxxxxxxx</span><br><span class="line">通信時間: 1時間58分52秒</span><br><span class="line">受信: 380429 パケット [288756495 オクテット]  負荷: 0.0%</span><br><span class="line">送信: 39109 パケット [39829260 オクテット]  負荷: 0.0%</span><br><span class="line">PPPオプション</span><br><span class="line">    LCP Local: Magic-Number MRU, Remote: CHAP Magic-Number MRU</span><br><span class="line">    IPCP Local: IP-Address Primary-DNS(xxx.xxx.xxx.xxx) Secondary-DNS(xxx.xxx.xxx.xxx), Remote: IP-Address</span><br><span class="line">    PP IP Address Local: xxx.xxx.xxx.xxx, Remote: xxx.xxx.xxx.xxx</span><br><span class="line">    CCP: None</span><br></pre></td></tr></table></figure>
+<p><code>PPPoEセッションは接続されています</code> というメッセージが表示されていれば、正常にインターネット接続されています。</p>
+<p>もし、エラーメッセージが表示されている場合は、メッセージを確認の上、接続用のIDやパスワードに誤りはないか？LAN2ポートを一旦非アクティブ化 → アクティブ化してみるなどを実施し正常に接続できる状態にします。</p>
+<h2 id="3amazon-vpcの準備"><a href="#3．Amazon-VPCの準備" class="headerlink" title="3．Amazon VPCの準備"></a>3．Amazon VPCの準備</h2><p>宅内側のインターネット接続が完了したら、AWS側にVPCを作成します。<br>今回はあくまでVPNの簡易的な接続検証ですので、新たに一つ専用のVPCを作成します。</p>
+<p><img src="/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/1_create_VPC.png" alt=""></p>
+<p>先にネットワーク構成(イメージ)で記載の通り <code>10.0.0.0/16</code> のIPv4 CIDRブロックを定義して、VPCを作成します。</p>
+<p>次に、接続用のEC2を配備するVPCサブネットを定義します。</p>
+<p><img src="/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/2_create_VPC_subnet.png" alt=""></p>
+<p>こちらもネットワーク構成(イメージ)で記載の通り <code>10.0.0.0/24</code> のCIDRブロックを定義します。</p>
+<p>サブネットの定義が終わったら、今度はVPC内のルートテーブルを新規作成し、作成済みのVPCサブネットをルートテーブルにアタッチします。</p>
+<p><img src="/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/3_create_route_table.png" alt=""></p>
+<p><img src="/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/4_attached_subnet.png" alt=""></p>
+<h2 id="4カスタマーゲートウェイcgwと仮想プライベートゲートウェイvgwの準備"><a href="#4．カスタマーゲートウェイ-CGW-と仮想プライベートゲートウェイ-VGW-の準備" class="headerlink" title="4．カスタマーゲートウェイ(CGW)と仮想プライベートゲートウェイ(VGW)の準備"></a>4．カスタマーゲートウェイ(CGW)と仮想プライベートゲートウェイ(VGW)の準備</h2><p>次にVPN接続で必要となるVPNアンカーの設定を進めていきます。</p>
+<p>ネットワーク構成(イメージ)を再掲しますが。</p>
+<p><img src="/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/VPN_diagram.png" alt=""></p>
+<p>Amazon VPCのVPN設定においては上図に記載の、 <code>仮想プライベートゲートウェイ(VGW)</code> と <code>カスタマーゲートウェイ(CGW)</code> の設定が必要となります。</p>
+<p><code>カスタマーゲートウェイ(CGW)</code> はAmazon VPCとVPN接続する装置を指しており、今回の検証構成においてはRTX1200となります。</p>
+<p>もう一方の <code>仮想プライベートゲートウェイ(VGW)</code> は Amazon VPC側のVPN受け口となるコンセントレータとなります。</p>
+<p>それでは、まず <code>カスタマーゲートウェイ(CGW)</code> から作成していきましょう。</p>
+<p><img src="/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/5_create_CGW.png" alt=""></p>
+<p>今回はBGPを使った動的ルーティングを行うため、ルーティングは <code>動的</code> を選択し、BGP用のASN(AS番号)はプライベートナンバーである <code>64512</code> を入力します。</p>
+<p>なお、<code>カスタマーゲートウェイ(CGW)</code> のIPアドレスはRTX1200側のグローバルIPアドレスとなりますが、今回はあくまで暫定的な検証であり、固定IPアドレスを取得していない為、現在RTX1200に動的付与されたグローバルIPアドレスを確認して、セットします。</p>
+<p>確認方法は RTX1200のコンソールで <code>show status pp 1</code> を入力し<br><code>PP IP Address Local: xxx.xxx.xxx.xxx</code><br>と表示された箇所のグローバルIPアドレスとなります。</p>
+<p>次にAmazon VPC側の受け口となる <code>仮想プライベートゲートウェイ(VGW)</code> を定義し、Amazon VPCにアタッチします。</p>
+<p><img src="/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/6_create_VGW.png" alt=""></p>
+<p><img src="/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/7_attached_VGW.png" alt=""></p>
+<p>Amazon VPCに <code>仮想プライベートゲートウェイ(VGW)</code> をアタッチした後、VPC側のルートテーブルのデフォルト・ゲートウェイとして <code>仮想プライベートゲートウェイ(VGW)</code> をセットします。</p>
+<p><img src="/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/8_add_route_table.png" alt=""></p>
+<p>また、ルーティング情報を伝搬させるために、アタッチした <code>仮想プライベートゲートウェイ(VGW)</code> の伝搬をONにします。</p>
+<p><img src="/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/9_propagation.png" alt=""></p>
+<h2 id="5amazon-vpc側のvpn接続の作成"><a href="#5．Amazon-VPC側のVPN接続の作成" class="headerlink" title="5．Amazon VPC側のVPN接続の作成"></a>5．Amazon VPC側のVPN接続の作成</h2><p>これまでの手順でAmazon VPCの下準備が完了している為、Amazon VPC側にVPN接続設定を追加します。</p>
+<p><img src="/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/10_create_VPN.png" alt=""></p>
+<p><code>仮想プライベートゲートウェイ(VGW)</code> と <code>カスタマーゲートウェイ(CGW)</code> は先の手順で作成済みのものを選択し、ルーティングオプションは動的(BGP)を選択し作成します。</p>
+<p>VPN接続を作成した後、<code>カスタマーゲートウェイ(CGW)</code> の設定ファイルをダウンロードできるようになるので。</p>
+<p><img src="/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/11_config_download.png" alt=""></p>
+<p>ベンダー <code>Yamaha</code> プラットフォーム <code>RTX Routes</code> ソフトウェア <code>Rev.10.01.16+</code> を選択し、RTXルーター用のコンフィグレーションをダウンロードしておきます。</p>
+<p>これでAmazon VPC側のVPN設定は完了です。</p>
+<h2 id="6宅内側のvpn接続設定"><a href="#6．宅内側のVPN接続設定" class="headerlink" title="6．宅内側のVPN接続設定"></a>6．宅内側のVPN接続設定</h2><p>Amazon VPC側の設定が完了しているため、今度は宅内側のRTX1200にVPN接続設定を追加していきます。</p>
+<p>基本的には5.の手順でAmazon VPCからダウンロードしたRTXルーター用の設定ファイルをセットすれば問題ないのですが、設定ファイルを投入前に、2点修正を行います。</p>
+<h3 id="rtx1200のセキュリティゲートウェイipアドレスをローカルipに"><a href="#RTX1200のセキュリティゲートウェイIPアドレスをローカルIPに" class="headerlink" title="RTX1200のセキュリティゲートウェイIPアドレスをローカルIPに"></a>RTX1200のセキュリティゲートウェイIPアドレスをローカルIPに</h3><p>ダウンロードしたRTXルーター設定ファイルを開くと</p>
+<p><code>ipsec ike local address</code> という設定にRTX1200側のグローバルIPアドレスがセットされている状態になっているかと思います。</p>
+<p>今回の宅内ネットワーク構成の場合、この値はプライベートIPアドレスをセットする必要があるため。</p>
+<p><code>ipsec ike local address 1 192.168.0.1</code><br><code>ipsec ike local address 2 192.168.0.1</code></p>
+<p><code>ipsec ike local address 1</code> と　<code>ipsec ike local address 2</code> をRTX1200のプライベートIPアドレスである <code>192.168.0.1</code> に変更します。</p>
+<h3 id="nat-traversalnat-t有効化"><a href="#NAT-Traversal-NAT-T-有効化" class="headerlink" title="NAT Traversal(NAT-T)有効化"></a>NAT Traversal(NAT-T)有効化</h3><p>今回の宅内ネットワーク構成の場合、NAT配下からの接続となるため、NAT Traversal(NAT-T)を有効化します。</p>
+<p><code>ipsec ike nat-traversal 1 on</code><br><code>ipsec ike nat-traversal 2 on</code></p>
+<p>上記変更を含めた、RTX1200のコンフィグレーションは下記のとおりとなります。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">ip route default gateway pp 1</span><br><span class="line">ip lan1 address 192.168.0.1/24</span><br><span class="line">pp select 1</span><br><span class="line">pp always-on on</span><br><span class="line">pppoe use lan2</span><br><span class="line">pp auth accept pap chap</span><br><span class="line">pp auth myname 契約プロバイダーから配布された接続用ID パスワード</span><br><span class="line">ppp lcp mru on 1454</span><br><span class="line">ppp ipcp ipaddress on</span><br><span class="line">ppp ipcp msext on</span><br><span class="line">ip pp mtu 1454</span><br><span class="line">ip pp nat descriptor 1</span><br><span class="line">pp enable 1</span><br><span class="line">tunnel select 1</span><br><span class="line">ipsec tunnel 201</span><br><span class="line">ipsec sa policy 201 1 esp aes-cbc sha-hmac</span><br><span class="line">ipsec ike duration ipsec-sa 1 3600</span><br><span class="line">ipsec ike encryption 1 aes-cbc</span><br><span class="line">ipsec ike group 1 modp1024</span><br><span class="line">ipsec ike hash 1 sha</span><br><span class="line">ipsec ike keepalive use 1 on dpd 10 3</span><br><span class="line">ipsec ike local address 1 192.168.0.1</span><br><span class="line">ipsec ike nat-traversal 1 on</span><br><span class="line">ipsec ike pfs 1 on</span><br><span class="line">ipsec ike pre-shared-key 1 text xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span><br><span class="line">ipsec ike remote address 1 xxx.xxx.xxx.xxx</span><br><span class="line">ipsec tunnel outer df-bit clear</span><br><span class="line">ip tunnel address xxx.xxx.xxx.xxx/30</span><br><span class="line">ip tunnel remote address xxx.xxx.xxx.xxx</span><br><span class="line">ip tunnel tcp mss limit 1379</span><br><span class="line">tunnel enable 1</span><br><span class="line">tunnel select 2</span><br><span class="line">ipsec tunnel 202</span><br><span class="line">ipsec sa policy 202 2 esp aes-cbc sha-hmac</span><br><span class="line">ipsec ike duration ipsec-sa 2 3600</span><br><span class="line">ipsec ike encryption 2 aes-cbc</span><br><span class="line">ipsec ike group 2 modp1024</span><br><span class="line">ipsec ike hash 2 sha</span><br><span class="line">ipsec ike keepalive use 2 on dpd 10 3</span><br><span class="line">ipsec ike local address 2 192.168.0.1</span><br><span class="line">ipsec ike nat-traversal 2 on</span><br><span class="line">ipsec ike pfs 2 on</span><br><span class="line">ipsec ike pre-shared-key 2 text xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span><br><span class="line">ipsec ike remote address 2 xxx.xxx.xxx.xxx</span><br><span class="line">ipsec tunnel outer df-bit clear</span><br><span class="line">ip tunnel address xxx.xxx.xxx.xxx/30</span><br><span class="line">ip tunnel remote address xxx.xxx.xxx.xxx</span><br><span class="line">ip tunnel tcp mss limit 1379</span><br><span class="line">tunnel enable 2</span><br><span class="line">nat descriptor type 1 masquerade</span><br><span class="line">bgp use on</span><br><span class="line">bgp autonomous-system 64512</span><br><span class="line">bgp neighbor 1 10124 xxx.xxx.xxx.xxx hold-time=30 local-address=xxx.xxx.xxx.xxx</span><br><span class="line">bgp neighbor 2 10124 xxx.xxx.xxx.xxx hold-time=30 local-address=xxx.xxx.xxx.xxx</span><br><span class="line">bgp import filter 1 equal 0.0.0.0/0</span><br><span class="line">bgp import 10124 static filter 1</span><br><span class="line">ipsec auto refresh on</span><br><span class="line">dhcp service server</span><br><span class="line">dhcp server rfc2131 compliant except remain-silent</span><br><span class="line">dhcp scope 1 192.168.0.100-192.168.0.200/24</span><br><span class="line">dns server 8.8.8.8</span><br><span class="line">dns private address spoof on</span><br></pre></td></tr></table></figure>
+<p>※IPアドレスや事前共有鍵などはマスキングしています</p>
+<p>RTX1200側のVPN設定が完了したら、正常にAmazon VPCとVPN接続されているか <code>show status tunnel</code> コマンドを入力して確認してみます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&gt; show status tunnel 1</span><br><span class="line">TUNNEL[1]:</span><br><span class="line">説明:</span><br><span class="line">  インタフェースの種類: IPsec</span><br><span class="line">  トンネルインタフェースは接続されています</span><br><span class="line">  開始: 2017/08/14 07:00:58</span><br><span class="line">  通信時間: 1時間20分34秒</span><br><span class="line">  受信: (IPv4) 1015 パケット [62860 オクテット]</span><br><span class="line">        (IPv6) 0 パケット [0 オクテット]</span><br><span class="line">  送信: (IPv4) 1028 パケット [63061 オクテット]</span><br><span class="line">        (IPv6) 0 パケット [0 オクテット]</span><br><span class="line">&gt; show status tunnel 2</span><br><span class="line">TUNNEL[2]:</span><br><span class="line">説明:</span><br><span class="line">  インタフェースの種類: IPsec</span><br><span class="line">  トンネルインタフェースは接続されています</span><br><span class="line">  開始: 2017/08/14 07:01:23</span><br><span class="line">  通信時間: 1時間20分12秒</span><br><span class="line">  受信: (IPv4) 6285 パケット [319129 オクテット]</span><br><span class="line">        (IPv6) 0 パケット [0 オクテット]</span><br><span class="line">  送信: (IPv4) 13979 パケット [9084808 オクテット]</span><br><span class="line">        (IPv6) 0 パケット [0 オクテット]</span><br></pre></td></tr></table></figure>
+<p>次にBGPのステータスを <code>show status bgp neighbor</code> コマンドで確認してみます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&gt; show status bgp neighbor 1つ目のトンネルIPアドレス</span><br><span class="line">BGP neighbor is xxx.xxx.xxx.xxx, remote AS 10124, local AS 64512, external link</span><br><span class="line">  BGP version 4, remote router ID xxx.xxx.xxx.xxx</span><br><span class="line">  BGP state = Established, up for 01:11:46</span><br><span class="line">  Last read 00:00:03, hold time is 30, keepalive interval is 10 seconds</span><br><span class="line">  Received 611 messages, 1 notifications, 0 in queue</span><br><span class="line">  Sent 622 messages, 3 notifications, 0 in queue</span><br><span class="line">  Connection established 3; dropped 2</span><br><span class="line">  Last reset 01:13:47</span><br><span class="line">Local host: xxx.xxx.xxx.xxx, Local port: 1037</span><br><span class="line">Foreign host: xxx.xxx.xxx.xxx, Foreign port: 179</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; show status bgp neighbor 2つ目のトンネルIPアドレス</span><br><span class="line">BGP neighbor is xxx.xxx.xxx.xxx, remote AS 10124, local AS 64512, external link</span><br><span class="line">  BGP version 4, remote router ID xxx.xxx.xxx.xxx</span><br><span class="line">  BGP state = Established, up for 01:12:43</span><br><span class="line">  Last read 00:00:10, hold time is 30, keepalive interval is 10 seconds</span><br><span class="line">  Received 613 messages, 1 notifications, 0 in queue</span><br><span class="line">  Sent 627 messages, 4 notifications, 0 in queue</span><br><span class="line">  Connection established 3; dropped 2</span><br><span class="line">  Last reset 01:14:20</span><br><span class="line">Local host: xxx.xxx.xxx.xxx, Local port: 1036</span><br><span class="line">Foreign host: xxx.xxx.xxx.xxx, Foreign port: 179</span><br></pre></td></tr></table></figure>
+<p>IPSecトンネルが接続され、BGPがEstablishedとなっていれば、正常にVPN接続が完了しています。</p>
+<p>AWS Console側を確認してみると</p>
+<p><img src="/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/12_VPN_Status.png" alt=""></p>
+<p>このように2つのトンネルが <code>UP</code> の状況になっています。</p>
+<h2 id="7宅内からvpn経由でpingを送信"><a href="#7．宅内からVPN経由でPingを送信" class="headerlink" title="7．宅内からVPN経由でPingを送信"></a>7．宅内からVPN経由でPingを送信</h2><p>これまでの手順で宅内とAmazon VPCはVPN接続が確立されているため、Amazon VPC内に配備したAmazon EC2インスタンスについてPingを送信してみます。<br>※EC2の構築手順は不要かと思いますので、省いています</p>
+<p>3度目のイメージ掲載となりますが…。</p>
+<p><img src="/images/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/VPN_diagram.png" alt=""></p>
+<p>まず <code>10.0.0.100</code> が付与されているEC2に対して、RTX1200からPingを送信します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt; ping 10.0.0.100</span><br><span class="line">10.0.0.100から受信: シーケンス番号=0 ttl=253 時間=7.590ミリ秒</span><br><span class="line">10.0.0.100から受信: シーケンス番号=1 ttl=253 時間=7.256ミリ秒</span><br><span class="line">10.0.0.100から受信: シーケンス番号=2 ttl=253 時間=7.394ミリ秒</span><br><span class="line">10.0.0.100から受信: シーケンス番号=3 ttl=253 時間=6.817ミリ秒</span><br><span class="line"></span><br><span class="line">4個のパケットを送信し、4個のパケットを受信しました。0.0%パケットロス</span><br><span class="line">往復遅延 最低/平均/最大 = 6.817/7.264/7.590 ミリ秒</span><br></pre></td></tr></table></figure>
+<p>次に、AirMacのWi-Fi経由で接続しているMacbook Proから同じくPingを送信します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Macbook% ping 10.0.0.100</span><br><span class="line">PING 10.0.0.100 (10.0.0.100): 56 data bytes</span><br><span class="line">64 bytes from 10.0.0.100: icmp_seq=0 ttl=253 time=8.579 ms</span><br><span class="line">64 bytes from 10.0.0.100: icmp_seq=1 ttl=253 time=8.282 ms</span><br><span class="line">64 bytes from 10.0.0.100: icmp_seq=2 ttl=253 time=9.030 ms</span><br><span class="line">64 bytes from 10.0.0.100: icmp_seq=3 ttl=253 time=7.986 ms</span><br><span class="line">^C</span><br><span class="line">--- 10.0.0.100 ping statistics ---</span><br><span class="line">4 packets transmitted, 4 packets received, 0.0% packet loss</span><br><span class="line">round-trip min/avg/max/stddev = 7.986/8.469/9.030/0.386 ms</span><br></pre></td></tr></table></figure>
+<p>レイテンシーはさておき、きちんと応答があります。<br>以上でVPNの接続検証まで完了となります。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>今回、VPN接続検証で利用したRTX1200ルーターを初め、AWS側で検証済みルーターは、中古であれば一万円前後で入手することも可能ですので、皆さんもお気軽に宅内のインターネット環境を使ってAmazon VPCとのVPN接続をお試し下さい。</p>
+<p>ではでは。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/08/16/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/" data-text="フレッツ光からYAMAHA RTX1200を使いAmazon VPCにハードウェアVPN接続する手順" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/08/16/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/08/16/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/08/16/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/08/16/try_VPN_with_AWS_VPN_using_YAMAHA_RTX1200/" class="hatena-bookmark-button" data-hatena-bookmark-title="フレッツ光からYAMAHA RTX1200を使いAmazon VPCにハードウェアVPN接続する手順" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RTX1200/">RTX1200</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/VPN/">VPN</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/クラウド/">クラウド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ネットワーク/">ネットワーク</a></li></ul>
+
+
+      <p class="article-footer__author">by 国本 廷宣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

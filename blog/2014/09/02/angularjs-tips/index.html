@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AngularJS で Google マップとか使ってみた | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="4月にこの記事を読んで、4時半起きを実践してみているのですが、最近は起きるとまだあたりが暗いんですよね。もう秋だなぁ…と実感する日々の佐々木です。   今回は、AngularJS を使っていて、「これ、どうやってやるんだろう」って思ったことや、使ってみて便利だったモジュールを簡単にまとめてみました。今後また使う可能性もあるので、自分の備忘録も兼ねて。 事前準備としてアプリ作成Yeomanを使いアプ">
+<meta name="keywords" content="フロントエンド,AngularJS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AngularJS で Google マップとか使ってみた">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2014/09/02/angularjs-tips/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="4月にこの記事を読んで、4時半起きを実践してみているのですが、最近は起きるとまだあたりが暗いんですよね。もう秋だなぁ…と実感する日々の佐々木です。   今回は、AngularJS を使っていて、「これ、どうやってやるんだろう」って思ったことや、使ってみて便利だったモジュールを簡単にまとめてみました。今後また使う可能性もあるので、自分の備忘録も兼ねて。 事前準備としてアプリ作成Yeomanを使いアプ">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/angularJS_tips/gmap.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/angularJS_tips/li.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/angularJS_tips/click.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/angularJS_tips/modal.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/angularJS_tips/after.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/angularJS_tips/modal_lg.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/angularJS_tips/modal_sm.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.126Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AngularJS で Google マップとか使ってみた">
+<meta name="twitter:description" content="4月にこの記事を読んで、4時半起きを実践してみているのですが、最近は起きるとまだあたりが暗いんですよね。もう秋だなぁ…と実感する日々の佐々木です。   今回は、AngularJS を使っていて、「これ、どうやってやるんだろう」って思ったことや、使ってみて便利だったモジュールを簡単にまとめてみました。今後また使う可能性もあるので、自分の備忘録も兼ねて。 事前準備としてアプリ作成Yeomanを使いアプ">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/angularJS_tips/gmap.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-angularjs-tips" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2014-09-02T22:28:33.000Z" itemprop="datePublished">2014-09-02</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2014/09/02/angularjs-tips/">AngularJS で Google マップとか使ってみた</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2014/09/02/angularjs-tips/" data-text="AngularJS で Google マップとか使ってみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2014/09/02/angularjs-tips/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2014/09/02/angularjs-tips/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2014/09/02/angularjs-tips/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2014/09/02/angularjs-tips/" class="hatena-bookmark-button" data-hatena-bookmark-title="AngularJS で Google マップとか使ってみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>4月に<a href="http://ameblo.jp/lagrange-y/entry-11828592314.html" target="_blank" rel="noopener">この記事</a>を読んで、4時半起きを実践してみているのですが、最近は起きるとまだあたりが暗いんですよね。<br>もう秋だなぁ…と実感する日々の佐々木です。  </p>
+<p>今回は、AngularJS を使っていて、「これ、どうやってやるんだろう」って思ったことや、使ってみて便利だったモジュールを簡単にまとめてみました。<br>今後また使う可能性もあるので、自分の備忘録も兼ねて。</p>
+<h4 id="事前準備としてアプリ作成"><a href="#事前準備としてアプリ作成" class="headerlink" title="事前準備としてアプリ作成"></a>事前準備としてアプリ作成</h4><p>Yeomanを使いアプリを作成します。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yo angular sample</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="google-マップを使う"><a href="#Google-マップを使う" class="headerlink" title="Google マップを使う"></a>Google マップを使う</h3><p>AngularJS で Google マップを使いたい場合です。<br>今回は、<a href="https://github.com/angular-ui/angular-google-maps" target="_blank" rel="noopener">angular-google-maps</a> を使います。<br><a href="https://angular-ui.github.io/angular-google-maps/#!/use" target="_blank" rel="noopener">Quickstart</a> を参考に。</p>
+<h4 id="bower-でインストール"><a href="#bower-でインストール" class="headerlink" title="bower でインストール"></a>bower でインストール</h4><p>bower で angular-google-maps をインストールします。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bower install angular-google-maps --save</span><br></pre></td></tr></table></figure>
+<h4 id="google-maps-api-v3-を-html-に入れる"><a href="#Google-Maps-API-v3-を-html-に入れる" class="headerlink" title="Google Maps API v3 を html に入れる"></a>Google Maps API v3 を html に入れる</h4><p>index.html や テンプレート html に Google Maps API を記載します。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">'https://maps.googleapis.com/maps/api/js?sensor=false'</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">'/path/to/lodash.underscore[.min].js'</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">'/path/to/angular-google-maps[.min].js'</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="appjs-に-google-maps-を入れる"><a href="#app-js-に-google-maps-を入れる" class="headerlink" title="app.js に google-maps を入れる"></a>app.js に google-maps を入れる</h4><p>google-maps モジュールを app.js に入れます。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi app/scripts/app.js</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @ngdoc overview</span></span><br><span class="line"><span class="comment"> * @name sampleApp</span></span><br><span class="line"><span class="comment"> * @description</span></span><br><span class="line"><span class="comment"> * # sampleApp</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Main module of the application.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">angular</span><br><span class="line">  .module(<span class="string">'sampleApp'</span>, [</span><br><span class="line">    <span class="string">'ngAnimate'</span>,</span><br><span class="line">    <span class="string">'ngCookies'</span>,</span><br><span class="line">    <span class="string">'ngResource'</span>,</span><br><span class="line">    <span class="string">'ngRoute'</span>,</span><br><span class="line">    <span class="string">'ngSanitize'</span>,</span><br><span class="line">    <span class="string">'ngTouch'</span>,</span><br><span class="line">    <span class="string">'google-maps'</span> <span class="comment">//ここに追加</span></span><br><span class="line">  ])</span><br><span class="line">  .config(<span class="function"><span class="keyword">function</span> (<span class="params">$routeProvider</span>) </span>&#123;</span><br><span class="line">    $routeProvider</span><br><span class="line">      .when(<span class="string">'/'</span>, &#123;</span><br><span class="line">        templateUrl: <span class="string">'views/main.html'</span>,</span><br><span class="line">        controller: <span class="string">'MainCtrl'</span></span><br><span class="line">      &#125;)</span><br><span class="line">      .when(<span class="string">'/about'</span>, &#123;</span><br><span class="line">        templateUrl: <span class="string">'views/about.html'</span>,</span><br><span class="line">        controller: <span class="string">'AboutCtrl'</span></span><br><span class="line">      &#125;)</span><br><span class="line">      .otherwise(&#123;</span><br><span class="line">        redirectTo: <span class="string">'/'</span></span><br><span class="line">      &#125;);</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<h4 id="コントローラーの-scope-に-map-オブジェクトを書く"><a href="#コントローラーの-scope-に-map-オブジェクトを書く" class="headerlink" title="コントローラーの scope に map オブジェクトを書く"></a>コントローラーの scope に map オブジェクトを書く</h4><p>下記のように、緯度経度の情報などを設定します。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi app/scripts/controllers/main.js</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @ngdoc function</span></span><br><span class="line"><span class="comment"> * @name sampleApp.controller:MainCtrl</span></span><br><span class="line"><span class="comment"> * @description</span></span><br><span class="line"><span class="comment"> * # MainCtrl</span></span><br><span class="line"><span class="comment"> * Controller of the sampleApp</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">angular.module(<span class="string">'sampleApp'</span>)</span><br><span class="line">  .controller(<span class="string">'MainCtrl'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">$scope</span>) </span>&#123;</span><br><span class="line">    $scope.map = &#123;</span><br><span class="line">        center: &#123;</span><br><span class="line">            latitude: <span class="number">35.681382</span>,</span><br><span class="line">            longitude: <span class="number">139.766084</span></span><br><span class="line">        &#125;,</span><br><span class="line">        zoom: <span class="number">14</span></span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<p>必要があれば、他にもオプションが指定できるので、こちらの <a href="https://angular-ui.github.io/angular-google-maps/#!/api" target="_blank" rel="noopener">API documentation</a> を参考に設定してみてください。<br>例えば地図上にピンを立てたいときには、marker の設定が必要です。</p>
+<h4 id="html-に-google-map-の要素を記載する"><a href="#html-に-google-map-の要素を記載する" class="headerlink" title="html に google-map の要素を記載する"></a>html に google-map の要素を記載する</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi app/views/main.html</span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">google-map</span> <span class="attr">center</span>=<span class="string">"map.center"</span> <span class="attr">zoom</span>=<span class="string">"map.zoom"</span>&gt;</span><span class="tag">&lt;/<span class="name">google-map</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="css-に設定を追記"><a href="#css-に設定を追記" class="headerlink" title="css に設定を追記"></a>css に設定を追記</h4><p>css に設定を追加します。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi app/styles/main.css</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.angular-google-map-container</span> &#123; <span class="attribute">height</span>: <span class="number">400px</span>; &#125;</span><br></pre></td></tr></table></figure>
+<p>結果。どーん。東京駅です。なんとなく。<br><img src="/images/angularJS_tips/gmap.png" alt="gmap"></p>
+<hr>
+<h3 id="カスタムフィルターを使って-ng-repeat-のループ内で指定した数ごとに-div-で囲みたい"><a href="#カスタムフィルターを使って、ng-repeat-のループ内で指定した数ごとに-div-で囲みたい" class="headerlink" title="カスタムフィルターを使って、ng-repeat のループ内で指定した数ごとに div で囲みたい"></a>カスタムフィルターを使って、ng-repeat のループ内で指定した数ごとに div で囲みたい</h3><p>ng-repeat を使ってループすると、</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">ng-repeat</span>=<span class="string">"item in ['あいうえお', 'かきくけこ', 'さしすせそ', 'たちつてと']"</span>&gt;</span>｛｛ item ｝｝<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+###### * *ブログシステム上で、{{}} が変数と解釈されてしまうため、{{}} を全角で表記しています。*
+
+<p>通常はこんな感じになるかと思います。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>あいうえお<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>かきくけこ<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>さしすせそ<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>たちつてと<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>これを、例えばこういう風にしたい場合です。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">      あいうえお</span><br><span class="line">      かきくけこ</span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">      さしすせそ</span><br><span class="line">      たちつてと</span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>【参考URL】<a href="http://stackoverflow.com/questions/21644493/how-to-split-the-ng-repeat-data-with-three-columns-using-bootstrap" target="_blank" rel="noopener">how to split the ng-repeat data with three columns using bootstrap</a></p>
+<p>上記のURLを参考にやってみました。</p>
+<h4 id="フィルター作成"><a href="#フィルター作成" class="headerlink" title="フィルター作成"></a>フィルター作成</h4><p>Yeomanを使いフィルターを作成。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yo angular:filter partition</span><br></pre></td></tr></table></figure></p>
+<h4 id="フィルターを編集"><a href="#フィルターを編集" class="headerlink" title="フィルターを編集"></a>フィルターを編集</h4><p>【参考URL】のフィルターを partition.js に書きます。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi app/scripts/filters/partition.js</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @ngdoc filter</span></span><br><span class="line"><span class="comment"> * @name sampleApp.filter:partition</span></span><br><span class="line"><span class="comment"> * @function</span></span><br><span class="line"><span class="comment"> * @description</span></span><br><span class="line"><span class="comment"> * # partition</span></span><br><span class="line"><span class="comment"> * Filter in the sampleApp.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">angular.module(<span class="string">'sampleApp'</span>)</span><br><span class="line">  .filter(<span class="string">'partition'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> cache = &#123;&#125;;</span><br><span class="line">    <span class="keyword">var</span> filter = <span class="function"><span class="keyword">function</span>(<span class="params">arr, size</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">if</span> (!arr) &#123; <span class="keyword">return</span>; &#125;</span><br><span class="line">      <span class="keyword">var</span> newArr = [];</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">var</span> i=<span class="number">0</span>; i&lt;arr.length; i+=size) &#123;</span><br><span class="line">        newArr.push(arr.slice(i, i+size));</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">var</span> arrString = <span class="built_in">JSON</span>.stringify(arr);</span><br><span class="line">      <span class="keyword">var</span> fromCache = cache[arrString+size];</span><br><span class="line">      <span class="keyword">if</span> (<span class="built_in">JSON</span>.stringify(fromCache) === <span class="built_in">JSON</span>.stringify(newArr)) &#123;</span><br><span class="line">        <span class="keyword">return</span> fromCache;</span><br><span class="line">      &#125;</span><br><span class="line">      cache[arrString+size] = newArr;</span><br><span class="line">      <span class="keyword">return</span> newArr;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">return</span> filter;</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<p>処理の内容としては、渡した配列から指定した要素数で配列にまとめなおして作成してくれるものです。</p>
+<h4 id="html-編集"><a href="#html-編集" class="headerlink" title="html 編集"></a>html 編集</h4><p>先ほど作成した partition フィルターをまとめたい要素数を引数にしてフィルターの設定します。</p>
+<p>li の中に、2つずつ入れたいのでここでは、2 を設定。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;ul&gt;</span><br><span class="line">  &lt;li ng-repeat=&quot;rows in [&apos;あいうえお&apos;, &apos;かきくけこ&apos;, &apos;さしすせそ&apos;, &apos;たちつてと&apos;]| partition:2&quot;&gt;</span><br><span class="line">    &lt;div ng-repeat=&quot;item in rows&quot;&gt;｛｛ item ｝｝&lt;/div&gt;</span><br><span class="line">  &lt;/li&gt;</span><br><span class="line">&lt;/ul&gt;</span><br></pre></td></tr></table></figure>
+
+###### * *ブログシステム上で、{{}} が変数と解釈されてしまうため、{{}} を全角で表記しています。*
+
+<p>結果。</p>
+<p><img src="/images/angularJS_tips/li.png" alt="li"></p>
+<hr>
+<h3 id="モーダルを使いたい"><a href="#モーダルを使いたい" class="headerlink" title="モーダルを使いたい"></a>モーダルを使いたい</h3><p>モーダルを使いたい場合、ui.bootstrap を使って実装します。</p>
+<h4 id="uibootstrap-をインストール"><a href="#ui-bootstrap-をインストール" class="headerlink" title="ui.bootstrap をインストール"></a>ui.bootstrap をインストール</h4><p>まずは bower を使って、ui.bootstrap をインストールします。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bower install angular-bootstrap --save</span><br></pre></td></tr></table></figure></p>
+<h4 id="appjs-に-uibootstrap-追加"><a href="#app-js-に、ui-bootstrap-追加" class="headerlink" title="app.js に、ui.bootstrap 追加"></a>app.js に、ui.bootstrap 追加</h4><p>app.js に ui.bootstrap を追加します。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi app/scripts/app.js</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @ngdoc overview</span></span><br><span class="line"><span class="comment"> * @name sampleApp</span></span><br><span class="line"><span class="comment"> * @description</span></span><br><span class="line"><span class="comment"> * # sampleApp</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Main module of the application.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">angular</span><br><span class="line">  .module(<span class="string">'sampleApp'</span>, [</span><br><span class="line">    <span class="string">'ngAnimate'</span>,</span><br><span class="line">    <span class="string">'ngCookies'</span>,</span><br><span class="line">    <span class="string">'ngResource'</span>,</span><br><span class="line">    <span class="string">'ngRoute'</span>,</span><br><span class="line">    <span class="string">'ngSanitize'</span>,</span><br><span class="line">    <span class="string">'ngTouch'</span>,</span><br><span class="line">    <span class="string">'ui.bootstrap'</span> <span class="comment">//ここに追加</span></span><br><span class="line">  ])</span><br><span class="line">  .config(<span class="function"><span class="keyword">function</span> (<span class="params">$routeProvider</span>) </span>&#123;</span><br><span class="line">    $routeProvider</span><br><span class="line">      .when(<span class="string">'/'</span>, &#123;</span><br><span class="line">        templateUrl: <span class="string">'views/main.html'</span>,</span><br><span class="line">        controller: <span class="string">'MainCtrl'</span></span><br><span class="line">      &#125;)</span><br><span class="line">      .when(<span class="string">'/about'</span>, &#123;</span><br><span class="line">        templateUrl: <span class="string">'views/about.html'</span>,</span><br><span class="line">        controller: <span class="string">'AboutCtrl'</span></span><br><span class="line">      &#125;)</span><br><span class="line">      .otherwise(&#123;</span><br><span class="line">        redirectTo: <span class="string">'/'</span></span><br><span class="line">      &#125;);</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<h4 id="モーダルインスタンス管理用のコントローラー作成"><a href="#モーダルインスタンス管理用のコントローラー作成" class="headerlink" title="モーダルインスタンス管理用のコントローラー作成"></a>モーダルインスタンス管理用のコントローラー作成</h4><p>モーダルインスタンス用のコントローラーを作成します。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yo angular:controller my_modal</span><br></pre></td></tr></table></figure></p>
+<h4 id="モーダルインスタンス管理用のコントローラー-編集"><a href="#モーダルインスタンス管理用のコントローラー-編集" class="headerlink" title="モーダルインスタンス管理用のコントローラー 編集"></a>モーダルインスタンス管理用のコントローラー 編集</h4><p>先ほど作成したモーダルインスタンス用のコントローラーを編集します。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi app/scripts/controllers/my_modal.js</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @ngdoc function</span></span><br><span class="line"><span class="comment"> * @name sampleApp.controller:MyModalCtrl</span></span><br><span class="line"><span class="comment"> * @description</span></span><br><span class="line"><span class="comment"> * # MyModalCtrl</span></span><br><span class="line"><span class="comment"> * Controller of the sampleApp</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">angular.module(<span class="string">'sampleApp'</span>)</span><br><span class="line">  .controller(<span class="string">'MyModalCtrl'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">$scope, $modalInstance, items</span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">    $scope.items = items;</span><br><span class="line">    $scope.selected = &#123;</span><br><span class="line">      item: $scope.items[<span class="number">0</span>]</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    $scope.ok = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">      $modalInstance.close($scope.selected.item);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    $scope.cancel = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">      $modalInstance.dismiss(<span class="string">'cancel'</span>);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<p>$modalInstance と 呼び出し元から渡ってくる items を引数に持っているのに注意して下さい。<br>OK ボタンを押したときのファンクションと、キャンセルボタンを押したときのファンクションを定義します。<br>OK ボタンを押したときには、選択されている item を呼び出し元へ引き渡します。  </p>
+<h4 id="モーダル用のテンプレート-html-作成"><a href="#モーダル用のテンプレート-html-作成" class="headerlink" title="モーダル用のテンプレート html 作成"></a>モーダル用のテンプレート html 作成</h4><p>モーダルのテンプレート html を作成。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yo angular:view my_modal</span><br></pre></td></tr></table></figure></p>
+<h4 id="モーダル用テンプレート-html-編集"><a href="#モーダル用テンプレート-html-編集" class="headerlink" title="モーダル用テンプレート html 編集"></a>モーダル用テンプレート html 編集</h4><p>先ほど作成したテンプレート html を編集。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi app/views/my_modal.html</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"modal-header"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h3</span> <span class="attr">class</span>=<span class="string">"modal-title"</span>&gt;</span>モーダルタイトル<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"modal-body"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">li</span> <span class="attr">ng-repeat</span>=<span class="string">"item in items"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">a</span> <span class="attr">ng-click</span>=<span class="string">"selected.item = item"</span>&gt;</span>｛｛ item ｝｝<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line">    選択中: <span class="tag">&lt;<span class="name">b</span>&gt;</span>｛｛ selected.item ｝｝<span class="tag">&lt;/<span class="name">b</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"modal-footer"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"btn btn-primary"</span> <span class="attr">ng-click</span>=<span class="string">"ok()"</span>&gt;</span>OK<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"btn btn-warning"</span> <span class="attr">ng-click</span>=<span class="string">"cancel()"</span>&gt;</span>Cancel<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+###### * *ブログシステム上で、{{}} が変数と解釈されてしまうため、{{}} を全角で表記しています。*
+
+<h4 id="モーダルの呼び出し元のコントローラー編集"><a href="#モーダルの呼び出し元のコントローラー編集" class="headerlink" title="モーダルの呼び出し元のコントローラー編集"></a>モーダルの呼び出し元のコントローラー編集</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi app/scripts/controllers/main.js</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @ngdoc function</span></span><br><span class="line"><span class="comment"> * @name sampleApp.controller:MainCtrl</span></span><br><span class="line"><span class="comment"> * @description</span></span><br><span class="line"><span class="comment"> * # MainCtrl</span></span><br><span class="line"><span class="comment"> * Controller of the sampleApp</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">angular.module(<span class="string">'sampleApp'</span>)</span><br><span class="line">  .controller(<span class="string">'MainCtrl'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">$scope, $modal, $log</span>) </span>&#123;</span><br><span class="line">    $scope.items = [<span class="string">'111111'</span>, <span class="string">'222222'</span>, <span class="string">'333333'</span>];</span><br><span class="line"></span><br><span class="line">    $scope.open = <span class="function"><span class="keyword">function</span> (<span class="params">size</span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">var</span> modalInstance = $modal.open(&#123;</span><br><span class="line">        templateUrl: <span class="string">'views/my_modal.html'</span>,</span><br><span class="line">        controller: <span class="string">'MyModalCtrl'</span>,</span><br><span class="line">        size: size,</span><br><span class="line">        resolve: &#123;</span><br><span class="line">          items: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> $scope.items;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">      modalInstance.result.then(<span class="function"><span class="keyword">function</span> (<span class="params">selectedItem</span>) </span>&#123;</span><br><span class="line">        $scope.selected = selectedItem;</span><br><span class="line">      &#125;, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        $log.info(<span class="string">'Modal dismissed at: '</span> + <span class="keyword">new</span> <span class="built_in">Date</span>());</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<p>$modal を引数に設定しているところに注意です。<br>先ほど作成した、モーダルインスタンス管理用のコントローラー (MyModalCtrl) と、テンプレート html (views/my_modal.html) を指定します。<br>ここで、注意。<br><a href="http://angular-ui.github.io/bootstrap/" target="_blank" rel="noopener">UI Bootstrap の公式ページのドキュメント</a> では、コントローラー名に、シングルクォーテーションが入っていないのですが、それにならって同じように書いてしまうと、エラーになります。<br><a href="http://stackoverflow.com/questions/19432592/ui-bootstrap-modals-controller-is-not-defined" target="_blank" rel="noopener">ui bootstrap modal’s controller ‘is not defined’</a><br>この解決策を参考に、コントローラー名はシングルクォーテーションで囲んだら行けました。  </p>
+<h4 id="モーダルの呼び出しのテンプレート-html-編集"><a href="#モーダルの呼び出しのテンプレート-html-編集" class="headerlink" title="モーダルの呼び出しのテンプレート html 編集"></a>モーダルの呼び出しのテンプレート html 編集</h4><p>モーダルの呼び出し元のテンプレート html を編集します。<br>先ほどコントローラーで定義した、open() に、引数でサイズ（lg と sm）を渡すことで描画するモーダルのサイズを変更できます。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi app/views/main.html</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"btn btn-default"</span> <span class="attr">ng-click</span>=<span class="string">"open()"</span>&gt;</span>通常<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"btn btn-default"</span> <span class="attr">ng-click</span>=<span class="string">"open('lg')"</span>&gt;</span>大きめ<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"btn btn-default"</span> <span class="attr">ng-click</span>=<span class="string">"open('sm')"</span>&gt;</span>小さめ<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">ng-show</span>=<span class="string">"selected"</span>&gt;</span>モーダルで選択された選択肢: ｛｛ selected ｝｝<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+###### * *ブログシステム上で、{{}} が変数と解釈されてしまうため、{{}} を全角で表記しています。*
+
+<p>結果。  </p>
+<ul>
+<li><p>呼び出し元<br><img src="/images/angularJS_tips/click.png" alt="click">  </p>
+</li>
+<li><p>通常のモーダル<br><img src="/images/angularJS_tips/modal.png" alt="modal">  </p>
+</li>
+<li><p>選択肢を選んだ後<br><img src="/images/angularJS_tips/after.png" alt="after"><br>「モーダルで選択された選択肢」でモーダル側で選択したものが呼び出し元にも渡ってきているのが確認できます。  </p>
+</li>
+<li><p>大きめのモーダル<br><img src="/images/angularJS_tips/modal_lg.png" alt="modal_lg">  </p>
+</li>
+<li><p>小さめのモーダル<br><img src="/images/angularJS_tips/modal_sm.png" alt="modal_sm">  </p>
+</li>
+</ul>
+<h3 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h3><p>いかがだったでしょうか。まだまだ AngularJS については、勉強することばかりで大変ですが、今後も AngularJS で使ったモジュールや、ハマった箇所などを随時ご紹介していきたいと思ってます。<br>こんな便利なモジュールがあるよ、等の情報ありましたら教えていただけると嬉しいです！</p>
+<p>今回ご紹介したような、<a href="https://mmmcorp.co.jp/services/remote_system_engineering_service/angularjs" target="_blank" rel="noopener">AngularJSなどのフレームワークを活用したフロントエンドアプリケーション開発</a>を御希望の企業様は、是非お気軽にMMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2014/09/02/angularjs-tips/" data-text="AngularJS で Google マップとか使ってみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2014/09/02/angularjs-tips/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2014/09/02/angularjs-tips/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2014/09/02/angularjs-tips/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2014/09/02/angularjs-tips/" class="hatena-bookmark-button" data-hatena-bookmark-title="AngularJS で Google マップとか使ってみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AngularJS/">AngularJS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li></ul>
+
+
+      <p class="article-footer__author">by 佐々木 悠人</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

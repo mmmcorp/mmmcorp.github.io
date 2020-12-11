@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>バズっても安心『落ちないWordPressサイト』を実現する方法 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="WordPressを運営されているみなさま。こんにちは。MMM代表 国本です。 Webサイトの運営を効率化するためにCMS(コンテンツ・マネジメント・システム)を導入されている企業は数多くあります。 オープンソース、商用含めて多くのCMS製品がある中でも「WordPress(ワードプレス)」は圧倒的なシェアを誇り、企業サイトの採用事例は枚挙に暇がありません。 企業の顔となるコーポレートサイトや、広">
+<meta name="keywords" content="クラウド,AWS,WordPress">
+<meta property="og:type" content="article">
+<meta property="og:title" content="バズっても安心『落ちないWordPressサイト』を実現する方法">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/08/20/How_to_make_a_High-Availability_WordPress_on_AWS/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="WordPressを運営されているみなさま。こんにちは。MMM代表 国本です。 Webサイトの運営を効率化するためにCMS(コンテンツ・マネジメント・システム)を導入されている企業は数多くあります。 オープンソース、商用含めて多くのCMS製品がある中でも「WordPress(ワードプレス)」は圧倒的なシェアを誇り、企業サイトの採用事例は枚挙に暇がありません。 企業の顔となるコーポレートサイトや、広">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/How_to_make_a_High-Availability_WordPress_on_AWS/AWS_shared-responsibility-model.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/How_to_make_a_High-Availability_WordPress_on_AWS/CloudFront.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/How_to_make_a_High-Availability_WordPress_on_AWS/WP_Design_01.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/How_to_make_a_High-Availability_WordPress_on_AWS/WP_Design_02.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/How_to_make_a_High-Availability_WordPress_on_AWS/WP_Design_03.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="バズっても安心『落ちないWordPressサイト』を実現する方法">
+<meta name="twitter:description" content="WordPressを運営されているみなさま。こんにちは。MMM代表 国本です。 Webサイトの運営を効率化するためにCMS(コンテンツ・マネジメント・システム)を導入されている企業は数多くあります。 オープンソース、商用含めて多くのCMS製品がある中でも「WordPress(ワードプレス)」は圧倒的なシェアを誇り、企業サイトの採用事例は枚挙に暇がありません。 企業の顔となるコーポレートサイトや、広">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/How_to_make_a_High-Availability_WordPress_on_AWS/AWS_shared-responsibility-model.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-How-to-make-a-High-Availability-WordPress-on-AWS" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-08-20T06:57:21.000Z" itemprop="datePublished">2020-08-20</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/08/20/How_to_make_a_High-Availability_WordPress_on_AWS/">バズっても安心『落ちないWordPressサイト』を実現する方法</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/08/20/How_to_make_a_High-Availability_WordPress_on_AWS/" data-text="バズっても安心『落ちないWordPressサイト』を実現する方法" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/08/20/How_to_make_a_High-Availability_WordPress_on_AWS/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/08/20/How_to_make_a_High-Availability_WordPress_on_AWS/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/08/20/How_to_make_a_High-Availability_WordPress_on_AWS/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/08/20/How_to_make_a_High-Availability_WordPress_on_AWS/" class="hatena-bookmark-button" data-hatena-bookmark-title="バズっても安心『落ちないWordPressサイト』を実現する方法" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>WordPressを運営されているみなさま。こんにちは。MMM代表 国本です。</p>
+<p>Webサイトの運営を効率化するためにCMS(コンテンツ・マネジメント・システム)を導入されている企業は数多くあります。</p>
+<p>オープンソース、商用含めて多くのCMS製品がある中でも「WordPress(ワードプレス)」は圧倒的なシェアを誇り、企業サイトの採用事例は枚挙に暇がありません。</p>
+<p>企業の顔となるコーポレートサイトや、広告と連動させたランディング・ページ(LP)、プラグインを導入したEC(Eコマース)など、WordPressの用途は多岐にわたり、これらはシステムダウンが許容されない商用サイトとして稼働が求められるケースも少なくありません。</p>
+<p>MMMでは企業用途を前提に、これまでシステムダウンが許容されないWordPressサイトを数多く設計・構築、そして運用している実績があります。</p>
+<p>そこで、今回のブログでは「落ちない企業向けWordPressサイト」を実現するための方式についてご紹介したいと思います。</p>
+<h2 id="目次"><a href="#目次" class="headerlink" title="目次"></a>目次</h2><!-- toc -->
+<ul>
+<li><a href="#企業サイトでの安定性パフォーマンスの重要性">企業サイトでの安定性・パフォーマンスの重要性</a></li>
+<li><a href="#wordpressサイトが落ちる要因">WordPressサイトが落ちる要因</a><ul>
+<li><a href="#要因1-ハードウェア障害">要因1. ハードウェア障害</a></li>
+<li><a href="#要因2-osミドルウェア障害">要因2. OS・ミドルウェア障害</a></li>
+<li><a href="#要因3-システムリソースの枯渇">要因3. システムリソースの枯渇</a></li>
+<li><a href="#要因4-悪意を持った攻撃">要因4. 悪意を持った攻撃</a></li>
+</ul>
+</li>
+<li><a href="#落ちないwordpressを実現する3つのパターン">『落ちないWordPress』を実現する3つのパターン</a><ul>
+<li><a href="#設計の前提">設計の前提</a><ul>
+<li><a href="#設計前提1-amazon-web-servicesawsを採用">設計前提1. Amazon Web Services(AWS)を採用</a></li>
+<li><a href="#設計前提2-design-for-failure-障害は発生するもの">設計前提2. 『Design for failure』 “障害は発生するもの”</a></li>
+<li><a href="#設計前提3-cdncontent-delivery-networkの活用">設計前提3. CDN(Content Delivery Network)の活用</a></li>
+</ul>
+</li>
+<li><a href="#wordpressデザインパターン">WordPressデザイン・パターン</a><ul>
+<li><a href="#パターン1-サーバー冗長化-auto-scalingオートスケーリング">パターン1. サーバー冗長化 + Auto Scaling(オートスケーリング)</a></li>
+<li><a href="#パターン2-コンテナ向けサーバーレスaws-fargate">パターン2. コンテナ向けサーバーレス(AWS Fargate)</a></li>
+<li><a href="#パターン3-wordpress静的化">パターン3. WordPress静的化</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#各パターンのメリットデメリット">各パターンのメリット・デメリット</a></li>
+<li><a href="#各パターンの比較">各パターンの比較</a></li>
+<li><a href="#落ちないwordpress-でビジネスに安心を">“落ちないWordPress” でビジネスに安心を</a></li>
+</ul>
+<!-- tocstop -->
+<h2 id="企業サイトでの安定性パフォーマンスの重要性"><a href="#企業サイトでの安定性・パフォーマンスの重要性" class="headerlink" title="企業サイトでの安定性・パフォーマンスの重要性"></a>企業サイトでの安定性・パフォーマンスの重要性</h2><p>昨今、数多くの企業がWebのテクノロジーを何かしらの形で自社のビジネスに取り入れています。</p>
+<p>企業でのWordPressの用途も</p>
+<ul>
+<li>コーポレートサイト</li>
+<li>ビジネス向け会員サイト</li>
+<li>Eコマース(EC)システム</li>
+<li>ブログ・メディア</li>
+<li>キュレーションサイト</li>
+<li>ランディングページ</li>
+</ul>
+<p>など多岐にわたっており、単なるWebサイトの役割を超え、既存顧客や潜在顧客層とダイレクトに接点を持つ重要なチャネルとなっています。</p>
+<p>その結果、企業向けWordPressでは「24時間365日スムーズに使えること」を前提に高い信頼性とパフォーマンスが求められており、アクセス集中によるパフォーマンスの劣化やシステムダウンの頻発は、ビジネス機会損失とブランドイメージ低下に直結します。</p>
+<p>よって、企業が運営するWordPressサイトでは顧客のニーズに応じて素早く対応可能な、柔軟かつ堅牢なシステムを作り上げることが重要です。</p>
+<h2 id="wordpressサイトが落ちる要因"><a href="#WordPressサイトが落ちる要因" class="headerlink" title="WordPressサイトが落ちる要因"></a>WordPressサイトが落ちる要因</h2><p>なぜ、WordPressサイトのパフォーマンス劣化やシステムダウンが発生してしまうのか？</p>
+<p>その要因を考えていきます。</p>
+<h3 id="要因1-ハードウェア障害"><a href="#要因1-ハードウェア障害" class="headerlink" title="要因1. ハードウェア障害"></a>要因1. ハードウェア障害</h3><p>オンプレミス(自社保有)やレンタルサーバー、クラウドを問わず、WordPressを動作させるサーバーOSはデーターセンター上の電源装置、ネットワーク機器、専用サーバー機やストレージ装置など様々なハードウェアが連携して動作します。</p>
+<p>これらを構成するハードウェア・パーツの劣化や物理的破損がサイトパフォーマンスへの影響やシステムダウンを引き起こすケースがあります。</p>
+<h3 id="要因2-osミドルウェア障害"><a href="#要因2-OS・ミドルウェア障害" class="headerlink" title="要因2. OS・ミドルウェア障害"></a>要因2. OS・ミドルウェア障害</h3><p>WordPressはPHPというプログラミング言語で開発されており、動作にはLinux OSやPHPが稼働するアプリケーション・Webサーバーといったミドルウェアが必要です。</p>
+<p>これらのプロセスダウンや暴走などは、WordPressサイトの障害要因になりえます。</p>
+<h3 id="要因3-システムリソースの枯渇"><a href="#要因3-システムリソースの枯渇" class="headerlink" title="要因3. システムリソースの枯渇"></a>要因3. システムリソースの枯渇</h3><p>TV放映、SNS拡散、広告によってWordPressサイトへ短時間に大量アクセス(スパイク)が発生した際に、WordPressサーバーのCPU/メモリなどのハードウェアリソースが枯渇し、パフォーマンスの劣化やシステムダウンが発生するケースがあります。</p>
+<p>また、アクセス集中時のネットワークトラフィック増大によって回線帯域を圧迫し、サイトに影響が発生するというケースも考えられます。</p>
+<h3 id="要因4-悪意を持った攻撃"><a href="#要因4-悪意を持った攻撃" class="headerlink" title="要因4. 悪意を持った攻撃"></a>要因4. 悪意を持った攻撃</h3><p>WordPressは国内外を問わず高いシェアを持っているため、攻撃対象として狙われやすいCMSです。</p>
+<p>脆弱性が公表されているバージョンのWordPressをアップデートせずに利用している企業も多く、これら脆弱性を狙った攻撃や、簡易的にセットアップされたOSやミドルウェアの設定不備を狙った攻撃事例は多数あります。</p>
+<p>加えて、これらソフトウェアやネットワーク層の攻撃以外にも、データーセンター上で稼働するサーバー機、ネットワーク装置、ストレージ装置へのハードウェアに対する悪意を持った攻撃(盗難など)も考えられます。</p>
+<p>これらの4つの要因をビジネス・リスクとして捉え、適切な対処を進めることが、WordPressサイトの安定性やパフォーマンス向上には欠かせません。</p>
+<h2 id="落ちないwordpressを実現する3つのパターン"><a href="#『落ちないWordPress』を実現する3つのパターン" class="headerlink" title="『落ちないWordPress』を実現する3つのパターン"></a>『落ちないWordPress』を実現する3つのパターン</h2><p>では、どうすればWordPressサイトのシステム・ダウンやパフォーマンス劣化を防ぎ『落ちないWordPressサイト』を実現できるのか？</p>
+<p>具体的なアプローチとして、MMMで提案している3つの企業向けWordPressデザイン・パターンをご紹介します。</p>
+<h3 id="設計の前提"><a href="#設計の前提" class="headerlink" title="設計の前提"></a>設計の前提</h3><p>初めに、全パターンで共通する設計前提を記載します。</p>
+<h4 id="設計前提1-amazon-web-servicesawsを採用"><a href="#設計前提1-Amazon-Web-Services-AWS-を採用" class="headerlink" title="設計前提1. Amazon Web Services(AWS)を採用"></a>設計前提1. Amazon Web Services(AWS)を採用</h4><p>WordPressサイトを稼働させる基盤にAWSを採用することで、自前設備やレンタルサーバーでは実現が困難であるハードウェアレイヤーでの非常に高い耐障害性や物理的セキュリティを担保します。</p>
+<p><img src="/images/How_to_make_a_High-Availability_WordPress_on_AWS/AWS_shared-responsibility-model.png" alt=""></p>
+<p>AWS採用によってハードウェアレイヤーの維持・運営をAWSに移管でき、企業は上位のレイヤーに投資・人的資源を集中できます。</p>
+<h4 id="設計前提2-design-for-failure-障害は発生するもの"><a href="#設計前提2-『Design-for-failure』-“障害は発生するもの”" class="headerlink" title="設計前提2. 『Design for failure』 “障害は発生するもの”"></a>設計前提2. 『Design for failure』 “障害は発生するもの”</h4><p>AWSではサーバーやデータベースそしてデータセンター機器を含め、システムを構成する全ての要素で「必ず障害は発生するもの」として考えます。</p>
+<p>よって、各構成要素の一部に何らかの障害が発生してもシステム全体としてサービス稼働を担保できる設計が必要です。</p>
+<p>これは『Design for failure』と呼ばれ <a href="https://media.amazonwebservices.com/AWS_Cloud_Best_Practices.pdf" target="_blank" rel="noopener">Architecting for the Cloud: Best Practices</a> としてクラウド利用のベストプラクティスとしても提唱されています。</p>
+<h4 id="設計前提3-cdncontent-delivery-networkの活用"><a href="#設計前提3-CDN-Content-Delivery-Network-の活用" class="headerlink" title="設計前提3. CDN(Content Delivery Network)の活用"></a>設計前提3. CDN(Content Delivery Network)の活用</h4><p><img src="/images/How_to_make_a_High-Availability_WordPress_on_AWS/CloudFront.png" alt=""></p>
+<p>AWSが提供するコンテンツ配信サービス『Amazon CloudFront』によって高速なキャッシュ配信を実現します。</p>
+<p>CloudFrontキャッシュ機構をWordPressサイトに適用することで、スパイクが起こってもサイトが「落ちる」「重くなる」ことを原理的に避けることが可能です。</p>
+<p><span style="font-size:80%"> ※ちなみに <a href="https://aws.amazon.com/jp/partners/find/partnerdetails/?id=001E000001Bwg3XIAR&amp;did=pa_card&amp;trk=pa_card" target="_blank" rel="noopener">MMMはAWSよりCloudFrontのサービスデリバリープログラム(AWS Service Delivery Program)認定を受けています</a> </span></p>
+<h3 id="wordpressデザインパターン"><a href="#WordPressデザイン・パターン" class="headerlink" title="WordPressデザイン・パターン"></a>WordPressデザイン・パターン</h3><p>共通する設計前提を把握した上で、次に3つのWordPressパターンを見ていきましょう。</p>
+<h4 id="パターン1-サーバー冗長化-auto-scalingオートスケーリング"><a href="#パターン1-サーバー冗長化-Auto-Scaling-オートスケーリング" class="headerlink" title="パターン1. サーバー冗長化 + Auto Scaling(オートスケーリング)"></a>パターン1. サーバー冗長化 + Auto Scaling(オートスケーリング)</h4><p><img src="/images/How_to_make_a_High-Availability_WordPress_on_AWS/WP_Design_01.png" alt=""></p>
+<p>WordPress(PHP)を稼働させる仮想サーバー(EC2)とデータベースを冗長構成とし、仮想サーバー間で共有が必要なWordPressファイルを共用ストレージ(EFS)に配備するパターン。</p>
+<p>加えて、スパイク発生時の拡張性を担保するため、仮想サーバーへAuto Scaling(オートスケーリング)というサーバー負荷をトリガーとした自動的なサーバー増減が可能な機構も導入します。</p>
+<h4 id="パターン2-コンテナ向けサーバーレスaws-fargate"><a href="#パターン2-コンテナ向けサーバーレス-AWS-Fargate" class="headerlink" title="パターン2. コンテナ向けサーバーレス(AWS Fargate)"></a>パターン2. コンテナ向けサーバーレス(AWS Fargate)</h4><p><img src="/images/How_to_make_a_High-Availability_WordPress_on_AWS/WP_Design_02.png" alt=""></p>
+<p>WordPressを仮想サーバーではなく「コンテナ(Docker)」技術を用いて実行させるパターン。</p>
+<p>コンテナの採用により仮想サーバーと比較して、リソース利用の効率化、より柔軟性の高いインフラを実現し、スパイク時のオートスケーリングの対応速度や耐障害性を引き上げることができます。</p>
+<h4 id="パターン3-wordpress静的化"><a href="#パターン3-WordPress静的化" class="headerlink" title="パターン3. WordPress静的化"></a>パターン3. WordPress静的化</h4><p><img src="/images/How_to_make_a_High-Availability_WordPress_on_AWS/WP_Design_03.png" alt=""></p>
+<p>通常のWordPressは動作環境として「PHPが実行できる動的Webサーバー」が必要です。</p>
+<p>PHPが実行できるWebサーバーによって、サイト閲覧者がWordPressサイトへアクセスする度にリアルタイム(動的)にページを生成してブラウザに表示する仕組みとなっています。</p>
+<p>一方この静的化では、WordPressサイトのページ・コンテンツを専用のプラグインで事前に生成させ、専用のWebサーバーに配置しておくことでリアルタイムでのページ生成処理を不要とします。</p>
+<p>よって、閲覧者のアクセスによる負荷を軽減でき、かつ静的Web環境(CloudFront + S3)はAWSがスパイク時の拡張含めて管理するため、非常に堅牢で安定したパフォーマンスを実現できます。</p>
+<h2 id="各パターンのメリットデメリット"><a href="#各パターンのメリット・デメリット" class="headerlink" title="各パターンのメリット・デメリット"></a>各パターンのメリット・デメリット</h2><p>各パターンはそれぞれトレードオフがあり、特性と制約を把握した上で、自社のWordPressサイトにフィットする方式を選択する必要があります。</p>
+<table>
+<thead>
+<tr>
+<th>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</th>
+<th>メリット</th>
+<th>デメリット(制約)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>パターン1.<br>サーバー冗長化&emsp;</td>
+<td>一般的な仮想サーバーベースのため、WordPress利用時の制約がなく、他のVPSやオンプレミスからの移行が容易&emsp;</td>
+<td>OSやミドルウェアのアップデート運用が必要となり、運用工数・コストが他パターンと比較して高くなる。また、スパイク発生時のスケーリング(仮想サーバー増減)が最も遅い</td>
+</tr>
+<tr>
+<td>パターン2.<br>コンテナ&emsp;</td>
+<td>仮想サーバー同様にWordPress利用時の制約がない。仮想サーバーよりスケーリングが速く、かつコンテナ運用をAWSに移管できるため、運用コストを抑えられる</td>
+<td>Dockerコンテナ技術の習得が必要(学習コストが発生する)</td>
+</tr>
+<tr>
+<td>パターン3.<br>静的化&emsp;</td>
+<td>3パターンの中で最も堅牢性が高い。静的コンテンツ運用となるためスパイク発生時もパフォーマンス劣化が発生しづらい。</td>
+<td>閲覧者がアクセスするWebサーバーではPHPが動作しないため、動的処理が必要なプラグインやカスタマイズしているWordPressサイトは適用できないケースがある</td>
+</tr>
+</tbody>
+</table>
+<h2 id="各パターンの比較"><a href="#各パターンの比較" class="headerlink" title="各パターンの比較"></a>各パターンの比較</h2><ol>
+<li>耐障害性: <br>障害発生時にWordPress機能の制限やパフォーマンス劣化なくサイトを継続できる</li>
+<li>パフォーマンス: <br>WordPressサイトのパフォーマンス性能</li>
+<li>自由度(カスタマイズ性): <br>WordPressプラグインや独自カスタマイズの自由度</li>
+<li>拡張性(スケーラビリティ): <br>アクセスニーズに応じたシステムリソースの柔軟な増減</li>
+<li>トータルコスト(TCO): <br>WordPressサイトを運営し続けるにあたり発生する管理維持を含めた総コスト</li>
+<li>セキュリティ: <br>WordPressサイトに対する攻撃リスク</li>
+</ol>
+<p>この6つの軸でパターンを比較してみます。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:center">1.耐障害性&emsp;</th>
+<th style="text-align:center">2.パフォーマンス&emsp;</th>
+<th style="text-align:center">3.自由度&emsp;</th>
+<th style="text-align:center">4.拡張性&emsp;</th>
+<th style="text-align:center">5.トータルコスト&emsp;</th>
+<th style="text-align:center">6.セキュリティ&emsp;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>パターン1. <br> サーバー冗長化</td>
+<td style="text-align:center">◯</td>
+<td style="text-align:center">◯</td>
+<td style="text-align:center">◎</td>
+<td style="text-align:center">△</td>
+<td style="text-align:center">△</td>
+<td style="text-align:center">△</td>
+</tr>
+<tr>
+<td>パターン2. <br> コンテナ</td>
+<td style="text-align:center">◯</td>
+<td style="text-align:center">◯</td>
+<td style="text-align:center">◎</td>
+<td style="text-align:center">◯</td>
+<td style="text-align:center">◯</td>
+<td style="text-align:center">◯</td>
+</tr>
+<tr>
+<td>パターン3. <br> 静的化</td>
+<td style="text-align:center">◎</td>
+<td style="text-align:center">◎</td>
+<td style="text-align:center">△</td>
+<td style="text-align:center">◎</td>
+<td style="text-align:center">◎</td>
+<td style="text-align:center">◎</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p>MMMでは動的処理やプラグインが不要(もしくは少ない)ランディング・ページ(LP)やキュレーションメディアサイト、コーポレートサイト、ブログメディアなどでは、コストを抑えつつ、高い耐障害性能と拡張性を持つ静的化パターンを積極的に採用しています。</p>
+<p>WordPressサイト上で動的な処理が必須となるEコマース(EC)システムや独自のPHPを稼働させている会員制サイトでは、事前にアセスメントを実施した上で、パフォーマンスと拡張性、コストを比較軸にコンテナパターン or サーバー冗長化パターンを選定しています。</p>
+<h2 id="落ちないwordpress-でビジネスに安心を"><a href="#“落ちないWordPress”-でビジネスに安心を" class="headerlink" title="“落ちないWordPress” でビジネスに安心を"></a>“落ちないWordPress” でビジネスに安心を</h2><p>MMMではご紹介した3つのパターンを軸に『企業用途の落ちないWordPress』に関して豊富な実績と経験があります。</p>
+<p>一部ですが公開事例として</p>
+<ul>
+<li><a href="https://mmmcorp.co.jp/case/kabaya/" target="_blank" rel="noopener">日本カバヤ・オハヨーホールディングス株式会社様</a></li>
+<li><a href="https://mmmcorp.co.jp/case/colorsmagazine/" target="_blank" rel="noopener">株式会社カラーズマガジン</a></li>
+<li><a href="https://mmmcorp.co.jp/case/mikuru/" target="_blank" rel="noopener">株式会社美来</a></li>
+</ul>
+<p>このようにお客様からも高い評価をいただいております。</p>
+<p>来月9月まで <a href="https://mmmcorp.co.jp/service/static-wordpress" target="_blank" rel="noopener">WordPress高性能化</a> として「落ちないWordPressサイト」構築に特化したソリューションのキャンペーンも行っておりますので <a href="https://mmmcorp.co.jp/inquiry" target="_blank" rel="noopener">株式会社MMMお問い合わせページ</a> からどうぞお気軽にご相談ください。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/08/20/How_to_make_a_High-Availability_WordPress_on_AWS/" data-text="バズっても安心『落ちないWordPressサイト』を実現する方法" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/08/20/How_to_make_a_High-Availability_WordPress_on_AWS/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/08/20/How_to_make_a_High-Availability_WordPress_on_AWS/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/08/20/How_to_make_a_High-Availability_WordPress_on_AWS/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/08/20/How_to_make_a_High-Availability_WordPress_on_AWS/" class="hatena-bookmark-button" data-hatena-bookmark-title="バズっても安心『落ちないWordPressサイト』を実現する方法" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WordPress/">WordPress</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/クラウド/">クラウド</a></li></ul>
+
+
+      <p class="article-footer__author">by 国本 廷宣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

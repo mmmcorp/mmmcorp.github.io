@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Docker で Step Functions Local の実行環境を構築する | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="最近、車を購入したので、色々なところに遠出をしています。エンジニアの内山です。 今回は、Step Functions をローカルPC内で実行する環境の構築について、ご紹介します。 概要Step Functions は、複数の Lambda 関数を組み合わせて機能を実装できるようにするサービスです。ループや分岐などのロジックを組むことができます。ロジックが複雑になってくると、ローカルPCで動作確認し">
+<meta name="keywords" content="AWS,Step Functions,AWS SAM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker で Step Functions Local の実行環境を構築する">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2019/07/31/step_functions_local/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="最近、車を購入したので、色々なところに遠出をしています。エンジニアの内山です。 今回は、Step Functions をローカルPC内で実行する環境の構築について、ご紹介します。 概要Step Functions は、複数の Lambda 関数を組み合わせて機能を実装できるようにするサービスです。ループや分岐などのロジックを組むことができます。ロジックが複雑になってくると、ローカルPCで動作確認し">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/uchiko/step-functions-local/st.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.162Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker で Step Functions Local の実行環境を構築する">
+<meta name="twitter:description" content="最近、車を購入したので、色々なところに遠出をしています。エンジニアの内山です。 今回は、Step Functions をローカルPC内で実行する環境の構築について、ご紹介します。 概要Step Functions は、複数の Lambda 関数を組み合わせて機能を実装できるようにするサービスです。ループや分岐などのロジックを組むことができます。ロジックが複雑になってくると、ローカルPCで動作確認し">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/uchiko/step-functions-local/st.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-step-functions-local" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2019-07-31T10:14:39.000Z" itemprop="datePublished">2019-07-31</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2019/07/31/step_functions_local/">Docker で Step Functions Local の実行環境を構築する</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/07/31/step_functions_local/" data-text="Docker で Step Functions Local の実行環境を構築する" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/07/31/step_functions_local/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/07/31/step_functions_local/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/07/31/step_functions_local/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/07/31/step_functions_local/" class="hatena-bookmark-button" data-hatena-bookmark-title="Docker で Step Functions Local の実行環境を構築する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近、車を購入したので、色々なところに遠出をしています。エンジニアの内山です。</p>
+<p>今回は、Step Functions をローカルPC内で実行する環境の構築について、ご紹介します。</p>
+<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>Step Functions は、複数の Lambda 関数を組み合わせて機能を実装できるようにするサービスです。<br>ループや分岐などのロジックを組むことができます。<br>ロジックが複雑になってくると、ローカルPCで動作確認したいと思うようになってきます。</p>
+<p>ローカルPCで動作させるために Step Functions Local というツールが公式で用意されています。<br>今回は、Docker と Step Functions Local を用いて、動作チェック環境をローカルPC(Mac)上に構築する方法をご紹介します。</p>
+<p>さっさと試したい方は以下のリポジトリをご参照ください。</p>
+<p><a href="https://github.com/memememomo/step-functions-local-test" target="_blank" rel="noopener">https://github.com/memememomo/step-functions-local-test</a></p>
+<h2 id="構成"><a href="#構成" class="headerlink" title="構成"></a>構成</h2><p><img src="/images/uchiko/step-functions-local/st.png" alt=""></p>
+<p>上記のような環境を構築します。設定するコンテナとしては以下の二種類があります。</p>
+<ul>
+<li>SAM Local用のコンテナ</li>
+<li>Step Functions用のコンテナ</li>
+</ul>
+<p>SAM Local は、ローカルPC上で Lambda 関数を実行するツールです。Lambda 関数の実行時には、実行用のコンテナを作成します。注意点として、<strong>Docker Compose で作成したネットワーク(net)を設定する必要がある</strong> ということです。このことについては後述します。</p>
+<p>また、図には含めていませんが、Goプログラムをビルドする用のコンテナも作成しています。</p>
+<h2 id="各-dockerfile-の設定"><a href="#各-Dockerfile-の設定" class="headerlink" title="各 Dockerfile の設定"></a>各 Dockerfile の設定</h2><p>各コンテナ用の Dockerfile を設定していきます。</p>
+<h3 id="sam-local-用の-dockerfile"><a href="#SAM-Local-用の-Dockerfile" class="headerlink" title="SAM Local 用の Dockerfile"></a>SAM Local 用の Dockerfile</h3><p>SAM Local 用のコンテナでは、Python がインストールされているイメージを使用します。<br>Dockerfile では、SAM Local 用のコマンド(aws-sam-cli)をインストールするように設定しています。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Dockerfile_sam</span></span><br><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.5</span>-alpine</span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> PYTHONUSERBASE=/usr/local</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apk add --no-cache py-pip git bash gcc libc-dev &amp;&amp; \</span></span><br><span class="line"><span class="bash">    pip install --upgrade pip &amp;&amp; \</span></span><br><span class="line"><span class="bash">    pip install --user awscli==1.16.76 aws-sam-cli==0.9.0</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">WORKDIR /var/opt</span></span><br><span class="line"><span class="bash">COPY . /var/opt/</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">EXPOSE 3001</span></span><br></pre></td></tr></table></figure>
+<h3 id="step-functions-local-用の-dockerfile"><a href="#Step-Functions-Local-用の-Dockerfile" class="headerlink" title="Step Functions Local 用の Dockerfile"></a>Step Functions Local 用の Dockerfile</h3><p>Step Functions Local 用のコンテナでは、公式で用意されているイメージを使用します。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Dockerfile_stepfunctions</span></span><br><span class="line"><span class="keyword">FROM</span> amazon/aws-stepfunctions-local</span><br><span class="line"></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">8083</span></span><br></pre></td></tr></table></figure>
+<h3 id="goプログラムビルド用の-dockerfile"><a href="#Goプログラムビルド用の-Dockerfile" class="headerlink" title="Goプログラムビルド用の Dockerfile"></a>Goプログラムビルド用の Dockerfile</h3><p>Goプログラムビルド用のコンテナでは、Goがインストールされているイメージを使用します。<br>Dockerfile では、必要なツールをインストールするように設定しています。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Dockerfile_go</span></span><br><span class="line"><span class="keyword">FROM</span> golang:<span class="number">1.11</span>.<span class="number">5</span>-alpine</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apk add --no-cache git bash make curl gcc libc-dev openssl &amp;&amp; \</span></span><br><span class="line"><span class="bash">    go get -u github.com/golang/dep/cmd/dep</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">WORKDIR /go/src/step-functions-local-test</span></span><br><span class="line"><span class="bash">COPY . /go/src/step-functions-local-test</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">RUN dep ensure</span></span><br><span class="line"><span class="bash">RUN <span class="built_in">cd</span> ./handlers/helloworld/ &amp;&amp; CGO_ENABLED=0 GOOS=linux go build -v -installsuffix cgo -o main .</span></span><br></pre></td></tr></table></figure>
+<h2 id="各種スクリプト"><a href="#各種スクリプト" class="headerlink" title="各種スクリプト"></a>各種スクリプト</h2><p>Docker コンテナ内で実行するスクリプトを作成していきます。</p>
+<h3 id="goプログラムビルドスクリプト"><a href="#Goプログラムビルドスクリプト" class="headerlink" title="Goプログラムビルドスクリプト"></a>Goプログラムビルドスクリプト</h3><p><code>go-build.sh</code> という名前で、Goプログラムビルドスクリプトを作成します。<br>内容としては、依存モジュールのインストールとコンパイルコマンドの実行を行っています。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/env bash</span></span><br><span class="line"></span><br><span class="line">dep ensure</span><br><span class="line"><span class="built_in">cd</span> ./handlers/helloworld/ &amp;&amp; CGO_ENABLED=0 GOOS=linux go build -v -installsuffix cgo -o main .</span><br></pre></td></tr></table></figure>
+<h3 id="sam-local-起動スクリプト"><a href="#SAM-Local-起動スクリプト" class="headerlink" title="SAM Local 起動スクリプト"></a>SAM Local 起動スクリプト</h3><p><code>start-lambda.sh</code> という名前で、SAM Local を起動するスクリプトを作成します。<br>先述したとおり、<strong>Lambda関数実行用コンテナにDockerのネットワークを設定する</strong> ようにします。これが行われていないと、SAM LocalのLambdaから他のコンテナ(DynamoDB Localなど)にアクセスすることができなくなります。<br><code>--docker-network</code>オプションで、Dockerのネットワークを設定しています。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">sam <span class="built_in">local</span> start-lambda \</span><br><span class="line">  --docker-volume-basedir <span class="string">"<span class="variable">$&#123;VOLUME&#125;</span>"</span> \</span><br><span class="line">  --docker-network step-functions-local-test_net \</span><br><span class="line">  --host 0.0.0.0 \</span><br><span class="line">  --template template.yml</span><br></pre></td></tr></table></figure>
+<h2 id="lambda関数用のプログラム"><a href="#Lambda関数用のプログラム" class="headerlink" title="Lambda関数用のプログラム"></a>Lambda関数用のプログラム</h2><p><code>handlers/helloworld/main.go</code> という名前のファイルで、Lambda関数用のGoプログラムを作成します。<br>今回は、”Hello World!”という文字列を返すだけのLambda関数を実装しています。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"github.com/aws/aws-lambda-go/lambda"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">handler</span><span class="params">()</span> <span class="params">(<span class="keyword">string</span>, error)</span></span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Hello World!"</span>, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">        lambda.Start(handler)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Gopkg.toml</code> という名前のファイルで、依存モジュールを記述します。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[prune]</span></span><br><span class="line">  go-tests = true</span><br><span class="line">  unused-packages = true</span><br><span class="line"></span><br><span class="line"><span class="section">[[constraint]]</span></span><br><span class="line">  name = "github.com/aws/aws-lambda-go"</span><br><span class="line">  version = "1.2.0"</span><br></pre></td></tr></table></figure>
+<h2 id="sam-テンプレートtemplateymlの設定"><a href="#SAM-テンプレート-template-yml-の設定" class="headerlink" title="SAM テンプレート(template.yml)の設定"></a>SAM テンプレート(template.yml)の設定</h2><p>SAM Local で読み込ませるテンプレート(template.yml)を作成します。<br>“HelloWorld”という名前のLambda関数を作成し、先程作成したプログラムを実行するように設定しています。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">AWSTemplateFormatVersion:</span> <span class="string">'2010-09-09'</span></span><br><span class="line"><span class="attr">Transform:</span> <span class="attr">AWS::Serverless-2016-10-31</span></span><br><span class="line"></span><br><span class="line"><span class="attr">Globals:</span></span><br><span class="line"><span class="attr">  Function:</span></span><br><span class="line"><span class="attr">    Runtime:</span> <span class="string">go1.x</span></span><br><span class="line"><span class="attr">    Timeout:</span> <span class="number">900</span></span><br><span class="line"></span><br><span class="line"><span class="attr">Resources:</span></span><br><span class="line"><span class="attr">  HelloWorld:</span></span><br><span class="line"><span class="attr">    Properties:</span></span><br><span class="line"><span class="attr">      CodeUri:</span> <span class="string">./handlers/helloworld</span></span><br><span class="line"><span class="attr">      FunctionName:</span> <span class="string">HelloWorld</span></span><br><span class="line"><span class="attr">      Handler:</span> <span class="string">main</span></span><br><span class="line"><span class="attr">    Type:</span> <span class="attr">AWS::Serverless::Function</span></span><br></pre></td></tr></table></figure>
+<h2 id="step-functions-local-の設定"><a href="#Step-Functions-Local-の設定" class="headerlink" title="Step Functions Local の設定"></a>Step Functions Local の設定</h2><p>Step Functions Local に読み込ませるための設定ファイルを作成します。<br><code>aws-stepfunctions-local-credentials.txt</code>というファイル名にします。<br>今回は Lambda のエンドポイントを指定しています(<a href="http://sam-local:3001/)。" target="_blank" rel="noopener">http://sam-local:3001/)。</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">AWS_DEFAULT_REGION=ap-northeast-1</span><br><span class="line">AWS_ACCESS_KEY_ID=dummy</span><br><span class="line">AWS_SECRET_ACCESS_KEY=dummy</span><br><span class="line">WAIT_TIME_SCALE=10</span><br><span class="line">LAMBDA_ENDPOINT=http://sam-local:3001</span><br><span class="line">BATCH_ENDPOINT=</span><br><span class="line">DYNAMODB_ENDPOINT=</span><br><span class="line">ECS_ENDPOINT=</span><br><span class="line">GLUE_ENDPOINT=</span><br><span class="line">SAGE_MAKER_ENDPOINT=</span><br><span class="line">SQS_ENDPOINT=</span><br><span class="line">SNS_ENDPOINT=</span><br><span class="line"># https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/sfn-local-config-options.html#docker-credentials</span><br></pre></td></tr></table></figure>
+<h2 id="docker-composeの設定"><a href="#Docker-Composeの設定" class="headerlink" title="Docker Composeの設定"></a>Docker Composeの設定</h2><p>Docker Composeで複数のDockerコンテナを連携させる設定を記述します。<br><code>docker-compose.yml</code> というファイル名にします。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">'3'</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line"><span class="attr">  sam-local:</span></span><br><span class="line"><span class="attr">    build:</span></span><br><span class="line"><span class="attr">      context:</span> <span class="string">./</span></span><br><span class="line"><span class="attr">      dockerfile:</span> <span class="string">./Dockerfile_sam</span></span><br><span class="line"><span class="attr">    command:</span> <span class="string">./start-lambda.sh</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">.:/var/opt/</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">/var/run/docker.sock:/var/run/docker.sock</span></span><br><span class="line"><span class="attr">    environment:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">VOLUME=$PWD</span></span><br><span class="line"><span class="attr">    env_file:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">.env</span></span><br><span class="line"><span class="attr">    networks:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">net</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  step-functions-local:</span></span><br><span class="line"><span class="attr">    build:</span></span><br><span class="line"><span class="attr">      context:</span> <span class="string">./</span></span><br><span class="line"><span class="attr">      dockerfile:</span> <span class="string">./Dockerfile_stepfunctions</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">'8083:8083'</span></span><br><span class="line"><span class="attr">    env_file:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">aws-stepfunctions-local-credentials.txt</span></span><br><span class="line"><span class="attr">    depends_on:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">sam-local</span></span><br><span class="line"><span class="attr">    networks:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">net</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Goビルド用</span></span><br><span class="line"><span class="attr">  go-build:</span></span><br><span class="line"><span class="attr">    build:</span></span><br><span class="line"><span class="attr">      context:</span> <span class="string">./</span></span><br><span class="line"><span class="attr">      dockerfile:</span> <span class="string">./Dockerfile_go</span></span><br><span class="line"><span class="attr">    command:</span> <span class="string">./go-build.sh</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">.:/go/src/step-functions-local-test/:cached</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="attr">networks:</span></span><br><span class="line"><span class="attr">  net:</span></span><br><span class="line"><span class="attr">    driver:</span> <span class="string">bridge</span></span><br></pre></td></tr></table></figure>
+<p>以上で、設定が一通りできました。</p>
+<h2 id="コンテナの起動"><a href="#コンテナの起動" class="headerlink" title="コンテナの起動"></a>コンテナの起動</h2><p>以下のコマンドでコンテナを起動します。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ビルド</span></span><br><span class="line">$ COMPOSE_PROJECT_NAME=step-functions-local-test docker-compose build</span><br><span class="line"></span><br><span class="line"><span class="comment"># Lambdaハンドラーのビルド</span></span><br><span class="line">$ COMPOSE_PROJECT_NAME=step-functions-local-test docker-compose run go-build ./go-build.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># サーバ立ち上げ</span></span><br><span class="line">$ COMPOSE_PROJECT_NAME=step-functions-local-test docker-compose up</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">`docker ps` で確認すると、コンテナが起動していることを確認できると思います。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">## Step Functions の実行</span></span><br><span class="line"></span><br><span class="line">起動している Step Functions コンテナ内に StateMachine を作成して、実行します。</span><br><span class="line">コンテナを立ち上げたコンソールとは別のコンソールで、以下のコマンドを実行します。</span><br><span class="line"></span><br><span class="line">```bash</span><br><span class="line"><span class="comment"># StateMachineを作成</span></span><br><span class="line">$ aws stepfunctions --endpoint http://localhost:8083 create-state-machine --definition <span class="string">"&#123;\</span></span><br><span class="line"><span class="string">    \"Comment\": \"A Hello World example of the Amazon States Language using an AWS Lambda Local function\",\</span></span><br><span class="line"><span class="string">    \"StartAt\": \"HelloWorld\",\</span></span><br><span class="line"><span class="string">    \"States\": &#123;\</span></span><br><span class="line"><span class="string">      \"HelloWorld\": &#123;\</span></span><br><span class="line"><span class="string">        \"Type\": \"Task\",\</span></span><br><span class="line"><span class="string">        \"Resource\": \"arn:aws:lambda:us-east-1:123456789012:function:HelloWorld\",\</span></span><br><span class="line"><span class="string">        \"End\": true\</span></span><br><span class="line"><span class="string">      &#125;\</span></span><br><span class="line"><span class="string">    &#125;\</span></span><br><span class="line"><span class="string">  &#125;\</span></span><br><span class="line"><span class="string">  &#125;&#125;"</span> --name <span class="string">"HelloWorld"</span> --role-arn <span class="string">"arn:aws:iam::012345678901:role/DummyRole"</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># StateMachineを実行</span></span><br><span class="line">$ aws stepfunctions --endpoint http://localhost:8083 start-execution --state-machine arn:aws:states:us-east-1:123456789012:stateMachine:HelloWorld</span><br></pre></td></tr></table></figure>
+<p>コンテナを立ち上げたコンソールで、以下のような出力が表示されたら成功です。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">step-functions-local_1  | 2019-07-31 00:49:58.444: [200] StartExecution &lt;= &#123;<span class="string">"sdkResponseMetadata"</span>:null,<span class="string">"sdkHttpMetadata"</span>:null,<span class="string">"executionArn"</span>:<span class="string">"arn:aws:states:ap-northeast-1:123456789012:execution:HelloWorld:9f49a299-36f7-4b22-95b1-fb7ae816b113"</span>,<span class="string">"startDate"</span>:1564534198424&#125;</span><br><span class="line">step-functions-local_1  | 2019-07-31 00:49:58.483: arn:aws:states:ap-northeast-1:123456789012:execution:HelloWorld:9f49a299-36f7-4b22-95b1-fb7ae816b113 : &#123;<span class="string">"Type"</span>:<span class="string">"ExecutionStarted"</span>,<span class="string">"PreviousEventId"</span>:0,<span class="string">"ExecutionStartedEventDetails"</span>:&#123;<span class="string">"Input"</span>:<span class="string">"&#123;&#125;"</span>,<span class="string">"RoleArn"</span>:<span class="string">"arn:aws:iam::012345678901:role/DummyRole"</span>&#125;&#125;</span><br><span class="line">step-functions-local_1  | 2019-07-31 00:49:58.487: arn:aws:states:ap-northeast-1:123456789012:execution:HelloWorld:9f49a299-36f7-4b22-95b1-fb7ae816b113 : &#123;<span class="string">"Type"</span>:<span class="string">"TaskStateEntered"</span>,<span class="string">"PreviousEventId"</span>:0,<span class="string">"StateEnteredEventDetails"</span>:&#123;<span class="string">"Name"</span>:<span class="string">"HelloWorld"</span>,<span class="string">"Input"</span>:<span class="string">"&#123;&#125;"</span>&#125;&#125;</span><br><span class="line">step-functions-local_1  | 2019-07-31 00:49:58.507: arn:aws:states:ap-northeast-1:123456789012:execution:HelloWorld:9f49a299-36f7-4b22-95b1-fb7ae816b113 : &#123;<span class="string">"Type"</span>:<span class="string">"LambdaFunctionScheduled"</span>,<span class="string">"PreviousEventId"</span>:2,<span class="string">"LambdaFunctionScheduledEventDetails"</span>:&#123;<span class="string">"Resource"</span>:<span class="string">"arn:aws:lambda:us-east-1:123456789012:function:HelloWorld"</span>,<span class="string">"Input"</span>:<span class="string">"&#123;&#125;"</span>&#125;&#125;</span><br><span class="line">step-functions-local_1  | 2019-07-31 00:49:58.508: arn:aws:states:ap-northeast-1:123456789012:execution:HelloWorld:9f49a299-36f7-4b22-95b1-fb7ae816b113 : &#123;<span class="string">"Type"</span>:<span class="string">"LambdaFunctionStarted"</span>,<span class="string">"PreviousEventId"</span>:3&#125;</span><br><span class="line">sam-local_1             | 2019-07-31 00:49:58 Invoking main (go1.x)</span><br><span class="line">sam-local_1             |</span><br><span class="line">sam-local_1             | Fetching lambci/lambda:go1.x Docker container image......</span><br><span class="line">sam-local_1             | 2019-07-31 00:50:01 Mounting /Users/uchiko/project/step-functions-local-test/handlers/helloworld as /var/task:ro inside runtime container</span><br><span class="line">sam-local_1             | START RequestId: bf7b22bb-7cc7-1703-a07b-f94434457538 Version: <span class="variable">$LATEST</span></span><br><span class="line">sam-local_1             | END RequestId: bf7b22bb-7cc7-1703-a07b-f94434457538</span><br><span class="line">sam-local_1             | REPORT RequestId: bf7b22bb-7cc7-1703-a07b-f94434457538        Duration: 1.21 ms       Billed Duration: 100 ms Memory Size: 128 MB     Max Memory Used: 5 MB</span><br><span class="line">sam-local_1             | 2019-07-31 00:50:03 172.19.0.3 - - [31/Jul/2019 00:50:03] <span class="string">"POST /2015-03-31/functions/HelloWorld/invocations HTTP/1.1"</span> 200 -</span><br><span class="line">step-functions-local_1  | 2019-07-31 00:50:03.689: arn:aws:states:ap-northeast-1:123456789012:execution:HelloWorld:9f49a299-36f7-4b22-95b1-fb7ae816b113 : &#123;<span class="string">"Type"</span>:<span class="string">"LambdaFunctionSucceeded"</span>,<span class="string">"PreviousEventId"</span>:4,<span class="string">"LambdaFunctionSucceededEventDetails"</span>:&#123;<span class="string">"Output"</span>:<span class="string">"\"Hello World!\""</span>&#125;&#125;</span><br><span class="line">step-functions-local_1  | 2019-07-31 00:50:03.691: arn:aws:states:ap-northeast-1:123456789012:execution:HelloWorld:9f49a299-36f7-4b22-95b1-fb7ae816b113 : &#123;<span class="string">"Type"</span>:<span class="string">"TaskStateExited"</span>,<span class="string">"PreviousEventId"</span>:5,<span class="string">"StateExitedEventDetails"</span>:&#123;<span class="string">"Name"</span>:<span class="string">"HelloWorld"</span>,<span class="string">"Output"</span>:<span class="string">"\"Hello World!\""</span>&#125;&#125;</span><br><span class="line">step-functions-local_1  | 2019-07-31 00:50:03.695: arn:aws:states:ap-northeast-1:123456789012:execution:HelloWorld:9f49a299-36f7-4b22-95b1-fb7ae816b113 : &#123;<span class="string">"Type"</span>:<span class="string">"ExecutionSucceeded"</span>,<span class="string">"PreviousEventId"</span>:0,<span class="string">"ExecutionSucceededEventDetails"</span>:&#123;<span class="string">"Output"</span>:<span class="string">"\"Hello World!\""</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>ローカルPC上で Step Functions の動作チェックを行える環境の構築方法をご紹介しました。<br>Step Functions のロジックは複雑になりがちなので、ぜひ取り入れてみてください。</p>
+<p>なお、MMMのDockerコンテナへの取り組みを以下で紹介しています。ぜひ合わせてご覧ください。</p>
+<p>・<a href="https://mmmcorp.co.jp/service/dockercontainer/" target="_blank" rel="noopener">Dockerコンテナ基盤（AWS Fargate/Amazon ECS）</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/07/31/step_functions_local/" data-text="Docker で Step Functions Local の実行環境を構築する" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/07/31/step_functions_local/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/07/31/step_functions_local/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/07/31/step_functions_local/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/07/31/step_functions_local/" class="hatena-bookmark-button" data-hatena-bookmark-title="Docker で Step Functions Local の実行環境を構築する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS-SAM/">AWS SAM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Step-Functions/">Step Functions</a></li></ul>
+
+
+      <p class="article-footer__author">by 内山 浩佑</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

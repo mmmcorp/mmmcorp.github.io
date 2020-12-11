@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AWS SAMとServerless Frameworkから学ぶAPI Gatewayリソースの分割手法 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="最近、次男の体重 が 長男の体重 を超え２台目の電動アシストサイクルを買い足しました。 やっさん でございます。  今回は、 CloudFormation における API Gateway の定義方法を、AWS SAM と Serverless Framework の事例から理解し、API Gateway リソースの分割方法について模索してみます。 API Gateway HTTPエンドポイントの">
+<meta name="keywords" content="AWS,サーバーレス">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWS SAMとServerless Frameworkから学ぶAPI Gatewayリソースの分割手法">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2019/09/15/api-gateway-resources/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="最近、次男の体重 が 長男の体重 を超え２台目の電動アシストサイクルを買い足しました。 やっさん でございます。  今回は、 CloudFormation における API Gateway の定義方法を、AWS SAM と Serverless Framework の事例から理解し、API Gateway リソースの分割方法について模索してみます。 API Gateway HTTPエンドポイントの">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-09-15-yassan-api-gateway-resources/01.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-09-15-yassan-api-gateway-resources/02.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.162Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AWS SAMとServerless Frameworkから学ぶAPI Gatewayリソースの分割手法">
+<meta name="twitter:description" content="最近、次男の体重 が 長男の体重 を超え２台目の電動アシストサイクルを買い足しました。 やっさん でございます。  今回は、 CloudFormation における API Gateway の定義方法を、AWS SAM と Serverless Framework の事例から理解し、API Gateway リソースの分割方法について模索してみます。 API Gateway HTTPエンドポイントの">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/2019-09-15-yassan-api-gateway-resources/01.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-yassan-api-gateway-resources" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2019-09-15T19:30:00.000Z" itemprop="datePublished">2019-09-15</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2019/09/15/api-gateway-resources/">AWS SAMとServerless Frameworkから学ぶAPI Gatewayリソースの分割手法</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/09/15/api-gateway-resources/" data-text="AWS SAMとServerless Frameworkから学ぶAPI Gatewayリソースの分割手法" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/09/15/api-gateway-resources/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/09/15/api-gateway-resources/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/09/15/api-gateway-resources/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/09/15/api-gateway-resources/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS SAMとServerless Frameworkから学ぶAPI Gatewayリソースの分割手法" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近、<code>次男の体重</code> が <code>長男の体重</code> を超え２台目の電動アシストサイクルを<br>買い足しました。 <code>やっさん</code> でございます。</p>
+<p><img src="/images/2019-09-15-yassan-api-gateway-resources/01.png" alt="電動アシストサイクル"></p>
+<p>今回は、 <code>CloudFormation</code> における <code>API Gateway</code> の定義方法を、<br><code>AWS SAM</code> と <code>Serverless Framework</code> の事例から理解し、<br><code>API Gateway</code> リソースの分割方法について模索してみます。</p>
+<h2 id="api-gateway-httpエンドポイントの定義方法について"><a href="#API-Gateway-HTTPエンドポイントの定義方法について" class="headerlink" title="API Gateway HTTPエンドポイントの定義方法について"></a>API Gateway HTTPエンドポイントの定義方法について</h2><p>API Gateway HTTPエンドポイントは、 <code>2種類の定義方法</code> があります。<br>それぞれを見ていきます。</p>
+<h3 id="その1awsapigatewayrestapiのbodyに記述"><a href="#その1：「AWS-ApiGateway-RestApi」のBodyに記述" class="headerlink" title="その1：「AWS::ApiGateway::RestApi」のBodyに記述"></a>その1：「AWS::ApiGateway::RestApi」のBodyに記述</h3><p>Body定義に、全てのエンドポイントを記述します。<br>一度に全てのエンドポイントを記述でき、<br>複数のリソースに分割しないため内容を理解しやすいです。<br>外部のswaggerファイルを参照することで、記述内容をより簡潔に出来ます。</p>
+<p><code>AWS SAM</code> はこの記述方法を採用しており、<br>Bodyの定義を省略した場合にも、<code>AWS SAM</code> が自動生成します。</p>
+<h4 id="サンプル例"><a href="#サンプル例：" class="headerlink" title="サンプル例："></a>サンプル例：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&quot;ApiGatewayApi1&quot;: &#123;</span><br><span class="line">      &quot;Type&quot;: &quot;AWS::ApiGateway::RestApi&quot;,</span><br><span class="line">      &quot;Properties&quot;: &#123;</span><br><span class="line">        &quot;Body&quot;: &#123;</span><br><span class="line">          &quot;info&quot;: &#123;</span><br><span class="line">            &quot;version&quot;: &quot;1.0&quot;,</span><br><span class="line">            &quot;title&quot;: &#123;</span><br><span class="line">              &quot;Ref&quot;: &quot;AWS::StackName&quot;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;,</span><br><span class="line">          &quot;paths&quot;: &#123;</span><br><span class="line">            &quot;/v1/test1&quot;: &#123;</span><br><span class="line">              &quot;get&quot;: &#123;</span><br><span class="line">                &quot;x-amazon-apigateway-integration&quot;: &#123;</span><br><span class="line">                  &quot;httpMethod&quot;: &quot;POST&quot;,</span><br><span class="line">                  &quot;type&quot;: &quot;aws_proxy&quot;,</span><br><span class="line">                  &quot;uri&quot;: &#123;</span><br><span class="line">                    &quot;Fn::Sub&quot;: &quot;arn:aws:apigateway:$&#123;AWS::Region&#125;:lambda:path/2015-03-31/functions/$&#123;api1.Arn&#125;/invocations&quot;</span><br><span class="line">                  &#125;</span><br><span class="line">                &#125;,</span><br><span class="line">                &quot;responses&quot;: &#123;&#125;</span><br><span class="line">              &#125;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;,</span><br><span class="line">          &quot;swagger&quot;: &quot;2.0&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;Name&quot;: &quot;api1&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br></pre></td></tr></table></figure>
+<h3 id="その2複数のリソースに定義"><a href="#その2：複数のリソースに定義" class="headerlink" title="その2：複数のリソースに定義"></a>その2：複数のリソースに定義</h3><p>前述のBody定義は利用せず、複数のCloudFormationリソースに分割して定義します。<br>下記のリソースが登場します。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">リソース名</th>
+<th style="text-align:left">役割</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">AWS::ApiGateway::RestApi</td>
+<td style="text-align:left">REST API が作成されます</td>
+</tr>
+<tr>
+<td style="text-align:left">AWS::ApiGateway::Resource</td>
+<td style="text-align:left">API にリソースを作成します</td>
+</tr>
+<tr>
+<td style="text-align:left">AWS::ApiGateway::Method</td>
+<td style="text-align:left">リクエストを送信する必要があるパラメータと本文を定義する</td>
+</tr>
+<tr>
+<td style="text-align:left">AWS::ApiGateway::Deployment</td>
+<td style="text-align:left">API Gateway RestApi リソースをステージにデプロイ</td>
+</tr>
+<tr>
+<td style="text-align:left">AWS::ApiGateway::Stage</td>
+<td style="text-align:left">デプロイするためのステージを作成します</td>
+</tr>
+</tbody>
+</table>
+<p>リレーション的な関係は以下のようになります。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">AWS::ApiGateway::RestApi</span><br><span class="line">  ├ AWS::ApiGateway::Resource</span><br><span class="line">  │  └ AWS::ApiGateway::Method</span><br><span class="line">  └ AWS::ApiGateway::Deployment</span><br><span class="line">     └ AWS::ApiGateway::Stage</span><br></pre></td></tr></table></figure>
+<p><code>Serverless Framework</code> はこの定義方法を採用しており、<br><code>RestApiの論理ID</code> を参照すれば <code>Resource</code> や <code>Method</code> を複数のスタックに容易に分割可能です。</p>
+<h2 id="本題api-gatewayリソースの分割方法"><a href="#本題：API-Gatewayリソースの分割方法" class="headerlink" title="本題：API Gatewayリソースの分割方法"></a>本題：API Gatewayリソースの分割方法</h2><p><code>AWS SAM</code> および、 <code>Serverless Framework</code> <code>API Gateway</code> のリソース例から、<br>リソース分割方法を模索しました。</p>
+<h3 id="必ず突き当たる-cloudformationのリソース数制限200の壁について"><a href="#必ず突き当たる、CloudFormationのリソース数制限200の壁について" class="headerlink" title="必ず突き当たる、CloudFormationのリソース数制限200の壁について"></a>必ず突き当たる、CloudFormationのリソース数制限200の壁について</h3><p><code>CloudFormation</code> は一つのテンプレートに含めることができるリソース数の上限を<br><code>200</code> としており、これは <code>上限解放申請をすることが出来ない</code> 制限 となります。<br><code>AWS SAM</code> および、 <code>Serverless Framework</code> でリソース制限に引っかかる<br>主な理由は、 <code>API Gateway</code> のHTTPエンドポイントが増えることにあります。</p>
+<h4 id="aws-samの場合"><a href="#AWS-SAMの場合" class="headerlink" title="AWS SAMの場合"></a>AWS SAMの場合</h4><p><code>AWS SAM</code> は、<code>AWS::ApiGateway::RestApi</code> のBodyに<br>全てのエンドポイントを記述しますので、<br>リソース数的には余裕があるように一見すると見えます。<br>しかし <code>2019年9月15日</code> 時点での仕様として、<br><code>API Gateway</code> のリソース と 関連する <code>Lambdaファンクション</code> は同じスタックに<br>記述しないとデプロイに成功しません。エラーが出力されます。</p>
+<p>つまり、単一の <code>API Gateway</code> と 関連する <code>Lambda</code> を含めたリソース数は <code>200が限界です</code> (2019年9月15日時点) 。</p>
+<p>この限界は意外にすぐにやってきます。<br>なぜなら、 <code>AWS SAM</code> は <code>Lambda</code> 毎に最低2つのPermissionリソースを作成するため、<br><code>Lambda</code> が増えれば増えるほど、Permissionが増え、<br>リソースの大半を占めるようになります。</p>
+<p><code>AWS SAM</code> はこれについていくつかの Issue が発行されており議論されています。</p>
+<h4 id="serverless-frameworkの場合"><a href="#Serverless-Frameworkの場合" class="headerlink" title="Serverless Frameworkの場合"></a>Serverless Frameworkの場合</h4><p><code>Serverless Framework</code> は、Permissionの数は <code>Lambda</code> と <code>1:1</code> であるため、<br>Permissionの数がリソースの大半を占めるようなことはありません。<br>しかしながら、 <code>API Gateway</code> 関連の複数のリソースが作成されるため、<br>場合によっては <code>AWS SAM</code> よりもリソース数を早く消費します。<br>特に、HTTPエンドポイントが多い大規模なAPIシステムの場合、<br> <code>Serverless Framework</code> のほうがリソース数の限界 <code>200</code> に<br> すぐに達してしまうでしょう。</p>
+<p>しかしながら、 <code>Serverless Framework</code> の場合は <code>AWS SAM</code> と比較して<br>容易に <code>スタック分割</code> できるため、実際には <code>AWS SAM</code> よりも<br>多くのHTTPエンドポイントを含めることが出来ます。これについては後述します。</p>
+<h2 id="それぞれのデプロイフレームワークにおける解決策を探る"><a href="#それぞれのデプロイフレームワークにおける解決策を探る" class="headerlink" title="それぞれのデプロイフレームワークにおける解決策を探る"></a>それぞれのデプロイフレームワークにおける解決策を探る</h2><p>それでは、それぞれのデプロイフレームワークにおける<br>解決策を模索していきましょう。</p>
+<h3 id="aws-sam-ベースパスマッピングによる複数のapi-gatewayリソースの統合"><a href="#AWS-SAM-：-ベースパスマッピングによる複数のAPI-Gatewayリソースの統合" class="headerlink" title="AWS SAM ： ベースパスマッピングによる複数のAPI Gatewayリソースの統合"></a>AWS SAM ： ベースパスマッピングによる複数のAPI Gatewayリソースの統合</h3><p>API Gatewayにはベースパスマッピングが利用できます。<br>これにより、複数のAPI Gatewayリソースを一つのドメインに集約することが出来き、<br>API Gatewayの標準のURLよりも簡潔で分かりやすくなります。</p>
+<p><img src="/images/2019-09-15-yassan-api-gateway-resources/02.png" alt="ベースパスマッピング"></p>
+<p>ただし、注意点があります。<br>ベースパスマッピングは複数の階層を含めることができません。<br>例えば、下記のように分割することはできます。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">パスマッピング</th>
+<th style="text-align:left">リソース名：ステージ名</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">user</td>
+<td style="text-align:left">user-api:dev</td>
+</tr>
+<tr>
+<td style="text-align:left">company</td>
+<td style="text-align:left">company-api:dev</td>
+</tr>
+</tbody>
+</table>
+<p>この場合、<code>https://example.co.jp/user/</code> や<br><code>https://example.co.jp/company</code> のエンドポイントを利用してアクセスできます。</p>
+<p>下記のように分割することは <font color="red"><b>できません。</b></font></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">パスマッピング</th>
+<th style="text-align:left">リソース名：ステージ名</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><font color="red">v1/user</font></td>
+<td style="text-align:left">user-api:dev</td>
+</tr>
+<tr>
+<td style="text-align:left"><font color="red">v1/company</font></td>
+<td style="text-align:left">company-api:dev</td>
+</tr>
+</tbody>
+</table>
+<p><font color="red">パスマッピングは <code>/</code> を許可しません。</font>つまり、エンドポイントの設計によっては、<br>ベースパスマッピングだけでは実現できない場合があります。</p>
+<p>Nested Applicationsによる、複数のAPI Gatewayリソースの作成サンプルはこちらです。<br><a href="https://github.com/x-blood/aws-sam-nested-application" target="?blank">aws-sam-nested-application</a></p>
+<h3 id="serverless-framework-split-stacksを用いたネストされたテンプレートへの分割"><a href="#Serverless-Framework-：-split-stacksを用いたネストされたテンプレートへの分割" class="headerlink" title="Serverless Framework ： split-stacksを用いたネストされたテンプレートへの分割"></a>Serverless Framework ： split-stacksを用いたネストされたテンプレートへの分割</h3><p><code>Serverless Framework</code> は <code>split-stacks</code> プラグインを用いて、<br>ネストされたスタックを作成することが出来ます。<br>これにより、複数のAPI Gatewayリソースを作る必要がなく、<br><code>Lambda</code> と <code>API Gateway</code> リソースを別々のスタックに分割できます。</p>
+<p>分割方法は現在、下記の選択肢があります。</p>
+<ul>
+<li>perFunction：Lambdaの単位で分割する</li>
+<li>perType：リソースのタイプで分割する</li>
+<li>perGroupFunction：最大スタック数からLambdaをグループに振り分けて分割する</li>
+</ul>
+<p>例えば、下記のように <code>perGroupFunction</code> を指定し、最大スタック数を <code>20</code> とし、 <code>API Gateway</code> に関連する <code>3つのLambda</code> をデプロイしてみます。</p>
+<p>設定値：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">custom:</span><br><span class="line">  splitStacks:</span><br><span class="line">    perFunction: false</span><br><span class="line">    perType: false</span><br><span class="line">    perGroupFunction: true</span><br><span class="line">    nestedStackCount: 20</span><br></pre></td></tr></table></figure></p>
+<p>この場合リソース分割は下記のような結果になり、Rootが最も少ないリソース数になり適切に分割されているのが分かります。</p>
+<p>分割結果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (root): 9</span><br><span class="line">- 11NestedStack: 15</span><br><span class="line">- 15NestedStack: 13</span><br><span class="line">- 4NestedStack: 3</span><br><span class="line">- 6NestedStack: 13</span><br></pre></td></tr></table></figure></p>
+<p>一つ注意点として、 <code>一度分割方法を設定したあとは、分割方法を変更することが出来ません。</code><br>ネストされるテンプレートの計画を変更したい場合は一度リソースを再作成する必要があります。</p>
+<p><code>split-stacks</code> による、スタックの分割のサンプルはこちらです。<br><a href="https://github.com/x-blood/aws-sls-split-stacks" target="?blank">aws-sls-split-stacks</a></p>
+<h3 id="総評サーバレスのデプロイフレームワークをより理解し-最適な利用方法を模索しよう"><a href="#総評：サーバレスのデプロイフレームワークをより理解し、最適な利用方法を模索しよう" class="headerlink" title="総評：サーバレスのデプロイフレームワークをより理解し、最適な利用方法を模索しよう"></a>総評：サーバレスのデプロイフレームワークをより理解し、最適な利用方法を模索しよう</h3><p><code>AWS SAM</code> と <code>Serverless Framework</code> で比較しましたが、<br><code>どちらがよいという話はしません。</code> それぞれの特徴を把握し、<br>最適な利用方法を模索していくことがもっとも大事です。</p>
+<p>サーバーレスの、酸いも甘いも嚙み分けていきましょう！<br>以上です！</p>
+<p>MMMは、会社としてもAWS Lambdaに力を入れています。ぜひ以下のページもご覧ください。</p>
+<p>・<a href="https://mmmcorp.co.jp/service/serverlessarchitecture/" target="_blank" rel="noopener">サーバーレスアーキテクチャ（AWS Lambda）</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/09/15/api-gateway-resources/" data-text="AWS SAMとServerless Frameworkから学ぶAPI Gatewayリソースの分割手法" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/09/15/api-gateway-resources/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/09/15/api-gateway-resources/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/09/15/api-gateway-resources/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/09/15/api-gateway-resources/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS SAMとServerless Frameworkから学ぶAPI Gatewayリソースの分割手法" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li></ul>
+
+
+      <p class="article-footer__author">by yassan</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

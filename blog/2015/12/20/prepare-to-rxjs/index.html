@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Rx(JS)に入門する前に知っておきたいN個のこと | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="アドベントカレンダードリブンダイエットに失敗中の小飼です。走っているのに中々痩せません。どうなってるんだ。。。 ※この記事はRxJS Advent Calendar 2015の第二十日目の記事です。 概要 最近チラホラRxJSについての記事を見るようになってきました。非同期処理を簡潔に書けることについてのポジティブなポストを見かける一方で、主に学習コストの面でネガティブな意見が目立っていることも否">
+<meta name="keywords" content="フロントエンド,JavaScript,Rx,RxJS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rx(JS)に入門する前に知っておきたいN個のこと">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2015/12/20/prepare-to-rxjs/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="アドベントカレンダードリブンダイエットに失敗中の小飼です。走っているのに中々痩せません。どうなってるんだ。。。 ※この記事はRxJS Advent Calendar 2015の第二十日目の記事です。 概要 最近チラホラRxJSについての記事を見るようになってきました。非同期処理を簡潔に書けることについてのポジティブなポストを見かける一方で、主に学習コストの面でネガティブな意見が目立っていることも否">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://gist.github.com/staltz/868e7e9bc2a7b8c1f754/raw/9f765eb717f4c60758a6c682b70296f5f6c2fc0a/zmantra.jpg">
+<meta property="og:image" content="https://gist.github.com/staltz/868e7e9bc2a7b8c1f754/raw/9f765eb717f4c60758a6c682b70296f5f6c2fc0a/zmantra.jpg">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.134Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Rx(JS)に入門する前に知っておきたいN個のこと">
+<meta name="twitter:description" content="アドベントカレンダードリブンダイエットに失敗中の小飼です。走っているのに中々痩せません。どうなってるんだ。。。 ※この記事はRxJS Advent Calendar 2015の第二十日目の記事です。 概要 最近チラホラRxJSについての記事を見るようになってきました。非同期処理を簡潔に書けることについてのポジティブなポストを見かける一方で、主に学習コストの面でネガティブな意見が目立っていることも否">
+<meta name="twitter:image" content="https://gist.github.com/staltz/868e7e9bc2a7b8c1f754/raw/9f765eb717f4c60758a6c682b70296f5f6c2fc0a/zmantra.jpg">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-prepare-to-rxjs" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2015-12-20T17:06:37.000Z" itemprop="datePublished">2015-12-20</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2015/12/20/prepare-to-rxjs/">Rx(JS)に入門する前に知っておきたいN個のこと</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/12/20/prepare-to-rxjs/" data-text="Rx(JS)に入門する前に知っておきたいN個のこと" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/12/20/prepare-to-rxjs/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/12/20/prepare-to-rxjs/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/12/20/prepare-to-rxjs/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/12/20/prepare-to-rxjs/" class="hatena-bookmark-button" data-hatena-bookmark-title="Rx(JS)に入門する前に知っておきたいN個のこと" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>アドベントカレンダードリブンダイエットに失敗中の小飼です。<br>走っているのに中々痩せません。どうなってるんだ。。。</p>
+<p>※この記事は<a href="http://qiita.com/advent-calendar/2015/rxjs" target="_blank" rel="noopener">RxJS Advent Calendar 2015</a>の第二十日目の記事です。</p>
+<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p><img src="https://gist.github.com/staltz/868e7e9bc2a7b8c1f754/raw/9f765eb717f4c60758a6c682b70296f5f6c2fc0a/zmantra.jpg" alt=""></p>
+<p>最近チラホラ<code>RxJS</code>についての記事を見るようになってきました。<br>非同期処理を簡潔に書けることについてのポジティブなポストを見かける一方で、主に学習コストの面でネガティブな意見が目立っていることも否定できません。</p>
+<p>私は業務でバリバリ<code>RxJS</code>を使いこなしている！というようなレベルでは到底ありませんが、入門ブログ・書籍などを読んだり簡単なコードを書いてみて、<code>事前に〇〇について知っていると理解が早そう</code>と思った点がいくつかありました。</p>
+<p>そこで本稿では<code>Rx(JS)に入門する前に知っておきたいN個のこと</code>と題して、事前に知っておくとスムーズに<code>RxJS</code>に入門出来るんじゃないかなと思うことを書いていきます。</p>
+<p>と言ってもご紹介したいのは基本的なデザインパターンについての事なので、既にご存知の方も多いと思います。<br>ただ、そういった方でも事前に<code>このデザインパターンに強く関連があるのだ</code>と前もって心積もりをしておくことで、スムーズな理解が得られるかも知れません。</p>
+<p>また、説明を簡単にするために、諸々を単純化し過ぎている箇所があるかも知れません。<br>そこはひとえに私の能力不足によるところですので、ガチな方々にはそこら辺をご容赦お願いします :bow:</p>
+<h2 id="前提-非同期処理は難しい"><a href="#前提-非同期処理は難しい" class="headerlink" title="前提: 非同期処理は難しい"></a>前提: 非同期処理は難しい</h2><p><code>JavaScript</code>によるアプリケーションを作成するにあたって、非同期処理というのは避けて通れません。<br>これは、いつ発生するかわからないユーザーからの入力を<code>event loop</code>で捌いていく<code>JavaScript</code>の言語設計の宿命と言えます。</p>
+<p>この非同期処理の操作というのは一般にわかりづらいものになりがちです。<br>いつ完了するのかが予め分かりませんし、複数の非同期処理がある場合にも完了順序は保証されません。<br>また、実アプリケーション上ではしばしば完了しない可能性もあります。</p>
+<p><a href="http://qiita.com/kiyodori/items/da434d169755cbb20447" target="_blank" rel="noopener">非同期処理ってどういうこと？JavaScriptで一から学ぶ</a></p>
+<p>そこで<code>JavaScript</code>界隈では、この非同期処理を分かりやすく記述するための様々な技法が取り入れられてきました。<br>例えば<code>Promise</code>や<code>Generator</code>を使った同期処理風な記述方法などです。</p>
+<p>ただ、実アプリケーションではしばしば複雑な非同期処理の組み合わせを実装する必要に迫られます。</p>
+<p>例えばユーザーのキーボード入力に特定の文字列を検知したタイミングでサーバーにリクエストを発行したかったり(<code>rx</code>, <code>cycle</code>などの<code>npm</code>ライブラリに存在する単語が入力されたら、該当しそうなライブラリの情報をサーバーから取ってくる、みたいな)、サーバーへのリクエストを複数回行ってみた内の特定のレスポンスをを使用したい(ジョークAPIに<code>?random=true</code>のようなクエリ付きでリクエストを投げた時に、<code>Chuck Norris</code>という文字列を含まないレスポンスだけを採用したい)というようなケースです。</p>
+<p>もちろん<code>Promise</code>や<code>Generator</code>のような慣れ親しんだ概念でも充分に実装可能ですが、往々にして不安定で複雑な実装になってしまいがちです。<br>そんな非同期処理の組み合わせを、もっとシンプルで安定した実装にするためのアイディアが<code>Reactive Extensions(ReactiveXまたはRx)</code>です</p>
+<h2 id="reactive-extensionsとは"><a href="#Reactive-Extensionsとは" class="headerlink" title="Reactive Extensionsとは?"></a>Reactive Extensionsとは?</h2><p><a href="http://reactivex.io/" target="_blank" rel="noopener">公式サイト</a>のトップには、</p>
+<blockquote>
+<p>An API for asynchronous programming with observable streams</p>
+</blockquote>
+<p><code>オブザーバブルストリームによる、非同期プログラミングのためのAPI</code>とあります。<br>これだけではよく分かりません。。。<br>更に下にスクロールすると、</p>
+<blockquote>
+<p>ReactiveX is a combination of the best ideas from the Observer pattern, the Iterator pattern, and functional programming</p>
+</blockquote>
+<p><code>ReactiveXはオブザーバパターンとイテレータパターン、それから関数型プログラミングの良いアイディアを組み合わせたものです</code>とあります。</p>
+<p>オブザーバパターンとイテレータパターン(これを指してオブザーバブルストリームと呼んでいるようです)に関数型プログラミングのエッセンスが組み合わさると、<br>なぜ非同期プログラミングの記述が簡単になるのでしょうか？<br>そこを納得できれば、難しそうな<code>Rx</code>に入門するメリットが見えてきそうに思います。</p>
+<hr>
+<h3 id="rxに入門する前にその1-反復する要素の操作は簡単"><a href="#Rxに入門する前に・その1-反復する要素の操作は簡単" class="headerlink" title="Rxに入門する前に・その1: 反復する要素の操作は簡単"></a><code>Rx</code>に入門する前に・その1: 反復する要素の操作は簡単</h3><p>例えば配列の操作というのは普段からよく記述していて、特に引っ掛かるところはないかと思います。</p>
+<p>配列の内容を一部変換したり、<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">'I'</span>, <span class="string">'like'</span>, <span class="string">'meat.'</span>].map(<span class="function">(<span class="params">str</span>)=&gt;</span> str === <span class="string">'meat'</span> ? <span class="string">'vegetable.'</span> : str)</span><br><span class="line"><span class="comment">// ['i', 'like', 'vegetable.']</span></span><br></pre></td></tr></table></figure></p>
+<p>フィルタリングしたりするような操作は日常的に行っていることです。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">'I'</span>, <span class="string">'like'</span>, <span class="string">'meat.'</span>].filter(<span class="function">(<span class="params">str</span>)=&gt;</span> str.match(<span class="regexp">/\./</span>))</span><br><span class="line"><span class="comment">// ['meat.']</span></span><br></pre></td></tr></table></figure></p>
+<p>操作対象のデータが配列に格納されていなくとも、イテレータパターンを用いて任意のデータを反復処理しやすい形に変換してあげれば、同じように簡単な操作が可能になります。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> iterable = &#123;</span><br><span class="line">  someData: [ <span class="string">'I'</span>, <span class="string">'like'</span>, <span class="string">'meat'</span> ],</span><br><span class="line">  hasNext() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.someData.length &gt; <span class="number">0</span>;</span><br><span class="line">  &#125;,</span><br><span class="line">  next() &#123;</span><br><span class="line">    <span class="keyword">this</span>.someData.shift();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span>(iterable.hasNext()) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(iterable.someData);</span><br><span class="line">  iterable.next();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">[ 'I', 'like', 'meat' ]</span></span><br><span class="line"><span class="comment">[ 'like', 'meat' ]</span></span><br><span class="line"><span class="comment">[ 'meat' ]</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<h3 id="rxに入門する前にその2-非同期処理の監視は簡単"><a href="#Rxに入門する前に・その2-非同期処理の監視は簡単" class="headerlink" title="Rxに入門する前に・その2: 非同期処理の監視は簡単"></a><code>Rx</code>に入門する前に・その2: 非同期処理の監視は簡単</h3><p>特に<code>JavaScript</code>界隈ではオブザーバパターンによる実装は至る所にあり、例えばブラウザにおけるクリックイベントの監視などは頻繁に行っているはずですので、こちらも容易に操作出来ると思います。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">window</span>.addEventListener(<span class="string">'click'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">ev</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(ev);</span><br><span class="line">  <span class="comment">// MouseEvent &#123;isTrusted: true ...&#125;</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h3 id="rxに入門する前にその3-非同期なイベントを反復する要素と捉える"><a href="#Rxに入門する前に・その3-非同期なイベントを反復する要素と捉える" class="headerlink" title="Rxに入門する前に・その3: 非同期なイベントを反復する要素と捉える"></a><code>Rx</code>に入門する前に・その3: 非同期なイベントを反復する要素と捉える</h3><p>もしイテレータパターンとオブザーバパターンを組み合わせて、非同期なイベントを反復処理できるような<code>何か</code>にすることが出来れば、非同期なイベントを複雑に組み合わせたり変換したりしても、理解のしやすさを保ったコードを記述することが出来るかも知れません。</p>
+<p>別の言い方をすると、非同期なイベントを時間軸に沿ったイベントの配列のようなイメージで捉えることで、理解のしやすいコードを書けるかも知れない、というような感じです。</p>
+<p>こういった、配列のように操作できる監視可能な非同期イベントの集合を指して、<code>Rx</code>では<code>Observable Stream</code>と呼んでいるようです。</p>
+<p>個人的な解釈ですが、ここで説明した<code>Observable Stream</code>は<code>Node.js</code>で出てくる<code>Stream</code>と同じものとして捉えて良いと思います。<br>ただし<code>Rx</code>には<code>Observable Stream ≒ Stream</code>を配列っぽく便利に操作するための大量の<code>API</code>群が付随しているという違いがあります。</p>
+<p><code>Stream</code>という、ブラウザ<code>JavaScript</code>界隈ではまだ馴染みの薄いように思われる概念の理解と、その<code>Stream</code>を操作する<code>API群</code>への理解を混同しないことが、<code>Rx</code>に入門する際に大事になってくるんじゃないかと思っています。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>Rx(Observable Stream)</code></th>
+<th><code>Node.js(Stream)</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Streamへの変換</td>
+<td>◯</td>
+<td>◯</td>
+</tr>
+<tr>
+<td>Streamの観測</td>
+<td>◯</td>
+<td>◯</td>
+</tr>
+<tr>
+<td><code>underscore/lodash</code>的な便利なAPI群</td>
+<td>◯</td>
+<td>x</td>
+</tr>
+</tbody>
+</table>
+<p>※この説明では<code>関数型プログラミング</code>の部分について触れていませんが、<code>Rxへの入門の準備</code>という目的をややこしくしてしまうと思ったので省いています。<br>(私は<code>Observable Stream</code>を外部状態に依存しない書き方で使うことで安定して綺麗なコードを書ける、みたいな理解の仕方をしています)</p>
+<h2 id="実装例"><a href="#実装例" class="headerlink" title="実装例"></a>実装例</h2><p>長々と個人的な解釈を書き連ねてきたので、この辺で実際のコードに落とし込んでみたいと思います。<br>ここではマークダウンエディタを実装している想定で、ユーザーのキーボード入力イベントから、`(逆クォート記号)で囲まれた文字列を<br><code>span</code>タグで囲んだ<code>html文字列</code>に変換するような処理を実装します。<br>ただし、変換した<code>html文字列</code>をその度に描画していると描画コストが掛かり過ぎてしまうという想定で、<br><code>500ms</code>毎に最新の<code>html文字列</code>を検出したいという仕様があるとしました。</p>
+<h3 id="準備"><a href="#準備" class="headerlink" title="準備"></a>準備</h3><p>まず、ユーザーのキーボード入力を模した<code>input</code>イベントを発行するモジュールを作成します。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// event-mock.js</span></span><br><span class="line"><span class="keyword">const</span> EventEmitter = <span class="built_in">require</span>(<span class="string">'events'</span>).EventEmitter;</span><br><span class="line"><span class="keyword">const</span> eventListener = <span class="keyword">new</span> EventEmitter();</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> texts = <span class="string">'ユーザーが打ち込んだマークダウン。\</span></span><br><span class="line"><span class="string">途中の`syntax-highlight`のように記述された箇所に、\</span></span><br><span class="line"><span class="string">シンタックスハイライトを`実装`する\n'</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">userInputMock</span>(<span class="params">str</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (str.length === <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ユーザーが`interval`変数の間隔でキー入力をしているようなイメージです</span></span><br><span class="line">  <span class="keyword">const</span> interval = <span class="built_in">Math</span>.random() * <span class="number">50</span>;</span><br><span class="line">  setTimeout(<span class="function"><span class="params">()</span>=&gt;</span> &#123;</span><br><span class="line">    eventListener.emit(<span class="string">'input'</span>, str[<span class="number">0</span>]);</span><br><span class="line">    userInputMock(str.substr(<span class="number">1</span>));</span><br><span class="line">  &#125;, interval);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">userInputMock(texts);</span><br><span class="line"><span class="built_in">module</span>.exports = eventListener;</span><br></pre></td></tr></table></figure>
+<h3 id="イベントリスナーによる実装"><a href="#イベントリスナーによる実装" class="headerlink" title="イベントリスナーによる実装"></a>イベントリスナーによる実装</h3><p>これを従来のオブザーバパターンによるイベントリスナーで単純に実装してみるとこんな感じになりました。<br>(例えば<code>Flux</code>の<code>ActionCreators</code>層に実装したと読み代えて頂くこともできると思います)<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> eventListener = <span class="built_in">require</span>(<span class="string">'./input-event'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> resultStr = <span class="string">''</span>;</span><br><span class="line"><span class="keyword">var</span> appearedCount = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">var</span> isEnd = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">eventListener.on(<span class="string">'input'</span>, (str)=&gt; &#123;</span><br><span class="line">  <span class="keyword">if</span> (resultStr.length === <span class="number">0</span>)&#123;</span><br><span class="line">    resultStr += <span class="string">`&lt;p&gt;<span class="subst">$&#123;str&#125;</span>`</span>;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (str === <span class="string">'\n'</span>) &#123;</span><br><span class="line">    isEnd = <span class="literal">true</span>;</span><br><span class="line">    resultStr += <span class="string">`&lt;/p&gt;`</span>;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (str === <span class="string">'`'</span>) &#123;</span><br><span class="line">    appearedCount++;</span><br><span class="line">    <span class="keyword">if</span> (appearedCount % <span class="number">2</span> !== <span class="number">0</span>) &#123;</span><br><span class="line">      resultStr += <span class="string">`&lt;span&gt;`</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      resultStr += <span class="string">`&lt;/span&gt;`</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    resultStr += str;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> interval = setInterval(<span class="function"><span class="params">()</span>=&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(resultStr);</span><br><span class="line">  <span class="comment">// &lt;p&gt;ユーザーが打ち込んだマークダウン。途中の&lt;span&gt;syntax-highlight&lt;/span&gt;のように記述された箇所に、\</span></span><br><span class="line">  <span class="comment">// シンタックスハイライトを&lt;span&gt;実装&lt;/span&gt;する&lt;/p&gt;</span></span><br><span class="line">  <span class="keyword">if</span> (isEnd) &#123;</span><br><span class="line">    clearInterval(interval);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;, <span class="number">500</span>);</span><br></pre></td></tr></table></figure></p>
+<p><code>resultStr</code>や<code>appearedCount</code>など、イベントリスナーの外部スコープに存在する変数を使った実装になっており、ちょっと不安な気持ちです。<br><code>if</code>文のネストが深いのも、やや気に入りません。少なくとも読みやすいコードには出来ていいないと思います。<br>(もちろん、もっと分かりやすいコードにするための工夫の余地はありますが、説明を単純にするためにわざと短絡的に実装しています)</p>
+<h3 id="配列に対する実装"><a href="#配列に対する実装" class="headerlink" title="配列に対する実装"></a>配列に対する実装</h3><p><code>Rx</code>を使えば、非同期イベントを配列のように処理できるはずですので、事前準備として単なる配列に対して同様の処理を実装してみます。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ユーザーの入力イベントを以下のような文字の配列であると仮定します</span></span><br><span class="line"><span class="keyword">const</span> inputs = [</span><br><span class="line">  <span class="string">'ユ'</span>, <span class="string">'ー'</span>, <span class="string">'ザ'</span>, <span class="string">'ー'</span>, <span class="string">'が'</span>, <span class="string">'打'</span>, <span class="string">'ち'</span>, <span class="string">'込'</span>, <span class="string">'ん'</span>, <span class="string">'だ'</span>, <span class="string">'マ'</span>, <span class="string">'ー'</span>, <span class="string">'ク'</span>, <span class="string">'ダ'</span>, <span class="string">'ウ'</span>, <span class="string">'ン'</span>, <span class="string">'。'</span>,</span><br><span class="line">  <span class="string">'途'</span>, <span class="string">'中'</span>, <span class="string">'の'</span>, <span class="string">'`'</span>, <span class="string">'s'</span>, <span class="string">'y'</span>, <span class="string">'n'</span>, <span class="string">'t'</span>, <span class="string">'a'</span>, <span class="string">'x'</span>, <span class="string">'-'</span>, <span class="string">'h'</span>, <span class="string">'i'</span>, <span class="string">'g'</span>, <span class="string">'h'</span>, <span class="string">'l'</span>, <span class="string">'i'</span>, <span class="string">'g'</span>, <span class="string">'h'</span>, <span class="string">'t'</span>, <span class="string">'`'</span>,</span><br><span class="line">  <span class="string">'の'</span>, <span class="string">'よ'</span>, <span class="string">'う'</span>, <span class="string">'に'</span>, <span class="string">'記'</span>, <span class="string">'述'</span>, <span class="string">'さ'</span>, <span class="string">'れ'</span>, <span class="string">'た'</span>, <span class="string">'箇'</span>, <span class="string">'所'</span>, <span class="string">'に'</span>, <span class="string">'、'</span>,</span><br><span class="line">  <span class="string">'シ'</span>, <span class="string">'ン'</span>, <span class="string">'タ'</span>, <span class="string">'ッ'</span>, <span class="string">'ク'</span>, <span class="string">'ス'</span>, <span class="string">'ハ'</span>, <span class="string">'イ'</span>, <span class="string">'ラ'</span>, <span class="string">'イ'</span>, <span class="string">'ト'</span>, <span class="string">'を'</span>, <span class="string">'`'</span>, <span class="string">'実'</span>, <span class="string">'装'</span>, <span class="string">'`'</span>, <span class="string">'す'</span>, <span class="string">'る'</span>, <span class="string">'\n'</span></span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 処理したい内容に併せて、`inputs`配列をフィルタするための条件を生成する関数(Predicate関数)を作っておきます。</span></span><br><span class="line"><span class="comment">// 一文字目や最後の改行、\`(逆クォート記号)をフィルタリングしたり、その逆をフィルタリングしたりできる関数を生成します。</span></span><br><span class="line"><span class="keyword">var</span> filterFirst = <span class="function">(<span class="params">isFirst</span>)=&gt;</span> isFirst ? <span class="function">(<span class="params">str, i</span>)=&gt;</span> i === <span class="number">0</span> : <span class="function">(<span class="params">str, i</span>)=&gt;</span> i !== <span class="number">0</span>;</span><br><span class="line"><span class="keyword">var</span> filterLast = <span class="function">(<span class="params">isLast</span>)=&gt;</span> isLast ? <span class="function">(<span class="params">str</span>)=&gt;</span> str === <span class="string">'\n'</span> : <span class="function">(<span class="params">str</span>)=&gt;</span> str !== <span class="string">'\n'</span>;</span><br><span class="line"><span class="keyword">var</span> filterSign = <span class="function">(<span class="params">isSign</span>)=&gt;</span> isSign ? <span class="function">(<span class="params">str</span>)=&gt;</span> str === <span class="string">'`'</span> : <span class="function">(<span class="params">str</span>)=&gt;</span> str !== <span class="string">'`'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 上の３つの関数から、必要に応じて`inputs`配列を変換します</span></span><br><span class="line"><span class="keyword">const</span> first = inputs.filter(filterFirst(<span class="literal">true</span>)).map(<span class="function">(<span class="params">val</span>)=&gt;</span> <span class="string">`&lt;p&gt;<span class="subst">$&#123;val&#125;</span>`</span>);</span><br><span class="line"><span class="keyword">const</span> last = inputs.filter(filterLast(<span class="literal">true</span>)).map(<span class="function"><span class="params">()</span>=&gt;</span> <span class="string">'&lt;/p&gt;'</span>);</span><br><span class="line"><span class="keyword">const</span> sign = inputs.filter(filterSign(<span class="literal">true</span>)).map(<span class="function">(<span class="params">val, i</span>)=&gt;</span> i % <span class="number">2</span> === <span class="number">0</span> ? <span class="string">'&lt;span&gt;'</span> : <span class="string">'&lt;/span&gt;'</span>);</span><br><span class="line"><span class="built_in">console</span>.log(first); <span class="comment">// ['&lt;p&gt;ユ']</span></span><br><span class="line"><span class="built_in">console</span>.log(last); <span class="comment">// [ '&lt;/p&gt;' ]</span></span><br><span class="line"><span class="built_in">console</span>.log(sign); <span class="comment">// [ '&lt;span&gt;', '&lt;/span&gt;', '&lt;span&gt;', '&lt;/span&gt;' ]</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// フィルタリングされなかった残りの文字を抽出します。</span></span><br><span class="line"><span class="keyword">const</span> strings = inputs</span><br><span class="line">  .filter(filterFirst(<span class="literal">false</span>))</span><br><span class="line">  .filter(filterLast(<span class="literal">false</span>))</span><br><span class="line">  .filter(filterSign(<span class="literal">false</span>));</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(strings);</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">[</span></span><br><span class="line"><span class="comment">  'ー', 'ザ', 'ー', 'が', '打', 'ち', '込', 'ん', 'だ', 'マ', 'ー', 'ク', 'ダ', 'ウ', 'ン', '。',</span></span><br><span class="line"><span class="comment">  '途', '中', 'の', 's', 'y', 'n', 't', 'a', 'x', '-', 'h', 'i', 'g', 'h', 'l', 'i', 'g', 'h', 't',</span></span><br><span class="line"><span class="comment">  'の', 'よ', 'う', 'に', '記', '述', 'さ', 'れ', 'た', '箇', '所', 'に', '、',</span></span><br><span class="line"><span class="comment">  'シ', 'ン', 'タ', 'ッ', 'ク', 'ス', 'ハ', 'イ', 'ラ', 'イ', 'ト', 'を', '実', '装', 'す', 'る'</span></span><br><span class="line"><span class="comment">]</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<p>配列のフィルタリングの際に、大本の<code>inputs</code>配列におけるインデックスを失ってしまうので、出来上がった配列達を正しく合成することが出来ませんが、考え方としてはこういう感じになるかと思います。(ちゃんと実装するなら<code>inputs</code>配列を{ char: ‘字’, index: 0 }のような要素の配列にしてあげる必要がありそうです)</p>
+<h3 id="rxによる実装"><a href="#Rxによる実装" class="headerlink" title="Rxによる実装"></a>Rxによる実装</h3><p>上述の配列に対する実装を参考に、<code>Rx</code>を用いた<code>Observable Stream</code>に対する実装に変換してみたいと思います。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> Rx = <span class="built_in">require</span>(<span class="string">'rx'</span>);</span><br><span class="line"><span class="keyword">const</span> eventListener = <span class="built_in">require</span>(<span class="string">'./input-event'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> input$ = Rx.Observable.fromEvent(eventListener, <span class="string">'input'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// フィルタ用のPredicate関数を返す</span></span><br><span class="line"><span class="keyword">var</span> filterFirst = <span class="function">(<span class="params">isFirst</span>)=&gt;</span> isFirst ? <span class="function">(<span class="params">str, i</span>)=&gt;</span> i === <span class="number">0</span> : <span class="function">(<span class="params">str, i</span>)=&gt;</span> i !== <span class="number">0</span>;</span><br><span class="line"><span class="keyword">var</span> filterLast = <span class="function">(<span class="params">isLast</span>)=&gt;</span> isLast ? <span class="function">(<span class="params">str</span>)=&gt;</span> str === <span class="string">'\n'</span> : <span class="function">(<span class="params">str</span>)=&gt;</span> str !== <span class="string">'\n'</span>;</span><br><span class="line"><span class="keyword">var</span> filterSign = <span class="function">(<span class="params">isSign</span>)=&gt;</span> isSign ? <span class="function">(<span class="params">str</span>)=&gt;</span> str === <span class="string">'`'</span> : <span class="function">(<span class="params">str</span>)=&gt;</span> str !== <span class="string">'`'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> first$ = input$.filter(filterFirst(<span class="literal">true</span>)).map(<span class="function">(<span class="params">val</span>)=&gt;</span> <span class="string">`&lt;p&gt;<span class="subst">$&#123;val&#125;</span>`</span>);</span><br><span class="line"><span class="keyword">const</span> last$ = input$.filter(filterLast(<span class="literal">true</span>)).map(<span class="function"><span class="params">()</span>=&gt;</span> <span class="string">'&lt;/p&gt;'</span>);</span><br><span class="line"><span class="keyword">const</span> sign$ = input$.filter(filterSign(<span class="literal">true</span>)).map(<span class="function">(<span class="params">val, i</span>)=&gt;</span> i % <span class="number">2</span> === <span class="number">0</span> ? <span class="string">'&lt;span&gt;'</span> : <span class="string">'&lt;/span&gt;'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> strings$ = input$</span><br><span class="line">  .filter(filterFirst(<span class="literal">false</span>))</span><br><span class="line">  .filter(filterLast(<span class="literal">false</span>))</span><br><span class="line">  .filter(filterSign(<span class="literal">false</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 時間軸に対する位置を、配列に対するインデックスとして捉えられるので、大本の`Observable Stream`の中でのオフセットを保ったまま</span></span><br><span class="line"><span class="comment">// 出来上がった`Observable Stream`を正しく合成することが出来ます</span></span><br><span class="line"><span class="keyword">const</span> merged$ = Rx.Observable.merge(strings$, first$, last$, sign$).scan(<span class="function">(<span class="params">strings, str</span>)=&gt;</span> strings + str);</span><br><span class="line"><span class="keyword">const</span> result$ = merged$.debounce(<span class="number">500</span>);</span><br><span class="line"></span><br><span class="line">result$.subscribe(<span class="function">(<span class="params">val</span>)=&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(val);</span><br><span class="line">  <span class="comment">// &lt;p&gt;ユーザーが打ち込んだマークダウン。途中の&lt;span&gt;syntax-highlight&lt;/span&gt;のように記述された箇所に、\</span></span><br><span class="line">  <span class="comment">// シンタックスハイライトを&lt;span&gt;実装&lt;/span&gt;する&lt;/p&gt;</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>配列に対する実装とほとんど同じように書くことが出来ました。<br>また、各々の<code>Observable Stream</code>の責任もコードを一読すれば、ある程度把握できるようになっているのではないでしょうか。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>という訳で、私が<code>Rx</code>入門前に意識しておくと理解がスムーズになりそうだと思っている事は</p>
+<ul>
+<li>イテレータパターンに対するなんとなくの理解</li>
+<li>オブザーバパターンに対するなんとなくの理解</li>
+<li>上２つの組み合わせとしてのストリームに対するなんとなくの理解</li>
+<li>ストリームを便利に操るために数多くのAPIが提供されているのが<code>Rx</code></li>
+</ul>
+<p>の4つです。</p>
+<p><code>Rx</code>はよく<code>API</code>のあまりの多さ、学習コストの高さでネガティブな紹介のされ方をする場面が多いです。<br>確かにそういった面は否定しようのない事実なのですが(実際、この記事の実装例くらいのものでも結構手こずりました)、<br>まずは大量の<code>API</code>とは距離を置いて<code>Rx</code>が提供する価値を享受してみるために、事前に抑えておきたい要素を挙げたつもりです。</p>
+<p>更にもう一つ付け加えるなら<a href="http://amagitakayosi.hatenablog.com/entry/2015/10/13/080000" target="_blank" rel="noopener">Cycle.js / RxJS 入門してサンプラー作ってみた</a>にあるように、<code>オペレータを使いこなそうとしない</code>というのも挙げられるかも知れません。</p>
+<p>とにかく、まず<code>Stream</code>とは何かについて自分なりに腹落ちすることで、入門への心理的な壁を低く出来るんじゃないかと思っています。</p>
+<h2 id="良かったドキュメント"><a href="#良かったドキュメント" class="headerlink" title="良かったドキュメント"></a>良かったドキュメント</h2><p>最後に私が<code>Rx</code>に入門するにあたって参考にしたドキュメントやサイトを色々載せておきます。<br>もちろん、この記事を書くにあたっても大いに参考にさせて頂きました。</p>
+<ul>
+<li><a href="https://gist.github.com/staltz/868e7e9bc2a7b8c1f754" target="_blank" rel="noopener">The introduction to Reactive Programming you’ve been missing</a></li>
+<li><a href="http://ninjinkun.hatenablog.com/entry/introrxja" target="_blank" rel="noopener">【翻訳】あなたが求めていたリアクティブプログラミング入門</a>(上の記事の邦訳)</li>
+<li><a href="http://qiita.com/erukiti/items/6a82dfd3506e9773d592" target="_blank" rel="noopener">RxJSで始めるRx(Reactive Extensions)入門1</a></li>
+<li><a href="http://qiita.com/advent-calendar/2015/rxjs" target="_blank" rel="noopener">RxJS Advent Calendar 2015</a></li>
+<li><a href="http://reactivex.io/" target="_blank" rel="noopener">ReactiveX公式サイト</a></li>
+<li><a href="https://github.com/Reactive-Extensions/RxJS/tree/master/doc/api/core/operators" target="_blank" rel="noopener">各オペレータのドキュメント一覧</a></li>
+<li><a href="http://rxmarbles.com/" target="_blank" rel="noopener">Rx marbles</a> Streamを可視化するとイメージしやすい</li>
+<li><a href="https://play.google.com/store/apps/details?id=com.moonfleet.rxmarbles" target="_blank" rel="noopener">Rx marblesのAndroidアプリ</a></li>
+</ul>
+<p>最近出た<code>RxJS</code>の本もとてもわかりやすいと思います。文量も多くないし。<br>この記事に書いた内容も、元々はこの本の1~2章あたりの内容に対する自分の理解をまとめたようなものです。<br><a href="https://pragprog.com/book/smreactjs/reactive-programming-with-rxjs" target="_blank" rel="noopener">Reactive Programming with RxJS</a></p>
+<p>正直なところ、<code>Rx</code>を全面的に採用したアプリケーション構築が主流になる事は考えづらいと思っていますが、<code>Observable Stream</code>の考え方がシンプルに解決してくれる課題というのも少なくないと思っています。</p>
+<p>この記事が、そのような場面に居合わせた時の心構えの一つになれればうれしいです。</p>
+<p><img src="https://gist.github.com/staltz/868e7e9bc2a7b8c1f754/raw/9f765eb717f4c60758a6c682b70296f5f6c2fc0a/zmantra.jpg" alt=""></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/12/20/prepare-to-rxjs/" data-text="Rx(JS)に入門する前に知っておきたいN個のこと" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/12/20/prepare-to-rxjs/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/12/20/prepare-to-rxjs/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/12/20/prepare-to-rxjs/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/12/20/prepare-to-rxjs/" class="hatena-bookmark-button" data-hatena-bookmark-title="Rx(JS)に入門する前に知っておきたいN個のこと" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Rx/">Rx</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RxJS/">RxJS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li></ul>
+
+
+      <p class="article-footer__author">by 小飼 慎一</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

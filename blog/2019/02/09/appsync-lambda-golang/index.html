@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AppSyncのデータソースとしてgolangのLambdaを利用する | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="AWS AppSyncのデータソースとして、GO言語のLambdaハンドラーを指定した環境を構築したいと思います。 概要図今回は、以下の図の通りに構築します。AppSyncはMutationおよび、Queryメソッドを利用して、Lambda Function経由でDynamoDBにアクセスし、結果を返却します。 AppSync API最初にAppSyncのAPIを作成します。今回はカスタムAPIの">
+<meta name="keywords" content="AWS,サーバーレス">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AppSyncのデータソースとしてgolangのLambdaを利用する">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2019/02/09/appsync-lambda-golang/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="AWS AppSyncのデータソースとして、GO言語のLambdaハンドラーを指定した環境を構築したいと思います。 概要図今回は、以下の図の通りに構築します。AppSyncはMutationおよび、Queryメソッドを利用して、Lambda Function経由でDynamoDBにアクセスし、結果を返却します。 AppSync API最初にAppSyncのAPIを作成します。今回はカスタムAPIの">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-02-09-yassan-appsync-lambda-golang/01.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-02-09-yassan-appsync-lambda-golang/02.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-02-09-yassan-appsync-lambda-golang/03.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-02-09-yassan-appsync-lambda-golang/04.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-02-09-yassan-appsync-lambda-golang/05.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-02-09-yassan-appsync-lambda-golang/06.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-02-09-yassan-appsync-lambda-golang/07.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-02-09-yassan-appsync-lambda-golang/08.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.158Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AppSyncのデータソースとしてgolangのLambdaを利用する">
+<meta name="twitter:description" content="AWS AppSyncのデータソースとして、GO言語のLambdaハンドラーを指定した環境を構築したいと思います。 概要図今回は、以下の図の通りに構築します。AppSyncはMutationおよび、Queryメソッドを利用して、Lambda Function経由でDynamoDBにアクセスし、結果を返却します。 AppSync API最初にAppSyncのAPIを作成します。今回はカスタムAPIの">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/2019-02-09-yassan-appsync-lambda-golang/01.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-yassan-appsync-lambda-golang" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2019-02-09T05:45:00.000Z" itemprop="datePublished">2019-02-09</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2019/02/09/appsync-lambda-golang/">AppSyncのデータソースとしてgolangのLambdaを利用する</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/02/09/appsync-lambda-golang/" data-text="AppSyncのデータソースとしてgolangのLambdaを利用する" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/02/09/appsync-lambda-golang/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/02/09/appsync-lambda-golang/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/02/09/appsync-lambda-golang/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/02/09/appsync-lambda-golang/" class="hatena-bookmark-button" data-hatena-bookmark-title="AppSyncのデータソースとしてgolangのLambdaを利用する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>AWS AppSyncのデータソースとして、<br>GO言語のLambdaハンドラーを指定した環境を構築したいと思います。</p>
+<h2 id="概要図"><a href="#概要図" class="headerlink" title="概要図"></a>概要図</h2><p>今回は、以下の図の通りに構築します。<br>AppSyncはMutationおよび、Queryメソッドを利用して、<br>Lambda Function経由でDynamoDBにアクセスし、結果を返却します。<br><img src="/images/2019-02-09-yassan-appsync-lambda-golang/01.png" alt="概要図"></p>
+<h2 id="appsync-api"><a href="#AppSync-API" class="headerlink" title="AppSync API"></a>AppSync API</h2><p>最初にAppSyncのAPIを作成します。<br>今回はカスタムAPIのため、「Build from scratch」を選択します。<br><img src="/images/2019-02-09-yassan-appsync-lambda-golang/02.png" alt="AppSync APIの作成"></p>
+<h2 id="dynamodb"><a href="#DynamoDB" class="headerlink" title="DynamoDB"></a>DynamoDB</h2><p>DynamoDBのテーブルを作成します。<br>今回はString型のpk, skを定義したシンプルなテーブルとします。  </p>
+<p><img src="/images/2019-02-09-yassan-appsync-lambda-golang/03.png" alt=""></p>
+<h2 id="appsync-schema"><a href="#AppSync-Schema" class="headerlink" title="AppSync Schema"></a>AppSync Schema</h2><p>AppSync APIのSchemaを記述します。<br>今回はPostの型にfieldという項目を設け、<br>Lambdaの処理を分岐させるように実装しました。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">type Mutation &#123;</span><br><span class="line">	putPost(</span><br><span class="line">		field: String!,</span><br><span class="line">		pk: String!,</span><br><span class="line">		sk: String!,</span><br><span class="line">		title: String!</span><br><span class="line">	): Post</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Post &#123;</span><br><span class="line">	field: String!</span><br><span class="line">	pk: String!</span><br><span class="line">	sk: String!</span><br><span class="line">	title: String</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Query &#123;</span><br><span class="line">	singlePost(field: String!, pk: String!, sk: String!): Post</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">schema &#123;</span><br><span class="line">	query: Query</span><br><span class="line">	mutation: Mutation</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="lambda-handler"><a href="#Lambda-Handler" class="headerlink" title="Lambda Handler"></a>Lambda Handler</h2><p>Lambdaハンドラーを実装します。<br>今回は、Serverless Application Model(SAM)を用いました。<br>golangのswitch構文によりfieldの値で処理が分岐し、<br>DynamoDBへのputまたは、getを実行します。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"github.com/aws/aws-lambda-go/lambda"</span></span><br><span class="line">	<span class="string">"github.com/aws/aws-sdk-go/aws"</span></span><br><span class="line">	<span class="string">"github.com/aws/aws-sdk-go/aws/session"</span></span><br><span class="line">	<span class="string">"github.com/aws/aws-sdk-go/service/dynamodb"</span></span><br><span class="line">	<span class="string">"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Post <span class="keyword">struct</span> &#123;</span><br><span class="line">	Field <span class="keyword">string</span> <span class="string">`json:"field"`</span></span><br><span class="line">	Pk    <span class="keyword">string</span> <span class="string">`json:"pk"`</span></span><br><span class="line">	Sk    <span class="keyword">string</span> <span class="string">`json:"sk"`</span></span><br><span class="line">	Title <span class="keyword">string</span> <span class="string">`json:"title"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Response <span class="keyword">struct</span> &#123;</span><br><span class="line">	Pk    <span class="keyword">string</span> <span class="string">`json:"pk"`</span></span><br><span class="line">	Sk    <span class="keyword">string</span> <span class="string">`json:"sk"`</span></span><br><span class="line">	Title <span class="keyword">string</span> <span class="string">`json:"title"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hander</span><span class="params">(arg Post)</span> <span class="params">(Response, error)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	response := Response&#123;&#125;</span><br><span class="line"></span><br><span class="line">	fmt.Println(<span class="string">"[DEBUG]Start create session."</span>)</span><br><span class="line">	session, err := session.NewSession(</span><br><span class="line">		&amp;aws.Config&#123;Region: aws.String(<span class="string">"ap-northeast-1"</span>)&#125;,</span><br><span class="line">	)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> Response&#123;&#125;, err</span><br><span class="line">	&#125;</span><br><span class="line">	svc := dynamodb.New(session)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">switch</span> arg.Field &#123;</span><br><span class="line">	<span class="keyword">case</span> <span class="string">"putPost"</span>:</span><br><span class="line">		input := &amp;dynamodb.PutItemInput&#123;</span><br><span class="line">			Item: <span class="keyword">map</span>[<span class="keyword">string</span>]*dynamodb.AttributeValue&#123;</span><br><span class="line">				<span class="string">"pk"</span>: &#123;</span><br><span class="line">					S: aws.String(arg.Pk),</span><br><span class="line">				&#125;,</span><br><span class="line">				<span class="string">"sk"</span>: &#123;</span><br><span class="line">					S: aws.String(arg.Sk),</span><br><span class="line">				&#125;,</span><br><span class="line">				<span class="string">"title"</span>: &#123;</span><br><span class="line">					S: aws.String(arg.Title),</span><br><span class="line">				&#125;,</span><br><span class="line">			&#125;,</span><br><span class="line">			TableName: aws.String(<span class="string">"appsync-lambda-go"</span>),</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		_, err = svc.PutItem(input)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> Response&#123;&#125;, err</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		response.Pk = arg.Pk</span><br><span class="line">		response.Sk = arg.Sk</span><br><span class="line">		response.Title = arg.Title</span><br><span class="line"></span><br><span class="line">	<span class="keyword">case</span> <span class="string">"singlePost"</span>:</span><br><span class="line">		input := &amp;dynamodb.GetItemInput&#123;</span><br><span class="line">			Key: <span class="keyword">map</span>[<span class="keyword">string</span>]*dynamodb.AttributeValue&#123;</span><br><span class="line">				<span class="string">"pk"</span>: &#123;</span><br><span class="line">					S: aws.String(arg.Pk),</span><br><span class="line">				&#125;,</span><br><span class="line">				<span class="string">"sk"</span>: &#123;</span><br><span class="line">					S: aws.String(arg.Sk),</span><br><span class="line">				&#125;,</span><br><span class="line">			&#125;,</span><br><span class="line">			TableName: aws.String(<span class="string">"appsync-lambda-go"</span>),</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		result, err := svc.GetItem(input)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> Response&#123;&#125;, err</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		resultData := &amp;Response&#123;&#125;</span><br><span class="line">		<span class="keyword">if</span> err := dynamodbattribute.UnmarshalMap(result.Item, resultData); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> Response&#123;&#125;, err</span><br><span class="line">		&#125;</span><br><span class="line">		response.Pk = resultData.Pk</span><br><span class="line">		response.Sk = resultData.Sk</span><br><span class="line">		response.Title = resultData.Title</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> response, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	lambda.Start(hander)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="appsync-datasource"><a href="#AppSync-DataSource" class="headerlink" title="AppSync DataSource"></a>AppSync DataSource</h2><p>実装済みのLambda FunctionをAppSyncのデータソースに指定します。  </p>
+<p><img src="/images/2019-02-09-yassan-appsync-lambda-golang/04.png" alt="AppSync データソースの指定"></p>
+<h2 id="appsync-schema-resolver"><a href="#AppSync-Schema-Resolver" class="headerlink" title="AppSync Schema Resolver"></a>AppSync Schema Resolver</h2><p>Mutationおよび、QueryのResolverを指定します。<br>今回は下記のリクエスト・レスポンスマッピングテンプレートを設定しました。</p>
+<h3 id="request-mapping-template"><a href="#request-mapping-template" class="headerlink" title="request mapping template."></a>request mapping template.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;version&quot; : &quot;2017-02-28&quot;,</span><br><span class="line">    &quot;operation&quot;: &quot;Invoke&quot;,</span><br><span class="line">    &quot;payload&quot;: $util.toJson($context.arguments)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="response-mapping-template"><a href="#response-mapping-template" class="headerlink" title="response mapping template."></a>response mapping template.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$util.toJson($context.result)</span><br></pre></td></tr></table></figure>
+<h2 id="動作確認"><a href="#動作確認" class="headerlink" title="動作確認"></a>動作確認</h2><p>動作確認をしていきます。</p>
+<h3 id="mutation"><a href="#Mutation" class="headerlink" title="Mutation"></a>Mutation</h3><p>AppSyncのQueries画面で下記クエリを記述し、実行します。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mutation PutPost &#123;</span><br><span class="line">  putPost(field: &quot;putPost&quot;, pk: &quot;hoge&quot;, sk: &quot;huga&quot;, title: &quot;Hello! AppSync!!&quot;) &#123;</span><br><span class="line">    pk</span><br><span class="line">    sk</span><br><span class="line">    title</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="実行結果"><a href="#実行結果" class="headerlink" title="実行結果"></a>実行結果</h4><p><img src="/images/2019-02-09-yassan-appsync-lambda-golang/05.png" alt="DynamoDBのデータ内容"><br><img src="/images/2019-02-09-yassan-appsync-lambda-golang/06.png" alt="Management Consoleの結果画面"><br>DynamoDBにデータが保存され、レスポンスも期待した値が返却されました！</p>
+<h3 id="query"><a href="#Query" class="headerlink" title="Query"></a>Query</h3><p>AppSyncのQueriess画面に下記クエリを記述し、実行します。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">query GetPost &#123;</span><br><span class="line">  singlePost(field: &quot;singlePost&quot;, pk: &quot;hoge&quot;, sk: &quot;huga&quot;) &#123;</span><br><span class="line">    pk</span><br><span class="line">    sk</span><br><span class="line">    title</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="実行結果"><a href="#実行結果-1" class="headerlink" title="実行結果"></a>実行結果</h4><p><img src="/images/2019-02-09-yassan-appsync-lambda-golang/07.png" alt="Management Consoleの結果画面"><br>Mutationで登録したデータが、取得できています！</p>
+<h2 id="データソースにlambdaを指定した場合の実装は無限大"><a href="#データソースにLambdaを指定した場合の実装は無限大" class="headerlink" title="データソースにLambdaを指定した場合の実装は無限大"></a>データソースにLambdaを指定した場合の実装は無限大</h2><p>Lambdaで処理を記述することで、その実装は無限大です。<br>例えば、以下の図のようにS3にリクエストパラメータを保存し、<br>分析用途としても利用することもできるでしょう。<br><img src="/images/2019-02-09-yassan-appsync-lambda-golang/08.png" alt="S3に保存する例"></p>
+<h2 id="改善点"><a href="#改善点" class="headerlink" title="改善点"></a>改善点</h2><p>今回はリクエストパラメータにfieldという項目を用意し、<br>Lambdaの処理を分岐しました。  </p>
+<p>しかしながら、AppSyncのためのAppSyncResolverTemplateを利用することが<br>最適解ではないかと思います。<br>AppSyncResolverTemplateを利用するよう、改善していければと思います。</p>
+<h3 id="appsyncresolvertemplateによる実装例"><a href="#AppSyncResolverTemplateによる実装例" class="headerlink" title="AppSyncResolverTemplateによる実装例"></a>AppSyncResolverTemplateによる実装例</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"context"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"github.com/aws/aws-lambda-go/events"</span></span><br><span class="line">	<span class="string">"github.com/aws/aws-lambda-go/lambda"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">handler</span><span class="params">(ctx context.Context, event events.AppSyncResolverTemplate)</span> <span class="title">error</span></span> &#123;</span><br><span class="line"></span><br><span class="line">  fmt.Printf(<span class="string">"Version: %s\n"</span>, event.Version)</span><br><span class="line">  fmt.Printf(<span class="string">"Operation: %s\n"</span>, event.Operation)</span><br><span class="line">  fmt.Printf(<span class="string">"Payload: %s\n"</span>, <span class="keyword">string</span>(event.Payload))</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>MMMは、会社としてもAWS Lambdaに力を入れています。ぜひ以下のページもあわせてご覧ください。</p>
+<p>・<a href="https://mmmcorp.co.jp/service/serverlessarchitecture/" target="_blank" rel="noopener">サーバーレスアーキテクチャ（AWS Lambda）</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/02/09/appsync-lambda-golang/" data-text="AppSyncのデータソースとしてgolangのLambdaを利用する" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/02/09/appsync-lambda-golang/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/02/09/appsync-lambda-golang/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/02/09/appsync-lambda-golang/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/02/09/appsync-lambda-golang/" class="hatena-bookmark-button" data-hatena-bookmark-title="AppSyncのデータソースとしてgolangのLambdaを利用する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li></ul>
+
+
+      <p class="article-footer__author">by yassan</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

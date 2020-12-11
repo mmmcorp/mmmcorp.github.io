@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AngularJSとGruntで稼働環境によって接続先APIを切り替える | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="今年の夏は、家族旅行で行った海ではしゃぎ過ぎ、温泉宿に付いた瞬間に疲れ果ててしまい肝心の温泉にあまり浸かれず、翌日全身筋肉痛となって帰宅したのがハイライトだった…..代表の国本です。 Webサービスやスマホ・アプリ開発では実際にサービスが稼働する本番環境の他に、同等のステージングや開発環境をセットで構築することが多々あるかと思います。 現在弊社のプロジェクトではクライアントサイドのフレームワークと">
+<meta name="keywords" content="フロントエンド,AngularJS,Grunt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AngularJSとGruntで稼働環境によって接続先APIを切り替える">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2014/08/25/enviroments-specific-configuration-in-angular/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="今年の夏は、家族旅行で行った海ではしゃぎ過ぎ、温泉宿に付いた瞬間に疲れ果ててしまい肝心の温泉にあまり浸かれず、翌日全身筋肉痛となって帰宅したのがハイライトだった…..代表の国本です。 Webサービスやスマホ・アプリ開発では実際にサービスが稼働する本番環境の他に、同等のステージングや開発環境をセットで構築することが多々あるかと思います。 現在弊社のプロジェクトではクライアントサイドのフレームワークと">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/angularJS/angularJS_alert.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.126Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AngularJSとGruntで稼働環境によって接続先APIを切り替える">
+<meta name="twitter:description" content="今年の夏は、家族旅行で行った海ではしゃぎ過ぎ、温泉宿に付いた瞬間に疲れ果ててしまい肝心の温泉にあまり浸かれず、翌日全身筋肉痛となって帰宅したのがハイライトだった…..代表の国本です。 Webサービスやスマホ・アプリ開発では実際にサービスが稼働する本番環境の他に、同等のステージングや開発環境をセットで構築することが多々あるかと思います。 現在弊社のプロジェクトではクライアントサイドのフレームワークと">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/angularJS/angularJS_alert.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-enviroments-specific-configuration-in-angular" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2014-08-25T22:21:15.000Z" itemprop="datePublished">2014-08-25</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2014/08/25/enviroments-specific-configuration-in-angular/">AngularJSとGruntで稼働環境によって接続先APIを切り替える</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2014/08/25/enviroments-specific-configuration-in-angular/" data-text="AngularJSとGruntで稼働環境によって接続先APIを切り替える" data-counturl="https://blog.mmmcorp.co.jp/blog/2014/08/25/enviroments-specific-configuration-in-angular/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2014/08/25/enviroments-specific-configuration-in-angular/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2014/08/25/enviroments-specific-configuration-in-angular/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2014/08/25/enviroments-specific-configuration-in-angular/" class="hatena-bookmark-button" data-hatena-bookmark-title="AngularJSとGruntで稼働環境によって接続先APIを切り替える" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今年の夏は、家族旅行で行った海ではしゃぎ過ぎ、温泉宿に付いた瞬間に疲れ果ててしまい肝心の温泉にあまり浸かれず、翌日全身筋肉痛となって帰宅したのがハイライトだった…..代表の国本です。</p>
+<p>Webサービスやスマホ・アプリ開発では実際にサービスが稼働する本番環境の他に、同等のステージングや開発環境をセットで構築することが多々あるかと思います。</p>
+<p>現在弊社のプロジェクトではクライアントサイドのフレームワークとしてAngularJSを積極的に採用しており、今回は<a href="http://newtriks.com/2013/11/29/environment-specific-configuration-in-angularjs-using-grunt/" target="_blank" rel="noopener">Environment Specific Configuration in AngularJS Using Grunt</a><br>を参考に、Gruntを使用してAngularJSでステージングや本番環境など、稼働環境に応じて接続するAPIを切り替える方法について書いてみようと思います。</p>
+<h2 id="事前準備"><a href="#事前準備" class="headerlink" title="事前準備"></a>事前準備</h2><p>今回は、<a href="http://yeoman.io/" target="_blank" rel="noopener">Yeoman</a>を使い、本ブログエントリーのために専用のenviromentsAppというアプリを作成します。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">% yo angular enviromentsApp --coffee</span><br></pre></td></tr></table></figure>
+<p>アプリのサービスで利用するAPIの接続先が開発環境、ステージング、本番それぞれで異なるという想定で以下手順を進めて行きたいと思います。</p>
+<h2 id="generator-env-configの導入"><a href="#generator-env-configの導入" class="headerlink" title="generator-env-configの導入"></a>generator-env-configの導入</h2><p>それぞれの環境で区分したいAPIのURLを設定ファイル化するための、Yeomanのジェネレーターである<a href="https://www.npmjs.org/package/generator-env-config" target="_blank" rel="noopener">generator-env-config</a>をnpm経由でインストールします。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">% npm install generator-env-config</span><br></pre></td></tr></table></figure>
+<p>インストールが完了後、下記コマンドを実行し、まずは開発環境用の設定ファイルを生成します。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">% yo env-config</span><br></pre></td></tr></table></figure>
+<p>実行後、<code>config/environments/development.json</code>が生成されます。</p>
+<p>アプリ直下に生成された<code>config/enviroments</code>配下のJSONファイルで、実行環境毎の設定値を管理します。(Railsにおけるconfig/enviromentsのイメージですね)</p>
+<p>同じように、ステージング用、本番用のJSONファイルも生成しておきましょう。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">% yo env-config staging</span><br><span class="line">% yo env-config production</span><br><span class="line"></span><br><span class="line">% ll config/environments/</span><br><span class="line">total 24</span><br><span class="line">drwxr-xr-x  5 kuninori  wheel  170  8 26 21:09 .</span><br><span class="line">drwxr-xr-x  4 kuninori  wheel  136  8 26 20:50 ..</span><br><span class="line">-rw-r--r--  1 kuninori  wheel   40  8 26 20:50 development.json</span><br><span class="line">-rw-r--r--  1 kuninori  wheel   19  8 26 21:09 production.json</span><br><span class="line">-rw-r--r--  1 kuninori  wheel   19  8 26 21:09 staging.json</span><br></pre></td></tr></table></figure>
+<p>今回はAPIの接続URLを実行環境毎に区分する。という想定なので<code>config/environments/</code>配下のそれぞれの環境設定JSONファイルに下記設定を行います。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// development.json</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"apiUrl"</span>: <span class="string">"http://localhost:9000"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// staging.json</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"apiUrl"</span>: <span class="string">"http://staging.local"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// production.json</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"apiUrl"</span>: <span class="string">"http://production.local"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="angularjsモジュールの生成"><a href="#AngularJSモジュールの生成" class="headerlink" title="AngularJSモジュールの生成"></a>AngularJSモジュールの生成</h2><p>次に、env-configを使用してAngularJS上で実行環境毎の設定値を管理する<code>services.config</code>というモジュールを作成します。<br>先程JSONファイルに設定されたそれぞれの環境用の設定値は、この<code>services.config</code>モジュールをロードすることで利用できるようになります。</p>
+<p>まず、下記コマンドを実行します。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">% yo env-config:angular config</span><br></pre></td></tr></table></figure>
+<p>コマンド実行後、<code>config/config.js</code>というファイルが生成されており、その中で<code>services.config</code>モジュールが定義されています。</p>
+<p><code>services.config</code>モジュールで、JSON設定ファイル内に定義されているAPIのURL(apiUrl)を扱えるようにします。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span>;</span><br><span class="line"></span><br><span class="line">angular.module(<span class="string">'services.config'</span>, [])</span><br><span class="line">  .constant(<span class="string">'configuration'</span>, &#123;</span><br><span class="line">    <span class="comment">// apiUrl変数を定義する</span></span><br><span class="line">    apiUrl: <span class="string">'@@apiUrl'</span></span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="grunt-replaceの導入とタスクの定義"><a href="#grunt-replaceの導入とタスクの定義" class="headerlink" title="grunt-replaceの導入とタスクの定義"></a>grunt-replaceの導入とタスクの定義</h2><p>次にGruntを使用しそれぞれの環境用の設定値を動的に生成できるように<code>grunt-replace</code>をnpmで導入し、ビルド用タスクを定義します。</p>
+<p>まずは<code>grunt-replace</code>をインストール</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">% npm install grunt-replace --save-dev</span><br></pre></td></tr></table></figure>
+<p>インストール後、<code>grunt-replace</code>をロードするように<code>Gruntfile.js</code>の編集を行います。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span> (<span class="params">grunt</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// module.exports内に下記設定を追記する</span></span><br><span class="line">  grunt.loadNpmTasks(<span class="string">'grunt-replace'</span>);</span><br></pre></td></tr></table></figure>
+<p>併せて<code>grunt-replace</code>用のタスクを<code>grunt.initConfig</code>配下に定義します。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">grunt.initConfig(&#123;</span><br><span class="line">  replace: &#123;</span><br><span class="line">    development: &#123;</span><br><span class="line">      options: &#123;</span><br><span class="line">        patterns: [&#123;</span><br><span class="line">          json: grunt.file.readJSON(<span class="string">'./config/environments/development.json'</span>)</span><br><span class="line">        &#125;]</span><br><span class="line">      &#125;,</span><br><span class="line">      files: [&#123;</span><br><span class="line">        expand: <span class="literal">true</span>,</span><br><span class="line">        flatten: <span class="literal">true</span>,</span><br><span class="line">        src: [<span class="string">'./config/config.js'</span>],</span><br><span class="line">        dest: <span class="string">'&lt;%= yeoman.app %&gt;/scripts/services/'</span></span><br><span class="line">      &#125;]</span><br><span class="line">    &#125;,</span><br><span class="line">    staging: &#123;</span><br><span class="line">      options: &#123;</span><br><span class="line">        patterns: [&#123;</span><br><span class="line">          json: grunt.file.readJSON(<span class="string">'./config/environments/staging.json'</span>)</span><br><span class="line">        &#125;]</span><br><span class="line">      &#125;,</span><br><span class="line">      files: [&#123;</span><br><span class="line">        expand: <span class="literal">true</span>,</span><br><span class="line">        flatten: <span class="literal">true</span>,</span><br><span class="line">        src: [<span class="string">'./config/config.js'</span>],</span><br><span class="line">        dest: <span class="string">'&lt;%= yeoman.app %&gt;/scripts/services/'</span></span><br><span class="line">      &#125;]</span><br><span class="line">    &#125;,</span><br><span class="line">    production: &#123;</span><br><span class="line">      options: &#123;</span><br><span class="line">        patterns: [&#123;</span><br><span class="line">          json: grunt.file.readJSON(<span class="string">'./config/environments/production.json'</span>)</span><br><span class="line">        &#125;]</span><br><span class="line">      &#125;,</span><br><span class="line">      files: [&#123;</span><br><span class="line">        expand: <span class="literal">true</span>,</span><br><span class="line">        flatten: <span class="literal">true</span>,</span><br><span class="line">        src: [<span class="string">'./config/config.js'</span>],</span><br><span class="line">        dest: <span class="string">'&lt;%= yeoman.app %&gt;/scripts/services/'</span></span><br><span class="line">      &#125;]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>タスクが定義できたら、早速開発環境用のタスクを走らせてみましょう</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">% grunt replace:development</span><br><span class="line">Running <span class="string">"replace:development"</span> (replace) task</span><br><span class="line">Replace ./config/config.js → app/scripts/services/config.js</span><br><span class="line"></span><br><span class="line">Done, without errors.</span><br></pre></td></tr></table></figure>
+<p>タスクが正常終了後、<code>app/scripts/services/config.js</code>ファイルが生成されます。<br><code>config/environments/development.json</code>で定義した、開発環境向けのAPIのURLがモジュールとして定義されているのが確認できます。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span>;</span><br><span class="line"></span><br><span class="line">angular.module(<span class="string">'services.config'</span>, [])</span><br><span class="line">  .constant(<span class="string">'configuration'</span>, &#123;</span><br><span class="line">    apiUrl: <span class="string">'http://localhost:9000'</span></span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="angularjsアプリでservicesconfigモジュールをロード"><a href="#AngularJSアプリでservices-configモジュールをロード" class="headerlink" title="AngularJSアプリでservices.configモジュールをロード"></a>AngularJSアプリでservices.configモジュールをロード</h2><p>これまでの手順で、それぞれの稼働環境用の変数が定義された<code>services.config</code>モジュールが生成できる環境が整ったため、生成された<code>services.config</code>モジュールをAngularJSアプリケーションからロードし利用できるようにしましょう。</p>
+<p>まずは<code>app/index.html</code>で<code>services.config</code>モジュール用のJavaScriptを読み込みます。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># config.jsをindex.htmlに追加</span></span><br><span class="line">&lt;script src=<span class="string">"scripts/services/config.js"</span>&gt;&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>次に、<code>app/scripts/app.coffee</code>からモジュールをロード。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span></span><br><span class="line"></span><br><span class="line">###*</span><br><span class="line"> # @ngdoc overview</span><br><span class="line"> # @name enviromentsAppApp</span><br><span class="line"> # @description</span><br><span class="line"> # # enviromentsAppApp</span><br><span class="line"> #</span><br><span class="line"> # Main module of the application.</span><br><span class="line">###</span><br><span class="line">angular</span><br><span class="line">  .module(<span class="string">'enviromentsAppApp'</span>, [</span><br><span class="line">    <span class="string">'ngAnimate'</span>,</span><br><span class="line">    <span class="string">'ngCookies'</span>,</span><br><span class="line">    <span class="string">'ngResource'</span>,</span><br><span class="line">    <span class="string">'ngRoute'</span>,</span><br><span class="line">    <span class="string">'ngSanitize'</span>,</span><br><span class="line">    <span class="string">'ngTouch'</span>,</span><br><span class="line">    <span class="comment">// services.configをロードするように追加</span></span><br><span class="line">    <span class="string">'services.config'</span></span><br><span class="line">  ])</span><br></pre></td></tr></table></figure>
+<p>これでモジュールが呼び出せるので、早速コントローラーから定義されているAPI用のURLを確認してみましょう。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span></span><br><span class="line"></span><br><span class="line">###*</span><br><span class="line"> # @ngdoc function</span><br><span class="line"> # @name enviromentsAppApp.controller:MainCtrl</span><br><span class="line"> # @description</span><br><span class="line"> # # MainCtrl</span><br><span class="line"> # Controller of the enviromentsAppApp</span><br><span class="line">###</span><br><span class="line">angular.module(<span class="string">'enviromentsAppApp'</span>)</span><br><span class="line">  <span class="comment">// configurationをセット</span></span><br><span class="line">  .controller <span class="string">'MainCtrl'</span>, ($scope, configuration) -&gt;</span><br><span class="line">    <span class="comment">// configuration.apiUrlで定義しているAPIのURLをアラート表示してみる</span></span><br><span class="line">    alert configuration.apiUrl</span><br></pre></td></tr></table></figure>
+<p>起動してみると……。</p>
+<p><img src="/images/angularJS/angularJS_alert.png" alt="alert"></p>
+<p>定義しているAPIのURLが表示されましたね。</p>
+<p>後は、実際にS3やWebサーバへAngularJSアプリケーションをデプロイする際に実行するGruntのビルド処理の中で<br><code>grunt replace:staging</code>や<code>grunt replace:production</code>を実行するように仕込めば、デプロイ環境に併せて<br>フレキシブルに環境変数が準備できます。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>いかがでしたでしょうか？ 今回活用した<code>generator-env-config</code>以外にも環境ごとの設定値を良い感じに定義する手法は数多くあるかと思いますので<br>ご教示いただければ幸いです。</p>
+<p>ではでは、良きAngularJSライフを‎╭( ･ㅂ･)و ̑̑</p>
+<p>今回ご紹介したような、<a href="https://mmmcorp.co.jp/services/remote_system_engineering_service/angularjs" target="_blank" rel="noopener">AngularJSなどのフレームワークを活用したフロントエンドアプリケーション開発</a>を御希望の企業様は、是非お気軽にMMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2014/08/25/enviroments-specific-configuration-in-angular/" data-text="AngularJSとGruntで稼働環境によって接続先APIを切り替える" data-counturl="https://blog.mmmcorp.co.jp/blog/2014/08/25/enviroments-specific-configuration-in-angular/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2014/08/25/enviroments-specific-configuration-in-angular/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2014/08/25/enviroments-specific-configuration-in-angular/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2014/08/25/enviroments-specific-configuration-in-angular/" class="hatena-bookmark-button" data-hatena-bookmark-title="AngularJSとGruntで稼働環境によって接続先APIを切り替える" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AngularJS/">AngularJS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Grunt/">Grunt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li></ul>
+
+
+      <p class="article-footer__author">by 国本 廷宣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

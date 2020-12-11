@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Docker for Macの代わりに、Vagrant + Dockerで開発環境を構築する | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="エンジニアの内山です。最近は家に引きこもって、どう森とスプラトゥーンを楽しんでいます。 今回は、Vagrant + Dockerで開発環境を構築する手順をご紹介します。 概要Docker for Mac はパフォーマンスが悪いため、開発効率に悪くなってしまいます。原因については、以下を参照してください。 https://forums.docker.com/t/file-access-in-moun">
+<meta name="keywords" content="プログラミング,Docker,Vagrant">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker for Macの代わりに、Vagrant + Dockerで開発環境を構築する">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/05/25/vagrant-docker-mac/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="エンジニアの内山です。最近は家に引きこもって、どう森とスプラトゥーンを楽しんでいます。 今回は、Vagrant + Dockerで開発環境を構築する手順をご紹介します。 概要Docker for Mac はパフォーマンスが悪いため、開発効率に悪くなってしまいます。原因については、以下を参照してください。 https://forums.docker.com/t/file-access-in-moun">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker for Macの代わりに、Vagrant + Dockerで開発環境を構築する">
+<meta name="twitter:description" content="エンジニアの内山です。最近は家に引きこもって、どう森とスプラトゥーンを楽しんでいます。 今回は、Vagrant + Dockerで開発環境を構築する手順をご紹介します。 概要Docker for Mac はパフォーマンスが悪いため、開発効率に悪くなってしまいます。原因については、以下を参照してください。 https://forums.docker.com/t/file-access-in-moun">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-vagrant-docker-mac" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-05-25T08:52:43.000Z" itemprop="datePublished">2020-05-25</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/05/25/vagrant-docker-mac/">Docker for Macの代わりに、Vagrant + Dockerで開発環境を構築する</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/05/25/vagrant-docker-mac/" data-text="Docker for Macの代わりに、Vagrant + Dockerで開発環境を構築する" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/05/25/vagrant-docker-mac/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/05/25/vagrant-docker-mac/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/05/25/vagrant-docker-mac/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/05/25/vagrant-docker-mac/" class="hatena-bookmark-button" data-hatena-bookmark-title="Docker for Macの代わりに、Vagrant + Dockerで開発環境を構築する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>エンジニアの内山です。最近は家に引きこもって、どう森とスプラトゥーンを楽しんでいます。</p>
+<p>今回は、Vagrant + Dockerで開発環境を構築する手順をご紹介します。</p>
+<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>Docker for Mac はパフォーマンスが悪いため、開発効率に悪くなってしまいます。原因については、以下を参照してください。</p>
+<p><a href="https://forums.docker.com/t/file-access-in-mounted-volumes-extremely-slow-cpu-bound/8076/158" target="_blank" rel="noopener">https://forums.docker.com/t/file-access-in-mounted-volumes-extremely-slow-cpu-bound/8076/158</a></p>
+<p>Docker自体が遅いわけではないため、Linux上で動かした場合は、問題になりません。</p>
+<p>この記事では、Docker for Macの代わりに、Vagrantで動作させているLinux上でDockerを使い、開発環境を構築する方法をご紹介しています。</p>
+<p>手順は、以下の3ステップになります。</p>
+<ol>
+<li>VirtualBoxとVagrantをインストールする</li>
+<li>mutagenでファイル同期する</li>
+<li>Dockerを起動する</li>
+</ol>
+<h2 id="virtualbox-と-vagrantをインストールする"><a href="#VirtualBox-と-Vagrantをインストールする" class="headerlink" title="VirtualBox と Vagrantをインストールする"></a>VirtualBox と Vagrantをインストールする</h2><p>Homebrewを使用しようして、必要なツールをインストールしていきます。</p>
+<p><a href="https://brew.sh/" target="_blank" rel="noopener">https://brew.sh/</a></p>
+<p>VirtualBoxとVagrantとUbuntuのイメージををインストールします。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ brew cask install virtualbox</span><br><span class="line">$ brew cask install vagrant</span><br><span class="line">$ vagrant box add ubuntu/xenial64</span><br></pre></td></tr></table></figure>
+<p>Dockerとmutagen(後述)用のvagrantプラグインをインストールします。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vagrant plugin install vagrant-disksize vagrant-hostsupdater vagrant-mutagen vagrant-docker-compose</span><br></pre></td></tr></table></figure>
+<p>vagrantで初期化します。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vagrant init ubuntu/xenial64</span><br></pre></td></tr></table></figure>
+<p>次に、Vagrantファイルを作成しますが、Railsプロジェクトのディレクトリに作成する必要はありません。もし、プロジェクトのgitに含めたくない場合は、Vagrant実行用のディレクトリを作成して、そこにVagrantファイルを作成すると良いでしょう。</p>
+<p>Vagrantファイルの内容は以下のようになります。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">Vagrant.configure(&apos;2&apos;) do |config|</span><br><span class="line">  config.vm.box = &apos;ubuntu/xenial64&apos;</span><br><span class="line"></span><br><span class="line">  config.vm.hostname = &apos;my-app&apos;</span><br><span class="line"></span><br><span class="line">  config.vm.network :private_network, ip: &apos;192.168.50.10&apos;</span><br><span class="line">  </span><br><span class="line">  config.vm.network &quot;forwarded_port&quot;, guest: 80, host: 80</span><br><span class="line"></span><br><span class="line">  config.vm.provider :virtualbox do |vb|</span><br><span class="line">    vb.gui = false</span><br><span class="line">    vb.cpus = 4</span><br><span class="line">    vb.memory = 8192</span><br><span class="line">    vb.customize [&apos;modifyvm&apos;, :id, &apos;--natdnsproxy1&apos;, &apos;off&apos;]</span><br><span class="line">    vb.customize [&apos;modifyvm&apos;, :id, &apos;--natdnshostresolver1&apos;, &apos;off&apos;]</span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">  config.disksize.size = &apos;30GB&apos;</span><br><span class="line">  config.mutagen.orchestrate = true</span><br><span class="line"></span><br><span class="line">  config.vm.synced_folder &apos;### PATH_TO_PROJECT ###&apos;, &apos;/home/vagrant/app&apos;, type: &apos;rsync&apos;,</span><br><span class="line">                                                                                                              rsync_auto: true,</span><br><span class="line">                                                                                                              rsync__exclude: [&apos;.git/&apos;, &apos;node_modules/&apos;, &apos;log/&apos;, &apos;tmp/&apos;, &apos;vendor&apos;]</span><br><span class="line"></span><br><span class="line">  config.vm.provision :docker, run: &apos;always&apos;</span><br><span class="line">  config.vm.provision :docker_compose</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p><code>### PATH_TO_PROJECT ###</code> の部分を、プロジェクトディレクトリの絶対パスに変更してください。</p>
+<p>以上で、Vagrant+VirtualBoxの準備は完了です。</p>
+<h2 id="mutagenでファイル同期する"><a href="#mutagenでファイル同期する" class="headerlink" title="mutagenでファイル同期する"></a>mutagenでファイル同期する</h2><p>編集したファイルをMacとLinuxで同期させます。mutagenというツールで実現します。</p>
+<p>以下のコマンドで、mutagenをインストールします。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ brew install mutagen-io/mutagen/mutagen</span><br></pre></td></tr></table></figure>
+<p>mutagenの設定ファイル<code>mutagen.yml</code>を作成します。作成する場所は、Vagrantfileと同じディレクトリにしてください。内容は以下のようになります。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sync:</span><br><span class="line">  app:</span><br><span class="line">    mode: &quot;two-way-resolved&quot;</span><br><span class="line">    alpha: &quot;### PATH_TO_PROJECT ####&quot;</span><br><span class="line">    beta: &quot;my-app:/home/vagrant/app&quot;</span><br><span class="line">    ignore:</span><br><span class="line">      vcs: true</span><br><span class="line">      paths:</span><br><span class="line">        - &quot;/node_modules&quot;</span><br><span class="line">        - &quot;/log&quot;</span><br><span class="line">        - &quot;/tmp&quot;</span><br><span class="line">        - &quot;/vendor&quot;</span><br></pre></td></tr></table></figure>
+<p><code>### PATH_TO_PROJECT ###</code> の部分を、プロジェクトディレクトリの絶対パスに変更してください。</p>
+<p>これで、mutagenの設定は完了です。mutagenはVagrantのプラグイン経由で実行されます。</p>
+<h2 id="dockerを起動する"><a href="#Dockerを起動する" class="headerlink" title="Dockerを起動する"></a>Dockerを起動する</h2><p>Vagrantで起動したLinuxにログインします。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ vagrant up</span><br><span class="line">$ vagrant ssh</span><br></pre></td></tr></table></figure>
+<p><code>Unable to monitor filesystem</code>というエラーが発生する場合があるので、以下のコマンドを実行しておき、防止します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf &amp;&amp; sudo sysctl -p</span><br></pre></td></tr></table></figure>
+<p>Vagrantの中で、Dockerを起動します。以下のコマンドは、プロジェクトディレクトリにdocker-compose.ymlが存在している場合の例です。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd app</span><br><span class="line">$ docker-compose up</span><br></pre></td></tr></table></figure>
+<p>以上で、完了です。</p>
+<p>体感的に、Docker for Macよりも高速に実行されていることが確認できると思います。</p>
+<h2 id="他の改善方法"><a href="#他の改善方法" class="headerlink" title="他の改善方法"></a>他の改善方法</h2><p>Docker for Macのパフォーマンス改善に関する方法は、他にも以下のようなものがあります。</p>
+<h3 id="macを使わずにlinux-pcを使う"><a href="#Macを使わずにLinux-PCを使う" class="headerlink" title="Macを使わずにLinux PCを使う"></a>Macを使わずにLinux PCを使う</h3><p>Macにこだわらなければ、LinuxPCを使うことも選択肢の一つです。移行コストが気にならなければ、この方法を選択できます。</p>
+<h3 id="docker-syncを使う"><a href="#docker-syncを使う" class="headerlink" title="docker-syncを使う"></a>docker-syncを使う</h3><p>未検証ですが、docker-syncを使う方法もあるそうです。<br><a href="https://github.com/EugenMayer/docker-sync/wiki" target="_blank" rel="noopener">https://github.com/EugenMayer/docker-sync/wiki</a></p>
+<h3 id="dockerを使わない"><a href="#Dockerを使わない" class="headerlink" title="Dockerを使わない"></a>Dockerを使わない</h3><p>そもそもDockerを使わない選択肢もあります。この方法は、チームのメンバー間で環境差異が出るのが懸念点です。しかし、フロントエンド開発であれば、ほとんど問題ないかもしれません。</p>
+<p>フロントエンドの開発環境に Docker は不要(少なくともMacでは)<br><a href="https://mizchi.hatenablog.com/entry/2019/04/07/074634" target="_blank" rel="noopener">https://mizchi.hatenablog.com/entry/2019/04/07/074634</a></p>
+<p>バックエンド開発については、DBなどのコンポーネントが必要な場合が多いため、Dockerはほぼ必須かと思います。</p>
+<h2 id="おわりに"><a href="#おわりに" class="headerlink" title="おわりに"></a>おわりに</h2><p>Docker for Macのパフォーマンスは、開発効率にかなりの悪影響を及ぼすレベルです。開発を進める前に、改善することをおすすめします。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://qiita.com/necocoa/items/bd62ed3dba14b17552f2" target="_blank" rel="noopener">https://qiita.com/necocoa/items/bd62ed3dba14b17552f2</a></li>
+<li><a href="https://qiita.com/yn-misaki/items/c850a07f7858437e4d26" target="_blank" rel="noopener">https://qiita.com/yn-misaki/items/c850a07f7858437e4d26</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/05/25/vagrant-docker-mac/" data-text="Docker for Macの代わりに、Vagrant + Dockerで開発環境を構築する" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/05/25/vagrant-docker-mac/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/05/25/vagrant-docker-mac/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/05/25/vagrant-docker-mac/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/05/25/vagrant-docker-mac/" class="hatena-bookmark-button" data-hatena-bookmark-title="Docker for Macの代わりに、Vagrant + Dockerで開発環境を構築する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/">Docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Vagrant/">Vagrant</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/プログラミング/">プログラミング</a></li></ul>
+
+
+      <p class="article-footer__author">by 内山 浩佑</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Session Manager 使えば踏み台サーバーが不要に | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="2019年7月、AWS Systems Manager セッションマネージャーを使用して、クライアントとサーバー間で SSH (Secure Shell) および SCP (Secure Copy) トラフィックをトンネリングすることができるようになった。 セッションマネージャーが SSH と SCP のトンネリングサポートを開始 何が嬉しいのかというと、一番大きいのは、 踏み台サーバーを使用せず">
+<meta name="keywords" content="AWS,運用・監視,インフラ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Session Manager 使えば踏み台サーバーが不要に">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2019/09/19/aws_ssm_ssh/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="2019年7月、AWS Systems Manager セッションマネージャーを使用して、クライアントとサーバー間で SSH (Secure Shell) および SCP (Secure Copy) トラフィックをトンネリングすることができるようになった。 セッションマネージャーが SSH と SCP のトンネリングサポートを開始 何が嬉しいのかというと、一番大きいのは、 踏み台サーバーを使用せず">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/ssm_ssh/update-ssm-agent.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/ssm_ssh/ec2-ssm-role.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/ssm_ssh/sg.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/ssm_ssh/remote-win.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/ssm_ssh/win.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/ssm_ssh/ssm-agent-version.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.162Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Session Manager 使えば踏み台サーバーが不要に">
+<meta name="twitter:description" content="2019年7月、AWS Systems Manager セッションマネージャーを使用して、クライアントとサーバー間で SSH (Secure Shell) および SCP (Secure Copy) トラフィックをトンネリングすることができるようになった。 セッションマネージャーが SSH と SCP のトンネリングサポートを開始 何が嬉しいのかというと、一番大きいのは、 踏み台サーバーを使用せず">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/ssm_ssh/update-ssm-agent.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-ssm-ssh" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2019-09-19T07:55:38.000Z" itemprop="datePublished">2019-09-19</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2019/09/19/aws_ssm_ssh/">Session Manager 使えば踏み台サーバーが不要に</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/09/19/aws_ssm_ssh/" data-text="Session Manager 使えば踏み台サーバーが不要に" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/09/19/aws_ssm_ssh/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/09/19/aws_ssm_ssh/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/09/19/aws_ssm_ssh/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/09/19/aws_ssm_ssh/" class="hatena-bookmark-button" data-hatena-bookmark-title="Session Manager 使えば踏み台サーバーが不要に" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>2019年7月、<code>AWS Systems Manager</code> セッションマネージャーを使用して、クライアントとサーバー間で <code>SSH (Secure Shell)</code> および <code>SCP (Secure Copy)</code> トラフィックをトンネリングすることができるようになった。</p>
+<p><a href="https://aws.amazon.com/jp/about-aws/whats-new/2019/07/session-manager-launches-tunneling-support-for-ssh-and-scp/" target="_blank" rel="noopener">セッションマネージャーが SSH と SCP のトンネリングサポートを開始</a></p>
+<p>何が嬉しいのかというと、一番大きいのは、</p>
+<p><strong>踏み台サーバーを使用せずに、 Session Manager 経由で対象のEC2に接続できる</strong></p>
+<p>ということではないだろうか。<br>実際にやってみた。</p>
+<h2 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h2><ul>
+<li><code>SSM Agent</code> のバージョン <code>2.3.672.0</code> 以上</li>
+<li><code>ProxyCommand</code> をサポートする <code>SSH</code> クライアント</li>
+<li><code>AWS CLI</code> のバージョン <code>1.16.12</code> 以上</li>
+<li><code>Session Manager Plugin</code> のバージョン <code>1.1.22.0</code> 以上</li>
+</ul>
+<h2 id="ec2側の設定"><a href="#EC2側の設定" class="headerlink" title="EC2側の設定"></a>EC2側の設定</h2><p>必要な <code>SSM Agent</code> のバージョンが <strong>2.3.672.0 以上</strong> なので、そうなっていない場合は、アップデートする。</p>
+<h3 id="ssm-agentのバージョンアップデート"><a href="#SSM-Agentのバージョンアップデート" class="headerlink" title="SSM Agentのバージョンアップデート"></a>SSM Agentのバージョンアップデート</h3><p>AWSコンソールの <code>AWS Systems Manager</code> の <code>Run Command</code> から <strong>AWS-UpdateSSMAgent</strong> を実行する。</p>
+<p><img src="/images/ssm_ssh/update-ssm-agent.png" alt=""></p>
+<p>もしくは、 <code>AWS CLI</code> から、下記のコマンドを実行する。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">aws ssm send-command --document-name <span class="string">"AWS-UpdateSSMAgent"</span> \</span><br><span class="line">  --instance-ids &lt;インスタンスID&gt; --region ap-northeast-1</span><br></pre></td></tr></table></figure>
+<h2 id="ec2にロール付与"><a href="#EC2にロール付与" class="headerlink" title="EC2にロール付与"></a>EC2にロール付与</h2><p>IAM インスタンスプロファイルロールを確認し、作成する。<br>AWS 管理ポリシー <code>AmazonSSMManagedInstanceCore</code> を含んだロールを付与する。</p>
+<p><img src="/images/ssm_ssh/ec2-ssm-role.png" alt=""></p>
+<h2 id="クライアント側"><a href="#クライアント側" class="headerlink" title="クライアント側"></a>クライアント側</h2><h3 id="session-manager-の-iam-エンドユーザーポリシーを作成"><a href="#Session-Manager-の-IAM-エンドユーザーポリシーを作成" class="headerlink" title="Session Manager の IAM エンドユーザーポリシーを作成"></a>Session Manager の IAM エンドユーザーポリシーを作成</h3><p>下記のドキュメントを参考に、ポリシーを作成、使用するIAMユーザーに付与する。</p>
+<p><a href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/getting-started-restrict-access-quickstart.html" target="_blank" rel="noopener">クイックスタート Session Manager のデフォルト IAM ポリシー - AWS Systems Manager</a></p>
+<h3 id="aws-cli-に-session-manager-plugin-をインストールする"><a href="#AWS-CLI-に-Session-Manager-Plugin-をインストールする" class="headerlink" title="AWS CLI に Session Manager Plugin をインストールする"></a>AWS CLI に Session Manager Plugin をインストールする</h3><p><a href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html" target="_blank" rel="noopener">(オプション) AWS CLI 用の Session Manager Plugin をインストールする
+</a></p>
+<p>上記のURLの手順の通り。</p>
+<ol>
+<li>バンドルされたインストーラをダウンロード</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl <span class="string">"https://s3.amazonaws.com/session-manager-downloads/plugin/latest/mac/sessionmanager-bundle.zip"</span> -o <span class="string">"sessionmanager-bundle.zip"</span></span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>パッケージを解凍</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unzip sessionmanager-bundle.zip</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>インストールコマンドを実行</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ./sessionmanager-bundle/install -i /usr/<span class="built_in">local</span>/sessionmanagerplugin -b /usr/<span class="built_in">local</span>/bin/session-manager-plugin</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>インストールできたことを確認</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">session-manager-plugin --version</span><br><span class="line">1.1.31.0</span><br></pre></td></tr></table></figure>
+<h3 id="~sshconfig-設定"><a href="#ssh-config-設定" class="headerlink" title="~/.ssh/config 設定"></a>~/.ssh/config 設定</h3><p><code>~/.ssh/config</code> に下記のように設定する。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># SSH over Session Manager</span><br><span class="line">host i-* mi-*</span><br><span class="line">    ProxyCommand bash -c &quot;aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters &apos;portNumber=%p&apos;&quot;</span><br></pre></td></tr></table></figure>
+<p>あとは通常のオペレーションと同じように、SSHをするだけ。<br>違うのは、パブリックIPではなくて<strong>インスタンスIDを指定する</strong>点。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -i ./genedev ec2-user@i-0f0963977fbd1a5bb</span><br><span class="line"></span><br><span class="line">       __|  __|_  )</span><br><span class="line">       _|  (     /   Amazon Linux 2 AMI</span><br><span class="line">      ___|\___|___|</span><br><span class="line"></span><br><span class="line">https://aws.amazon.com/amazon-linux-2/</span><br><span class="line">[ec2-user@genedev ~]$</span><br></pre></td></tr></table></figure>
+<p>SCP もOK</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ scp -i ./genedev abc.txt ec2-user@i-0f0963977fbd1a5bb:/tmp/</span><br><span class="line">abc.txt                                                                             100%   18     0.4KB/s   00:00</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[ec2-user@genedev ~]$ ls -l /tmp/abc.txt</span><br><span class="line">-rw-r--r-- 1 ec2-user ec2-user 18 Sep 16 01:34 /tmp/abc.txt</span><br><span class="line">[ec2-user@genedev ~]$</span><br></pre></td></tr></table></figure>
+<p>※ セキュリティグループは、ご覧の通り、インバウンドは何も許可していない</p>
+<p><img src="/images/ssm_ssh/sg.png" alt=""></p>
+<h2 id="windowsもやってみた"><a href="#Windowsもやってみた" class="headerlink" title="Windowsもやってみた"></a>Windowsもやってみた</h2><p>Windowsの場合は、 <code>AWS-StartPortForwardingSession</code> を使用して、ポート転送を行う。<br>下記コマンドを実行する。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ aws ssm start-session --target i-05bc3e1e3e92f1eed \</span><br><span class="line">  --document-name AWS-StartPortForwardingSession \</span><br><span class="line">  --parameters <span class="string">'&#123;"portNumber":["3389"], "localPortNumber":["13389"]&#125;'</span></span><br><span class="line"></span><br><span class="line">Starting session with SessionId: eugene_sasaki-0f6e15b8de94ffd19</span><br><span class="line">Port 13389 opened <span class="keyword">for</span> sessionId eugene_sasaki-0f6e15b8de94ffd19.</span><br></pre></td></tr></table></figure>
+<p>セッションが開始されるので、リモートデスクトップクライアント側の設定。<br>ここでのポイントは、 <code>localPortNumber</code> で指定したポート13389を入れて、 <code>localhost:13389</code> とすること。</p>
+<p><img src="/images/ssm_ssh/remote-win.png" alt=""></p>
+<p><img src="/images/ssm_ssh/win.png" alt=""></p>
+<p>無事接続できた。</p>
+<h2 id="今回のハマリポイント"><a href="#今回のハマリポイント" class="headerlink" title="今回のハマリポイント"></a>今回のハマリポイント</h2><p><code>SSM Agent</code> のバージョンをしっかりと確認していなかった( <code>2.3.662.0</code> だった)ため、<br>「つながらないなー。何が悪いんだー」って無駄な調査時間を費やしてしまった……。<br>ちゃんとバージョンは確認しましょう。</p>
+<p><code>SSM Agent</code> のバージョンは、 <code>AWS Systems Manager</code> の <code>Managed Instances</code> から確認可能。</p>
+<p><img src="/images/ssm_ssh/ssm-agent-version.png" alt=""></p>
+<h2 id="再度メリットとデメリットをおさらい"><a href="#再度メリットとデメリットをおさらい" class="headerlink" title="再度メリットとデメリットをおさらい"></a>再度メリットとデメリットをおさらい</h2><h3 id="メリット"><a href="#メリット" class="headerlink" title="メリット"></a>メリット</h3><ul>
+<li>VPC内のアプリケーション・サーバーにアクセスするためだけの<strong>踏み台サーバーが不要になる。</strong> 踏み台サーバーの使用料が不要。合わせて踏み台サーバーの運用コスト(脆弱性対応など)もかからない</li>
+<li>セキュリティグループでSSHポートを外に開放しなくていい</li>
+<li>IAMでの一元的なアクセス制御が可能</li>
+<li><code>AWS CloudTrail</code> で <code>Session Manager API</code> の呼び出しをログ記録できる</li>
+</ul>
+<h3 id="デメリット"><a href="#デメリット？" class="headerlink" title="デメリット？"></a>デメリット？</h3><ul>
+<li>プラグインインストールなど、若干の手間が必要</li>
+<li>お客様が普段からSSH接続して運用しているケースが多い場合、通常のSSHではなくて、 <code>AWS CLI</code> を使って、<code>Session Manager</code> 経由でSSHしてもらうことになるので、少しだけハードル高いかも？しれない。MMMのメンバーのみがオペレーションするような環境なら、問題なさそう</li>
+</ul>
+<h2 id="参考url"><a href="#参考URL" class="headerlink" title="参考URL"></a>参考URL</h2><ul>
+<li><a href="https://aws.amazon.com/jp/about-aws/whats-new/2019/07/session-manager-launches-tunneling-support-for-ssh-and-scp/" target="_blank" rel="noopener">セッションマネージャーが SSH と SCP のトンネリングサポートを開始</a></li>
+<li><a href="https://aws.amazon.com/jp/blogs/aws/new-port-forwarding-using-aws-system-manager-sessions-manager/" target="_blank" rel="noopener">New – Port Forwarding Using AWS System Manager Session Manager | AWS News Blog</a></li>
+<li><a href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html" target="_blank" rel="noopener">AWS Systems Manager Session Manager</a></li>
+<li><a href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html" target="_blank" rel="noopener">(オプション) AWS CLI 用の Session Manager Plugin をインストールする - AWS Systems Manager</a></li>
+<li><a href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager-getting-started-instance-profile.html" target="_blank" rel="noopener">ステップ 2: Session Manager アクセス権限を使用して、IAM インスタンスプロファイルロールを確認し、作成する - AWS Systems Manager</a></li>
+<li><a href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager-working-with-sessions-start.html" target="_blank" rel="noopener">セッションを開始する - AWS Systems Manager</a></li>
+<li><a href="https://qiita.com/hayao_k/items/78b5bfe030ad8a053e93" target="_blank" rel="noopener">Session Manager で SSH/SCPをトンネリングしてEC2に接続する - Qiita</a></li>
+<li><a href="https://www.beex-inc.com/blog/no-bastion-with-session-manager/" target="_blank" rel="noopener">セッションマネージャで踏み台いらず | BeeX Technical Blog</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/09/19/aws_ssm_ssh/" data-text="Session Manager 使えば踏み台サーバーが不要に" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/09/19/aws_ssm_ssh/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/09/19/aws_ssm_ssh/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/09/19/aws_ssm_ssh/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/09/19/aws_ssm_ssh/" class="hatena-bookmark-button" data-hatena-bookmark-title="Session Manager 使えば踏み台サーバーが不要に" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/インフラ/">インフラ</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/運用・監視/">運用・監視</a></li></ul>
+
+
+      <p class="article-footer__author">by 佐々木 悠人</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

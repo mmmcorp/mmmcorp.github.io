@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>API Blueprintで書いたAPI仕様書をDreddを使ってCircleCIでテストしてみた | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="今回、あるプロジェクトで API Blueprint を使って、API仕様書を書くことになったので、 API Blueprint について調べていたのだが、 Dredd というAPIのテストフレームワークが便利そうだったので、 CircleCI で簡単なテストするところまで触ってみた。 Dredd は、 apiary.io が提供しているAPIのテストフレームワークで、 API Blueprint">
+<meta name="keywords" content="サーバーサイド,運用・監視,プログラミング">
+<meta property="og:type" content="article">
+<meta property="og:title" content="API Blueprintで書いたAPI仕様書をDreddを使ってCircleCIでテストしてみた">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2018/01/18/api_blueprint_dredd/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="今回、あるプロジェクトで API Blueprint を使って、API仕様書を書くことになったので、 API Blueprint について調べていたのだが、 Dredd というAPIのテストフレームワークが便利そうだったので、 CircleCI で簡単なテストするところまで触ってみた。 Dredd は、 apiary.io が提供しているAPIのテストフレームワークで、 API Blueprint">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/api_blueprint_dredd/dredd_apiay_test_inspector.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/api_blueprint_dredd/circleci.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.150Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="API Blueprintで書いたAPI仕様書をDreddを使ってCircleCIでテストしてみた">
+<meta name="twitter:description" content="今回、あるプロジェクトで API Blueprint を使って、API仕様書を書くことになったので、 API Blueprint について調べていたのだが、 Dredd というAPIのテストフレームワークが便利そうだったので、 CircleCI で簡単なテストするところまで触ってみた。 Dredd は、 apiary.io が提供しているAPIのテストフレームワークで、 API Blueprint">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/api_blueprint_dredd/dredd_apiay_test_inspector.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-api-blueprint-dredd" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2018-01-18T13:22:41.000Z" itemprop="datePublished">2018-01-18</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2018/01/18/api_blueprint_dredd/">API Blueprintで書いたAPI仕様書をDreddを使ってCircleCIでテストしてみた</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2018/01/18/api_blueprint_dredd/" data-text="API Blueprintで書いたAPI仕様書をDreddを使ってCircleCIでテストしてみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2018/01/18/api_blueprint_dredd/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2018/01/18/api_blueprint_dredd/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2018/01/18/api_blueprint_dredd/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2018/01/18/api_blueprint_dredd/" class="hatena-bookmark-button" data-hatena-bookmark-title="API Blueprintで書いたAPI仕様書をDreddを使ってCircleCIでテストしてみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今回、あるプロジェクトで <a href="https://apiblueprint.org/" target="_blank" rel="noopener">API Blueprint</a> を使って、API仕様書を書くことになったので、 <code>API Blueprint</code> について調べていたのだが、 <a href="https://dredd.readthedocs.io/en/latest/" target="_blank" rel="noopener">Dredd</a> というAPIのテストフレームワークが便利そうだったので、 <code>CircleCI</code> で簡単なテストするところまで触ってみた。</p>
+<p><code>Dredd</code> は、 <code>apiary.io</code> が提供しているAPIのテストフレームワークで、 <code>API Blueprint</code> だけではなく、 <a href="https://swagger.io/" target="_blank" rel="noopener">Swagger</a> にも対応している。</p>
+<h2 id="試してみた"><a href="#試してみた" class="headerlink" title="試してみた"></a>試してみた</h2><h3 id="api作成"><a href="#API作成" class="headerlink" title="API作成"></a>API作成</h3><p>まずは <code>Golang</code> で非常に簡単な <code>API</code> を作成。<br><code>/message</code> にアクセスすると、 <code>Hello World!!</code> が返るだけ。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	http.HandleFunc(<span class="string">"/message"</span>, index)</span><br><span class="line"></span><br><span class="line">	p := port()</span><br><span class="line">	fmt.Println(<span class="string">"Listening on Port"</span>, p)</span><br><span class="line">	http.ListenAndServe(p, <span class="literal">nil</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">port</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	port := os.Getenv(<span class="string">"PORT"</span>)</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(port) == <span class="number">0</span> &#123;</span><br><span class="line">		port = <span class="string">"8080"</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">":"</span> + port</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">index</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">	w.WriteHeader(http.StatusOK)</span><br><span class="line">	fmt.Fprintln(w, <span class="string">"Hello World!!"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>go build</code> をして、サーバーを起動。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ./simple-go-server</span><br><span class="line">Listening on Port :8080</span><br></pre></td></tr></table></figure>
+<p>別のコンソールから、 <code>curl</code> を実行してちゃんとレスポンスが返ってくることを確認する。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl localhost:8080/message</span><br><span class="line">Hello World!!</span><br></pre></td></tr></table></figure>
+<h3 id="api-blueprint-でドキュメント作成"><a href="#API-Blueprint-でドキュメント作成" class="headerlink" title="API Blueprint でドキュメント作成"></a>API Blueprint でドキュメント作成</h3><p><code>API Blueprint</code> 形式のドキュメント <code>doc.apib</code> を作成する。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">FORMAT: 1A</span><br><span class="line"></span><br><span class="line"># GET /message</span><br><span class="line">+ Response 200 (text/plain; charset=utf-8)</span><br><span class="line"></span><br><span class="line">        Hello World!!</span><br></pre></td></tr></table></figure>
+<h3 id="dredd-のインストール"><a href="#Dredd-のインストール" class="headerlink" title="Dredd のインストール"></a>Dredd のインストール</h3><p><code>Node.js</code> がインストール済みの環境で、下記コマンドを実行して <code>Dredd</code> をインストールする。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ npm install -g dredd</span><br><span class="line">$ dredd --version</span><br></pre></td></tr></table></figure>
+<h3 id="dredd-設定ファイル作成"><a href="#Dredd-設定ファイル作成" class="headerlink" title="Dredd 設定ファイル作成"></a>Dredd 設定ファイル作成</h3><p><code>dredd init</code> を実行することで対話形式で設定ファイル <code>dredd.yml</code> が作成できる。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ dredd init</span><br><span class="line">? Location of the API description document doc.apib</span><br><span class="line">? Command to start API backend server e.g. (bundle <span class="built_in">exec</span> rails server) ./simple-go-server</span><br><span class="line">? URL of tested API endpoint localhost:8080</span><br><span class="line">? Programming language of hooks go</span><br><span class="line">? Do you want to use Apiary <span class="built_in">test</span> inspector? No</span><br><span class="line">? Dredd is best served with Continuous Integration. Create CircleCI config <span class="keyword">for</span> Dredd? No</span><br><span class="line"></span><br><span class="line">Configuration saved to dredd.yml</span><br><span class="line"></span><br><span class="line">Install hooks handler and run Dredd <span class="built_in">test</span> with:</span><br><span class="line"></span><br><span class="line">  $ go get github.com/snikch/goodman/cmd/goodman</span><br><span class="line">  $ dredd</span><br></pre></td></tr></table></figure>
+<ul>
+<li>APIのドキュメントのファイル名<ul>
+<li><code>doc.apib</code> を入力</li>
+</ul>
+</li>
+<li>API サーバー起動コマンド<ul>
+<li><code>./simple-go-server</code> を入力</li>
+</ul>
+</li>
+<li>APIのエンドポイント<ul>
+<li><code>localhost:8080</code> を入力</li>
+</ul>
+</li>
+<li>Hook を利用する際の言語<ul>
+<li><code>go</code> を下記のように出てくる選択肢より選択</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">? Programming language of hooks</span><br><span class="line">  ruby</span><br><span class="line">  python</span><br><span class="line">  nodejs</span><br><span class="line">  php</span><br><span class="line">  perl</span><br><span class="line">❯ go</span><br><span class="line">  rust</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>Apiary test inspector</code> を利用するか<ul>
+<li><code>n</code> を入力</li>
+</ul>
+</li>
+<li><code>CircleCI</code> の設定ファイルを作成するか<ul>
+<li>現時点では、<code>CircleCI 2.0</code> には対応しておらず、<code>1.0</code> の設定ファイル <code>circle.yml</code> が作られるため、 <code>n</code> を選択</li>
+</ul>
+</li>
+</ul>
+<p>生成された <code>dredd.yml</code> の設定内容はこんな感じになっている。</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">dry-run:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">hookfiles:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">language:</span> <span class="string">go</span></span><br><span class="line"><span class="attr">sandbox:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">server:</span> <span class="string">./simple-go-server</span></span><br><span class="line"><span class="attr">server-wait:</span> <span class="number">3</span></span><br><span class="line"><span class="attr">init:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">custom:</span> <span class="string">&#123;&#125;</span></span><br><span class="line"><span class="attr">names:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">only:</span> <span class="string">[]</span></span><br><span class="line"><span class="attr">reporter:</span> <span class="string">[]</span></span><br><span class="line"><span class="attr">output:</span> <span class="string">[]</span></span><br><span class="line"><span class="attr">header:</span> <span class="string">[]</span></span><br><span class="line"><span class="attr">sorted:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">user:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">inline-errors:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">details:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">method:</span> <span class="string">[]</span></span><br><span class="line"><span class="attr">color:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">level:</span> <span class="string">info</span></span><br><span class="line"><span class="attr">timestamp:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">silent:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">path:</span> <span class="string">[]</span></span><br><span class="line"><span class="attr">hooks-worker-timeout:</span> <span class="number">5000</span></span><br><span class="line"><span class="attr">hooks-worker-connect-timeout:</span> <span class="number">1500</span></span><br><span class="line"><span class="attr">hooks-worker-connect-retry:</span> <span class="number">500</span></span><br><span class="line"><span class="attr">hooks-worker-after-connect-wait:</span> <span class="number">100</span></span><br><span class="line"><span class="attr">hooks-worker-term-timeout:</span> <span class="number">5000</span></span><br><span class="line"><span class="attr">hooks-worker-term-retry:</span> <span class="number">500</span></span><br><span class="line"><span class="attr">hooks-worker-handler-host:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">hooks-worker-handler-port:</span> <span class="number">61321</span></span><br><span class="line"><span class="attr">config:</span> <span class="string">./dredd.yml</span></span><br><span class="line"><span class="attr">blueprint:</span> <span class="string">doc.apib</span></span><br><span class="line"><span class="attr">endpoint:</span> <span class="string">'localhost:8080'</span></span><br></pre></td></tr></table></figure>
+<h3 id="dredd-実行"><a href="#Dredd-実行" class="headerlink" title="Dredd 実行"></a>Dredd 実行</h3><p>対話の最後に指示が出ており、その指示に従ってコマンドを実行する。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ go get github.com/snikch/goodman/cmd/goodman</span><br></pre></td></tr></table></figure>
+<p>を実行して、 <code>github.com/snikch/goodman/cmd/goodman</code> をインストールした後に、 <code>dredd</code> コマンドを実行。<br>すると、先ほど作成した設定ファイル <code>./dredd.yml</code> を見つけて、その設定に従って、APIサーバーを起動。<br>エンドポイントに対してアクセスをして、ドキュメント通りの期待したレスポンスが返ってくるかのテストを行ってくれる。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ dredd</span><br><span class="line">info: Configuration <span class="string">'./dredd.yml'</span> found, ignoring other arguments.</span><br><span class="line">info: Starting backend server process with <span class="built_in">command</span>: ./simple-go-server</span><br><span class="line">info: Waiting 3 seconds <span class="keyword">for</span> backend server process to start</span><br><span class="line">Listening on Port :8080</span><br><span class="line">info: Beginning Dredd testing...</span><br><span class="line">pass: GET (200) /message duration: 29ms</span><br><span class="line">complete: 1 passing, 0 failing, 0 errors, 0 skipped, 1 total</span><br><span class="line">complete: Tests took 34ms</span><br><span class="line">info: Backend server process exited</span><br></pre></td></tr></table></figure>
+<p>正常にテストが通った。<br>ちなみに、 <code>doc.apib</code> を下記のように、 <code>Hello</code> を <code>Good Morning</code> に修正して、</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">FORMAT: 1A</span><br><span class="line"></span><br><span class="line"># GET /message</span><br><span class="line">+ Response 200 (text/plain; charset=utf-8)</span><br><span class="line"></span><br><span class="line">        Good Morning World!!</span><br></pre></td></tr></table></figure>
+<p>テストを再度実行してみると……</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">$ dredd</span><br><span class="line">info: Configuration <span class="string">'./dredd.yml'</span> found, ignoring other arguments.</span><br><span class="line">info: Starting backend server process with <span class="built_in">command</span>: ./simple-go-server</span><br><span class="line">info: Waiting 3 seconds <span class="keyword">for</span> backend server process to start</span><br><span class="line">Listening on Port :8080</span><br><span class="line">info: Beginning Dredd testing...</span><br><span class="line">fail: GET (200) /message duration: 30ms</span><br><span class="line">info: Displaying failed tests...</span><br><span class="line">fail: GET (200) /message duration: 30ms</span><br><span class="line">fail: body: Real and expected data does not match.</span><br><span class="line"></span><br><span class="line">request:</span><br><span class="line">method: GET</span><br><span class="line">uri: /message</span><br><span class="line">headers:</span><br><span class="line">    User-Agent: Dredd/4.9.2 (Darwin 17.3.0; x64)</span><br><span class="line">    Content-Length: 0</span><br><span class="line"></span><br><span class="line">body:</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">expected:</span><br><span class="line">headers:</span><br><span class="line">    Content-Type: text/plain; charset=utf-8</span><br><span class="line"></span><br><span class="line">body:</span><br><span class="line">Good Morning World!!</span><br><span class="line"></span><br><span class="line">statusCode: 200</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">actual:</span><br><span class="line">statusCode: 200</span><br><span class="line">headers:</span><br><span class="line">    date: Tue, 16 Jan 2018 08:22:59 GMT</span><br><span class="line">    content-length: 14</span><br><span class="line">    content-type: text/plain; charset=utf-8</span><br><span class="line">    connection: close</span><br><span class="line"></span><br><span class="line">body:</span><br><span class="line">Hello World!!</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">complete: 0 passing, 1 failing, 0 errors, 0 skipped, 1 total</span><br><span class="line">complete: Tests took 34ms</span><br><span class="line">info: Backend server process exited</span><br></pre></td></tr></table></figure>
+<p>ちゃんと <code>fail: body: Real and expected data does not match.</code> と表示されていて、 <code>body</code> が一致していないっていう内容で <code>Fail</code> した。<br>╭( ･ㅂ･)و ̑̑ ｸﾞｯ !</p>
+<h3 id="apiary-test-inspector"><a href="#Apiary-test-inspector" class="headerlink" title="Apiary test inspector"></a>Apiary test inspector</h3><p>ちなみに、設定ファイル作成時に、 <code>Apiary test inspector</code> を利用する設定にすると、 <code>Apiary API key</code> を聞かれる。<br>何も入力せずにエンターキーを押すと、テスト結果が  <code>https://app.apiary.io</code> アップロードされ、パブリックにアクセスできるようになり、WEB上で確認できる。<br>テスト実行した最後に、下記のようにURLが表示されて、</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">complete: See results <span class="keyword">in</span> Apiary at: https://app.apiary.io/public/tests/run/eb7093e0-565e-45e4-82f1-de14fda0cf72</span><br></pre></td></tr></table></figure>
+<p>URLにアクセスしてみると、下記のような画面となり、テストの結果が確認できる。<br>テスト結果は、24時間保持される。</p>
+<p><img src="/images/api_blueprint_dredd/dredd_apiay_test_inspector.png" alt=""></p>
+<h3 id="hook-について"><a href="#Hook-について" class="headerlink" title="Hook について"></a>Hook について</h3><p>あるエンドポイントにアクセスする前に、テスト用のダミーデータを作成するとか、前のテストで作られたデータを次のテスト実行前に削除したい場合などには、 <code>Hook</code> を利用することができる。<br><code>dredd init</code> を実行した際に、選択肢として表示されたように、 <code>Hook</code> で使用できる言語は、</p>
+<ul>
+<li>Go</li>
+<li>JavaScript (Sandboxed)</li>
+<li>Node.js</li>
+<li>Perl</li>
+<li>PHP</li>
+<li>Python</li>
+<li>Ruby</li>
+</ul>
+<p>となっている。</p>
+<p>【参考URL】<br><a href="https://dredd.readthedocs.io/en/latest/hooks.html#languages" target="_blank" rel="noopener">Hook Scripts — Languages</a></p>
+<p><code>Hook</code> で利用できる種類はドキュメントを参考にしていただきたいが、下記の種類を指定できる。</p>
+<ul>
+<li>beforeAll</li>
+<li>beforeEach</li>
+<li>before</li>
+<li>beforeEachValidation</li>
+<li>beforeValidation</li>
+<li>after</li>
+<li>afterEach</li>
+<li>afterAll</li>
+</ul>
+<p>【参考URL】<br><a href="https://dredd.readthedocs.io/en/latest/hooks.html#types-of-hooks" target="_blank" rel="noopener">Hook Scripts — Types of Hooks</a></p>
+<h3 id="hook-作成"><a href="#Hook-作成" class="headerlink" title="Hook 作成"></a>Hook 作成</h3><p>ドキュメントの例を参考に、ほぼそのままではあるが <code>test/hooks.go</code> として下記のような <code>Hook</code> を作成した。<br><code>/message</code> へアクセスする前に、コンソール上にメッセージを表示するだけ……。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"github.com/snikch/goodman/hooks"</span></span><br><span class="line">	trans <span class="string">"github.com/snikch/goodman/transaction"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	h := hooks.NewHooks()</span><br><span class="line">	server := hooks.NewServer(hooks.NewHooksRunner(h))</span><br><span class="line">	h.Before(<span class="string">"/message &gt; GET"</span>, <span class="function"><span class="keyword">func</span><span class="params">(t *trans.Transaction)</span></span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">"-------------------"</span>)</span><br><span class="line">		fmt.Println(<span class="string">"before modification"</span>)</span><br><span class="line">		fmt.Println(<span class="string">"-------------------"</span>)</span><br><span class="line">	&#125;)</span><br><span class="line">	server.Serve()</span><br><span class="line">	<span class="keyword">defer</span> server.Listener.Close()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>作成した上で、 <code>go build</code> を行う。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ go build -o hooks <span class="built_in">test</span>/hooks.go</span><br></pre></td></tr></table></figure>
+<p><code>hooks</code> ファイルができるので、 <code>dredd.yml</code> で、</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">hookfiles:</span> <span class="literal">null</span></span><br></pre></td></tr></table></figure>
+<p>となっていた箇所を下記のように変更する。</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">hookfiles:</span> <span class="string">hooks</span></span><br></pre></td></tr></table></figure>
+<p>再度テストを実行してみると、</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">$ dredd</span><br><span class="line">info: Configuration <span class="string">'./dredd.yml'</span> found, ignoring other arguments.</span><br><span class="line">info: Starting backend server process with <span class="built_in">command</span>: ./simple-go-server</span><br><span class="line">info: Waiting 3 seconds <span class="keyword">for</span> backend server process to start</span><br><span class="line">Listening on Port :8080</span><br><span class="line">info: Beginning Dredd testing...</span><br><span class="line">info: Found Hookfiles: 0=/Users/eugenesasa/work/src/github.com/mmmsasaki/simple-go-server/hooks</span><br><span class="line">info: Spawning <span class="string">'go'</span> hooks handler process.</span><br><span class="line">info: Hooks handler stdout: Sending to channel</span><br><span class="line"></span><br><span class="line">Completed</span><br><span class="line"></span><br><span class="line">info: Hooks handler stderr: 2018/01/18 07:42:27 Starting hooks server</span><br><span class="line"></span><br><span class="line">info: Hooks handler stdout: Starting</span><br><span class="line"></span><br><span class="line">info: Hooks handler stdout: Accepting connection</span><br><span class="line"></span><br><span class="line">info: Successfully connected to hooks handler. Waiting 0.1s to start testing.</span><br><span class="line">info: Hooks handler stdout: -------------------</span><br><span class="line">before modification</span><br><span class="line">-------------------</span><br><span class="line"></span><br><span class="line">pass: GET (200) /message duration: 53ms</span><br><span class="line">info: Hooks handler stderr: 2018/01/18 07:42:28 Shutting down hooks servers</span><br><span class="line"></span><br><span class="line">complete: 1 passing, 0 failing, 0 errors, 0 skipped, 1 total</span><br><span class="line">complete: Tests took 5653ms</span><br><span class="line">info: Backend server process exited</span><br></pre></td></tr></table></figure>
+<p><code>/message</code> へアクセスする前に、メッセージが表示されており、 <code>hooks</code> が実行されているのが見えるかと思う。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">info: Hooks handler stdout: -------------------</span><br><span class="line">before modification</span><br><span class="line">-------------------</span><br></pre></td></tr></table></figure>
+<p>以下の <code>Express.js</code> のサンプルでは、データのフィクスチャを読み込んだりしているので、こちらも参考に。</p>
+<p>【参考URL】<br><a href="https://github.com/apiaryio/dredd-example/blob/master/api-blueprint/hooks.js" target="_blank" rel="noopener">dredd-example/hooks.js</a></p>
+<h3 id="circleci"><a href="#CircleCI" class="headerlink" title="CircleCI"></a>CircleCI</h3><p>これを、 <code>CircleCI</code> でも実行することで、継続的に実装した機能と、ドキュメントの乖離がないかということがチェックできる。<br><code>.circleci/config.yml</code> は下記のようにした。</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="number">2</span></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line"><span class="attr">  build:</span></span><br><span class="line"><span class="attr">    docker:</span></span><br><span class="line"><span class="attr">      - image:</span> <span class="string">circleci/golang:latest</span></span><br><span class="line"><span class="attr">    working_directory:</span> <span class="string">/go/src/github.com/mmmsasaki/simple-go-server</span></span><br><span class="line"><span class="attr">    steps:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">checkout</span></span><br><span class="line"><span class="attr">      - run:</span> <span class="string">curl</span> <span class="bullet">-sL</span> <span class="attr">https://deb.nodesource.com/setup_8.x</span> <span class="string">| sudo -E bash -</span></span><br><span class="line"><span class="string"></span><span class="attr">      - run:</span> <span class="string">sudo</span> <span class="string">apt-get</span> <span class="string">install</span> <span class="bullet">-y</span> <span class="string">nodejs</span></span><br><span class="line"><span class="attr">      - run:</span> <span class="string">go</span> <span class="string">version</span></span><br><span class="line"><span class="attr">      - run:</span> <span class="string">node</span> <span class="bullet">--version</span></span><br><span class="line"><span class="attr">      - run:</span> <span class="string">npm</span> <span class="bullet">--version</span></span><br><span class="line"><span class="attr">      - restore_cache:</span></span><br><span class="line"><span class="attr">          name:</span> <span class="string">restore</span> <span class="string">node_modules</span> <span class="string">cache</span></span><br><span class="line"><span class="attr">          key:</span> <span class="string">dredd</span></span><br><span class="line"><span class="attr">      - run:</span></span><br><span class="line"><span class="attr">          name:</span> <span class="string">npm</span> <span class="string">install</span> <span class="string">dredd</span></span><br><span class="line"><span class="attr">          command:</span> <span class="string">npm</span> <span class="string">install</span> <span class="string">dredd</span></span><br><span class="line"><span class="attr">      - save_cache:</span></span><br><span class="line"><span class="attr">          name:</span> <span class="string">save</span> <span class="string">node_modules</span> <span class="string">cache</span></span><br><span class="line"><span class="attr">          key:</span> <span class="string">dredd</span></span><br><span class="line"><span class="attr">          paths:</span></span><br><span class="line"><span class="bullet">              -</span> <span class="string">node_modules</span></span><br><span class="line"><span class="attr">      - run:</span> <span class="string">go</span> <span class="string">build</span></span><br><span class="line"><span class="attr">      - run:</span> <span class="string">go</span> <span class="string">get</span> <span class="string">github.com/snikch/goodman/cmd/goodman</span></span><br><span class="line"><span class="attr">      - run:</span> <span class="string">go</span> <span class="string">build</span> <span class="bullet">-o</span> <span class="string">hooks</span> <span class="string">./test/hooks.go</span></span><br><span class="line"><span class="attr">      - run:</span> <span class="string">./node_modules/dredd/bin/dredd</span></span><br></pre></td></tr></table></figure>
+<p>ちゃんとテストが通っていることが確認できた。</p>
+<p><img src="/images/api_blueprint_dredd/circleci.png" alt=""></p>
+<p>キャッシュが効いていれば、今回の簡単なテストで35秒ぐらいで終わった。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>API仕様書の管理の課題として、</p>
+<p><strong>ドキュメント起票者のミスや、変更仕様の反映漏れなどにより、ドキュメント仕様と実際のAPIが乖離してしまい、使えないドキュメント化してしまう</strong></p>
+<p>ということが往々にしてあることだと思うが、 <code>API Blueprint</code> と <code>Dredd</code> を使い、 <code>CircleCI</code> で、ドキュメントとAPIの間で乖離がないか、というチェックを継続的に行えば、この問題は解決できそうな気もしている。<br>また、実際にサーバーを起動して、アクセスしてレスポンスをテストするので、 テストコードを書く工数ももしかしたら削減できるかもしれないな、と少し期待している。</p>
+<p>今回の各種ファイルは下記リポジトリに置いてある。<br><a href="https://github.com/mmmsasaki/simple-go-server" target="_blank" rel="noopener">mmmsasaki/simple-go-server</a></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p>公式ページ<br><a href="https://apiblueprint.org/" target="_blank" rel="noopener">API Blueprint</a><br><a href="https://dredd.readthedocs.io/en/latest/index.html" target="_blank" rel="noopener">Dredd — HTTP API Testing Framework</a></p>
+<p><a href="https://www.slideshare.net/dcubeio/api-67703513" target="_blank" rel="noopener">こんなに使える！今どきのAPIドキュメンテーションツール</a><br><a href="https://qiita.com/yagays/items/cff20ab65076f5e16269" target="_blank" rel="noopener">API Blueprintで書いたWeb APIをdreddでテストする - Qiita</a><br><a href="https://www.slideshare.net/dcubeio/apiapi-blueprint" target="_blank" rel="noopener">Apiドキュメンテーションツールを使いこなす【api blueprint編】</a><br><a href="https://techblog.gmo-ap.jp/2017/05/17/api-blueprint/" target="_blank" rel="noopener">API Blueprint で API 仕様書を書いて、配布用の HTML を自動生成する方法 | GMOアドパートナーズグループ TECH BLOG byGMO</a><br><a href="https://qiita.com/yagays/items/8e16a27b058f0ddef653" target="_blank" rel="noopener">API BlueprintでWeb APIのドキュメントを生成する - Qiita</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2018/01/18/api_blueprint_dredd/" data-text="API Blueprintで書いたAPI仕様書をDreddを使ってCircleCIでテストしてみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2018/01/18/api_blueprint_dredd/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2018/01/18/api_blueprint_dredd/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2018/01/18/api_blueprint_dredd/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2018/01/18/api_blueprint_dredd/" class="hatena-bookmark-button" data-hatena-bookmark-title="API Blueprintで書いたAPI仕様書をDreddを使ってCircleCIでテストしてみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーサイド/">サーバーサイド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/プログラミング/">プログラミング</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/運用・監視/">運用・監視</a></li></ul>
+
+
+      <p class="article-footer__author">by 佐々木 悠人</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

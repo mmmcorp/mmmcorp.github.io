@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>新人プログラマの時に知っておきたかった「ハマったときの考え方とフローチャート」 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="はじめにプログラムを書いたことがある人なら、誰しも「ハマる」という状況に陥ったことがあると思います。 ハマるとは、一般的には何かから抜け出せなくなってしまうことを意味しますが、システム開発の世界では、ある課題やエラーなどに対して、解決の見込みが見えないまま多くの時間をかけてしまうことを意味します。 今回は、ハマってしまったときに、いかに問題を解決し、ハマった状態から脱却するかについて書きたいと思い">
+<meta name="keywords" content="プログラミング">
+<meta property="og:type" content="article">
+<meta property="og:title" content="新人プログラマの時に知っておきたかった「ハマったときの考え方とフローチャート」">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2017/04/24/problem-solving/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="はじめにプログラムを書いたことがある人なら、誰しも「ハマる」という状況に陥ったことがあると思います。 ハマるとは、一般的には何かから抜け出せなくなってしまうことを意味しますが、システム開発の世界では、ある課題やエラーなどに対して、解決の見込みが見えないまま多くの時間をかけてしまうことを意味します。 今回は、ハマってしまったときに、いかに問題を解決し、ハマった状態から脱却するかについて書きたいと思い">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/problem-solving/Flowchart.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.146Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="新人プログラマの時に知っておきたかった「ハマったときの考え方とフローチャート」">
+<meta name="twitter:description" content="はじめにプログラムを書いたことがある人なら、誰しも「ハマる」という状況に陥ったことがあると思います。 ハマるとは、一般的には何かから抜け出せなくなってしまうことを意味しますが、システム開発の世界では、ある課題やエラーなどに対して、解決の見込みが見えないまま多くの時間をかけてしまうことを意味します。 今回は、ハマってしまったときに、いかに問題を解決し、ハマった状態から脱却するかについて書きたいと思い">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/problem-solving/Flowchart.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-problem-solving" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2017-04-24T09:12:08.000Z" itemprop="datePublished">2017-04-24</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2017/04/24/problem-solving/">新人プログラマの時に知っておきたかった「ハマったときの考え方とフローチャート」</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/04/24/problem-solving/" data-text="新人プログラマの時に知っておきたかった「ハマったときの考え方とフローチャート」" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/04/24/problem-solving/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/04/24/problem-solving/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/04/24/problem-solving/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/04/24/problem-solving/" class="hatena-bookmark-button" data-hatena-bookmark-title="新人プログラマの時に知っておきたかった「ハマったときの考え方とフローチャート」" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="はじめに"><a href="#はじめに" class="headerlink" title="はじめに"></a>はじめに</h2><p>プログラムを書いたことがある人なら、誰しも「ハマる」という状況に陥ったことがあると思います。</p>
+<p>ハマるとは、一般的には何かから抜け出せなくなってしまうことを意味しますが、システム開発の世界では、ある課題やエラーなどに対して、解決の見込みが見えないまま多くの時間をかけてしまうことを意味します。</p>
+<p>今回は、ハマってしまったときに、いかに問題を解決し、ハマった状態から脱却するかについて書きたいと思います。</p>
+<h2 id="目次"><a href="#目次" class="headerlink" title="目次"></a>目次</h2><!-- toc -->
+<ul>
+<li><a href="#問題解決における6つの基本">問題解決における6つの基本</a><ul>
+<li><a href="#1-イライラしない">1. イライラしない</a></li>
+<li><a href="#2-常に解決の計画を持つ">2. 常に解決の計画を持つ</a></li>
+<li><a href="#3-問題を分割する">3. 問題を分割する</a></li>
+<li><a href="#4-ツールを使う">4. ツールを使う</a></li>
+<li><a href="#5-体系的な知識を身につける">5. 体系的な知識を身につける</a></li>
+<li><a href="#6-質問する">6. 質問する</a></li>
+<li><a href="#その他">その他</a></li>
+</ul>
+</li>
+<li><a href="#問題解決のフローチャート">問題解決のフローチャート</a><ul>
+<li><a href="#1-現象再現手順を特定する">1. 現象/再現手順を特定する</a></li>
+<li><a href="#2-原因を特定する">2. 原因を特定する</a></li>
+<li><a href="#3-解決策と思われるものを試す">3. 解決策と思われるものを試す</a></li>
+<li><a href="#4-解決しない場合結果を残しておいて-また1のサイクルに戻る">4. 解決しない場合=&gt;結果を残しておいて、また1のサイクルに戻る</a></li>
+</ul>
+</li>
+<li><a href="#まとめ">まとめ</a></li>
+<li><a href="#参考にしたリソース">参考にしたリソース</a></li>
+<li><a href="#code-complete-second-editionの抜粋">Code Complete, Second Editionの抜粋</a></li>
+</ul>
+<!-- tocstop -->
+<h2 id="問題解決における6つの基本"><a href="#問題解決における6つの基本" class="headerlink" title="問題解決における6つの基本"></a>問題解決における6つの基本</h2><p>最初に、問題解決の基本的な考え方を書いておきます。当たり前のことばかりだと感じるかもしれませんが、この基本が完璧にできていれば、ハマることはそもそも稀だと思っています。</p>
+<p>もし、普段の実装の中で「同じことで丸1日悩んでいるけど解決の手立てがない」「これにさえ気付いていればもっとはやくできた」「単純なミスだった」といったことに時間を溶かしているのであれば、問題解決の基本ができていない可能性があります。</p>
+<p>技術的な知識が欠けていることがハマる原因になっているケースもあります。しかし、理想通りにいかないことも多いとはいえ、適切な問題解決を行うことでハマる時間を減らせるかもしれません。</p>
+<p>以下では、自分自身の経験や信頼できる書籍から学んだ問題解決の基本を、6つに分けて紹介しようと思います。</p>
+<h3 id="1-イライラしない"><a href="#1-イライラしない" class="headerlink" title="1. イライラしない"></a>1. イライラしない</h3><p>1番重要かもしれませんが、イライラしないことが大事です。</p>
+<p>自分も最初の頃よくやっていた(いまも油断すると…)のですが、「あーあれもこれもだめだ、全然わかんない！イライラする！」みたいなことが初心者だと起こりがちだと思います。気持ちはとてもよくわかるのですが、これは残念ながら、問題解決につながらず、冷静になれないので効率は悪くなり、せっかくのコーディングが楽しくもなく、何のメリットもありません。</p>
+<p><strong>こういう時は、考えずに、ただ問題を解くことに集中するべきです。</strong>そのために、淡々と問題を解くための自分のルーティンのようなものをもっておくことが大事だと考えます。冷静に考えてみれば、実装の失敗は「この方法はうまくいかなかい」という1つのデータでしかなく、イライラする必要はないと気付くはずです。</p>
+<p>また、ドツボにハマる前に休憩や気分転換をするというのも有効かと思います。<a href="http://gongo.hatenablog.com/entry/2017/01/04/233904" target="_blank" rel="noopener">バグなどの謎の現象に立ち向かうも闇が濃く、どうしても沼から脱出できない時に見るフローチャート</a>という記事では、気分転換のタイミングをわかりやすく図で示していておすすめです。</p>
+<h3 id="2-常に解決の計画を持つ"><a href="#2-常に解決の計画を持つ" class="headerlink" title="2. 常に解決の計画を持つ"></a>2. 常に解決の計画を持つ</h3><p>常に解決の計画を持ちましょう。これは、何か調査や検証をするときに、明確な目的をもって取り組むということです。</p>
+<p>自分が昔あったのが、「なんとなくあれが原因な気がするから、とりあえずその辺を調べてみよう」といった発想です。過去に類似している問題があり、自分の中である程度確信があればいいのですが、特に根拠もなく調べて時間を溶かしてしまうことが起こりがちだと思います。</p>
+<p><strong>闇雲に調べたり、コードを書いたりせず、常に計画を持つことが大事</strong>です。これは、<code>達人プログラマー</code>という書籍の<code>慎重なプログラミングの方法</code>にも詳しくかいてあるので、一部抜粋します。</p>
+<ul>
+<li>偶発的なプログラミングを避け、慎重なプログラミングをする方法<ul>
+<li>目隠しでコーディングしてはいけません。完全に理解していないアプリケーションを作成しようとしたり、なじみのない技法を使おうとするのは、偶発的なプログラミングに通じる近道なのです。</li>
+<li>明確なプランがあなたの頭の中にあるか、ナプキンの裏に書かれているか、CASEツールから印刷したタペストリのようなものであるかどうかは別にして、まずプランから進めるようにしてください。</li>
+<li>信頼のおけるものだけを前提としてください。偶然や仮定に依存してはいけません。特定の状況下にあってそういった区別が行えない場合は、最悪の仮定を置いてください。</li>
+<li>仮定をドキュメント化してください。他のメンバーとのコミュニケーションを効率化したり、あなたの心の中にある仮定を明確にするには、「契約による設計」(p.123)を参考にしてください。</li>
+<li>単にコードをテストするのではなく、あなたの仮定をテストしてください。推量は抜きにして、実際に試してみるのです。あなたの仮定を試すため、表明(「表明プログラミング」(p.139)参照)を記述してください。その表明が正しいものであれば、それだけでコード中のドキュメントの質が向上したことになります。そして仮定の誤りが発覚したのであれば、単にあなたは運がよかっただけだということを理解できるはずです。</li>
+</ul>
+</li>
+</ul>
+<p>一貫して主張されているのは、確かな仮定のない実装は良くないという点です。計画を持ってから実装に入ることの重要さがわかると思います。</p>
+<h3 id="3-問題を分割する"><a href="#3-問題を分割する" class="headerlink" title="3. 問題を分割する"></a>3. 問題を分割する</h3><p>問題を切り分けることも重要です。これは<code>常に解決の計画を持つ</code>にも関連しますが、問題を分割できないと、<code>計画を持つ</code>ことも難しいと考えます。具体的には以下のような方法があります。</p>
+<ul>
+<li>簡単な問題に切り分ける</li>
+<li>部品毎に問題を区切る</li>
+<li>解けると考えられる大きさまで問題を切り分ける</li>
+</ul>
+<p>同じようなことを言っていますが、特に重要なのは<code>解けると考えられる大きさまで問題を切り分ける</code>ことです。初心者がやりがちなのが、<strong>一気に実装をして、2つ3つの要素が混ざり合い、何がエラーの原因なのかわからなくなってしまうこと</strong>です。参考までに、<a href="https://note.mu/ruiu/n/n1083b2a5d547" target="_blank" rel="noopener">ソースコードって実際のところどういうふうに書いていますか？</a>という記事では、以下のように書いてあります。</p>
+<blockquote>
+<p>それから実際にコーディングにとりかかるわけですが、ここで非常に気をつけているのは、できる限りコードを正常動作する状態に保つことです。大きな変更を一気にやろうとするとわけがわからなくなるので、できるかぎり小さな変更を積み重ねていくことで最終的に構想通りの変更を行うようにしています。コードを書いている途中、コンパイルしてユニットテストが通せるまでは、危ない橋の上を歩いているような気分で、なるべく早く安定した状態に戻したいという気持ちがあります。</p>
+</blockquote>
+<p>このレベルで慎重になれば、エラーの原因は特定したも同然で、実装しながらにして問題の分割ができることとなります。また、<a href="http://qiita.com/hirokidaichi/items/27c757d92b6915e8ecf7" target="_blank" rel="noopener">ペアプログラミングして気がついた新人プログラマの成長を阻害する悪習</a>という記事では以下のように述べています。</p>
+<blockquote>
+<p>すぐさま、私は「シンタクスチェックの仕方」と「画面上でのモジュールの実行」の仕方を教えた。また、それを利用した「小さなテストコードの書き方」も教えた。ところが、彼はその方法は知っていたのだ。しかし、むしろめんどくさいことのように感じていた。なぜかと問うと応えには窮していたが、要するに「最終的に画面が表示されるのだから画面を見た方が完成に近いだろう」と言うことだった。</p>
+<p>CIは導入され、テストコードを書くことが必須となっていったあとになると彼はブラウザ上で動作するのを確認したあとに、めんどくさそうにテストを書いていた。</p>
+<p>確認のサイクルが長くなり、結合されたあとであるので問題は複雑化した形でしか、エラーメッセージは出力されていなかった。あまり読んでいなかったので気にならなかったかもしれないが。</p>
+<p>単体でのテストを意識せずに書くからか、コードの結合度は高く、テストの難易度も上がっていった。</p>
+</blockquote>
+<p>テストの話はこの記事では置いておくとしても、<code>コードの結合度</code>、<code>小さな単位でのコードの書き方</code>は、問題の分割において重要な考え方だと思います。コードが複雑化してしまうと、問題を切り分けることが難しくなってしまうからです。</p>
+<h3 id="4-ツールを使う"><a href="#4-ツールを使う" class="headerlink" title="4. ツールを使う"></a>4. ツールを使う</h3><p>デバッグのためのツールを使いましょう。ツールは以下の項目を満たせているものが良いと思います。</p>
+<ul>
+<li>エディタ上でシンタックスエラー、型エラーなどを検知できる(コンパイルを待つ前にエラーを検知できて高速)</li>
+<li>ライブリロードができる</li>
+<li>StackTraceが確認できる</li>
+<li>BreakPointを設置できる</li>
+</ul>
+<p>ただし、これらに頼るのではなく、自分の頭で道筋を立ててから使うといいと思います。<a href="http://blog.livedoor.jp/lalha/archives/50261226.html" target="_blank" rel="noopener">プログラマーの開発速度は「はまる」時間の長さで決まる</a>という記事では、以下のようなことをいっています。</p>
+<blockquote>
+<p>問題箇所を頭で考えることに慣れてくれば、大抵の場合、テキストエディタさえあれば問題は割とすぐ解決できる。</p>
+<p>そして、ツールが本領を発揮するのは、当たりを付けていないプログラマーに対してではなく、当たりを付けているプログラマーに対してである、ということを忘れてはいけない。</p>
+</blockquote>
+<p>また、当たり前ですが、テストを書いておくとエラーが検知しやすくなります。逆に言うと、エラーが検知しやすいテストをあらかじめ書いておくことが大切です。</p>
+<h3 id="5-体系的な知識を身につける"><a href="#5-体系的な知識を身につける" class="headerlink" title="5. 体系的な知識を身につける"></a>5. 体系的な知識を身につける</h3><p>公式ドキュメントや書籍などで、一度体系的な知識を身に着けておくといいと思います。</p>
+<p>必要な知識をすべて覚えよう、ということではなく、ざっとでもいいので全体を舐めておくと、いざというときに問題のあたりをつけたり、調べて解決したりすることができるからです。体系的に理解しておくことで、「知っていればハマらなかったのに」と後悔することを減らし、本来時間をかけるべき箇所に集中できます。</p>
+<p>何を学ぶにしても、付け焼き刃ではなくて、一歩深いところまで興味をもつことが大事だと思います。<a href="http://blog.livedoor.jp/lalha/archives/50261226.html" target="_blank" rel="noopener">プログラマーの開発速度は「はまる」時間の長さで決まる</a>で触れられている、「よくあるつくり」を意識するようなイメージです。</p>
+<blockquote>
+<p>「最近ではＸＸというフレームワークがあって」というような表層の情報をたくさん集めることよりも、少なくても良いので、これは面白そうだ、というものについて深入りして、内部の構造や拡張ポイント、設計の指針などを理解する方が、速く美しくコードを書けるプログラマーになるための近道だと思うわけである。</p>
+</blockquote>
+<p><a href="http://qiita.com/hirokidaichi/items/27c757d92b6915e8ecf7" target="_blank" rel="noopener">ペアプログラミングして気がついた新人プログラマの成長を阻害する悪習</a>にも、</p>
+<blockquote>
+<p>知識についておいしいところをつまみ食いしようとしたり、文法やパラダイムについての理解を自分なりに整理できていない場合、知識ではなく、tipsになってしまい応用が利かず、無限にtipsを追い求めてしまう。</p>
+</blockquote>
+<p>と書かれています。</p>
+<h3 id="6-質問する"><a href="#6-質問する" class="headerlink" title="6. 質問する"></a>6. 質問する</h3><p>適切なタイミングで誰かに質問するのも重要なスキルです。<a href="http://qiita.com/seki_uk/items/4001423b3cd3db0dada7" target="_blank" rel="noopener">質問は恥ではないし役に立つ</a>という記事によくまとまっていますが、個人的に重要だと思ったのは以下の点でした。</p>
+<ul>
+<li>質問のテンプレートを使う(どこまで自力でやればいいかを毎回考えずに済む)</li>
+<li>15分後も解決していなかったら必ず人に聞く(早すぎず遅すぎず)</li>
+<li>質問のレベルの把握</li>
+<li>経験のない仕事でも、世界のスタンダードがどうなっているのかを調べる</li>
+</ul>
+<p>また、身の回りに、質問に関して知見のある人がいない、というときは、Stack OverflowやGitHubのissueで質問することができます。</p>
+<h3 id="その他"><a href="#その他" class="headerlink" title="その他"></a>その他</h3><p>その他のテクニックとして、過去に出会って類似した問題と照らし合わせてあたりをつけることや、問題を言い換えたり簡略化したりして違った視点から見ることなどがあります。これらも、達人プログラマーによいリストがあるので抜粋します。</p>
+<ul>
+<li>要求を再解釈<ul>
+<li>もっと簡単な手段は存在するのか?</li>
+<li>本当の問題を解決しようとしているのか、それとも末端の技術的な問題にとらわれているのか?</li>
+<li>なぜそれが問題なのか?</li>
+<li>解決を難しくしている真の原因は何なのか?</li>
+<li>この手段でやり遂げなければならないのか?</li>
+<li>そもそも解決しなければならない問題なのか?</li>
+</ul>
+</li>
+</ul>
+<h2 id="問題解決のフローチャート"><a href="#問題解決のフローチャート" class="headerlink" title="問題解決のフローチャート"></a>問題解決のフローチャート</h2><p>以上の問題解決の基本をふまえると、問題が生じたときの考え方の流れは次のフローチャートのとおり整理できます。</p>
+<p><img src="/images/problem-solving/Flowchart.png" alt=""></p>
+<p><br></p>
+<p>各項目の補足をしていきます。</p>
+<h3 id="1-現象再現手順を特定する"><a href="#1-現象-再現手順を特定する" class="headerlink" title="1. 現象/再現手順を特定する"></a>1. 現象/再現手順を特定する</h3><p>まずはじめに、現象/再現手順を特定することから始めます。これは、<code>常に解決の計画を持つ</code>、<code>問題を分割する</code>ために必要な手順です。当たり前のようですが、意識しないと忘れてしまいがちかなと思います。</p>
+<p>例えば、ランダムに起こる現象(バグ)を、どういう状況で起こるのかを知らないままに調べていくのは危険です。もし調べるにしても、<code>現象に当たりをつけるための調査</code>という意識を持っておくといいかもしれません。</p>
+<h3 id="2-原因を特定する"><a href="#2-原因を特定する" class="headerlink" title="2. 原因を特定する"></a>2. 原因を特定する</h3><p>現象が分かったら原因を探ります。作業的には前手順「1. 現象/再現手順を特定する」とセットになることも多いのですが、そうではないケースもあるため、別の手順にしています。</p>
+<p>まず大事なのは、問題を分割することです。コードのどの行がエラーの原因になっているのかまで絞り込むために、実装をコメントアウト等しながら切り分けていきます。問題が発生する前のコミットまで戻るのもひとつの手段です。できる限り余計な部分を排除した、最小構成から原因を探っていくのがいいと思います。</p>
+<p>また、<code>ググる</code>スキルも重要です。自分は、以下のいずれかを組み合わせながら、もしくは単体ででググることが多い気がします(ちなみにまず最初に英語で調べます)。</p>
+<ul>
+<li>エラーメッセージをそのままペースト</li>
+<li>現象/再現手順名</li>
+<li>原因と考えられる実装名</li>
+</ul>
+<p>こういった指針をもっておくと、手順を実行していくだけで原因が特定できるので、イライラせずに問題を解決できることが多いです。</p>
+<h3 id="3-解決策と思われるものを試す"><a href="#3-解決策と思われるものを試す" class="headerlink" title="3. 解決策と思われるものを試す"></a>3. 解決策と思われるものを試す</h3><p>調べた解決策を実装してみます。解決すればここで終了です。</p>
+<h3 id="4-解決しない場合gt結果を残しておいて-また1のサイクルに戻る"><a href="#4-解決しない場合-gt-結果を残しておいて、また1のサイクルに戻る" class="headerlink" title="4. 解決しない場合=&gt;結果を残しておいて、また1のサイクルに戻る"></a>4. 解決しない場合=&gt;結果を残しておいて、また1のサイクルに戻る</h3><p>解決しない場合、そのプロセスを文字に残しておくことが大事です。面倒に思うかもしれませんが、問題が複雑であるほど、結果を書いておくと早く切り分けできます。試した順番に因果関係がありそうな場合は、それをツリー構造で残しておくことも重要です。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>今回は、信頼できる書籍などをリソースを参考にして、ハマった時の問題解決の考え方を書いてみました。あくまで個人的な指針ではありますが、このような考え方のフレームワークを自分の中で持っておくと、様々な状況に対処しやすいのではないかと思っています。</p>
+<p>自分もまだ模索中です。他に良い方法があればぜひ教えてください。</p>
+<h2 id="参考にしたリソース"><a href="#参考にしたリソース" class="headerlink" title="参考にしたリソース"></a>参考にしたリソース</h2><ul>
+<li><a href="http://qiita.com/Sekky0905/items/095b45c46a80e933509c" target="_blank" rel="noopener">新人プログラマのうちに身に付けたい習慣、考え方（この半年で学んだことと反省） - Qiita</a></li>
+<li><a href="http://qiita.com/Mic-U/items/f9de1c08c47c50620905" target="_blank" rel="noopener">プログラマたる者、人に頼る前にこれぐらいはやっておきたい - Qiita</a></li>
+<li><a href="http://qiita.com/STEEL_PLUS/items/c3f8d0d7d9588094686d" target="_blank" rel="noopener">新人エンジニアこそちゃんと調べてちゃんと知りちゃんと考える - Qiita</a></li>
+<li><a href="http://qiita.com/hirokidaichi/items/27c757d92b6915e8ecf7" target="_blank" rel="noopener">ペアプログラミングして気がついた新人プログラマの成長を阻害する悪習 - Qiita</a></li>
+<li><a href="http://qiita.com/seki_uk/items/4001423b3cd3db0dada7" target="_blank" rel="noopener">質問は恥ではないし役に立つ - Qiita</a></li>
+<li><a href="http://gongo.hatenablog.com/entry/2017/01/04/233904" target="_blank" rel="noopener">バグなどの謎の現象に立ち向かうも闇が濃く、どうしても沼から脱出できない時に見るフローチャート</a></li>
+<li><a href="http://blog.livedoor.jp/lalha/archives/50261226.html" target="_blank" rel="noopener">プログラマーの開発速度は「はまる」時間の長さで決まる</a></li>
+<li><a href="https://note.mu/ruiu/n/n1083b2a5d547" target="_blank" rel="noopener">ソースコードって実際のところどういうふうに書いていますか？</a></li>
+<li><a href="https://www.amazon.com/Code-Complete-Developer-Best-Practices-ebook/dp/B00JDMPOSY/ref=mt_kindle?_encoding=UTF8&amp;me=" target="_blank" rel="noopener">Code Complete, Second Edition</a></li>
+<li><a href="https://www.amazon.co.jp/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9E%E3%81%AE%E8%80%83%E3%81%88%E6%96%B9%E3%81%8C%E3%81%8A%E3%82%82%E3%81%97%E3%82%8D%E3%81%84%E3%81%BB%E3%81%A9%E8%BA%AB%E3%81%AB%E3%81%A4%E3%81%8F%E6%9C%AC-%E5%95%8F%E9%A1%8C%E8%A7%A3%E6%B1%BA%E8%83%BD%E5%8A%9B%E3%82%92%E9%8D%9B%E3%81%88%E3%82%88%E3%81%86-V-Anton-Spraul/dp/4048869558" target="_blank" rel="noopener">プログラマの考え方がおもしろいほど身につく本 問題解決能力を鍛えよう!</a></li>
+</ul>
+<h2 id="code-complete-second-editionの抜粋"><a href="#Code-Complete-Second-Editionの抜粋" class="headerlink" title="Code Complete, Second Editionの抜粋"></a>Code Complete, Second Editionの抜粋</h2><p>最後に、Code Complete, Second Editionの抜粋を紹介します。この記事で言いたいことが網羅されていると思います。</p>
+<ul>
+<li>Techniques for Finding Defects<ul>
+<li>Use all the data available to make your hypothesis.</li>
+<li>Refine the test cases that produce the error.</li>
+<li>Exercise the code in your unit test suite.</li>
+<li>Use available tools.</li>
+<li>Reproduce the error several different ways.</li>
+<li>Generate more data to generate more hypotheses.</li>
+<li>Use the results of negative tests.</li>
+<li>Brainstorm for possible hypotheses.</li>
+<li><strong>Keep a note pad by your desk, and make a list of things to try.</strong></li>
+<li>Narrow the suspicious region of the code.</li>
+<li>Be suspicious of classes and routines that have had defects before.</li>
+<li>Check code that’s changed recently.</li>
+<li>Expand the suspicious region of the code.</li>
+<li>Integrate incrementally.</li>
+<li>Check for common defects.</li>
+<li>Talk to someone else about the problem.</li>
+<li>Take a break from the problem.</li>
+<li><strong>Set a maximum time for quick and dirty debugging.</strong></li>
+<li>Make a list of brute-force techniques, and use them.</li>
+</ul>
+</li>
+<li>Techniques for Syntax Errors<ul>
+<li>Don’t trust line numbers in compiler messages.</li>
+<li>Don’t trust compiler messages.</li>
+<li>Don’t trust the compiler’s second message.</li>
+<li>Divide and conquer.</li>
+<li>Use a syntax-directed editor to find misplaced comments and quotation marks.</li>
+</ul>
+</li>
+<li>Techniques for Fixing Defects<ul>
+<li><strong>Understand the problem before you fix it.</strong></li>
+<li>Understand the program, not just the problem.</li>
+<li>Confirm the defect diagnosis.</li>
+<li><strong>Relax.</strong></li>
+<li>Save the original source code.</li>
+<li>Fix the problem, not the symptom.</li>
+<li>Change the code only for good reason.</li>
+<li>Make one change at a time.</li>
+<li>Check your fix.</li>
+<li>Add a unit test that exposes the defect.</li>
+<li>Look for similar defects.</li>
+<li>General Approach to Debugging</li>
+<li>Do you use debugging as an opportunity to learn more about your program, mistakes, code quality, and problem-solving approach?</li>
+<li>Do you avoid the trial-and-error, superstitious approach to debugging?</li>
+<li>Do you assume that errors are your fault?</li>
+<li>Do you use the scientific method to stabilize intermittent errors?</li>
+<li>Do you use the scientific method to find defects?</li>
+<li>Rather than using the same approach every time, do you use several different techniques to find defects?</li>
+<li>Do you verify that the fix is correct?</li>
+<li><strong>Do you use compiler warning messages, execution profiling, a test framework, scaffolding, and interactive debugging?</strong></li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/04/24/problem-solving/" data-text="新人プログラマの時に知っておきたかった「ハマったときの考え方とフローチャート」" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/04/24/problem-solving/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/04/24/problem-solving/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/04/24/problem-solving/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/04/24/problem-solving/" class="hatena-bookmark-button" data-hatena-bookmark-title="新人プログラマの時に知っておきたかった「ハマったときの考え方とフローチャート」" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/プログラミング/">プログラミング</a></li></ul>
+
+
+      <p class="article-footer__author">by okp</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

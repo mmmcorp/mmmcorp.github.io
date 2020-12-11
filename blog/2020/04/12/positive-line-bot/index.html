@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>自動返信LINE BotをAWS SAM+DynamoDBで作ってみた | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="こんにちは、関口です。最近はUber EatsとAmazonフレッシュを多用して以前にもまして引きこもり気味です。 今回は現状所属しているプロジェクトのキャッチアップ的意味合いを込めて、ポジティブなワードを返してくれる自動LineBotをAWS SAMとDynamoDBで試してみました。 雛形作成まずは雛形のプロジェクトを作成します。123456$ sam init --runtime go1.x">
+<meta name="keywords" content="AWS,サーバーレス,サーバサイド">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自動返信LINE BotをAWS SAM+DynamoDBで作ってみた">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/04/12/positive-line-bot/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="こんにちは、関口です。最近はUber EatsとAmazonフレッシュを多用して以前にもまして引きこもり気味です。 今回は現状所属しているプロジェクトのキャッチアップ的意味合いを込めて、ポジティブなワードを返してくれる自動LineBotをAWS SAMとDynamoDBで試してみました。 雛形作成まずは雛形のプロジェクトを作成します。123456$ sam init --runtime go1.x">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2020-04-12-positive-line-bot/line.jpg">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="自動返信LINE BotをAWS SAM+DynamoDBで作ってみた">
+<meta name="twitter:description" content="こんにちは、関口です。最近はUber EatsとAmazonフレッシュを多用して以前にもまして引きこもり気味です。 今回は現状所属しているプロジェクトのキャッチアップ的意味合いを込めて、ポジティブなワードを返してくれる自動LineBotをAWS SAMとDynamoDBで試してみました。 雛形作成まずは雛形のプロジェクトを作成します。123456$ sam init --runtime go1.x">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/2020-04-12-positive-line-bot/line.jpg">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-positive-line-bot" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-04-12T21:41:47.000Z" itemprop="datePublished">2020-04-12</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/04/12/positive-line-bot/">自動返信LINE BotをAWS SAM+DynamoDBで作ってみた</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/04/12/positive-line-bot/" data-text="自動返信LINE BotをAWS SAM+DynamoDBで作ってみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/04/12/positive-line-bot/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/04/12/positive-line-bot/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/04/12/positive-line-bot/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/04/12/positive-line-bot/" class="hatena-bookmark-button" data-hatena-bookmark-title="自動返信LINE BotをAWS SAM+DynamoDBで作ってみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>こんにちは、関口です。<br>最近はUber EatsとAmazonフレッシュを多用して以前にもまして引きこもり気味です。</p>
+<p>今回は現状所属しているプロジェクトのキャッチアップ的意味合いを込めて、<br>ポジティブなワードを返してくれる自動LineBotを<br>AWS SAMとDynamoDBで試してみました。</p>
+<h2 id="雛形作成"><a href="#雛形作成" class="headerlink" title="雛形作成"></a>雛形作成</h2><p>まずは雛形のプロジェクトを作成します。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ sam init --runtime go1.x --name positive-line-bot</span><br><span class="line"></span><br><span class="line">$ cd positive-line-bot</span><br><span class="line"></span><br><span class="line">//依存モジュール管理</span><br><span class="line">$ go mod init line-positive-bot</span><br></pre></td></tr></table></figure></p>
+<h2 id="dynamodb"><a href="#DynamoDB" class="headerlink" title="DynamoDB"></a>DynamoDB</h2><p>Lineと連携する前に、<br>DynamoDBから自動返信されるワードを取得する部分を実装します。</p>
+<p>一覧をDynamoDBのテーブルから取得してきて、<br>そのうち1つをランダムに抽出しています。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Positive <span class="keyword">struct</span> &#123;</span><br><span class="line">	ID   <span class="keyword">int</span>    <span class="string">`json:"ID"`</span></span><br><span class="line">	Name <span class="keyword">string</span> <span class="string">`json:"Name"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">handler</span><span class="params">(request events.APIGatewayProxyRequest)</span> <span class="params">(events.APIGatewayProxyResponse, error)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	endpoint := os.Getenv(<span class="string">"DYNAMODB_ENDPOINT"</span>)</span><br><span class="line">	tableName := os.Getenv(<span class="string">"DYNAMODB_TABLE_NAME"</span>)</span><br><span class="line"></span><br><span class="line">	sess := session.Must(session.NewSession())</span><br><span class="line">	config := aws.NewConfig().WithRegion(<span class="string">"ap-northeast-1"</span>)</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(endpoint) &gt; <span class="number">0</span> &#123;</span><br><span class="line">		config = config.WithEndpoint(endpoint)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	db := dynamodb.New(sess, config)</span><br><span class="line"></span><br><span class="line">	result, err := db.Scan(&amp;dynamodb.ScanInput&#123;</span><br><span class="line">		TableName:              aws.String(tableName),</span><br><span class="line">		ConsistentRead:         aws.Bool(<span class="literal">true</span>),</span><br><span class="line">		ReturnConsumedCapacity: aws.String(<span class="string">"NONE"</span>),</span><br><span class="line">	&#125;)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> events.APIGatewayProxyResponse&#123;&#125;, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> positives []Positive</span><br><span class="line"></span><br><span class="line">	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &amp;positives)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(err)</span><br><span class="line">		<span class="keyword">return</span> events.APIGatewayProxyResponse&#123;&#125;, err</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> words []<span class="keyword">string</span></span><br><span class="line">	<span class="keyword">for</span> _, positive := <span class="keyword">range</span> positives &#123;</span><br><span class="line">		words = <span class="built_in">append</span>(words, positive.Name)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	rand.Seed(time.Now().UnixNano())</span><br><span class="line">	i := rand.Intn(<span class="built_in">len</span>(words))</span><br><span class="line">	word := words[i]</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> events.APIGatewayProxyResponse&#123;</span><br><span class="line">		Body:       word,</span><br><span class="line">		StatusCode: <span class="number">200</span>,</span><br><span class="line">	&#125;, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	lambda.Start(handler)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>template.yml</code><br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">Resources:</span></span><br><span class="line"><span class="attr">  PositiveLineBotFunction:</span></span><br><span class="line"><span class="attr">    Type:</span> <span class="attr">AWS::Serverless::Function</span></span><br><span class="line"><span class="attr">    Properties:</span></span><br><span class="line"><span class="attr">      CodeUri:</span> <span class="string">positive-line-bot/</span></span><br><span class="line"><span class="attr">      Handler:</span> <span class="string">positive-line-bot</span></span><br><span class="line"><span class="attr">      Runtime:</span> <span class="string">go1.x</span></span><br><span class="line"><span class="attr">      Tracing:</span> <span class="string">Active</span></span><br><span class="line"><span class="attr">      Policies:</span></span><br><span class="line"><span class="attr">        - arn:</span><span class="attr">aws:iam::aws:policy/AmazonDynamoDBFullAccess</span></span><br><span class="line"><span class="attr">      Events:</span></span><br><span class="line"><span class="attr">        CatchAll:</span></span><br><span class="line"><span class="attr">          Type:</span> <span class="string">Api</span></span><br><span class="line"><span class="attr">          Properties:</span></span><br><span class="line"><span class="attr">            Path:</span> <span class="string">/positive</span></span><br><span class="line"><span class="attr">            Method:</span> <span class="string">GET</span></span><br><span class="line"><span class="attr">      Environment:</span></span><br><span class="line"><span class="attr">        Variables:</span></span><br><span class="line"><span class="attr">          DYNAMODB_ENDPOINT:</span> <span class="string">''</span></span><br><span class="line"><span class="attr">          DYNAMODB_TABLE_NAME:</span> <span class="string">'PositiveLineBotTable'</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  PositiveLineBotTable:</span></span><br><span class="line"><span class="attr">    Type:</span> <span class="attr">AWS::DynamoDB::Table</span></span><br><span class="line"><span class="attr">    Properties:</span></span><br><span class="line"><span class="attr">      TableName:</span> <span class="string">'PositiveLineBotTable'</span></span><br><span class="line"><span class="attr">      AttributeDefinitions:</span></span><br><span class="line"><span class="attr">        - AttributeName:</span> <span class="string">'ID'</span></span><br><span class="line"><span class="attr">          AttributeType:</span> <span class="string">'N'</span></span><br><span class="line"><span class="attr">      KeySchema:</span></span><br><span class="line"><span class="attr">        - AttributeName:</span> <span class="string">'ID'</span></span><br><span class="line"><span class="attr">          KeyType:</span> <span class="string">'HASH'</span></span><br><span class="line"><span class="attr">      ProvisionedThroughput:</span></span><br><span class="line"><span class="attr">        ReadCapacityUnits:</span> <span class="string">'2'</span></span><br><span class="line"><span class="attr">        WriteCapacityUnits:</span> <span class="string">'2'</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="dynamodb-local"><a href="#DynamoDB-Local" class="headerlink" title="DynamoDB Local"></a>DynamoDB Local</h3><p>うまくできているかどうかローカルで確認します。</p>
+<p><code>docker-compose.yml</code><br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">'3'</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line"><span class="attr">  dynamodb:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">amazon/dynamodb-local</span></span><br><span class="line"><span class="attr">    container_name:</span> <span class="string">dynamodb</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="number">8000</span><span class="string">:8000</span></span><br></pre></td></tr></table></figure></p>
+<p>ローカルテストで用いるテーブル定義および、テストデータを作成します。<br><code>test/positive-line-bot_table.json</code><br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"AttributeDefinitions"</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">"AttributeName"</span>: <span class="string">"Id"</span>,</span><br><span class="line">      <span class="attr">"AttributeType"</span>: <span class="string">"N"</span></span><br><span class="line">    &#125;</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">"TableName"</span>: <span class="string">"PositiveLineBotTable"</span>,</span><br><span class="line">  <span class="attr">"KeySchema"</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">"AttributeName"</span>: <span class="string">"Id"</span>,</span><br><span class="line">      <span class="attr">"KeyType"</span>: <span class="string">"HASH"</span></span><br><span class="line">    &#125;</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">"ProvisionedThroughput"</span>: &#123;</span><br><span class="line">    <span class="attr">"ReadCapacityUnits"</span>: <span class="number">2</span>,</span><br><span class="line">    <span class="attr">"WriteCapacityUnits"</span>: <span class="number">2</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>test/positive-line-bot_table_data.json</code><br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"PositiveLineBotTable"</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">"PutRequest"</span>: &#123;</span><br><span class="line">        <span class="attr">"Item"</span>: &#123;</span><br><span class="line">          <span class="attr">"ID"</span>: &#123;<span class="attr">"N"</span>: <span class="string">"1"</span>&#125;,</span><br><span class="line">          <span class="attr">"Name"</span>: &#123;<span class="attr">"S"</span>: <span class="string">"test"</span>&#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">"PutRequest"</span>: &#123;</span><br><span class="line">        <span class="attr">"Item"</span>: &#123;</span><br><span class="line">          <span class="attr">"ID"</span>: &#123;<span class="attr">"N"</span>: <span class="string">"2"</span>&#125;,</span><br><span class="line">          <span class="attr">"Name"</span>: &#123;<span class="attr">"S"</span>: <span class="string">"testtest"</span>&#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>ローカルテスト用の環境変数を設定します<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#123;</span></span><br><span class="line"><span class="attr">  "PositiveLineBotFunction":</span> <span class="string">&#123;</span></span><br><span class="line"><span class="attr">    "DYNAMODB_ENDPOINT":</span> <span class="string">"http://&#123;ポート番号&#125;:8000"</span><span class="string">,</span></span><br><span class="line"><span class="attr">    "DYNAMODB_TABLE_NAME":</span> <span class="string">"PositiveLineBotTable"</span></span><br><span class="line">  <span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure></p>
+<p>AWS CLI のコマンドを実行してデータを反映した上で<br>実行すると、テストデータの値が1つランダムで返されます<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ docker-compose up -d</span><br><span class="line"></span><br><span class="line">$ aws dynamodb create-table --cli-input-json file://test/positive-line-bot_table.json --endpoint-url http://127.0.0.1:8000</span><br><span class="line"></span><br><span class="line">$ aws dynamodb batch-write-item --request-items file://test/positive-line-bot_table_data.json --endpoint-url http://127.0.0.1:8000</span><br><span class="line"></span><br><span class="line">$ aws dynamodb scan --table-name PositiveLineBotTable --endpoint-url http://127.0.0.1:8000</span><br><span class="line"></span><br><span class="line">$ sam local start-api --env-vars test/env.json　--profile dummy</span><br><span class="line"></span><br><span class="line">$ curl http://localhost:3000/positive</span><br><span class="line">&#123;&quot;id&quot;:1,&quot;name&quot;:&quot;testtest&quot;&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="lineと連携する"><a href="#Lineと連携する" class="headerlink" title="Lineと連携する"></a>Lineと連携する</h2><p><a href="https://developers.line.biz/ja/docs/messaging-api/getting-started/" target="_blank" rel="noopener">Messaging APIを利用するには</a>などを参考にLine側の設定行います。</p>
+<p>設定時、ChannelSecretとアクセストークン（ロングターム）をメモします。</p>
+<p>Lineに入力された値が渡ってくるように、コードとtemplate.ymlを修正します。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">UnmarshalLineRequest</span><span class="params">(data []<span class="keyword">byte</span>)</span> <span class="params">(LineRequest, error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> r LineRequest</span><br><span class="line">	err := json.Unmarshal(data, &amp;r)</span><br><span class="line">	<span class="keyword">return</span> r, err</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> LineRequest <span class="keyword">struct</span> &#123;</span><br><span class="line">	Events      []Event <span class="string">`json:"events"`</span></span><br><span class="line">	Destination <span class="keyword">string</span>  <span class="string">`json:"destination"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Event <span class="keyword">struct</span> &#123;</span><br><span class="line">	Type       <span class="keyword">string</span>  <span class="string">`json:"type"`</span></span><br><span class="line">	ReplyToken <span class="keyword">string</span>  <span class="string">`json:"replyToken"`</span></span><br><span class="line">	Source     Source  <span class="string">`json:"source"`</span></span><br><span class="line">	Timestamp  <span class="keyword">int64</span>   <span class="string">`json:"timestamp"`</span></span><br><span class="line">	Message    Message <span class="string">`json:"message"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Message <span class="keyword">struct</span> &#123;</span><br><span class="line">	Type <span class="keyword">string</span> <span class="string">`json:"type"`</span></span><br><span class="line">	ID   <span class="keyword">string</span> <span class="string">`json:"id"`</span></span><br><span class="line">	Text <span class="keyword">string</span> <span class="string">`json:"text"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Source <span class="keyword">struct</span> &#123;</span><br><span class="line">	UserID <span class="keyword">string</span> <span class="string">`json:"userId"`</span></span><br><span class="line">	Type   <span class="keyword">string</span> <span class="string">`json:"type"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">handler</span><span class="params">(request events.APIGatewayProxyRequest)</span> <span class="params">(events.APIGatewayProxyResponse, error)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	myLineRequest, err := UnmarshalLineRequest([]<span class="keyword">byte</span>(request.Body))</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatal(err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	bot, err := linebot.New(</span><br><span class="line">		<span class="string">"ChannelSecret"</span>,</span><br><span class="line">		<span class="string">"アクセストークン（ロングターム）"</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatal(err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 中略</span></span><br><span class="line">    </span><br><span class="line">	<span class="keyword">var</span> tmpReplyMessage <span class="keyword">string</span></span><br><span class="line">	tmpReplyMessage = word</span><br><span class="line">	<span class="keyword">if</span> _, err = bot.ReplyMessage(myLineRequest.Events[<span class="number">0</span>].ReplyToken, linebot.NewTextMessage(tmpReplyMessage)).Do(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatal(err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> events.APIGatewayProxyResponse&#123;</span><br><span class="line">		Body:       word,</span><br><span class="line">		StatusCode: <span class="number">200</span>,</span><br><span class="line">	&#125;, <span class="literal">nil</span></span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>template.yml</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Method: POST</span><br></pre></td></tr></table></figure></p>
+<h2 id="デプロイ"><a href="#デプロイ" class="headerlink" title="デプロイ"></a>デプロイ</h2><p>最後にデプロイをして実際に確認してみます。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ sam validate --profile my_profile --debug</span><br><span class="line"></span><br><span class="line">$ sam build --template template.yaml --profile my_profile</span><br><span class="line"></span><br><span class="line">$ sam deploy --guided --profile my_profile</span><br></pre></td></tr></table></figure></p>
+<p>作成されたdynamoDBテーブルにデータを入れた状態で<br>試しに自身の携帯から確認したところ無事自動返答がされました。</p>
+<p><img src="/images/2020-04-12-positive-line-bot/line.jpg" alt=""></p>
+<h2 id="参考サイト"><a href="#参考サイト" class="headerlink" title="参考サイト"></a>参考サイト</h2><ul>
+<li><a href="https://www.m3tech.blog/entry/advent-calendar-2018-6" target="_blank" rel="noopener">AWS SAM + DynamoDB Local + Go で始めるサーバレスアプリケーション開発</a></li>
+<li><a href="https://dev.classmethod.jp/articles/lambda-line-bot-tutorial/" target="_blank" rel="noopener">LambdaではじめてのLINE Botを作る</a></li>
+<li><a href="https://dev.classmethod.jp/articles/aws-sam-simplifies-deployment/" target="_blank" rel="noopener">[アップデート]AWS SAMのデプロイが簡単になりました</a></li>
+<li><a href="https://www.m3tech.blog/entry/advent-calendar-2018-6" target="_blank" rel="noopener">オウム返しチャットボット LINE API＋Lambda＋Go言語(フレームワーク利用なし)</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/04/12/positive-line-bot/" data-text="自動返信LINE BotをAWS SAM+DynamoDBで作ってみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/04/12/positive-line-bot/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/04/12/positive-line-bot/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/04/12/positive-line-bot/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/04/12/positive-line-bot/" class="hatena-bookmark-button" data-hatena-bookmark-title="自動返信LINE BotをAWS SAM+DynamoDBで作ってみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバサイド/">サーバサイド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li></ul>
+
+
+      <p class="article-footer__author">by 関口(JP)</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>React VRについて調べてみた | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="昨年、React VRがプレリリースされた。  Introducing the React VR Pre-Release | Oculus  VR開発に興味はあるものの、なかなか手を付けられなかったが、とりあえずしらべてみることにした。 React VRとは？Oculusのブログを読むのが手っ取り早いが、WebVRをつかって、ブラウザ上でVR体験を可能にするには、平面での開発とは勝手が異なり、3D">
+<meta name="keywords" content="フロントエンド">
+<meta property="og:type" content="article">
+<meta property="og:title" content="React VRについて調べてみた">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2017/03/24/ReactVR/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="昨年、React VRがプレリリースされた。  Introducing the React VR Pre-Release | Oculus  VR開発に興味はあるものの、なかなか手を付けられなかったが、とりあえずしらべてみることにした。 React VRとは？Oculusのブログを読むのが手っ取り早いが、WebVRをつかって、ブラウザ上でVR体験を可能にするには、平面での開発とは勝手が異なり、3D">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/ReactVR/technical_details.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/ReactVR/mesh.gif">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/ReactVR/layout.gif">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/ReactVR/tour.gif">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/ReactVR/cube.gif">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/ReactVR/pano.gif">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/ReactVR/cubic_pano_1.gif">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/ReactVR/cubic_pano_2.gif">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/ReactVR/animating.gif">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.146Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="React VRについて調べてみた">
+<meta name="twitter:description" content="昨年、React VRがプレリリースされた。  Introducing the React VR Pre-Release | Oculus  VR開発に興味はあるものの、なかなか手を付けられなかったが、とりあえずしらべてみることにした。 React VRとは？Oculusのブログを読むのが手っ取り早いが、WebVRをつかって、ブラウザ上でVR体験を可能にするには、平面での開発とは勝手が異なり、3D">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/ReactVR/technical_details.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-React-VR" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2017-03-24T12:00:51.000Z" itemprop="datePublished">2017-03-24</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2017/03/24/ReactVR/">React VRについて調べてみた</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/03/24/ReactVR/" data-text="React VRについて調べてみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/03/24/ReactVR/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/03/24/ReactVR/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/03/24/ReactVR/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/03/24/ReactVR/" class="hatena-bookmark-button" data-hatena-bookmark-title="React VRについて調べてみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>昨年、React VRがプレリリースされた。</p>
+<ul>
+<li><a href="https://developer.oculus.com/blog/introducing-the-react-vr-pre-release/" target="_blank" rel="noopener">Introducing the React VR Pre-Release | Oculus</a></li>
+</ul>
+<p>VR開発に興味はあるものの、なかなか手を付けられなかったが、とりあえずしらべてみることにした。</p>
+<h2 id="react-vrとは"><a href="#React-VRとは？" class="headerlink" title="React VRとは？"></a>React VRとは？</h2><p><a href="https://developer.oculus.com/blog/introducing-the-react-vr-pre-release/" target="_blank" rel="noopener">Oculusのブログ</a>を読むのが手っ取り早いが、WebVRをつかって、ブラウザ上でVR体験を可能にするには、平面での開発とは勝手が異なり、3Dや映像処理の知識がなければ難しい。</p>
+<p>React VRは、それらを隠蔽し、従来のWeb開発に近い形で開発できるライブラリである。同じような思想のライブラリ(フレームワーク)として、<a href="https://aframe.io/" target="_blank" rel="noopener">A-Frame</a>などがあるが、React VRのメリットとしては <strong>Reactが使える</strong> ことにあると思う。例えば、チュートリアルで紹介されているコンポーネントは以下のような感じになる。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WelcomeToVR</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;View&gt;</span><br><span class="line">        &lt;Pano source=&#123;asset(<span class="string">'chess-world.jpg'</span>)&#125;/&gt;</span><br><span class="line">        &lt;Text</span><br><span class="line">          style=&#123;&#123;</span><br><span class="line">            backgroundColor: <span class="string">'#777879'</span>,</span><br><span class="line">            fontSize: <span class="number">0.8</span>,</span><br><span class="line">            layoutOrigin: [<span class="number">0.5</span>, <span class="number">0.5</span>],</span><br><span class="line">            paddingLeft: <span class="number">0.2</span>,</span><br><span class="line">            paddingRight: <span class="number">0.2</span>,</span><br><span class="line">            textAlign: <span class="string">'center'</span>,</span><br><span class="line">            textAlignVertical: <span class="string">'center'</span>,</span><br><span class="line">            transform: [&#123;<span class="attr">translate</span>: [<span class="number">0</span>, <span class="number">0</span>, <span class="number">-3</span>]&#125;],</span><br><span class="line">          &#125;&#125;&gt;</span><br><span class="line">          hello</span><br><span class="line">        &lt;<span class="regexp">/Text&gt;</span></span><br><span class="line"><span class="regexp">      &lt;/</span>View&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>ビューに関してはおなじみ、このあたりはReact Nativeと同じような感じである。また、<code>&lt;View&gt;</code>、<code>&lt;Text&gt;</code>など、React Nativeでみたことのあるコンポーネントが並んでいる。</p>
+<h2 id="どんな仕組み"><a href="#どんな仕組み？" class="headerlink" title="どんな仕組み？"></a>どんな仕組み？</h2><p>仕組みとしては、以下の図のようなレイヤーになる。</p>
+<p><img src="/images/ReactVR/technical_details.png" alt=""></p>
+<p>これもブログを読むのが早いのだが、内部的には、Three.jsをOVRUIでVR用に変換している。また、ReactのコードはWebWorkerを使用して非同期に走るので、パフォーマンス的にも最適化されているとのこと。</p>
+<h2 id="自作vrをみるにはどうしたらいいの"><a href="#自作VRをみるにはどうしたらいいの？" class="headerlink" title="自作VRをみるにはどうしたらいいの？"></a>自作VRをみるにはどうしたらいいの？</h2><p>自作VRをみるには、<a href="https://www.oculus.com/gear-vr/" target="_blank" rel="noopener">Gear VR</a>を使用し、Oculus Storeで<a href="https://developer.oculus.com/blog/carmel-developer-preview-launches-today/" target="_blank" rel="noopener">Carmel Developer Preview</a>というWebVR APIが実装されたブラウザをインストール、その上でVRを動かす。</p>
+<p>Carmelはまだプレビュー版なので、<code>アドレスバーがでない</code>、<code>2D web contentが表示されない</code>など未実装な部分がある。しかし、WebVRに特化するなら、最新のAPIが使えるし、最適化されているとのこと。また、優先的にこれらを改善していくとアナウンスもしており、FBの本気を感じる。</p>
+<p>React VRは、Gear VRをもっていない場合でも、普段使用しているブラウザで開発ができる。ただし、もちろんVRができるわけではなく、自動的にWebGLへダウングレードされたUIを開発することとなる。</p>
+<p>デバッグに関しては、Hot Reloading、NuclideのReact Dev Tools Inspectorをサポートしていて、React Native同様に、Webの世界の開発イテレーションをそのまま持ち込める(そもそもReact Nativeのようにネイティブの世界で動かしているわけでもない)。また、WebVRだけあって、Chrome Developer Toolsも使用できる。これらをみると、特にストレスなくデバッグサイクルがまわるはずだと考えた。</p>
+<h2 id="どんなことができるの"><a href="#どんなことができるの？" class="headerlink" title="どんなことができるの？"></a>どんなことができるの？</h2><p>今回は、いくつかサンプルを動かしてみようと思う。まずは<a href="https://facebook.github.io/react-vr/docs/getting-started.html" target="_blank" rel="noopener">Getting Started</a>のサンプルをみていくが、それぞれ以下のような感じである。コードは一部抜粋なので、興味のある人は参考リンクからとんでください。</p>
+<h4 id="meshモデル"><a href="#Meshモデル" class="headerlink" title="Meshモデル"></a>Meshモデル</h4><p><img src="/images/ReactVR/mesh.gif" alt=""></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MeshSample</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;</span><br><span class="line">    <span class="keyword">super</span>();</span><br><span class="line">    <span class="keyword">this</span>.state      = &#123;<span class="attr">rotation</span>: <span class="number">0</span>&#125;;</span><br><span class="line">    <span class="keyword">this</span>.lastUpdate = <span class="built_in">Date</span>.now();</span><br><span class="line">    <span class="keyword">this</span>.rotate     = <span class="keyword">this</span>.rotate.bind(<span class="keyword">this</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  rotate() &#123;</span><br><span class="line">    <span class="keyword">const</span> now       = <span class="built_in">Date</span>.now();</span><br><span class="line">    <span class="keyword">const</span> delta     = now - <span class="keyword">this</span>.lastUpdate;</span><br><span class="line">    <span class="keyword">this</span>.lastUpdate = now;</span><br><span class="line">    <span class="keyword">this</span>.setState(&#123;<span class="attr">rotation</span>: <span class="keyword">this</span>.state.rotation + delta / <span class="number">20</span>&#125;);</span><br><span class="line">    <span class="keyword">this</span>.frameHandle = requestAnimationFrame(<span class="keyword">this</span>.rotate);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  componentDidMount() &#123;</span><br><span class="line">    <span class="keyword">this</span>.rotate();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  componentWillUnmount() &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.frameHandle) &#123;</span><br><span class="line">      cancelAnimationFrame(<span class="keyword">this</span>.frameHandle);</span><br><span class="line">      <span class="keyword">this</span>.frameHandle = <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;View&gt;</span><br><span class="line">        &lt;Pano source=&#123;asset(<span class="string">'chess-world.jpg'</span>)&#125;/&gt;</span><br><span class="line">        &lt;Mesh</span><br><span class="line">          style=&#123;&#123;</span><br><span class="line">            transform: [</span><br><span class="line">              &#123;<span class="attr">translate</span>: [<span class="number">0</span>, <span class="number">-15</span>, <span class="number">-70</span>]&#125;,</span><br><span class="line">              &#123;<span class="attr">scale</span> : <span class="number">0.1</span> &#125;,</span><br><span class="line">              &#123;<span class="attr">rotateY</span> : <span class="keyword">this</span>.state.rotation&#125;,</span><br><span class="line">              &#123;<span class="attr">rotateX</span> : <span class="number">-90</span>&#125;</span><br><span class="line">            ],</span><br><span class="line">          &#125;&#125;</span><br><span class="line">          source=&#123;&#123;<span class="attr">mesh</span>:asset(<span class="string">'creature.obj'</span>), <span class="attr">mtl</span>:asset(<span class="string">'creature.mtl'</span>), <span class="attr">lit</span>: <span class="literal">true</span>&#125;&#125;</span><br><span class="line">        /&gt;</span><br><span class="line">        &lt;PointLight style=&#123;&#123;<span class="attr">color</span>:<span class="string">'white'</span>, <span class="attr">transform</span>:[&#123;<span class="attr">translate</span> : [<span class="number">0</span>, <span class="number">400</span>, <span class="number">700</span>]&#125;]&#125;&#125; /&gt;</span><br><span class="line"></span><br><span class="line">        &lt;Text style=&#123;style&#125;&gt;Creature&lt;<span class="regexp">/Text&gt;</span></span><br><span class="line"><span class="regexp">        &lt;/</span>View&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h4 id="レイアウト"><a href="#レイアウト" class="headerlink" title="レイアウト"></a>レイアウト</h4><p><img src="/images/ReactVR/layout.gif" alt=""></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LayoutSample</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;View&gt;</span><br><span class="line">        &lt;Pano source=&#123;asset(<span class="string">'chess-world.jpg'</span>)&#125; /&gt;</span><br><span class="line">        &lt;View style=&#123;&#123;</span><br><span class="line">          flex: <span class="number">1</span>,</span><br><span class="line">          flexDirection: <span class="string">'column'</span>,</span><br><span class="line">          width: <span class="number">2</span>,</span><br><span class="line">          alignItems: <span class="string">'stretch'</span>,</span><br><span class="line">          transform: [&#123;<span class="attr">translate</span>: [<span class="number">-1</span>, <span class="number">1</span>, <span class="number">-5</span>]&#125;],</span><br><span class="line">        &#125;&#125;&gt;</span><br><span class="line">          &lt;HighlightView text=<span class="string">'Red'</span> backgroundColor=<span class="string">'red'</span>/&gt;</span><br><span class="line">          &lt;HighlightView text=<span class="string">'Orange'</span> backgroundColor=<span class="string">'orange'</span>/&gt;</span><br><span class="line">          &lt;HighlightView text=<span class="string">'Yellow'</span> backgroundColor=<span class="string">'yellow'</span>/&gt;</span><br><span class="line">          &lt;HighlightView text=<span class="string">'Green'</span> backgroundColor=<span class="string">'green'</span>/&gt;</span><br><span class="line">          &lt;HighlightView text=<span class="string">'Blue'</span> backgroundColor=<span class="string">'blue'</span>/&gt;</span><br><span class="line">        &lt;<span class="regexp">/View&gt;</span></span><br><span class="line"><span class="regexp">      &lt;/</span>View&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="ツアー"><a href="#ツアー" class="headerlink" title="ツアー"></a>ツアー</h4><p><img src="/images/ReactVR/tour.gif" alt=""></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* setStateによってnextLocationIdを出し分け、遷移を実現している */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TourSample</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;View&gt;</span><br><span class="line">        &lt;View style=&#123;&#123;<span class="attr">transform</span>:[&#123;<span class="attr">rotateY</span>: rotation&#125;]&#125;&#125;&gt;</span><br><span class="line">          &lt;Pano source=&#123;asset(<span class="keyword">this</span>.state.data.photos[<span class="keyword">this</span>.state.nextLocationId].uri)&#125;/&gt;</span><br><span class="line">          &lt;NavButton</span><br><span class="line">            key=&#123;tooltip.linkedPhotoId&#125;</span><br><span class="line">            isLoading=&#123;isLoading&#125;</span><br><span class="line">            onClickSound=&#123;asset(soundEffects.navButton.onClick.uri)&#125;</span><br><span class="line">            onEnterSound=&#123;asset(soundEffects.navButton.onEnter.uri)&#125;</span><br><span class="line">            onInput=&#123;() =&gt; &#123;</span><br><span class="line">              <span class="keyword">this</span>.setState(&#123;<span class="attr">nextLocationId</span>: tooltip.linkedPhotoId&#125;);</span><br><span class="line">            &#125;&#125;</span><br><span class="line">            rotateY=&#123;tooltip.rotationY&#125;</span><br><span class="line">            source=&#123;asset(<span class="keyword">this</span>.state.data.nav_icon)&#125;</span><br><span class="line">            textLabel=&#123;tooltip.text&#125;</span><br><span class="line">            translateZ=&#123;<span class="keyword">this</span>.translateZ&#125;</span><br><span class="line">          /&gt;</span><br><span class="line">        &lt;<span class="regexp">/View&gt;</span></span><br><span class="line"><span class="regexp">      &lt;/</span>View&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h4 id="cube"><a href="#Cube" class="headerlink" title="Cube"></a>Cube</h4><p><img src="/images/ReactVR/cube.gif" alt=""></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 作成したコンポーネントに対してカスタム3Dオブジェクトを当て込んでいる</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">init</span>(<span class="params">bundle, parent, options</span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> scene = <span class="keyword">new</span> THREE.Scene();</span><br><span class="line">  <span class="keyword">const</span> cubeModule = <span class="keyword">new</span> CubeModule();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> vr = <span class="keyword">new</span> VRInstance(bundle, <span class="string">'CubeSample'</span>, parent, &#123;</span><br><span class="line">    cursorVisibility: <span class="string">'visible'</span>,</span><br><span class="line">    nativeModules: [ cubeModule ],</span><br><span class="line">    scene: scene,</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> cube = <span class="keyword">new</span> THREE.Mesh(</span><br><span class="line">    <span class="keyword">new</span> THREE.BoxGeometry(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>),</span><br><span class="line">    <span class="keyword">new</span> THREE.MeshBasicMaterial()</span><br><span class="line">  );</span><br><span class="line">  cube.position.z = <span class="number">-4</span>;</span><br><span class="line">  scene.add(cube);</span><br><span class="line"></span><br><span class="line">  cubeModule.init(cube);</span><br><span class="line"></span><br><span class="line">  vr.render = <span class="function"><span class="keyword">function</span>(<span class="params">timestamp</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> seconds = timestamp / <span class="number">1000</span>;</span><br><span class="line">    cube.position.x = <span class="number">0</span> + (<span class="number">1</span> * (<span class="built_in">Math</span>.cos(seconds)));</span><br><span class="line">    cube.position.y = <span class="number">0.2</span> + (<span class="number">1</span> * <span class="built_in">Math</span>.abs(<span class="built_in">Math</span>.sin(seconds)));</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  vr.start();</span><br><span class="line">  <span class="keyword">return</span> vr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>他にも、以下の様なことができる。</p>
+<h4 id="パノラマ写真"><a href="#パノラマ写真" class="headerlink" title="パノラマ写真"></a>パノラマ写真</h4><p><img src="/images/ReactVR/pano.gif" alt=""></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">render() &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;View&gt;</span><br><span class="line">      &lt;Pano source=&#123;asset(<span class="string">'sample_pano.jpg'</span>)&#125;/&gt;</span><br><span class="line">    &lt;<span class="regexp">/View&gt;</span></span><br><span class="line"><span class="regexp">  );</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
+<h4 id="自分で6方位の面を画像で定義"><a href="#自分で6方位の面を画像で定義" class="headerlink" title="自分で6方位の面を画像で定義"></a>自分で6方位の<code>面</code>を画像で定義</h4><p><img src="/images/ReactVR/cubic_pano_1.gif" alt=""></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">render() &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;View&gt;</span><br><span class="line">      &lt;Pano source=&#123;&#123; <span class="attr">uri</span>: [</span><br><span class="line">        <span class="string">'../static_assets/sample_right.jpg'</span>,</span><br><span class="line">        <span class="string">'../static_assets/sample_left.jpg'</span>,</span><br><span class="line">        <span class="string">'../static_assets/sample_top.jpg'</span>,</span><br><span class="line">        <span class="string">'../static_assets/sample_bottom.jpg'</span>,</span><br><span class="line">        <span class="string">'../static_assets/sample_back.jpg'</span>,</span><br><span class="line">        <span class="string">'../static_assets/sample_front.jpg'</span></span><br><span class="line">      ]&#125;&#125; /&gt;</span><br><span class="line">    &lt;<span class="regexp">/View&gt;</span></span><br><span class="line"><span class="regexp">  );</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
+<p><img src="/images/ReactVR/cubic_pano_2.gif" alt=""></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">render() &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;View&gt;</span><br><span class="line">      &lt;Pano source=&#123;&#123; <span class="attr">uri</span>: [</span><br><span class="line">        <span class="string">'../static_assets/sahara_rt.jpg'</span>,</span><br><span class="line">        <span class="string">'../static_assets/sahara_lf.jpg'</span>,</span><br><span class="line">        <span class="string">'../static_assets/sahara_up.jpg'</span>,</span><br><span class="line">        <span class="string">'../static_assets/sahara_dn.jpg'</span>,</span><br><span class="line">        <span class="string">'../static_assets/sahara_bk.jpg'</span>,</span><br><span class="line">        <span class="string">'../static_assets/sahara_ft.jpg'</span></span><br><span class="line">      ]&#125;&#125; /&gt;</span><br><span class="line">    &lt;<span class="regexp">/View&gt;</span></span><br><span class="line"><span class="regexp">  );</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
+<h4 id="ズームインアウト-アニメーション"><a href="#ズームイン・アウト、アニメーション" class="headerlink" title="ズームイン・アウト、アニメーション"></a>ズームイン・アウト、アニメーション</h4><p><img src="/images/ReactVR/animating.gif" alt=""></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">render() &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;View&gt;</span><br><span class="line">      &lt;Pano source=&#123; &#123;<span class="attr">uri</span>: <span class="keyword">this</span>.spaceSkymap&#125; &#125;/&gt;</span><br><span class="line">      &lt;AmbientLight intensity=&#123; <span class="number">2.6</span> &#125; /&gt;</span><br><span class="line">      &lt;View style=&#123; <span class="keyword">this</span>.styles.menu &#125;&gt;</span><br><span class="line">        &lt;Button text=<span class="string">'+'</span> callback=&#123;() =&gt; <span class="keyword">this</span>.setState(<span class="function">(<span class="params">prevState</span>) =&gt;</span> (&#123; <span class="attr">zoom</span>: prevState.zoom + <span class="number">10</span> &#125;) ) &#125; /&gt;</span><br><span class="line">        &lt;Button text=<span class="string">'-'</span> callback=&#123;() =&gt; <span class="keyword">this</span>.setState(<span class="function">(<span class="params">prevState</span>) =&gt;</span> (&#123; <span class="attr">zoom</span>: prevState.zoom - <span class="number">10</span> &#125;) ) &#125; /&gt;</span><br><span class="line">      &lt;<span class="regexp">/View&gt;</span></span><br><span class="line"><span class="regexp">      &lt;Mesh</span></span><br><span class="line"><span class="regexp">        style=&#123;&#123;</span></span><br><span class="line"><span class="regexp">          transform: [</span></span><br><span class="line"><span class="regexp">            &#123;translate: [-25, 0, this.state.zoom]&#125;, &#123;scale: 0.05 &#125;, &#123;rotateY: this.state.rotation&#125;, &#123;rotateX: 20&#125;, &#123;rotateZ: -10&#125;</span></span><br><span class="line"><span class="regexp">          ]</span></span><br><span class="line"><span class="regexp">        &#125;&#125;</span></span><br><span class="line"><span class="regexp">        source=&#123;&#123;mesh:asset('earth.obj'), mtl:asset('earth.mtl'), lit: true&#125;&#125; /</span>&gt;</span><br><span class="line">      &lt;Mesh</span><br><span class="line">        style=&#123;&#123;</span><br><span class="line">          transform: [</span><br><span class="line">            &#123;<span class="attr">translate</span>: [<span class="number">10</span>, <span class="number">10</span>, <span class="keyword">this</span>.state.zoom - <span class="number">30</span>]&#125;, &#123;<span class="attr">scale</span>: <span class="number">0.05</span>&#125;, &#123;<span class="attr">rotateY</span>: <span class="keyword">this</span>.state.rotation / <span class="number">3</span>&#125;,</span><br><span class="line">          ]</span><br><span class="line">        &#125;&#125;</span><br><span class="line">        source=&#123;&#123;<span class="attr">mesh</span>:asset(<span class="string">'moon.obj'</span>), <span class="attr">mtl</span>:asset(<span class="string">'moon.mtl'</span>), <span class="attr">lit</span>: <span class="literal">true</span>&#125;&#125; /&gt;</span><br><span class="line">    &lt;<span class="regexp">/View&gt;</span></span><br><span class="line"><span class="regexp">  );</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
+<h4 id="その他"><a href="#その他" class="headerlink" title="その他"></a>その他</h4><ul>
+<li>Styleは、React Nativeと同じような感じだが、flexboxをはじめとするCSSライクな構文が使える</li>
+<li>Three.jsでカスタムオブジェクトも作成可能。React Nativeと違い、JSだけ書けばいいと思うと楽</li>
+<li>現時点ではAPIもけっこう限られているため、Three.jsに詳しくなければ、コンテンツの向き不向きをしっかり考えたほうが良さそう。</li>
+<li>ドキュメントはさくっと読み切れる量なので、事前に使えるAPIを把握しておくと良さそう</li>
+</ul>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>ブラウザで見るぶんにはただのWebGLなのでそこまで感動はないが、これがそのままVRに展開できると考えるとすごいと思う。また、React VRによって宣言的にビューを作れるのも、たしかに開発効率が上がりそうである。Three.jsの時代と違い、適度に隠蔽されていて、コードが非常に読みやすいのは嬉しい。</p>
+<p>WebVRに関しては過去にも度々話題になっていたが、効率的に開発できる手段が成熟していくと、これまでなかった可能性が広がりそうで面白い。</p>
+<p>例えば、WebVRそのもののメリットとして、VR端末を持っていなくても、ブラウザからWebGLとしてアクセスできるため、VR専用コンテンツにする必要が無い(より多くのユーザーにアプローチできる)、従来のブラウザと同じようにシンプルに共有できる、などがある。向き不向きはあるが、ゲーム以外の、アクセスやシェアが重要になってくる、動画や画像ベースのコンテンツで有益なのではないだろうか。</p>
+<p>以上、React VRについてしらべてみました。VR初心者なので、なにか間違っていたらご指摘ください。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://facebook.github.io/react-vr/index.html" target="_blank" rel="noopener">React VR | A framework for building VR apps using React</a></li>
+<li><a href="https://developer.oculus.com/blog/introducing-the-react-vr-pre-release/" target="_blank" rel="noopener">Introducing the React VR Pre-Release | Oculus</a></li>
+<li><a href="https://developer.oculus.com/blog/carmel-developer-preview-launches-today/" target="_blank" rel="noopener">Carmel Developer Preview Launches Today | Oculus</a></li>
+<li><a href="https://www.pluralsight.com/guides/front-end-javascript/getting-started-with-react-vr" target="_blank" rel="noopener">Getting started with React VR</a></li>
+<li><a href="https://www.slideshare.net/jujunjun110/2017-web-vr" target="_blank" rel="noopener">ここまで来た！2017年 Web VRでできること</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/03/24/ReactVR/" data-text="React VRについて調べてみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/03/24/ReactVR/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/03/24/ReactVR/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/03/24/ReactVR/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/03/24/ReactVR/" class="hatena-bookmark-button" data-hatena-bookmark-title="React VRについて調べてみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li></ul>
+
+
+      <p class="article-footer__author">by okp</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

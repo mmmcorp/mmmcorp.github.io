@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Amazon Echoでスマートホーム | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="こんにちは、皆さんゴールデンウィークはいかがお過ごしでしたか、下條です。 私は暇だったのでAmazon Alexaのスキル開発に手を出したのですが半日で飽きてしまい、更に暇な毎日を過ごしておりました。 とは言いつつも、最近家のスマートホーム化にちょっとハマっており、今回は我が家のスマートホーム化についてご紹介いたします。 私の部屋にある主な家電私は一人暮らしで小さな1Kの家に住んでおり、スマートホ">
+<meta name="keywords" content="プライベート">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Amazon Echoでスマートホーム">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2019/05/07/smart_home/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="こんにちは、皆さんゴールデンウィークはいかがお過ごしでしたか、下條です。 私は暇だったのでAmazon Alexaのスキル開発に手を出したのですが半日で飽きてしまい、更に暇な毎日を過ごしておりました。 とは言いつつも、最近家のスマートホーム化にちょっとハマっており、今回は我が家のスマートホーム化についてご紹介いたします。 私の部屋にある主な家電私は一人暮らしで小さな1Kの家に住んでおり、スマートホ">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/smart_home/lsmini.jpg">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/smart_home/alexa.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.158Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Amazon Echoでスマートホーム">
+<meta name="twitter:description" content="こんにちは、皆さんゴールデンウィークはいかがお過ごしでしたか、下條です。 私は暇だったのでAmazon Alexaのスキル開発に手を出したのですが半日で飽きてしまい、更に暇な毎日を過ごしておりました。 とは言いつつも、最近家のスマートホーム化にちょっとハマっており、今回は我が家のスマートホーム化についてご紹介いたします。 私の部屋にある主な家電私は一人暮らしで小さな1Kの家に住んでおり、スマートホ">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/smart_home/lsmini.jpg">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-smart-home" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2019-05-07T15:00:00.000Z" itemprop="datePublished">2019-05-07</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2019/05/07/smart_home/">Amazon Echoでスマートホーム</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/05/07/smart_home/" data-text="Amazon Echoでスマートホーム" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/05/07/smart_home/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/05/07/smart_home/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/05/07/smart_home/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/05/07/smart_home/" class="hatena-bookmark-button" data-hatena-bookmark-title="Amazon Echoでスマートホーム" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>こんにちは、皆さんゴールデンウィークはいかがお過ごしでしたか、下條です。</p>
+<p>私は暇だったのでAmazon Alexaのスキル開発に手を出したのですが半日で飽きてしまい、更に暇な毎日を過ごしておりました。</p>
+<p>とは言いつつも、最近家のスマートホーム化にちょっとハマっており、今回は我が家のスマートホーム化についてご紹介いたします。</p>
+<h1 id="私の部屋にある主な家電"><a href="#私の部屋にある主な家電" class="headerlink" title="私の部屋にある主な家電"></a>私の部屋にある主な家電</h1><p>私は一人暮らしで小さな1Kの家に住んでおり、スマートホーム化とは言ってもあまり家電はありません。</p>
+<ul>
+<li>照明 (何個か)</li>
+<li>テレビ</li>
+<li>エアコン</li>
+<li>暖房</li>
+</ul>
+<p>ぐらいです。これらをスマートホーム化をするのは実はそこまでは意味はない、と思いきやそれでも確かに便利になっているので、もっと広い家の人であればさらに便利になると思います。</p>
+<h1 id="スマートホームでどんなことをしているか"><a href="#スマートホームでどんなことをしているか" class="headerlink" title="スマートホームでどんなことをしているか"></a>スマートホームでどんなことをしているか</h1><p>以下のようなことができるようになっています。</p>
+<ul>
+<li>家に帰ったときに一言「Alexa、ただいま」というだけで照明・エアコン・テレビがつく。</li>
+<li>外出する際に、「Alexa、行ってきます」というだけで照明が全部消える。</li>
+<li>テレビやエアコンのリモコンが手元にない、寝てるときでも「Alexa、エアコンをつけて」などと話しかけるだけで操作ができる。 (寝起きなどは声を出すことすら面倒なこともあるのですが。。。)</li>
+<li>家にいなくても照明等のオンオフができるので、空き巣対策になる (かもしれない)。</li>
+</ul>
+<p>また、これからの時期暑くなりますが、家に帰る前にエアコンを動作させておき家に帰った時点では涼しくなっている、といった芸当も可能です。</p>
+<p>本当は動画でご紹介したいのですが、私の部屋が汚くてお恥ずかしいため動画はアップしません。</p>
+<h1 id="スマートホーム化にあたり考えないといけないこと"><a href="#スマートホーム化にあたり考えないといけないこと" class="headerlink" title="スマートホーム化にあたり考えないといけないこと"></a>スマートホーム化にあたり考えないといけないこと</h1><h2 id="ハブ"><a href="#ハブ" class="headerlink" title="ハブ"></a>ハブ</h2><p>スマートホームのハブを何にするかですが、現時点で有力なのは</p>
+<ul>
+<li>Amazon Echo</li>
+<li>Google Home</li>
+</ul>
+<p>の2つかと思います。弊社はAWSのアドバンストコンサルティングパートナーになっている関係上、というわけではないのですが、Amazon Echoを使うことにしました。</p>
+<h2 id="赤外線リモコン対応"><a href="#赤外線リモコン対応" class="headerlink" title="赤外線リモコン対応"></a>赤外線リモコン対応</h2><p>照明、エアコン、テレビはスマートホームに対応しておらず、操作には通常赤外線リモコンを利用します。</p>
+<p>Amazon EchoやGoogle Homeには赤外線による操作機能はついていないため、赤外線リモコンをシミュレートする機器が必要となります。</p>
+<p>私が買ったのはこれです。ちなみにAmazon Echoも含め、<a href="https://blog.mmmcorp.co.jp/blog/2019/03/23/goods_bought/">会社の業務効率化グッズ購入補助制度</a>を使って購入したものです。</p>
+<p><img src="/images/smart_home/lsmini.jpg" alt=""></p>
+<p><a href="https://www.livesmart.co.jp/?utm_source=google&amp;utm_medium=paid%20search&amp;utm_campaign=Brand&amp;utm_content=5&amp;gclid=Cj0KCQjwtr_mBRDeARIsALfBZA7XZmW1_0rOrjhTpE2Dw7ZjepyjLVaCIqpn16pFTtUIST8TYbTRUj0aAufpEALw_wcB" target="_blank" rel="noopener">LS Mini第2世代</a></p>
+<p>基本は実際のリモコンの信号を覚えさせてセットアップするのですが、大手家電メーカーのリモコンはアプリにプリセットで入っているためかなり簡単にセットアップできます。ただ、テレビは中国のハイセンスというメーカーなのですが、プリセットの操作はあまり動かなかったので、チクチクリモコンのボタンを覚えさせたのですが、残念ながらたまに動作したりしなかったりというボタンがあります。</p>
+<p>なお、LS Mini自体がなかなか高機能で温度や照度センサーがついているので、これ単体でもかなりのスマートホーム化が実現できます。例えば家に近づいたら何らかのアクションをしたり、エアコンのON/OFFを温度に応じて自動的にやってくれるなど、高機能な操作が可能です。しかし、音声操作ができないのと、赤外線操作ができない機器については操作できないので、やはりハブとなるAmazon Echoなどと組み合わせたいところです。</p>
+<p>LS Miniで管理している機器をAlexaに検出させるには<br>「Alexa、端末を検出して」<br>と命令します。これによってAlexaからLS Mini経由で家電の操作が可能となります。</p>
+<h2 id="赤外線リモコンも何もない機器"><a href="#赤外線リモコンも何もない機器" class="headerlink" title="赤外線リモコンも何もない機器"></a>赤外線リモコンも何もない機器</h2><p>私の家の暖房はセラミックヒーターなのですが、これは赤外線リモコン操作でのオンオフはできず、物理ボタンでしか操作できません。こういった機器をオンオフするにはスマートプラグというものが必要になります。</p>
+<p>例えば<a href="https://www.amazon.co.jp/wifi%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%97%E3%83%A9%E3%82%B0-meross-%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%82%B3%E3%83%B3%E3%82%BB%E3%83%B3%E3%83%88-%E3%82%84Google%E3%83%9B%E3%83%BC%E3%83%A0%E5%AF%BE%E5%BF%9C-%E9%9B%BB%E6%B0%97%E3%82%B9%E3%82%A4%E3%83%83%E3%83%81%E3%82%B3%E3%83%B3%E3%83%88%E3%83%AD%E3%83%BC%E3%83%AB/dp/B07BT58131" target="_blank" rel="noopener">こういうもの</a>です。私はまだ買っていませんが、今年の秋には暖房をON/OFFするために買おうと思っています。</p>
+<p>ただ、細かい温度調整などは諦めるしかないのでそれは残念なところです。</p>
+<h1 id="ルーティン"><a href="#ルーティン" class="headerlink" title="ルーティン"></a>ルーティン</h1><p>Alexaではルーティンをセットすることができます。例えば、</p>
+<p><img src="/images/smart_home/alexa.png" alt=""></p>
+<p>これで、「Alexa、ただいま」というだけで</p>
+<ul>
+<li>照明を付ける (2つ)</li>
+<li>エアコンを付ける</li>
+<li>テレビを付ける</li>
+</ul>
+<p>ことができます。</p>
+<p>またルーティンはスマホアプリからもON/OFFできるため、家に帰る前にスマホからこのルーティンをONにしておけば、家に帰ったときには照明がついていて、エアコンもついていて涼しくなっているみたいなことができます。</p>
+<p>私は以下のようなルーティンを作成しています。何か他にいいアイデアあったら教えてください！</p>
+<h2 id="帰宅したとき"><a href="#帰宅したとき" class="headerlink" title="帰宅したとき"></a>帰宅したとき</h2><p>「Alexa、ただいま」と言うと、</p>
+<ul>
+<li>照明が全て付く</li>
+<li>テレビが付く</li>
+<li>エアコンが付く</li>
+</ul>
+<h2 id="家をでるとき"><a href="#家をでるとき" class="headerlink" title="家をでるとき"></a>家をでるとき</h2><p>「Alexa、いってきます」と言うと、</p>
+<ul>
+<li>照明が全て消える</li>
+</ul>
+<h2 id="寝るとき"><a href="#寝るとき" class="headerlink" title="寝るとき"></a>寝るとき</h2><p>「Alexa、おやすみ」と言うと、</p>
+<ul>
+<li>照明が全て消える</li>
+</ul>
+<h1 id="不満など"><a href="#不満など" class="headerlink" title="不満など"></a>不満など</h1><ul>
+<li><p>Alexaに何かを喋ってから、レスポンスに若干のタイムラグがあるのがちょっとフラストレーションがたまります。例えば夜帰ってから「Alexa、ただいま」というと2、3秒して照明等が付く、というその数秒が若干のストレスになります。おそらく、音声認識やらいろいろのために通信していてラグが出ているものと思うのですが、そこはうまいことエッジコンピューティングやキャッシュやらで解決されてほしいものです。</p>
+</li>
+<li><p>テレビの電源ON/OFFやエアコンのON/OFFは一般的にはリモコンの同じボタン (信号) でON/OFFを操作する仕様となっていると思います。こういうボタンはスマートホーム化においては使いにくいです。例えばテレビを付けたまま外出してしまって、帰りに「Alexa、ただいま」と言うと、逆にテレビが消えてしまうことになります。こういう機器についてはON/OFFの判断ができるスマートプラグを使ってON/OFFしたほうが確実です。</p>
+</li>
+<li><p>カーテンの開け閉めもやりたいのですが、お手軽なAlexa対応のカーテン開け閉め器具がなく、実現できていません。もしいい製品があったら教えてください！</p>
+</li>
+</ul>
+<h1 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h1><p>スマートホーム化で劇的に生活が変わるというわけではないのですが、少し便利になります。その少しが意外と大きく、今ではスマートホームなしの生活は考えられません。ぜひ皆さんも一緒にスマートホーム生活をエンジョイしましょう！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/05/07/smart_home/" data-text="Amazon Echoでスマートホーム" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/05/07/smart_home/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/05/07/smart_home/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/05/07/smart_home/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/05/07/smart_home/" class="hatena-bookmark-button" data-hatena-bookmark-title="Amazon Echoでスマートホーム" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/プライベート/">プライベート</a></li></ul>
+
+
+      <p class="article-footer__author">by 下條 真嗣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

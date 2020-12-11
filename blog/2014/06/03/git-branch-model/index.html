@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Gitのブランチ運用でちょっと試行錯誤した話 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="先日の健康診断で即メタボ認定を受けて危機感を覚え、酒量と食事量を減らしつつありますが、まだ効果が表れていない下條です。このブログで定期的に体重を公開すればさらに意識が変わるかなと思いましたが、皆さんそんなものは見たくないと思いますので書きません。 さて、私は以前の会社ではソースコードのバージョン管理にSubversion的なものを使っており、弊社に入社してから本格的にGitを使い出しました。そこで">
+<meta name="keywords" content="プロジェクト管理,Git">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Gitのブランチ運用でちょっと試行錯誤した話">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2014/06/03/git-branch-model/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="先日の健康診断で即メタボ認定を受けて危機感を覚え、酒量と食事量を減らしつつありますが、まだ効果が表れていない下條です。このブログで定期的に体重を公開すればさらに意識が変わるかなと思いましたが、皆さんそんなものは見たくないと思いますので書きません。 さて、私は以前の会社ではソースコードのバージョン管理にSubversion的なものを使っており、弊社に入社してから本格的にGitを使い出しました。そこで">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.126Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Gitのブランチ運用でちょっと試行錯誤した話">
+<meta name="twitter:description" content="先日の健康診断で即メタボ認定を受けて危機感を覚え、酒量と食事量を減らしつつありますが、まだ効果が表れていない下條です。このブログで定期的に体重を公開すればさらに意識が変わるかなと思いましたが、皆さんそんなものは見たくないと思いますので書きません。 さて、私は以前の会社ではソースコードのバージョン管理にSubversion的なものを使っており、弊社に入社してから本格的にGitを使い出しました。そこで">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-git-branch-model" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2014-06-03T23:25:20.000Z" itemprop="datePublished">2014-06-03</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2014/06/03/git-branch-model/">Gitのブランチ運用でちょっと試行錯誤した話</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2014/06/03/git-branch-model/" data-text="Gitのブランチ運用でちょっと試行錯誤した話" data-counturl="https://blog.mmmcorp.co.jp/blog/2014/06/03/git-branch-model/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2014/06/03/git-branch-model/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2014/06/03/git-branch-model/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2014/06/03/git-branch-model/" class="hatena-bookmark-button" data-hatena-bookmark-title="Gitのブランチ運用でちょっと試行錯誤した話" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>先日の健康診断で即メタボ認定を受けて危機感を覚え、酒量と食事量を減らしつつありますが、まだ効果が表れていない下條です。このブログで定期的に体重を公開すればさらに意識が変わるかなと思いましたが、皆さんそんなものは見たくないと思いますので書きません。</p>
+<p>さて、私は以前の会社ではソースコードのバージョン管理にSubversion的なものを使っており、弊社に入社してから本格的にGitを使い出しました。そこで最初に参加した受託Webサービス開発のプロジェクトにおいて、Gitを使ったブランチ運用についてちょっと試行錯誤した経緯をご紹介します。</p>
+<h2 id="github-flowとの出会い"><a href="#GitHub-Flowとの出会い" class="headerlink" title="GitHub Flowとの出会い"></a>GitHub Flowとの出会い</h2><p>Gitのブランチ運用の方法として有名なものとして、<a href="https://gist.github.com/Gab-km/3705015" target="_blank" rel="noopener">GitHub Flow</a>と<a href="http://nvie.com/posts/a-successful-git-branching-model/" target="_blank" rel="noopener">A successful Git branching model</a> (<a href="http://keijinsonyaban.blogspot.jp/2010/10/successful-git-branching-model.html" target="_blank" rel="noopener">O-Show 氏による日本語訳</a>) （以後git-flowと記述）の2つがあります。私が弊社に入社してGitを使い始めたときは、受託Webサービス新規開発のまっただ中で、ほぼGitHub Flowに準じたフローとなっていました。<br>一応GitHub Flowの概要を書いておきます。</p>
+<blockquote>
+<ul>
+<li>masterブランチのものは何であれデプロイ可能である</li>
+<li>新しい何かに取り組む際は、説明的な名前のブランチをmasterから作成する（例: new-oauth2-scopes）</li>
+<li>作成したブランチにローカルでコミットし、サーバー上の同じ名前のブランチにも定期的に作業内容をpushする</li>
+<li>フィードバックや助言が欲しい時、ブランチをマージしてもよいと思ったときは、 プルリクエスト を作成する</li>
+<li>他の誰かがレビューをして機能にOKを出してくれたら、あなたはコードをmasterへマージすることができる</li>
+<li>マージをしてmasterへpushしたら、直ちにデプロイをする</li>
+</ul>
+</blockquote>
+<p>（<a href="https://gist.github.com/Gab-km/3705015" target="_blank" rel="noopener">https://gist.github.com/Gab-km/3705015</a> から引用。）</p>
+<p>このフローはシンプルで分かりやすいです。そして、Pull Requestを利用してレビューをプロセスの中に組み込んだ開発フローってなかなかいいなと思っていました。（実際にはソースレビューがきちんとされないプロジェクトをこれまでたくさん見てきたので。）<br>このフローは、開発段階では基本的にはうまくいくと思いますし、実際にうまくいっていました。</p>
+<h2 id="github-flowとの別れ"><a href="#GitHub-Flowとの別れ" class="headerlink" title="GitHub Flowとの別れ"></a>GitHub Flowとの別れ</h2><p>リリース後に運用・保守開発フェーズに入り、機能追加・バグフィックスをするにあたって、ブランチをどう取り扱うかというところでGitHub Flowではうまくいかなくなりました。<br>まず、そのプロジェクトでは、リリースについて以下の前提条件がありました。このルールは特に受託開発においては例外的なものではないと思います。  </p>
+<ul>
+<li>ステージング環境と本番環境があり、機能追加・修正はお客様のOKが出たものからステージング環境で動作確認する。</li>
+<li>どの機能追加・修正を本番リリースするかは最終的にお客様が決める。</li>
+</ul>
+<p>この場合、GitHub Flowのように随時masterブランチにPull Requestしてマージしていくと、masterブランチは本番環境と乖離していってしまいます。即本番リリースができるブランチがないというのはいろいろと困ります。緊急のバグフィックスをしたいというときなどに困ります。また、後からこれこれの修正はリリースしないなどと言われた場合にmasterブランチからコミットをrevertしたりするのは嫌なものです。特にrevertでコンフリクトしたりすると非常に嫌です。<br>結局、上述したURLの中にも記載されている通り、GitHub Flowではきちんとしたリリースというものがないことを前提としています。やはり、リリースが存在する受託開発での運用・保守開発フェーズや、自社の場合でもリリースには誰かの承認がいるといった場合にはGitHub Flowはなかなかマッチしません。<br>というわけで、今回の事情に合わせた、新たなGitのブランチ運用を検討することにしました。</p>
+<h2 id="新たな運用を模索してgit-flowを調査"><a href="#新たな運用を模索してgit-flowを調査" class="headerlink" title="新たな運用を模索してgit-flowを調査"></a>新たな運用を模索してgit-flowを調査</h2><p>GitHub Flowがダメだったらgit-flowかなということでgit-flowを調べてみました。  </p>
+<p>git-flowでは5種類のブランチを使用します。</p>
+<blockquote>
+<ol>
+<li>developブランチ<br>開発を行うためのブランチ。開発者は、主にこのブランチ上で作業を行う。次に紹介するfeatureブランチなど、他のブランチで行った作業は、ここにマージされる</li>
+<li>featureブランチ<br>主要な機能を実装するためのブランチ。機能の実装やバグフィックスなど、タスクごとにfeatureブランチを作成し、作業を行う</li>
+<li>releaseブランチ<br>リリースの準備を行うためのブランチ。プロダクトをリリースする前に、このブランチを作成し、微調整を行う。releaseブランチを作成することで、リリース準備と次のバージョンに向けた開発のコードを分けることができる</li>
+<li>masterブランチ<br>リリースしたソースコードを管理するためのブランチ。リリース作業を行うと、releaseブランチはmasterブランチへマージされて、リリースタグが打たれる。開発者は、このブランチへのコミットは行わない</li>
+<li>hotfixブランチ<br>リリースされたソフトウェアに緊急の修正を行うためのブランチ。このブランチでの修正内容は、すぐにリリースされるので、hotfixブランチはリリースを管理するmasterブランチへマージされる</li>
+</ol>
+</blockquote>
+<p>（<a href="http://www.atmarkit.co.jp/ait/articles/1311/18/news017.html" target="_blank" rel="noopener">http://www.atmarkit.co.jp/ait/articles/1311/18/news017.html</a> から引用。）</p>
+<p>GitHub Flowに比べるとかなりややこしい運用となります。今回のプロジェクトの場合、開発者も少ないし、機能追加・修正がそこまでたくさんあったわけではなかったので、git-flowほどがんばってやる必要はないのではないかと思いました。git-flowほどがんばりたくはないけれどもGitHub Flowでは要件を満たさないといった場合にどういった運用にするかということで検討し、何回かの試行錯誤の末、以下の運用にすることにしました。</p>
+<h2 id="採用したブランチ運用"><a href="#採用したブランチ運用" class="headerlink" title="採用したブランチ運用"></a>採用したブランチ運用</h2><p>masterブランチ、stagingブランチという2つのメインブランチを保持。</p>
+<ul>
+<li>masterブランチ: サービスをリリースするためのブランチ。常に本番環境で動いているブランチとなる。リリースしたらタグを付ける。</li>
+<li>stagingブランチ: お客様からステージングでの検証許可が出た修正のみが入っているステージング検証用ブランチ。本番リリースの許可が出たらmasterへマージする。</li>
+</ul>
+<p>各開発者は機能追加・バグフィックスにおいては全てtopicブランチを作成して開発する。</p>
+<ul>
+<li>topicブランチ：機能の追加、バグフィックスなど全ての作業はmasterからブランチを切って行う。stagingにプルリクエスト、レビューする。レビューで全員のOKが出た後、お客様からステージング環境での検証許可が出た時点でstagingにマージする。<br>topicブランチはmasterマージ後破棄する。</li>
+</ul>
+<p>→おおざっぱに言うと、git-flowのhotfixブランチおよびdevelopブランチがない簡易バージョンのような感じです。</p>
+<h4 id="hotfixブランチがない理由"><a href="#hotfixブランチがない理由" class="headerlink" title="hotfixブランチがない理由"></a>hotfixブランチがない理由</h4><p>masterから分岐し、masterにマージする、hotfixブランチは作成しません。どんな修正でも、ステージング環境でお客様が確認した後に本番リリースというルールがあるため、必ずまずstagingブランチにマージすることになります。</p>
+<h4 id="developブランチがない理由"><a href="#developブランチがない理由" class="headerlink" title="developブランチがない理由"></a>developブランチがない理由</h4><p>ここはちょっと微妙なのですが、修正の数、開発者の数が少なかったため、リリースの前にtopicブランチをstagingブランチにマージすればよいと考えました。そのため、git-flowでdevelopブランチにあたるブランチは作成しませんでした。  </p>
+<p>ただし、この運用の問題点として、リリース許可が出た段階でstagingブランチに一気に多くのtopicブランチをマージしなければいけない状況が発生する場合があります。一概には言えませんが、お客様には修正自体にかかるコストはそれなりに理解していただけるものですが、リリース準備の際に修正をマージするコスト、リスクはなかなか理解していただけないものです。リリース許可が出たtopicブランチを一気にstagingブランチにマージをすると、修正同士の影響がどれだけ発生するか分からず、リスクが見えないのはよろしくありません。<br>それを考えると、レビューが済んだtopicブランチは、いったんなんらかのブランチにマージしておき、修正同士の影響を予め把握しておく方がよいとも思います。<a href="http://daretoku-unix.blogspot.jp/2014/01/git-flowgithub-flowgit.html" target="_blank" rel="noopener">git本家が推奨するワークフロー</a>の中でも「使い捨ての統合ブランチ」を作成することが推奨されています。そして、リリースが近くなったらtopicブランチをstagingブランチにマージしてリリースに向けた調整をすると。<br>ただし、今回のプロジェクトは小さくてメンバーも少なく、あまり大量の修正が入ることもなかったため、各修正同士の影響が見えることがほとんどだったために、使い捨ての統合ブランチは作りませんでした。<br>結果、git-flowよりもだいぶ簡易な運用となり、現状はまあうまくいっています。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>当然ではありますが、必ずしもGitHub Flowやgit-flowが現実とマッチするとは限りません。GitHub Flowやgit-flowはおそらくベストプラクティスのようなものですが、Gitのブランチ運用は、ある意味汚い現実の開発・リリースプロセスと密接に絡んでいるので、開発・リリースプロセスを含めながら、その都度良い運用を考えていくのがよいと思います。デザインパターン的なものがあればうれしい気はしていますが。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2014/06/03/git-branch-model/" data-text="Gitのブランチ運用でちょっと試行錯誤した話" data-counturl="https://blog.mmmcorp.co.jp/blog/2014/06/03/git-branch-model/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2014/06/03/git-branch-model/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2014/06/03/git-branch-model/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2014/06/03/git-branch-model/" class="hatena-bookmark-button" data-hatena-bookmark-title="Gitのブランチ運用でちょっと試行錯誤した話" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Git/">Git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/プロジェクト管理/">プロジェクト管理</a></li></ul>
+
+
+      <p class="article-footer__author">by 下條 真嗣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

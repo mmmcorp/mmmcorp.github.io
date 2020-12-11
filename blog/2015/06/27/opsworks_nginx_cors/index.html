@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AWS OpsWorks の nginx の CORS 対応でハマった | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="AngularJS で作った SPA(Single-page application) から、Ruby on Rails で作った API と情報をやりとりするため、CORS(Cross-Origin Resource Sharing) 対応が必要になり、AWS の OpsWorks の nginx のレシピを修正してハマった話。 CORS(Cross-Origin Resource Sharin">
+<meta name="keywords" content="AWS,OpsWorks,nginx,CORS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWS OpsWorks の nginx の CORS 対応でハマった">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2015/06/27/opsworks_nginx_cors/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="AngularJS で作った SPA(Single-page application) から、Ruby on Rails で作った API と情報をやりとりするため、CORS(Cross-Origin Resource Sharing) 対応が必要になり、AWS の OpsWorks の nginx のレシピを修正してハマった話。 CORS(Cross-Origin Resource Sharin">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/cors/debug.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.130Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AWS OpsWorks の nginx の CORS 対応でハマった">
+<meta name="twitter:description" content="AngularJS で作った SPA(Single-page application) から、Ruby on Rails で作った API と情報をやりとりするため、CORS(Cross-Origin Resource Sharing) 対応が必要になり、AWS の OpsWorks の nginx のレシピを修正してハマった話。 CORS(Cross-Origin Resource Sharin">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/cors/debug.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-opsworks-nginx-cors" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2015-06-27T07:47:15.000Z" itemprop="datePublished">2015-06-27</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2015/06/27/opsworks_nginx_cors/">AWS OpsWorks の nginx の CORS 対応でハマった</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/06/27/opsworks_nginx_cors/" data-text="AWS OpsWorks の nginx の CORS 対応でハマった" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/06/27/opsworks_nginx_cors/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/06/27/opsworks_nginx_cors/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/06/27/opsworks_nginx_cors/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/06/27/opsworks_nginx_cors/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS OpsWorks の nginx の CORS 対応でハマった" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>AngularJS で作った SPA(Single-page application) から、Ruby on Rails で作った API と情報をやりとりするため、CORS(Cross-Origin Resource Sharing) 対応が必要になり、AWS の OpsWorks の nginx のレシピを修正してハマった話。</p>
+<h2 id="corscross-origin-resource-sharing-とは"><a href="#CORS-Cross-Origin-Resource-Sharing-とは" class="headerlink" title="CORS(Cross-Origin Resource Sharing) とは"></a>CORS(Cross-Origin Resource Sharing) とは</h2><p>ブラウザで Ajax 通信を行う場合、<a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Same_origin_policy_for_JavaScript" target="_blank" rel="noopener">同一生成元ポリシー</a>(Same Origin Policy)によって、ページの生成元のドメイン以外のドメインへの HTTP リクエストができない。<br>簡単に言うと、ドメインA(<a href="http://domaina.com" target="_blank" rel="noopener">http://domaina.com</a>) で読み込んだ HTML から、ドメインB(<a href="http://domainb.jp" target="_blank" rel="noopener">http://domainb.jp</a>) への Ajax 通信は制限されているということ。<br>通信しようとすると、例えば下記のようなエラーが出る。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">XMLHttpRequest cannot load http://domainb.jp/api/v1/addresses?postal_code=3120003. No &apos;Access-Control-Allow-Origin&apos; header is present on the requested resource. Origin &apos;http://domaina.com&apos; is therefore not allowed access.</span><br></pre></td></tr></table></figure>
+<p>ドメインが異なる HTTP リクエスト(クロスサイト HTTP リクエスト)を安全に行えるように作られたのが、CORS である。<br>CORS とは Cross-Origin Resource Sharing の略で、<a href="http://www.w3.org/TR/2014/REC-cors-20140116/" target="_blank" rel="noopener">2014年1月に W3C 勧告</a>となった仕様である。  </p>
+<h2 id="aws-opsworks-の-nginx-レシピを修正"><a href="#AWS-OpsWorks-の-nginx-レシピを修正" class="headerlink" title="AWS OpsWorks の nginx レシピを修正"></a>AWS OpsWorks の nginx レシピを修正</h2><p>この CORS 対応するため、API 側の nginx の設定を変更してやる必要がある。<br>※ 本番環境では、同一のドメインになるため、この設定は必要なくなるが、開発環境はローカルの開発環境からステージング環境の API にアクセスする必要があるため、サーバー側の設定が必要になった。  </p>
+<p>API サーバーは、AWS の OpsWorks を利用しているので、 <a href="https://github.com/aws/opsworks-cookbooks" target="_blank" rel="noopener">aws/opsworks-cookbooks</a> を変更して、カスタムレシピとして設定しないといけない。  </p>
+<p>何か参考にできるものはないかと、ググってみたら <a href="https://github.com/YotpoLtd/opsworks-custom-cookbooks/blob/master/unicorn/templates/default/nginx_unicorn_web_app.erb" target="_blank" rel="noopener">こちら</a> が良さそうだったので、これを参考にしつつ、前に別の案件で使った設定と合わせて確認しながら試してみた。</p>
+<h2 id="シンプルなリクエストとプリフライトリクエスト"><a href="#シンプルなリクエストとプリフライトリクエスト" class="headerlink" title="シンプルなリクエストとプリフライトリクエスト"></a>シンプルなリクエストとプリフライトリクエスト</h2><p>サーバー側の設定を行う際に、<strong>リクエストが GET もしくは POST の場合</strong>(シンプルなリクエスト)と、<strong>リクエストが OPTIONS の場合</strong>(プリフライトリクエスト)とを分ける必要がある。</p>
+<h3 id="シンプルなクロスサイトリクエストとは"><a href="#シンプルなクロスサイトリクエストとは" class="headerlink" title="シンプルなクロスサイトリクエストとは"></a>シンプルなクロスサイトリクエストとは</h3><p>シンプルなリクエストとは、GET または POST のみ用いる。<br>POST をサーバーへのデータ送信に利用する場合、HTTP POST でサーバーに送られるデータの Content-Type は application/x-www-form-urlencoded、multipart/form-data、または text/plain のいずれかとなる。<br>例えばサーバー側でアクセスを <a href="http://domaina.com" target="_blank" rel="noopener">http://domaina.com</a> からだけに制限したい場合は、以下のように Access-Control-Allow-Origin: ヘッダー を返す必要がある。</p>
+<p>Access-Control-Allow-Origin: <a href="http://domaina.com" target="_blank" rel="noopener">http://domaina.com</a></p>
+<h3 id="プリフライトリクエストとは"><a href="#プリフライトリクエストとは" class="headerlink" title="プリフライトリクエストとは"></a>プリフライトリクエストとは</h3><p>プリフライトリクエストとは、上記のシンプルなリクエスト以外のリクエスト。<br>シンプルなリクエストと違い、始めに実際のリクエストを送信しても安全かを確かめるために、他ドメインへ向けて HTTP の OPTIONS リクエストヘッダを送信する。</p>
+<p>上記を踏まえると、サーバー側では、<strong>HTTP メソッドが OPTIONS か、 GETやPOST か</strong> を判別して、それぞれレスポンスを返す必要がある。</p>
+<h2 id="if-文がうまく動いてない"><a href="#if-文がうまく動いてない？？" class="headerlink" title="if 文がうまく動いてない？？"></a>if 文がうまく動いてない？？</h2><p>はじめに下記のように設定をしてみた。<br><code>location @unicorn</code> の部分で <code>$request_method</code> で判別して、OPTIONS だったらプリフライトリクエスト用の設定を、GET(POST) だったらシンプルなリクエスト用のヘッダーの設定を付与する、というもの。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">location @unicorn &#123;</span><br><span class="line">  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">  proxy_set_header Host $http_host;</span><br><span class="line">  proxy_redirect off;</span><br><span class="line"></span><br><span class="line">  if ($request_method = &apos;OPTIONS&apos;) &#123;</span><br><span class="line">    add_header &apos;Access-Control-Allow-Origin&apos; &quot;*&quot;;</span><br><span class="line">    add_header &apos;Access-Control-Allow-Headers&apos; &apos;Authorization,Content-Type,Accept,Origin,User-Agent,DNT,Cache-Control,X-Mx-ReqToken,Keep-Alive,X-Requested-With,If-Modified-Since&apos;;</span><br><span class="line">    add_header &apos;Content-Length&apos; 0;</span><br><span class="line">    add_header &apos;Content-Type&apos; &apos;text/plain charset=UTF-8&apos;;</span><br><span class="line">    return 204;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  if ($request_method = &apos;GET&apos;) &#123;</span><br><span class="line">    add_header &apos;Access-Control-Allow-Origin&apos; &quot;*&quot;;</span><br><span class="line">    add_header &apos;Access-Control-Allow-Credentials&apos; &apos;true&apos;;</span><br><span class="line">    add_header &apos;Access-Control-Allow-Methods&apos; &apos;GET, POST, OPTIONS&apos;;</span><br><span class="line">    add_header &apos;Access-Control-Allow-Headers&apos; &apos;DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type&apos;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  if ($request_method = &apos;POST&apos;) &#123;</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">  &#125;  </span><br><span class="line">  (略)</span><br><span class="line"></span><br><span class="line">  # If you don&apos;t find the filename in the static files</span><br><span class="line">  # Then request it from the unicorn server</span><br><span class="line">  if (!-f $request_filename) &#123;</span><br><span class="line">    proxy_pass http://unicorn_&lt;%= @application[:domains].first %&gt;;</span><br><span class="line">    break;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>これがなぜかうまく動かなかった。<br>if 文の条件にどこにも合致せずに、ヘッダーに設定が入っていない状況だった。<br><code>$request_method</code> に、値が入っていないのかと思い、デバッグのため下記の設定を入れてみて確かめてみたものの、</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">add_header &apos;X-request-method&apos; &apos;$request_method&apos;;`</span><br></pre></td></tr></table></figure>
+<p><img src="/images/cors/debug.png" alt=""></p>
+<p>しっかり GET と入っていて……。<br>切り分けのために、if 文を取り除いてみたらちゃんとヘッダーが設定されてレスポンスされていて……。<br>そもそも if 文自体が使えない？ って思ったけど、もともとの OpsWorks のレシピにはしっかり if 文が入っているし、<code>if (!-f $request_filename)</code> の部分はちゃんと動いているし……。<br>じゃあ、必ず通るはずの if 文を書いてみて切り分けしてみよう！と思ってやってみたものの、なぜか設定されず……。<br>ヽ(｀Д´#)ﾉ ﾑｷｰ!!</p>
+<h2 id="最終的にこうなった"><a href="#最終的にこうなった" class="headerlink" title="最終的にこうなった"></a>最終的にこうなった</h2><p>いろいろと試行錯誤した結果、下記のような設定でいけた。<br><code>location @unicorn</code> で設定する前の、<code>location /</code> の部分で判別するように設定した。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">location / &#123;</span><br><span class="line">  &lt;% if node[&apos;nginx&apos;][&apos;enable_cors&apos;] -%&gt;</span><br><span class="line">  if ( $request_method = OPTIONS ) &#123;</span><br><span class="line">    add_header &apos;Access-Control-Allow-Origin&apos; &quot;*&quot;;</span><br><span class="line">    add_header &apos;Access-Control-Allow-Headers&apos; &apos;Authorization,Content-Type,Accept,Origin,User-Agent,DNT,Cache-Control,X-Mx-ReqToken,Keep-Alive,X-Requested-With,If-Modified-Since&apos;;</span><br><span class="line"></span><br><span class="line">    add_header &apos;Content-Length&apos; 0;</span><br><span class="line">    add_header &apos;Content-Type&apos; &apos;text/plain charset=UTF-8&apos;;</span><br><span class="line">    return 204;</span><br><span class="line">  &#125;</span><br><span class="line">  &lt;% end -%&gt;</span><br><span class="line">  try_files $uri/index.html $uri/index.htm @unicorn;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location @unicorn &#123;</span><br><span class="line">  &lt;% if node[&apos;nginx&apos;][&apos;enable_cors&apos;] -%&gt;</span><br><span class="line">  add_header &apos;Access-Control-Allow-Origin&apos; &quot;*&quot;;</span><br><span class="line">  add_header &apos;Access-Control-Allow-Credentials&apos; &apos;true&apos;;</span><br><span class="line">  add_header &apos;Access-Control-Allow-Methods&apos; &apos;GET, POST, OPTIONS&apos;;</span><br><span class="line">  add_header &apos;Access-Control-Allow-Headers&apos; &apos;DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type&apos;;</span><br><span class="line">  &lt;% end -%&gt;</span><br><span class="line">  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">  proxy_set_header Host $http_host;</span><br><span class="line">  proxy_redirect off;</span><br><span class="line"></span><br><span class="line">&lt;% if node[:nginx] &amp;&amp; node[:nginx][:proxy_read_timeout] -%&gt;</span><br><span class="line">  proxy_read_timeout &lt;%= node[:nginx][:proxy_read_timeout] %&gt;;</span><br><span class="line">&lt;% end -%&gt;</span><br><span class="line">&lt;% if node[:nginx] &amp;&amp; node[:nginx][:proxy_send_timeout] -%&gt;</span><br><span class="line">  proxy_send_timeout &lt;%= node[:nginx][:proxy_send_timeout] %&gt;;</span><br><span class="line">&lt;% end -%&gt;</span><br><span class="line"></span><br><span class="line">  # If you don&apos;t find the filename in the static files</span><br><span class="line">  # Then request it from the unicorn server</span><br><span class="line">  if (!-f $request_filename) &#123;</span><br><span class="line">    proxy_pass http://unicorn_&lt;%= @application[:domains].first %&gt;;</span><br><span class="line">    break;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>location /</code> の部分で、<code>$request_method</code> が OPTIONS だったら、プリフライトリクエスト用のヘッダーの設定を適用して、204 でレスポンスを返す。<br>そうでない GET や POST の場合は、シンプルなリクエスト用のヘッダーの設定を付与して Rails へ、という流れ。<br>ステージング環境用だし、とりあえず動いたのでよしとするも、なぜ if 文が思うように動かなかったのか納得がいかないので引き続き調査中……。  </p>
+<h3 id="参考サイト"><a href="#参考サイト" class="headerlink" title="参考サイト"></a>参考サイト</h3><p><a href="https://developer.mozilla.org/ja/docs/HTTP_access_control" target="_blank" rel="noopener">HTTP access control (CORS) | MDN</a><br><a href="http://dev.classmethod.jp/cloud/cors-cross-origin-resource-sharing-cross-domain/" target="_blank" rel="noopener">CORS(Cross-Origin Resource Sharing)によるクロスドメイン通信の傾向と対策 ｜ Developers.IO</a><br><a href="http://dev.classmethod.jp/etc/about-cors/" target="_blank" rel="noopener">CORS(Cross-Origin Resource Sharing)について整理してみた ｜ Developers.IO</a><br><a href="http://inside.pixiv.net/entry/2014/12/16/181804" target="_blank" rel="noopener">CORSでハマったことまとめ - pixiv inside</a>  </p>
+<p><a href="https://mmmcorp.co.jp/services/aws/" target="_blank" rel="noopener">OpsWorksなどのマネージドサービスをフル活用したAWSインフラ構築や運用</a>を御希望の企業様は、是非MMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/06/27/opsworks_nginx_cors/" data-text="AWS OpsWorks の nginx の CORS 対応でハマった" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/06/27/opsworks_nginx_cors/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/06/27/opsworks_nginx_cors/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/06/27/opsworks_nginx_cors/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/06/27/opsworks_nginx_cors/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS OpsWorks の nginx の CORS 対応でハマった" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CORS/">CORS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpsWorks/">OpsWorks</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/">nginx</a></li></ul>
+
+
+      <p class="article-footer__author">by 佐々木 悠人</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

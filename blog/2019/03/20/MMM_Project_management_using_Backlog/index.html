@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Backlogを用いたMMMのプロジェクト運用 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="2017年から2年間毎日欠かさず飲み続けた明治R1ヨーグルトが今年の花粉症を若干？和らげているかもしれない…と感じている MMM代表 国本です。 MMMでは2018年末に社内チームで話し合った結果、2019年よりプロジェクト管理をJIRAからBacklogへ全面的に移行しました。 本格的に使い始めてからまだ3ヶ月と日は浅い状況ですが、今回は主にクライアントワーク(受託)プロジェクトを対象とした我々">
+<meta name="keywords" content="リモートワーク,テレワーク,プロジェクト管理,Backlog,見積もり">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Backlogを用いたMMMのプロジェクト運用">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2019/03/20/MMM_Project_management_using_Backlog/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="2017年から2年間毎日欠かさず飲み続けた明治R1ヨーグルトが今年の花粉症を若干？和らげているかもしれない…と感じている MMM代表 国本です。 MMMでは2018年末に社内チームで話し合った結果、2019年よりプロジェクト管理をJIRAからBacklogへ全面的に移行しました。 本格的に使い始めてからまだ3ヶ月と日は浅い状況ですが、今回は主にクライアントワーク(受託)プロジェクトを対象とした我々">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/MMM_Project_management_using_Backlog/pm_flow.001.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/MMM_Project_management_using_Backlog/backlog_category.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.158Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Backlogを用いたMMMのプロジェクト運用">
+<meta name="twitter:description" content="2017年から2年間毎日欠かさず飲み続けた明治R1ヨーグルトが今年の花粉症を若干？和らげているかもしれない…と感じている MMM代表 国本です。 MMMでは2018年末に社内チームで話し合った結果、2019年よりプロジェクト管理をJIRAからBacklogへ全面的に移行しました。 本格的に使い始めてからまだ3ヶ月と日は浅い状況ですが、今回は主にクライアントワーク(受託)プロジェクトを対象とした我々">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/MMM_Project_management_using_Backlog/pm_flow.001.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-MMM-Project-management-using-Backlog" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2019-03-20T18:18:00.000Z" itemprop="datePublished">2019-03-20</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2019/03/20/MMM_Project_management_using_Backlog/">Backlogを用いたMMMのプロジェクト運用</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/03/20/MMM_Project_management_using_Backlog/" data-text="Backlogを用いたMMMのプロジェクト運用" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/03/20/MMM_Project_management_using_Backlog/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/03/20/MMM_Project_management_using_Backlog/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/03/20/MMM_Project_management_using_Backlog/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/03/20/MMM_Project_management_using_Backlog/" class="hatena-bookmark-button" data-hatena-bookmark-title="Backlogを用いたMMMのプロジェクト運用" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>2017年から2年間毎日欠かさず飲み続けた明治R1ヨーグルトが今年の花粉症を若干？和らげているかもしれない…と感じている MMM代表 国本です。</p>
+<p>MMMでは2018年末に社内チームで話し合った結果、2019年よりプロジェクト管理をJIRAから<a href="https://backlog.com/" target="_blank" rel="noopener">Backlog</a>へ全面的に移行しました。</p>
+<p>本格的に使い始めてからまだ3ヶ月と日は浅い状況ですが、今回は主にクライアントワーク(受託)プロジェクトを対象とした我々のBacklog運用について簡単にご紹介したいと思います。</p>
+<h2 id="mmmでのクライアントワークにおけるプロジェクト運用の流れ"><a href="#MMMでのクライアントワークにおけるプロジェクト運用の流れ" class="headerlink" title="MMMでのクライアントワークにおけるプロジェクト運用の流れ"></a>MMMでのクライアントワークにおけるプロジェクト運用の流れ</h2><p>取り扱うプロジェクト種別や契約形態(一括請負や準委任)によって、差異はあるものの、プロジェクト運用の全体はこのような流れとなります。</p>
+<p><img src="/images/MMM_Project_management_using_Backlog/pm_flow.001.png" alt=""></p>
+<h3 id="1ストーリー精査"><a href="#1．ストーリー精査" class="headerlink" title="1．ストーリー精査"></a>1．ストーリー精査</h3><p>関連資料や実現したいビジネス要件、達成したいゴールを原資とし、設計・開発を進めて具現化が必要なビジネス上の機能を『ストーリー』としてプロジェクト関係者全員で精査します。</p>
+<p>このストーリー精査において「機能単位で動作が確認でき、受け入れることが可能な意味のあるストーリー」を作り上げていく。例えば</p>
+<p><code>サービス管理者がCMSを利用して、登録済みの利用者に対し、プッシュ通知をリアルタイムに配信できる</code></p>
+<p>というような単位で、ストーリーを精査しています。</p>
+<p>このストーリー精査の段階ではBacklogは使用せず、チームメンバー複数人でリアルタイムに共有・書き込みが可能なGoogleスプレッドシートを用いて、ストーリーの書き起こしを行っています。</p>
+<h3 id="2工数見積もり"><a href="#2．工数見積もり" class="headerlink" title="2．工数見積もり"></a>2．工数見積もり</h3><p>スプレッドシートにおいて <strong>受け入れテストが可能で、ビジネス的に意味のあるストーリー</strong> の精査が一通り終わった段階で、そのストーリーを実現するために、必要と考えられる工数を下記方式で見積もります。</p>
+<h4 id="見積もりの進め方"><a href="#見積もりの進め方" class="headerlink" title="見積もりの進め方"></a>見積もりの進め方</h4><p>MMMは全メンバーが異なるロケーションで働くリモートワークのため、アジャイルで用いられるカードを使った『見積もりポーカー』は物理的制約から実施できません。</p>
+<p>そこで、ストーリーが一覧化されたスプレッドシートに、プロジェクトメンバーがリアルタイムで工数を書き込める枠(列)を人数分準備した上で、Slack Callsで通話しながら、ストーリーに対してオンラインで一斉に見積もりポイントを入力する。という見積もりを行っています。</p>
+<h4 id="見積もりポイントのルール"><a href="#見積もりポイントのルール" class="headerlink" title="見積もりポイントのルール"></a>見積もりポイントのルール</h4><p>この際に入力する見積もりポイントは「1ポイント = 1営業日」としており</p>
+<p><code>0</code> <code>1</code> <code>3</code> <code>5</code> <code>10</code></p>
+<p>のいずれかのポイントを入力し、仮に10ポイント以上が必要と考えられるようなストーリーの場合、該当ストーリーの粒度や、技術的・仕様的な側面での不確実性を少しでも減らせるようなストーリー組み立てを再検討し、10ポイント以下になるように分割します。</p>
+<p>また、この見積もりを進める前に、必ずプロジェクトメンバー全員で</p>
+<ul>
+<li>仕様・技術的検討でのミーティングで必要となる工数の考慮</li>
+<li>自身・他メンバーのコードレビュー工数の考慮</li>
+<li>他メンバーの技術面・仕様面でのサポート工数の考慮</li>
+<li>他ストーリーと重複する機能に対する見積もりポイントの前提</li>
+</ul>
+<p>について、見積もりポイントにどう含めるべき(含めないべき)か？という点を全メンバーで共通認識を図った上で実施しています。<br>(プロジェクトの性質により最適解が異なるため、そのプロジェクトチームの裁量で決める)</p>
+<p>なお、見積もりポイントは各々のスキルセット、これまでの経験値・見方により、大きな『ブレ』が発生することは多々ありますが、都度「なぜそのポイントを見積もったのか？」という点をプロジェクトメンバー間でディスカッションしながら、皆で納得できるポイントを決定するよう務めています。</p>
+<h3 id="3backlogでのマイルストーン定義"><a href="#3．Backlogでのマイルストーン定義" class="headerlink" title="3．Backlogでのマイルストーン定義"></a>3．Backlogでのマイルストーン定義</h3><p>Backlogでは『プロジェクト設定』 → 『発生バージョン/マイルストーン』という機能を利用することで、リリース計画を定義することが可能です。</p>
+<p>MMMではこの『発生バージョン/マイルストーン』をプロジェクトの契約形態により定義しています。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">契約形態</th>
+<th style="text-align:left">方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>一括請負</code></td>
+<td style="text-align:left">個別契約範囲を対象に、初期/中期/後期の3分割でリリース計画を立案・定義</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>準委任</code></td>
+<td style="text-align:left">月次でのエンジニアリングリソース契約毎にリリース計画を立案・定義</td>
+</tr>
+</tbody>
+</table>
+<p>Backlogに定義したこれらマイルストーンに対し、後述の手順で課題を紐づけていくことで、リリース計画を可視化していきます。</p>
+<h3 id="4backlogでの課題起票"><a href="#4．Backlogでの課題起票" class="headerlink" title="4．Backlogでの課題起票"></a>4．Backlogでの課題起票</h3><p>スプレッドシート上のストーリー定義、それらストーリーに対応する見積もり、そしてBacklogでの発生バージョン/マイルストーンの準備が整い次第、Backlogに『課題』を起票します。</p>
+<h4 id="backlog課題の種別"><a href="#Backlog課題の種別" class="headerlink" title="Backlog課題の種別"></a>Backlog課題の種別</h4><p>Backlogでは最小の管理単位が『課題』(いわゆるチケット)となっており、課題に対して『種別』を紐付けることが可能な為、MMMでは下記5つの種別を共通定義で用いています。</p>
+<p><img src="/images/MMM_Project_management_using_Backlog/backlog_category.png" alt=""></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">種別</th>
+<th style="text-align:left">用途</th>
+<th style="text-align:left">テンプレート定義</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>仕様検討</code></td>
+<td style="text-align:left">ビジネスロジックや実装機能仕様に関して、合意形成を得るために必要な課題</td>
+<td style="text-align:left">なし</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>調査</code></td>
+<td style="text-align:left">お客様からの要請や、その他技術的側面で調査が必要と考えられる課題</td>
+<td style="text-align:left">なし</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>機能ストーリー</code></td>
+<td style="text-align:left">受け入れテストが可能なビジネス的に意味のあるストーリーを登録する課題</td>
+<td style="text-align:left">あり</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>子タスク</code></td>
+<td style="text-align:left"><code>機能ストーリー</code> に対して、実際に設計や開発を行う実際のタスク粒度の課題</td>
+<td style="text-align:left">あり</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>バグ</code></td>
+<td style="text-align:left">受け入れテストや納品後に発見された不具合や瑕疵・デグレーションを登録する課題</td>
+<td style="text-align:left">あり</td>
+</tr>
+</tbody>
+</table>
+<h4 id="機能ストーリー-について"><a href="#『機能ストーリー』-について" class="headerlink" title="『機能ストーリー』 について"></a>『機能ストーリー』 について</h4><h5 id="機能ストーリー向け課題テンプレート"><a href="#機能ストーリー向け課題テンプレート" class="headerlink" title="機能ストーリー向け課題テンプレート"></a>機能ストーリー向け課題テンプレート</h5><p>ストーリーは書籍『アジャイルな見積りと計画づくり』を参考に</p>
+<p><code>&lt;ユーザーの種類&gt;として、&lt;機能や性能&gt;がほしい。それは&lt;ビジネス価値&gt;のためだ</code></p>
+<p>とした一律のフォーマットに準じて登録を行うようにするため、Backlogの種別ごとにセットできる『課題テンプレート』を使っています。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">## このストーリーで実現すること</span><br><span class="line"></span><br><span class="line">企業管理者が管理画面から、登録済みの企業ユーザをチェックボックスで選択し、選択されたユーザに対して、Push通知をリアルタイムに配信できるようにしたい。</span><br><span class="line"></span><br><span class="line">それは、企業管理者が任意のタイミングでプッシュ通知を使った集客やマーケティングを行えるというビジネス価値を実現するためだ。</span><br><span class="line"></span><br><span class="line">## 受け入れテストのシナリオ</span><br><span class="line">お客様がこのシナリオ・前提条件をみて、実際にテストを行えるようにする</span><br></pre></td></tr></table></figure>
+<p>この課題テンプレートでは</p>
+<ul>
+<li>このストーリーでは何が実現でき、その結果どのようなビジネス上の価値が生まれるか</li>
+<li>お客様はどのようなシナリオで受け入れテストを行えば良いのかわかる</li>
+</ul>
+<p>という2点を意識しています。</p>
+<p>ストーリは既にスプレッドシートで起こされているため、Backlogでの <code>機能ストーリー</code> 起票時にそのまま流用可能ですが、受け入れテストのシナリオは起票時には全てを網羅・記入することは困難な場合もあるため、お客様の受け入れテストが開始される前段階までに更新し書き上げるケースが多いです。</p>
+<h4 id="子タスクについて"><a href="#『子タスク』について" class="headerlink" title="『子タスク』について"></a>『子タスク』について</h4><p>機能ストーリーはビジネス的に意味のあるストーリー、かつ受け入れテストが可能な単位となっているため、実際の開発を進める際のタスク定義(例：XXX向けWeb-APIの設計/XXXのテストコード実装など)については Backlogの『親子課題』機能を使い、登録済みの機能ストーリーの子課題として『子タスク』として登録する運用としています。</p>
+<p>よって、一つの機能ストーリーに対して、複数の子タスクが紐付いており、この子タスクの粒度はざっくり『Pull Requestを意識する』というのを一つの目安としています。</p>
+<h5 id="子タスクの課題テンプレート"><a href="#『子タスク』の課題テンプレート" class="headerlink" title="『子タスク』の課題テンプレート"></a>『子タスク』の課題テンプレート</h5><p>種別『子タスク』向けも課題テンプレートを定義していますが。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">## そのタスクが終わると何が実現されるのか？</span><br></pre></td></tr></table></figure>
+<p>このように非常にシンプルにそのタスクを完了させることで何がもたらされるのか？という点のみを記載するようにして運用しています。</p>
+<h4 id="バグについて"><a href="#『バグ』について" class="headerlink" title="『バグ』について"></a>『バグ』について</h4><p>名称通り、発見された不具合、合意仕様と異なる挙動についての課題は『バグ』を種別にセットしてBacklog上で登録・管理しています。</p>
+<h5 id="バグの課題テンプレート"><a href="#『バグ』の課題テンプレート" class="headerlink" title="『バグ』の課題テンプレート"></a>『バグ』の課題テンプレート</h5><p>バグに関しては、迅速な状況精査・対応を目的に</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">## 本来期待された挙動</span><br><span class="line">仕様合意している正しい振る舞いを記入する</span><br><span class="line"></span><br><span class="line">## 現状の挙動</span><br><span class="line">現時点での動作状況を記入する</span><br><span class="line"></span><br><span class="line">## 原因・調査内容</span><br><span class="line">不具合・瑕疵が発生している根本的な原因、調査の内容を記入するか、該当のGitHubプルリクエストへのURLを貼り付ける</span><br></pre></td></tr></table></figure>
+<p>これら情報を必ず課題テンプレートを用いて入力する運用としています。</p>
+<h3 id="5backlog上でのプロジェクト進行計画の立案"><a href="#5．Backlog上でのプロジェクト進行計画の立案" class="headerlink" title="5．Backlog上でのプロジェクト進行計画の立案"></a>5．Backlog上でのプロジェクト進行計画の立案</h3><p>Backlogに機能ストーリーが課題として登録された段階で、プロジェクト進行の計画を立案していきます。</p>
+<p>定義されている『発生バージョン/マイルストーン』に、登録した全ての機能ストーリーを見積もった工数ポイントや、技術的難易度・不確実性を加味しながら、現実的なリリース計画に振り分けていきます。</p>
+<p>また、このタイミングで、プロジェクトメンバー全員でリリース計画の実現可能性を検証するためにも、できる限り機能ストーリーに紐づく子タスクまで含めて可視化し、プロジェクト計画の可視化に努めています。</p>
+<h3 id="6backlogプロジェクト進行"><a href="#6．Backlogプロジェクト進行" class="headerlink" title="6．Backlogプロジェクト進行"></a>6．Backlogプロジェクト進行</h3><p>プロジェクト計画が立案できた後は、登録された課題の『状態』を用いてプロジェクト進行の見える化を進めます。</p>
+<h4 id="backlog課題の状態"><a href="#Backlog課題の状態" class="headerlink" title="Backlog課題の状態"></a>Backlog課題の状態</h4><p>MMMのプロジェクト運用では</p>
+<ul>
+<li><code>未対応</code>　→　全く手付かずの課題(登録直後)</li>
+<li><code>処理中</code>　→　現在着手・実行中である課題</li>
+<li><code>処理済み</code>　→ 実装やテストが完了済みであり、受け入れ中である課題</li>
+<li><code>完了</code>　→　お客様含めた受け入れが全て完了している状況</li>
+</ul>
+<p>このような前提でそれぞれの課題を運用しています。</p>
+<p>また、課題の『担当者』を必ず定義することでだれが、どのステータスで、課題を保有しているのかというのを把握できるようにしています。</p>
+<h2 id="現時点で検討が必要な事項"><a href="#現時点で検討が必要な事項…" class="headerlink" title="現時点で検討が必要な事項…"></a>現時点で検討が必要な事項…</h2><p>2019年からBacklogベースのプロジェクト運用に切り替えた後、現時点で検討が必要と考えている課題についてです。</p>
+<h3 id="課題単位の即時性視認性の高い可視化方式について"><a href="#課題単位の即時性・視認性の高い可視化方式について" class="headerlink" title="課題単位の即時性・視認性の高い可視化方式について"></a>課題単位の即時性・視認性の高い可視化方式について</h3><p>Backlogはバーンダウンチャートの機能はあるものの『期限日』と『予定時間』のセットが前提となっており、現状全ての課題に対してこれらの項目を必ず入力するような運用ルールを整備できていないため、活用できていません。</p>
+<p>また、MMMのプロジェクト運用においては、登録した課題の状態を基本にした可視化をよりわかりやすく・よりリアルタイムに行いたいと考えており、Backlogで課題を使った『カンバン方式』の魅せ方ができればと思っているものの、現時点では実現に至っていません。</p>
+<h2 id="最後に"><a href="#最後に" class="headerlink" title="最後に"></a>最後に</h2><p>簡単にBacklogを切り口としたMMMのプロジェクト管理をご紹介しました。</p>
+<p>MMMのプロジェクト管理に少しでも興味を持ってもらえる方いらっしゃいましたら、<a href="https://www.wantedly.com/companies/mmmcorp/projects" target="_blank" rel="noopener">フロントエンドエンジニア、バックエンドエンジニア、UI/UX，Webプロデューサーなど、全領域で募集中</a>ですので、とてもカジュアルにサクッとオンラインで20分くらいお話しませんか？</p>
+<p>ではでは。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/03/20/MMM_Project_management_using_Backlog/" data-text="Backlogを用いたMMMのプロジェクト運用" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/03/20/MMM_Project_management_using_Backlog/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/03/20/MMM_Project_management_using_Backlog/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/03/20/MMM_Project_management_using_Backlog/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/03/20/MMM_Project_management_using_Backlog/" class="hatena-bookmark-button" data-hatena-bookmark-title="Backlogを用いたMMMのプロジェクト運用" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Backlog/">Backlog</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/テレワーク/">テレワーク</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/プロジェクト管理/">プロジェクト管理</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/リモートワーク/">リモートワーク</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/見積もり/">見積もり</a></li></ul>
+
+
+      <p class="article-footer__author">by 国本 廷宣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

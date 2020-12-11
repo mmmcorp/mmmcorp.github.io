@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AppSyncのパイプラインリソルバーを利用して履歴データを管理する | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="AWS AppSyncのパイプラインリソルバーを利用して、履歴データ管理を構築してみました。 パイプラインリソルバーとは？パイプラインリゾルバーは、データソースに対してオペレーションを順番に実行する機能を提供します。複数のデータソースに対して順番に実行することも可能です。 パイプラインリソルバーを利用した履歴データ管理の構築今回は、従業員が商品の在庫数を管理するシチュエーションを想定して在庫数の変">
+<meta name="keywords" content="AWS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AppSyncのパイプラインリソルバーを利用して履歴データを管理する">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2019/03/17/pipeline-resolver/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="AWS AppSyncのパイプラインリソルバーを利用して、履歴データ管理を構築してみました。 パイプラインリソルバーとは？パイプラインリゾルバーは、データソースに対してオペレーションを順番に実行する機能を提供します。複数のデータソースに対して順番に実行することも可能です。 パイプラインリソルバーを利用した履歴データ管理の構築今回は、従業員が商品の在庫数を管理するシチュエーションを想定して在庫数の変">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-03-17-yassan-appsync-pipeline-resolver/01.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-03-17-yassan-appsync-pipeline-resolver/02.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-03-17-yassan-appsync-pipeline-resolver/03.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-03-17-yassan-appsync-pipeline-resolver/04.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-03-17-yassan-appsync-pipeline-resolver/05.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-03-17-yassan-appsync-pipeline-resolver/06.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-03-17-yassan-appsync-pipeline-resolver/07.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-03-17-yassan-appsync-pipeline-resolver/08.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-03-17-yassan-appsync-pipeline-resolver/09.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-03-17-yassan-appsync-pipeline-resolver/10.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-03-17-yassan-appsync-pipeline-resolver/11.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.158Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AppSyncのパイプラインリソルバーを利用して履歴データを管理する">
+<meta name="twitter:description" content="AWS AppSyncのパイプラインリソルバーを利用して、履歴データ管理を構築してみました。 パイプラインリソルバーとは？パイプラインリゾルバーは、データソースに対してオペレーションを順番に実行する機能を提供します。複数のデータソースに対して順番に実行することも可能です。 パイプラインリソルバーを利用した履歴データ管理の構築今回は、従業員が商品の在庫数を管理するシチュエーションを想定して在庫数の変">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/2019-03-17-yassan-appsync-pipeline-resolver/01.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-yassan-pipeline-resolver" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2019-03-17T00:50:00.000Z" itemprop="datePublished">2019-03-17</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2019/03/17/pipeline-resolver/">AppSyncのパイプラインリソルバーを利用して履歴データを管理する</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/03/17/pipeline-resolver/" data-text="AppSyncのパイプラインリソルバーを利用して履歴データを管理する" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/03/17/pipeline-resolver/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/03/17/pipeline-resolver/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/03/17/pipeline-resolver/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/03/17/pipeline-resolver/" class="hatena-bookmark-button" data-hatena-bookmark-title="AppSyncのパイプラインリソルバーを利用して履歴データを管理する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>AWS AppSyncのパイプラインリソルバーを利用して、<br>履歴データ管理を構築してみました。</p>
+<h2 id="パイプラインリソルバーとは"><a href="#パイプラインリソルバーとは？" class="headerlink" title="パイプラインリソルバーとは？"></a>パイプラインリソルバーとは？</h2><p>パイプラインリゾルバーは、データソースに対してオペレーションを<br>順番に実行する機能を提供します。<br>複数のデータソースに対して順番に実行することも可能です。</p>
+<h2 id="パイプラインリソルバーを利用した履歴データ管理の構築"><a href="#パイプラインリソルバーを利用した履歴データ管理の構築" class="headerlink" title="パイプラインリソルバーを利用した履歴データ管理の構築"></a>パイプラインリソルバーを利用した履歴データ管理の構築</h2><p>今回は、従業員が商品の在庫数を管理するシチュエーションを想定して<br>在庫数の変動を確認できる履歴データのテーブルを<br>パイプラインリソルバーを利用して構築していきます。</p>
+<h2 id="1-データソースの作成"><a href="#1-データソースの作成" class="headerlink" title="1. データソースの作成"></a>1. データソースの作成</h2><p>データソースにはDynamoDBを利用します。下記のテーブルを作成します。</p>
+<h3 id="1-1-在庫マスタテーブル"><a href="#1-1-在庫マスタテーブル" class="headerlink" title="1-1. 在庫マスタテーブル"></a>1-1. 在庫マスタテーブル</h3><p>在庫マスタは文字列のハッシュキーを持つシンプルなテーブルを作成しました。<br><img src="/images/2019-03-17-yassan-appsync-pipeline-resolver/01.png" alt=""></p>
+<h3 id="1-2-履歴テーブル"><a href="#1-2-履歴テーブル" class="headerlink" title="1-2. 履歴テーブル"></a>1-2. 履歴テーブル</h3><p>履歴は作成日をレンジキーとして保持し、時系列データとします。<br><img src="/images/2019-03-17-yassan-appsync-pipeline-resolver/02.png" alt=""><br>TTL属性を指定し、履歴データは自動的に削除されるようにしました。<br><img src="/images/2019-03-17-yassan-appsync-pipeline-resolver/03.png" alt=""></p>
+<h2 id="2-appsync-apiの作成"><a href="#2-AppSync-APIの作成" class="headerlink" title="2. AppSync APIの作成"></a>2. AppSync APIの作成</h2><p>在庫マスタテーブルをインポートしてAppSync APIを作成します。<br><img src="/images/2019-03-17-yassan-appsync-pipeline-resolver/04.png" alt=""><br>自動的にスキーマが作成されますので、<br>商品名(ProductName)や在庫数(NumberOfStock)の属性を追加します。<br>下記の通りです。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line">input CreatePostInput &#123;</span><br><span class="line">	PK: String!</span><br><span class="line">	ProductName: String</span><br><span class="line">	NumberOfStock: Int</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">input DeletePostInput &#123;</span><br><span class="line">	PK: String!</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Mutation &#123;</span><br><span class="line">	createPost(input: CreatePostInput!): Post</span><br><span class="line">	updatePost(input: UpdatePostInput!): Post</span><br><span class="line">	deletePost(input: DeletePostInput!): Post</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Post &#123;</span><br><span class="line">	PK: String!</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type PostConnection &#123;</span><br><span class="line">	items: [Post]</span><br><span class="line">	nextToken: String</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Query &#123;</span><br><span class="line">	getPost(PK: String!): Post</span><br><span class="line">	listPosts(filter: TablePostFilterInput, limit: Int, nextToken: String): PostConnection</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Subscription &#123;</span><br><span class="line">	onCreatePost(PK: String): Post</span><br><span class="line">		@aws_subscribe(mutations: [&quot;createPost&quot;])</span><br><span class="line">	onUpdatePost(PK: String): Post</span><br><span class="line">		@aws_subscribe(mutations: [&quot;updatePost&quot;])</span><br><span class="line">	onDeletePost(PK: String): Post</span><br><span class="line">		@aws_subscribe(mutations: [&quot;deletePost&quot;])</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">input TableBooleanFilterInput &#123;</span><br><span class="line">	ne: Boolean</span><br><span class="line">	eq: Boolean</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">input TableFloatFilterInput &#123;</span><br><span class="line">	ne: Float</span><br><span class="line">	eq: Float</span><br><span class="line">	le: Float</span><br><span class="line">	lt: Float</span><br><span class="line">	ge: Float</span><br><span class="line">	gt: Float</span><br><span class="line">	contains: Float</span><br><span class="line">	notContains: Float</span><br><span class="line">	between: [Float]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">input TableIDFilterInput &#123;</span><br><span class="line">	ne: ID</span><br><span class="line">	eq: ID</span><br><span class="line">	le: ID</span><br><span class="line">	lt: ID</span><br><span class="line">	ge: ID</span><br><span class="line">	gt: ID</span><br><span class="line">	contains: ID</span><br><span class="line">	notContains: ID</span><br><span class="line">	between: [ID]</span><br><span class="line">	beginsWith: ID</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">input TableIntFilterInput &#123;</span><br><span class="line">	ne: Int</span><br><span class="line">	eq: Int</span><br><span class="line">	le: Int</span><br><span class="line">	lt: Int</span><br><span class="line">	ge: Int</span><br><span class="line">	gt: Int</span><br><span class="line">	contains: Int</span><br><span class="line">	notContains: Int</span><br><span class="line">	between: [Int]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">input TablePostFilterInput &#123;</span><br><span class="line">	PK: TableStringFilterInput</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">input TableStringFilterInput &#123;</span><br><span class="line">	ne: String</span><br><span class="line">	eq: String</span><br><span class="line">	le: String</span><br><span class="line">	lt: String</span><br><span class="line">	ge: String</span><br><span class="line">	gt: String</span><br><span class="line">	contains: String</span><br><span class="line">	notContains: String</span><br><span class="line">	between: [String]</span><br><span class="line">	beginsWith: String</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">input UpdatePostInput &#123;</span><br><span class="line">	PK: String!</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="3-パイプラインリソルバーへの変換"><a href="#3-パイプラインリソルバーへの変換" class="headerlink" title="3. パイプラインリソルバーへの変換　"></a>3. パイプラインリソルバーへの変換　</h2><p>商品在庫を登録する時のリソルバーを、パイプラインリソルバーに変換します。<br>該当するリソルバーの <em>Convert to pipeline resolver</em> リンクを<br>クリックすることで簡単にパイプラインリソルバーに変換できます。<br><img src="/images/2019-03-17-yassan-appsync-pipeline-resolver/05.png" alt=""></p>
+<h2 id="4-ファンクションの作成"><a href="#4-ファンクションの作成" class="headerlink" title="4. ファンクションの作成"></a>4. ファンクションの作成</h2><p>パイプラインリソルバーに割り当てる複数のファンクションを作成します。</p>
+<h3 id="4-1-在庫マスタ登録ファンクションの作成"><a href="#4-1-在庫マスタ登録ファンクションの作成" class="headerlink" title="4-1. 在庫マスタ登録ファンクションの作成"></a>4-1. 在庫マスタ登録ファンクションの作成</h3><p><em>createMain</em> というファンクション名で作成しました。<br>主要な処理としましては、</p>
+<ol>
+<li>タイムスタンプを <em>createdDate</em> という項目で変数として定義する。</li>
+<li><em>createdDate</em> と全てのKeyを含めた <em>baseobject</em> を作成し、 <em>attributeValues</em> に設定する。</li>
+</ol>
+<p>などが挙げられます。</p>
+<p>リクエストマッピングテンプレートは下記の通りです。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#set($baseobject = &#123;&apos;createdDate&apos;: $util.time.nowEpochMilliSeconds()&#125;)</span><br><span class="line">#foreach($key in $ctx.args.input.keySet())</span><br><span class="line">	$util.qr($baseobject.put($key, $ctx.args.input.get($key)))</span><br><span class="line">#end</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;version&quot;: &quot;2018-05-29&quot;,</span><br><span class="line">  &quot;operation&quot;: &quot;PutItem&quot;,</span><br><span class="line">  &quot;key&quot;: &#123;</span><br><span class="line">    &quot;PK&quot;: $util.dynamodb.toDynamoDBJson($ctx.args.input.PK)</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;attributeValues&quot; : $util.dynamodb.toMapValuesJson($baseobject)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>レスポンスマッピングテンプレートは下記の通りです。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#if($ctx.error)</span><br><span class="line">    $util.error($ctx.error.message, $ctx.error.type)</span><br><span class="line">#end</span><br><span class="line">$util.toJson($ctx.result)</span><br></pre></td></tr></table></figure></p>
+<h3 id="4-2-履歴登録ファンクションの作成"><a href="#4-2-履歴登録ファンクションの作成" class="headerlink" title="4-2. 履歴登録ファンクションの作成"></a>4-2. 履歴登録ファンクションの作成</h3><p><em>createHistory</em> というファンクション名で作成しました。</p>
+<p>主要な処理としましては、</p>
+<ol>
+<li><em>exp</em> というタイムスタンプの変数を作成し、 <em>expdate</em> というTTL項目に設定する。</li>
+<li>レンジキーに <em>createMain</em> で作成されたデータの <em>createDate</em> を設定する。</li>
+<li>上記の項目を含めた <em>historyobject</em> を生成し、 <em>attributeValues</em> に設定する。</li>
+</ol>
+<p>などが挙げられます。</p>
+<p>リクエストマッピングテンプレートは下記の通りです。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">#set($pk = $ctx.prev.result.PK)</span><br><span class="line"></span><br><span class="line">#set($history = 24 * 3600 * 1000)</span><br><span class="line">#set($timestamp = $ctx.prev.result.createdDate)</span><br><span class="line">##TTL must be in seconds for DDB to evict items.</span><br><span class="line">#set($exp = ($history + $timestamp)/1000)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#set($historyobject = &#123;</span><br><span class="line">    &apos;PK&apos;: $pk,</span><br><span class="line">    &apos;SK&apos;: $timestamp,</span><br><span class="line">    &apos;expdate&apos;: $exp</span><br><span class="line">&#125;)</span><br><span class="line">#foreach($key in $ctx.prev.result.keySet())</span><br><span class="line">    $util.qr($historyobject.put($key, $ctx.prev.result.get($key)))</span><br><span class="line">#end</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    &quot;version&quot; : &quot;2018-05-29&quot;,</span><br><span class="line">    &quot;operation&quot; : &quot;PutItem&quot;,</span><br><span class="line">    &quot;key&quot; : &#123;</span><br><span class="line">        &quot;PK&quot; : &#123; &quot;S&quot; : &quot;$pk&quot; &#125;,</span><br><span class="line">        &quot;SK&quot; : &#123; &quot;N&quot; : &quot;$timestamp&quot; &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;attributeValues&quot; : $util.dynamodb.toMapValuesJson($historyobject),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>レスポンスマッピングテンプレートは下記の通りです。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#if($ctx.error)</span><br><span class="line">    $util.error($ctx.error.message, $ctx.error.errorType)</span><br><span class="line">#end</span><br><span class="line">$util.toJson($ctx.result)</span><br></pre></td></tr></table></figure></p>
+<h2 id="5-パイプラインリソルバへの割り当て"><a href="#5-パイプラインリソルバへの割り当て" class="headerlink" title="5. パイプラインリソルバへの割り当て"></a>5. パイプラインリソルバへの割り当て</h2><p>作成したファンクションをパイプラインリソルバへ割り当てます。<br><img src="/images/2019-03-17-yassan-appsync-pipeline-resolver/06.png" alt=""></p>
+<h2 id="6-動作確認"><a href="#6-動作確認" class="headerlink" title="6. 動作確認"></a>6. 動作確認</h2><h3 id="6-1-商品を登録する"><a href="#6-1-商品を登録する。" class="headerlink" title="6-1. 商品を登録する。"></a>6-1. 商品を登録する。</h3><p>チョコレートの在庫を1,000で登録してみます。<br>下記のMutationを実行しました。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mutation createPost($createpostinput: CreatePostInput!) &#123;</span><br><span class="line">  createPost(input: $createpostinput) &#123;</span><br><span class="line">    PK</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>登録するデータは下記の通りです。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;createpostinput&quot;: &#123;</span><br><span class="line">    &quot;PK&quot;: &quot;従業員コード01-商品在庫管理テーブル-ID01&quot;,</span><br><span class="line">    &quot;ProductName&quot;: &quot;チョコレート&quot;,</span><br><span class="line">    &quot;NumberOfStock&quot;: 1000</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>登録したデータを見てみましょう。<br><img src="/images/2019-03-17-yassan-appsync-pipeline-resolver/07.png" alt=""><br>チョコレートの在庫数が1,000で登録されていることが確認できました。</p>
+<p>次に、履歴データを見てみましょう。<br><img src="/images/2019-03-17-yassan-appsync-pipeline-resolver/08.png" alt=""><br>レンジキーにタイムスタンプが設定された履歴データが登録されています。</p>
+<h3 id="6-2-在庫の再登録"><a href="#6-2-在庫の再登録" class="headerlink" title="6-2. 在庫の再登録"></a>6-2. 在庫の再登録</h3><p>在庫を350に変更して再登録してみます。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;createpostinput&quot;: &#123;</span><br><span class="line">    &quot;PK&quot;: &quot;従業員コード01-商品在庫管理テーブル-ID01&quot;,</span><br><span class="line">    &quot;ProductName&quot;: &quot;チョコレート&quot;,</span><br><span class="line">    &quot;NumberOfStock&quot;: 350</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>データはどのようになっているでしょうか。<br>まずは、在庫マスタです。<br><img src="/images/2019-03-17-yassan-appsync-pipeline-resolver/09.png" alt=""><br>チョコレートの在庫が350に変更されていることが確認できます。</p>
+<p>次に、履歴データを見てみましょう。<br><img src="/images/2019-03-17-yassan-appsync-pipeline-resolver/10.png" alt=""><br>新しいレンジキーのタイムスタンプで、<br>履歴データが作成されていることを確認できました。</p>
+<p>また、TTLを指定していますので履歴データは自動的に削除されます。<br><img src="/images/2019-03-17-yassan-appsync-pipeline-resolver/11.png" alt=""></p>
+<h2 id="総括"><a href="#総括" class="headerlink" title="総括"></a>総括</h2><p>ここまでの履歴データ管理は、<br>全てAppSync単体の機能で構築することが出来ています。<br>AppSyncは発想次第で様々な利活用の方法があり、とても楽しいですね！<br>GraphQL ✖︎︎ AWS AppSync ✖︎ データソースの組み合わせは、<br>次世代のデータAPIを彷彿とさせます！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/03/17/pipeline-resolver/" data-text="AppSyncのパイプラインリソルバーを利用して履歴データを管理する" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/03/17/pipeline-resolver/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/03/17/pipeline-resolver/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/03/17/pipeline-resolver/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/03/17/pipeline-resolver/" class="hatena-bookmark-button" data-hatena-bookmark-title="AppSyncのパイプラインリソルバーを利用して履歴データを管理する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li></ul>
+
+
+      <p class="article-footer__author">by yassan</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

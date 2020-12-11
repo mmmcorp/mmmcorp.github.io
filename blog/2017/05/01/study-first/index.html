@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>新人プログラマの時に知っておきたかった1年目に本当に勉強すべきこと | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="MMMサーバサイドエンジニアの柳沼です。お世話になっております。 今日は新人プログラマのときに知っておきたかったシリーズ第2弾です。1弾はこちらを御覧ください。 はじめに筆者は2年目のエンジニアです。最近仕事をしていて、こういうことはもっと早くから勉強しておくべきだったな〜と思うことがよくあったので、それについてまとめてみます。読者は、新卒エンジニアを想定しています。技術書も併せて紹介するので、読">
+<meta name="keywords" content="プログラミング">
+<meta property="og:type" content="article">
+<meta property="og:title" content="新人プログラマの時に知っておきたかった1年目に本当に勉強すべきこと">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2017/05/01/study-first/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="MMMサーバサイドエンジニアの柳沼です。お世話になっております。 今日は新人プログラマのときに知っておきたかったシリーズ第2弾です。1弾はこちらを御覧ください。 はじめに筆者は2年目のエンジニアです。最近仕事をしていて、こういうことはもっと早くから勉強しておくべきだったな〜と思うことがよくあったので、それについてまとめてみます。読者は、新卒エンジニアを想定しています。技術書も併せて紹介するので、読">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.146Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="新人プログラマの時に知っておきたかった1年目に本当に勉強すべきこと">
+<meta name="twitter:description" content="MMMサーバサイドエンジニアの柳沼です。お世話になっております。 今日は新人プログラマのときに知っておきたかったシリーズ第2弾です。1弾はこちらを御覧ください。 はじめに筆者は2年目のエンジニアです。最近仕事をしていて、こういうことはもっと早くから勉強しておくべきだったな〜と思うことがよくあったので、それについてまとめてみます。読者は、新卒エンジニアを想定しています。技術書も併せて紹介するので、読">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-study-first" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2017-05-01T10:00:00.000Z" itemprop="datePublished">2017-05-01</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2017/05/01/study-first/">新人プログラマの時に知っておきたかった1年目に本当に勉強すべきこと</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/05/01/study-first/" data-text="新人プログラマの時に知っておきたかった1年目に本当に勉強すべきこと" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/05/01/study-first/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/05/01/study-first/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/05/01/study-first/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/05/01/study-first/" class="hatena-bookmark-button" data-hatena-bookmark-title="新人プログラマの時に知っておきたかった1年目に本当に勉強すべきこと" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>MMMサーバサイドエンジニアの柳沼です。お世話になっております。</p>
+<p>今日は新人プログラマのときに知っておきたかったシリーズ第2弾です。<br>1弾は<a href="http://blog.mmmcorp.co.jp/blog/2017/04/24/problem-solving/">こちら</a>を御覧ください。</p>
+<h3 id="はじめに"><a href="#はじめに" class="headerlink" title="はじめに"></a>はじめに</h3><p>筆者は2年目のエンジニアです。最近仕事をしていて、こういうことはもっと早くから勉強しておくべきだったな〜と思うことがよくあったので、それについてまとめてみます。読者は、新卒エンジニアを想定しています。技術書も併せて紹介するので、読みましょう。技術書最高！</p>
+<h3 id="エンジニアが身につけるべき技術についての基本的な考え方"><a href="#エンジニアが身につけるべき技術についての基本的な考え方" class="headerlink" title="エンジニアが身につけるべき技術についての基本的な考え方"></a>エンジニアが身につけるべき技術についての基本的な考え方</h3><p>自分が身につけるべき知識がなにかを知るためには、次のように考えてみてください。<br><code>「低レイヤーの知識から身につける」</code><br>技術には、レイヤーがあります。例えば、Webアプリケーションはサーバの上にあります。ユーザは、インターネット経由でサーバに接続します。この例で言えば、レイヤーは上から アプリ -&gt; サーバ -&gt; インターネット になります。</p>
+<h3 id="何故下から勉強するか"><a href="#何故下から勉強するか？" class="headerlink" title="何故下から勉強するか？"></a>何故下から勉強するか？</h3><p>低レイヤーの知識は「汎用的」だからです。エンジニアは、短期間でたくさんのプロジェクトに関わることが珍しくありません。一生懸命勉強したRubyの知識は、次のプロジェクトでは役に立たないかもしれません。<br>しかし、低レイヤーの技術の知識はどこに行っても使います。どこに行っても使える技術から身につけるほうが、順番的に正しいです。</p>
+<h3 id="1ネットワーク"><a href="#1-ネットワーク" class="headerlink" title="1.ネットワーク"></a>1.ネットワーク</h3><p>ネットワークはどんなプロジェクトでも確実に出てきます。IPアドレス、サブネットマスク、CIDRなどの概念は、とっつきにくくて曖昧な知識のまま時間が経過しがちです。また、経験上、先輩はこのへんの基礎知識について、「知ってる前提で話しかけてきがち」です。<br>とりあえず、「IPアドレス」「ポート番号」「DHCP」「DNS」「グローバルアドレスとプライベートアドレス」あたりはおさえましょう。その後は、「HTTPとHTTPS」「SSHとは」あたりも勉強すると良いです。SIer系なら「FTP」「LDAP」とかも使うかなあ…<br>こちらは、<a href="https://www.amazon.co.jp/%E3%83%9E%E3%82%B9%E3%82%BF%E3%83%AA%E3%83%B3%E3%82%B0TCP-IP-%E5%85%A5%E9%96%80%E7%B7%A8-%E7%AC%AC5%E7%89%88-%E7%AB%B9%E4%B8%8B/dp/4274068765" target="_blank" rel="noopener">マスタリングTCP/IP</a>で勉強しましょう。非常に有名な本です。</p>
+<h3 id="2データベース"><a href="#2-データベース" class="headerlink" title="2.データベース"></a>2.データベース</h3><p>データベースを使わないアプリケーションは今ほとんどありません。データベースと一言で言っても、MySQL、Oracle、SQL Serverなどいろいろあるので、汎用的な知識を身に着けましょう。<br>SQLの書き方は、書いてれば覚えるので大丈夫です。それよりも、<br>「インデックス」「キー(プライマリキー、複合キー、外部キーなど)」「トランザクション」「トランザクション分離レベル」「実行計画」などについて勉強しましょう。この辺がわかっていないと、データベース設計ができませんし、パフォーマンスチューニングもできません。致命的です。<br>こちらは、<a href="https://www.amazon.co.jp/%E7%90%86%E8%AB%96%E3%81%8B%E3%82%89%E5%AD%A6%E3%81%B6%E3%83%87%E3%83%BC%E3%82%BF%E3%83%99%E3%83%BC%E3%82%B9%E5%AE%9F%E8%B7%B5%E5%85%A5%E9%96%80-%E3%83%AA%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%8A%E3%83%AB%E3%83%A2%E3%83%87%E3%83%AB%E3%81%AB%E3%82%88%E3%82%8B%E5%8A%B9%E7%8E%87%E7%9A%84%E3%81%AASQL-WEB-PRESS-plus/dp/4774171972/ref=sr_1_5?s=books&amp;ie=UTF8&amp;qid=1493256369&amp;sr=1-5&amp;keywords=%E3%83%87%E3%83%BC%E3%82%BF%E3%83%99%E3%83%BC%E3%82%B9" target="_blank" rel="noopener">理論から学ぶデータベース実践入門</a>が良書です。余裕があれば<a href="https://www.amazon.co.jp/SQL%E3%82%A2%E3%83%B3%E3%83%81%E3%83%91%E3%82%BF%E3%83%BC%E3%83%B3-Bill-Karwin/dp/4873115892/ref=pd_sim_14_2?_encoding=UTF8&amp;psc=1&amp;refRID=CDGHGMQBHHZS8BRET0CJ" target="_blank" rel="noopener">SQLアンチパターン</a>も読みましょう。</p>
+<h3 id="3unixlinux"><a href="#3-UNIX-Linux" class="headerlink" title="3.UNIX(Linux)"></a>3.UNIX(Linux)</h3><p>アプリケーション開発はWindowsやMacを使用するかもしれませんが、<br>最終的にデプロイする先のサーバのOSについても勉強しておきましょう。<br>基礎的なコマンドは使いこなせないと、黒い画面の前で固まってしまいます。<br>アプリケーションのデプロイ作業や、障害時のログ調査もサーバに入って<br>行うことになると思います。<br>こちらについては、自前のマシンに構築してみるのが一番いいです。<br>書籍では<a href="https://www.amazon.co.jp/%E6%96%B0%E3%81%97%E3%81%84Linux%E3%81%AE%E6%95%99%E7%A7%91%E6%9B%B8-%E5%A4%A7%E8%A7%92-%E7%A5%90%E4%BB%8B/dp/4797380942/ref=sr_1_8?s=books&amp;ie=UTF8&amp;qid=1493260709&amp;sr=1-8&amp;keywords=unix" target="_blank" rel="noopener">新しいLinuxの教科書</a>が良書です。<br>サーバという視点では、<a href="https://www.amazon.co.jp/24%E6%99%82%E9%96%93365%E6%97%A5-%E3%82%A4%E3%83%B3%E3%83%95%E3%83%A9%E3%82%92%E6%94%AF%E3%81%88%E3%82%8B%E6%8A%80%E8%A1%93-%E3%82%B9%E3%82%B1%E3%83%BC%E3%83%A9%E3%83%93%E3%83%AA%E3%83%86%E3%82%A3-%E3%83%8F%E3%82%A4%E3%83%91%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%B3%E3%82%B9-%E7%9C%81%E5%8A%9B%E9%81%8B%E7%94%A8-PRESS-plus%E3%82%B7%E3%83%AA%E3%83%BC%E3%82%BA/dp/4774135666/ref=zg_bs_3257502051_7?_encoding=UTF8&amp;psc=1&amp;refRID=N4ABTJR620X5NG7K1H6P" target="_blank" rel="noopener">サーバ/インフラを支える技術</a>が間違いないです。<br>「シェルスクリプト」「bash/tsh/zsh」「シェル芸」などはまだわからなくて大丈夫です。</p>
+<h3 id="4オブジェクト指向"><a href="#4-オブジェクト指向" class="headerlink" title="4.オブジェクト指向"></a>4.オブジェクト指向</h3><p>オブジェクト指向の考え方は、JavaやRubyのエンジニアはもちろん、オブジェクト指向言語以外を使うエンジニアも勉強すると良いと思います。<br>基本的な文法は書いてるうちに覚えますが、根本にある考え方を学ばないと正しいプログラムは書けません。プログラムは、大きいものだと数年かけて作っていたものがめちゃくちゃになったりするので、うまく設計しないと本当に辛くなります。頑張りましょう。<br>個人的な考えですが、オブジェクト指向の解説はネットに非常に多くあるものの、本当にわかりやすいもの、正しいものは非常に少ないです。一番いい方法として、熟練者の書いたプログラムを読んでみるほうが理解が早いです。Javaのソースコードを読んでみたりしてみてください。<br>入門としては、<a href="https://www.amazon.co.jp/%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E6%8C%87%E5%90%91%E3%81%A7%E3%81%AA%E3%81%9C%E3%81%A4%E3%81%8F%E3%82%8B%E3%81%AE%E3%81%8B-%E7%AC%AC2%E7%89%88-%E5%B9%B3%E6%BE%A4-%E7%AB%A0/dp/4822284654/ref=pd_lpo_sbs_14_t_0?_encoding=UTF8&amp;psc=1&amp;refRID=DVHEKB5J1ABGGY8DA270" target="_blank" rel="noopener">オブジェクト指向でなぜつくるのか</a>が良いでしょう。<br>より高度な内容としては、<a href="https://www.amazon.co.jp/%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E6%8C%87%E5%90%91%E5%85%A5%E9%96%80-%E7%AC%AC2%E7%89%88-%E5%8E%9F%E5%89%87%E3%83%BB%E3%82%B3%E3%83%B3%E3%82%BB%E3%83%97%E3%83%88-Architect%E2%80%99Archive-%E3%82%AF%E3%83%A9%E3%82%B7%E3%83%83%E3%82%AF%E3%83%A2%E3%83%80%E3%83%B3%E3%83%BB%E3%82%B3%E3%83%B3%E3%83%94%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0/dp/4798111112" target="_blank" rel="noopener">オブジェクト指向入門</a>が非常に良い本です。最高に分厚く、難しいですが、この本を理解できればもうオブジェクト指向はOK、というくらいの名著です。</p>
+<h3 id="5システムパフォーマンス"><a href="#5-システムパフォーマンス" class="headerlink" title="5.システムパフォーマンス"></a>5.システムパフォーマンス</h3><p>遅いシステムは本当につらいです。開発効率も悪くなります。パフォーマンスチューニングではどうにもならない問題もありますが、どうにかなることは多いです。<br>チューニングは、本当にコンピューターのことを理解してないとどうにもできないことが多いです。しかし基礎として、「キャッシュの使い方」「データベースチューニング」の基礎は知っておきましょう。<br>とりあえず、「計測して」「ボトルネックを見つけて」「改善する」の考え方ができれば大丈夫です。あとはツールの問題なので。<br>ちょっと内容は難しいですが、<a href="https://www.oreilly.co.jp/books/9784873117904/" target="_blank" rel="noopener">詳解 システム・パフォーマンス</a>はおすすめです。ISUCONの解説ブログなどを読むのもいいと思います。</p>
+<p>最後に<br>これらは筆者の実体験に基づいて「これをやっとけばよかったな〜」というものです。<br>小手先のテクニックよりも、しっかりとした基礎を身に着けて、一流のエンジニアになりましょう！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/05/01/study-first/" data-text="新人プログラマの時に知っておきたかった1年目に本当に勉強すべきこと" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/05/01/study-first/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/05/01/study-first/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/05/01/study-first/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/05/01/study-first/" class="hatena-bookmark-button" data-hatena-bookmark-title="新人プログラマの時に知っておきたかった1年目に本当に勉強すべきこと" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/プログラミング/">プログラミング</a></li></ul>
+
+
+      <p class="article-footer__author">by 柳沼秀龍</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

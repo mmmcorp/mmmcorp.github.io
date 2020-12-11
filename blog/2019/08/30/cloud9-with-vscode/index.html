@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Cloud9環境のコードをVisual Studio Codeで編集したくなった時の設定方法 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="西藤です。 クラウドベースで統合開発環境を構築できるCloud9というAWSのサービスがあります。このサービスを使うことによりローカル環境に手を入れることなく、ブラウザのみでコードの編集から動作確認までひととおりの操作ができる開発環境を構築できます。 ただし、そこに搭載されているエディターは入力補完など各機能は充実していると思いますが、それでも使い慣れたエディターそのものではないので、微妙に操作に">
+<meta name="keywords" content="AWS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cloud9環境のコードをVisual Studio Codeで編集したくなった時の設定方法">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2019/08/30/cloud9-with-vscode/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="西藤です。 クラウドベースで統合開発環境を構築できるCloud9というAWSのサービスがあります。このサービスを使うことによりローカル環境に手を入れることなく、ブラウザのみでコードの編集から動作確認までひととおりの操作ができる開発環境を構築できます。 ただし、そこに搭載されているエディターは入力補完など各機能は充実していると思いますが、それでも使い慣れたエディターそのものではないので、微妙に操作に">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-08-30-cloud9-with-vscode/image_01.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-08-30-cloud9-with-vscode/image_02.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-08-30-cloud9-with-vscode/image_03.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-08-30-cloud9-with-vscode/image_04.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-08-30-cloud9-with-vscode/image_05.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-08-30-cloud9-with-vscode/image_07.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-08-30-cloud9-with-vscode/image_08.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-08-30-cloud9-with-vscode/image_09.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-08-30-cloud9-with-vscode/image_10.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-08-30-cloud9-with-vscode/image_11.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2019-08-30-cloud9-with-vscode/image_12.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.162Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cloud9環境のコードをVisual Studio Codeで編集したくなった時の設定方法">
+<meta name="twitter:description" content="西藤です。 クラウドベースで統合開発環境を構築できるCloud9というAWSのサービスがあります。このサービスを使うことによりローカル環境に手を入れることなく、ブラウザのみでコードの編集から動作確認までひととおりの操作ができる開発環境を構築できます。 ただし、そこに搭載されているエディターは入力補完など各機能は充実していると思いますが、それでも使い慣れたエディターそのものではないので、微妙に操作に">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/2019-08-30-cloud9-with-vscode/image_01.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-cloud9-with-vscode" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2019-08-30T19:00:00.000Z" itemprop="datePublished">2019-08-30</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2019/08/30/cloud9-with-vscode/">Cloud9環境のコードをVisual Studio Codeで編集したくなった時の設定方法</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/08/30/cloud9-with-vscode/" data-text="Cloud9環境のコードをVisual Studio Codeで編集したくなった時の設定方法" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/08/30/cloud9-with-vscode/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/08/30/cloud9-with-vscode/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/08/30/cloud9-with-vscode/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/08/30/cloud9-with-vscode/" class="hatena-bookmark-button" data-hatena-bookmark-title="Cloud9環境のコードをVisual Studio Codeで編集したくなった時の設定方法" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>西藤です。</p>
+<p>クラウドベースで統合開発環境を構築できるCloud9というAWSのサービスがあります。このサービスを使うことによりローカル環境に手を入れることなく、ブラウザのみでコードの編集から動作確認までひととおりの操作ができる開発環境を構築できます。</p>
+<p>ただし、そこに搭載されているエディターは入力補完など各機能は充実していると思いますが、それでも使い慣れたエディターそのものではないので、微妙に操作に慣れないこともありえます。</p>
+<p>今回はCloud9上に開発環境を構築しつつ、コードはVisual Studio Code（以下、VS Code）で編集したくなった時の設定をしてみます。</p>
+<h2 id="1-cloud9の設定"><a href="#1-Cloud9の設定" class="headerlink" title="1. Cloud9の設定"></a>1. Cloud9の設定</h2><p>こちらについては詳細は割愛いたします。AWSマネジメントコンソールの画面からCloud9環境を作成し、今回は <code>cloud9test</code> という環境を作ったことにします。</p>
+<p><img src="/images/2019-08-30-cloud9-with-vscode/image_01.png" alt=""></p>
+<p>Cloud9環境ができ上がったら、検証用に<code>test.html</code>というファイルをCloud9から編集して保存しておきます。（これをVS Codeで編集できるようにすることが今回のゴールです）</p>
+<p><img src="/images/2019-08-30-cloud9-with-vscode/image_02.png" alt=""></p>
+<h2 id="2-cloud9用のセキュリティグループを変更"><a href="#2-Cloud9用のセキュリティグループを変更" class="headerlink" title="2. Cloud9用のセキュリティグループを変更"></a>2. Cloud9用のセキュリティグループを変更</h2><p>後述する拡張機能でVS CodeからCloud9環境に接続する際にはSSH接続できるようになっている必要がありますが、デフォルトのままでは通信が許可されていません。<br>そのため、 <code>cloud9test</code>用に作成されたEC2インスタンスセキュリティグループを直接変更します。</p>
+<p><img src="/images/2019-08-30-cloud9-with-vscode/image_03.png" alt=""></p>
+<p>今回は自PCからアクセスできればいいので、SSHの「マイIP」で今使っているインターネット環境から接続できるようにしました。（元からある設定は消さないように）</p>
+<p><img src="/images/2019-08-30-cloud9-with-vscode/image_04.png" alt=""></p>
+<h2 id="3-remote-ssh-のインストール"><a href="#3-“Remote-SSH”-のインストール" class="headerlink" title="3. “Remote - SSH” のインストール"></a>3. “Remote - SSH” のインストール</h2><p>Cloud9環境の作成・準備がすみましたら、ローカルでの準備をいたします。</p>
+<p>VS CodeからCloud9環境に接続するにはMicrosoftが提供している<code>Remote - SSH</code>という拡張機能を使います。<br>Marketplaceから検索してインストールします。（プレビュー版につき導入は自己責任にてお願いします）</p>
+<p><img src="/images/2019-08-30-cloud9-with-vscode/image_05.png" alt=""></p>
+<h2 id="4-認証鍵の発行"><a href="#4-認証鍵の発行" class="headerlink" title="4. 認証鍵の発行"></a>4. 認証鍵の発行</h2><p>拡張機能をインストールしたら先ほどセキュリティグループを編集して許可したSSH接続する際に使う認証鍵を発行します。</p>
+<p>今回は<br><code>~/.ssh/</code>配下に</p>
+<ul>
+<li>秘密鍵：cloud9test</li>
+<li>公開鍵：cloud9test.pub</li>
+</ul>
+<p>を準備したことにします。</p>
+<h2 id="5-configの編集"><a href="#5-configの編集" class="headerlink" title="5. configの編集"></a>5. configの編集</h2><p>認証鍵を準備しましたら、先ほどの<code>cloud9test</code>用に作成されたEC2インスタンスへ接続する用ために<code>~/.ssh/config</code>を編集します。<br><code>Remote - SSH</code>をインストールしてあるとconfigファイルの編集画面をすぐに開けるので便利です。</p>
+<p><img src="/images/2019-08-30-cloud9-with-vscode/image_07.png" alt=""></p>
+<p>configファイルの必要事項を記載し、<code>CONNECTIONS</code>の一覧に追加したHost名が表示されればOKです。</p>
+<h2 id="6-公開鍵の登録"><a href="#6-公開鍵の登録" class="headerlink" title="6. 公開鍵の登録"></a>6. 公開鍵の登録</h2><p>最後に、SSH接続できるようにするためには公開鍵の登録が必要なのでCloud9上で<code>authorized_keys</code>を編集します。</p>
+<p>デフォルトのままではCloud9環境上の<code>authorized_keys</code>を見れないので、ファイル一覧の画面にある設定ボタンを押して<code>Show Home in Favorites</code>を有効にすることで、インスタンス内のホームディレクトが表示されるようになります。</p>
+<p><img src="/images/2019-08-30-cloud9-with-vscode/image_08.png" alt=""></p>
+<p>そして、<code>~/.ssh/authorized_keys</code>を開くと<br>ここから下に追加したいキー情報追加せよ（<code>Add any additional keys below this line</code>）とある部分の下に、先ほど生成したSSH接続用の公開鍵<code>cloud9test.pub</code>の内容を登録します。</p>
+<p>こんな感じ。</p>
+<p><img src="/images/2019-08-30-cloud9-with-vscode/image_09.png" alt=""></p>
+<p>そうすると準備完了です。</p>
+<h2 id="7-remote-sshを使ってcloud9環境に接続"><a href="#7-Remote-SSHを使ってCloud9環境に接続" class="headerlink" title="7. Remote - SSHを使ってCloud9環境に接続"></a>7. Remote - SSHを使ってCloud9環境に接続</h2><p><code>Remote - SSH</code> の画面を開き、<code>cloud9test</code>のホスト名の横にあるボタンをクリック</p>
+<p><img src="/images/2019-08-30-cloud9-with-vscode/image_10.png" alt=""></p>
+<p>接続に成功すると新しいウインドウが開き、左下には<code>cloud9test</code>の表示が出ます。<br>そして、<code>フォルダを開く</code>でCloud9上で編集したファイルが置かれているディレクトリを表示します。</p>
+<p><img src="/images/2019-08-30-cloud9-with-vscode/image_11.png" alt=""></p>
+<p>そうすると、Cloud9上で編集した<code>test.html</code>が表示され、編集ができるようになります。<br><img src="/images/2019-08-30-cloud9-with-vscode/image_12.png" alt=""></p>
+<p>以上がローカルのVS CodeからCloud9環境上のコードを編集するまでの手順となります。</p>
+<p>この環境のためにVS Codeの拡張機能を足すこともできるのでローカル環境を汚さずに、かつふだん使いの操作感でCloud9上のコードを編集できます。</p>
+<p>ブラウザで完結できるCloud9の環境を作ったのに、VS Codeで編集したいというのはレアケースではあると思いますが、、それぞれの編集環境を使い分けしたいという時に役立てば幸いです。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/08/30/cloud9-with-vscode/" data-text="Cloud9環境のコードをVisual Studio Codeで編集したくなった時の設定方法" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/08/30/cloud9-with-vscode/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/08/30/cloud9-with-vscode/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/08/30/cloud9-with-vscode/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/08/30/cloud9-with-vscode/" class="hatena-bookmark-button" data-hatena-bookmark-title="Cloud9環境のコードをVisual Studio Codeで編集したくなった時の設定方法" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li></ul>
+
+
+      <p class="article-footer__author">by 西藤翔太朗</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

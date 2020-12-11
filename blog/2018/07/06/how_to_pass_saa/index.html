@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AWS認定ソリューションアーキテクト(アソシエイト)の合格に重要かもしれないことをまとめてみた | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="AWS認定ソリューションアーキテクト(アソシエイトレベル)(以下SAA)に合格したので、試験を受けるにあたって、特に重要だと思ったポイントを箇条書きで絞ってサービスごとにまとめてみようと思います。 こんな会社に所属しながらも、筆者ががっつり実プロジェクトで触ったことがあるAWSサービスはLambdaとS3くらいで、アプリケーションのコアとなる、EC2やRDS、VPCなどの知識はほとんどありませんで">
+<meta name="keywords" content="AWS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWS認定ソリューションアーキテクト(アソシエイト)の合格に重要かもしれないことをまとめてみた">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2018/07/06/how_to_pass_saa/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="AWS認定ソリューションアーキテクト(アソシエイトレベル)(以下SAA)に合格したので、試験を受けるにあたって、特に重要だと思ったポイントを箇条書きで絞ってサービスごとにまとめてみようと思います。 こんな会社に所属しながらも、筆者ががっつり実プロジェクトで触ったことがあるAWSサービスはLambdaとS3くらいで、アプリケーションのコアとなる、EC2やRDS、VPCなどの知識はほとんどありませんで">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.154Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AWS認定ソリューションアーキテクト(アソシエイト)の合格に重要かもしれないことをまとめてみた">
+<meta name="twitter:description" content="AWS認定ソリューションアーキテクト(アソシエイトレベル)(以下SAA)に合格したので、試験を受けるにあたって、特に重要だと思ったポイントを箇条書きで絞ってサービスごとにまとめてみようと思います。 こんな会社に所属しながらも、筆者ががっつり実プロジェクトで触ったことがあるAWSサービスはLambdaとS3くらいで、アプリケーションのコアとなる、EC2やRDS、VPCなどの知識はほとんどありませんで">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-how-to-pass-saa" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2018-07-06T17:17:17.000Z" itemprop="datePublished">2018-07-06</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2018/07/06/how_to_pass_saa/">AWS認定ソリューションアーキテクト(アソシエイト)の合格に重要かもしれないことをまとめてみた</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2018/07/06/how_to_pass_saa/" data-text="AWS認定ソリューションアーキテクト(アソシエイト)の合格に重要かもしれないことをまとめてみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2018/07/06/how_to_pass_saa/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2018/07/06/how_to_pass_saa/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2018/07/06/how_to_pass_saa/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2018/07/06/how_to_pass_saa/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS認定ソリューションアーキテクト(アソシエイト)の合格に重要かもしれないことをまとめてみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>AWS認定ソリューションアーキテクト(アソシエイトレベル)(以下SAA)に合格したので、試験を受けるにあたって、特に重要だと思ったポイントを箇条書きで絞ってサービスごとにまとめてみようと思います。</p>
+<p>こんな会社に所属しながらも、筆者ががっつり実プロジェクトで触ったことがあるAWSサービスはLambdaとS3くらいで、アプリケーションのコアとなる、EC2やRDS、VPCなどの知識はほとんどありませんでした。それを踏まえて以下をご覧いただけるといいかなと思います。</p>
+<h2 id="ec2"><a href="#EC2" class="headerlink" title="EC2"></a>EC2</h2><blockquote>
+<p>Amazon Elastic Compute Cloud (Amazon EC2) は、セキュアでサイズ変更可能なコンピューティング性能をクラウド上で提供するウェブサービスです。</p>
+</blockquote>
+<ul>
+<li>EC2インスタンスファミリー<ul>
+<li>汎用<ul>
+<li>T</li>
+<li>M</li>
+</ul>
+</li>
+<li>コンピューティング最適化<ul>
+<li>C</li>
+</ul>
+</li>
+<li>メモリ最適化<ul>
+<li>X</li>
+<li>R</li>
+</ul>
+</li>
+<li>高速コンピューティング<ul>
+<li>P</li>
+<li>G</li>
+<li>F</li>
+</ul>
+</li>
+<li>ストレージの最適化<ul>
+<li>H</li>
+<li>I</li>
+<li>D</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Dedicated Instances<ul>
+<li>ハードディスクレベルで専有できるインスタンス</li>
+</ul>
+</li>
+<li>On-Demand Instances、Reserved Instances、Spot Instancesの違いを把握しておく</li>
+<li>Reserved Instances<ul>
+<li>今後の稼働状況が予測できる場合に向いている</li>
+<li>使用状況にかかわらず支払いが発生する</li>
+<li>購入はキャンセルできないが、Reserved Instance Marketplaceで売ることができる</li>
+</ul>
+</li>
+<li>Spot Instances<ul>
+<li>余ってるインスタンスを借りることができる</li>
+<li>入札価格で課金され、入札価格以上に市場価格が上がったら、インスタンスはAWSによって停止される</li>
+<li>60分単位で課金される</li>
+<li>AWSによってインスタンスが停止された場合は、60分未満の料金は切り捨てされる</li>
+<li>自分で停止した場合は、その時間まで課金される</li>
+<li>上記のような制限の代わりに、低価格で使用することができる</li>
+<li>開始と終了時間に影響を受けないアプリケーションに向いている(データのバッチ処理など)</li>
+</ul>
+</li>
+<li>Consolidated Billing<ul>
+<li>ひとつのAWSアカウント(Payer Account)が、複数のAWSアカウント(Linked Accounts)の課金をまとめて請け負うことができる</li>
+</ul>
+</li>
+<li>EIPの料金発生タイミングについて</li>
+</ul>
+<h2 id="ebs"><a href="#EBS" class="headerlink" title="EBS"></a>EBS</h2><blockquote>
+<p>Amazon Elastic Block Store (Amazon EBS) は、AWS クラウド内で Amazon EC2 インスタンスと組み合わせて使用できる、永続的なブロックストレージボリュームです。</p>
+</blockquote>
+<ul>
+<li>EC2インスタンスストアとの比較<ul>
+<li>インスタンスストアは、インスタンスの再起動で破棄されるが、EBSでは永続化されるため、保持される</li>
+</ul>
+</li>
+<li>RegionをまたいだSnapshotのコピー<ul>
+<li>Snapshotを作成する</li>
+<li>別Regionへコピーする</li>
+<li>コピーしたSnapshotから新しくEBS volumeを作成する</li>
+<li>EC2 instanceにアタッチする</li>
+</ul>
+</li>
+<li>暗号化されたSnapshotは共有Snapshotにはできるが、パブリックにはできない</li>
+<li>EBSボリュームのデータはひとつのAvailability Zoneにおいて複数サーバーに複製される</li>
+<li>EBSはひとつのAvailability Zone内であればどのインスタンスにもアタッチできる</li>
+<li>EBSの暗号化はどのボリュームタイプにも対応している</li>
+<li>EBSの暗号化は特定のインスタンスタイプに限定される</li>
+<li>暗号化されたEBSのSnapshotは自動的に暗号化される</li>
+<li>暗号化されていないEBSボリュームは直接は暗号化できない。しかし、以下の方法でマイグレートすることはできる<ul>
+<li>Snapshotを作成する</li>
+<li>Snapshotのコピーを作成する</li>
+<li>新たに暗号化されたEBSボリュームを作成する</li>
+</ul>
+</li>
+</ul>
+<h2 id="elb"><a href="#ELB" class="headerlink" title="ELB"></a>ELB</h2><blockquote>
+<p>Elastic Load Balancing は、アプリケーションへのトラフィックを複数のターゲット (Amazon EC2 インスタンス、コンテナ、IP アドレスなど) に自動的に分散するロードバランサーです。</p>
+</blockquote>
+<ul>
+<li>ELBは同一Regionの複数Availability Zone間を対象とすることができる</li>
+<li>ヘルスチェックが正常なインスタンスにのみトラフィックを行う</li>
+<li>Connection Draining<ul>
+<li>ELBからインスタンスを切り離しても、リクエスト中のインスタンスへ、指定秒数の間は通信を途切れないようにする機能</li>
+</ul>
+</li>
+<li>Sticky Sessionsについて</li>
+</ul>
+<h2 id="auto-scaling"><a href="#Auto-Scaling" class="headerlink" title="Auto Scaling"></a>Auto Scaling</h2><blockquote>
+<p>AWS Auto Scaling はアプリケーションを監視し、安定した予測可能なパフォーマンスを可能な限り低コストで維持するように、自動的に容量を調整します。</p>
+</blockquote>
+<ul>
+<li>Auto Scalingはregionをまたげない</li>
+<li>Auto Scaling Groupについて</li>
+<li>Launch Configurationについて</li>
+<li>Cooldown Periodについて</li>
+<li>Termination Policyの順序について</li>
+</ul>
+<h2 id="vpc"><a href="#VPC" class="headerlink" title="VPC"></a>VPC</h2><blockquote>
+<p>Amazon Virtual Private Cloud (Amazon VPC) では、AWS クラウドの論理的に分離されたセクションをプロビジョニングし、お客様が定義した仮想ネットワーク内の AWS リソースを起動することができます。</p>
+</blockquote>
+<ul>
+<li>VPCにおけるCIDRブロックは<code>/28</code>から<code>/16</code>の間</li>
+<li>各インスタンスはデフォルトのENI(プライマリネットワークインタフェースeth0)で接続されており、インスタンスから切り離すことはできない</li>
+<li>パブリックサブネットの何か、Internet Gatewaysとは何か</li>
+<li>VPC Flow Logsについて</li>
+<li>5つのIPアドレスはAWSに予約されている</li>
+<li>セキュリティグループはデフォルトで<ul>
+<li>インバウンドのトラフィックを許可していない</li>
+<li>アウトバウンドのトラフィックを許可している</li>
+<li>同じセキュリティグループにあるインスタンスからのインバウンドは許可している</li>
+</ul>
+</li>
+<li>セキュリティグループ/NACLの違い<ul>
+<li>セキュリティグループ<ul>
+<li>ステートフル。インバウンドしたら必ずアウトバウンドする。</li>
+<li>インスタンスに対して付与</li>
+</ul>
+</li>
+<li>NACL<ul>
+<li>ステートレス。インバウンドとアウトバウンドは別々に設定する必要がある。</li>
+<li>サブネットに対して付与</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>VPC同士で通信するときはVPC peering</li>
+</ul>
+<h2 id="iam"><a href="#IAM" class="headerlink" title="IAM"></a>IAM</h2><blockquote>
+<p>AWS Identity and Access Management (IAM) は、ユーザーに対して AWS へのアクセスを安全に制御するための仕組みです。</p>
+</blockquote>
+<ul>
+<li>ポリシー、ロール、ユーザーの違い</li>
+<li>EC2にはIAMユーザーではなく、ロールを紐付ける</li>
+<li>Federation周りの違いを把握、IAMとどう関わるのか把握<ul>
+<li>OpenID</li>
+<li>OpenID Connect</li>
+<li>SAML</li>
+</ul>
+</li>
+<li>AWS Security Token Service(STS)について</li>
+</ul>
+<h2 id="s3"><a href="#S3" class="headerlink" title="S3"></a>S3</h2><blockquote>
+<p>Amazon S3 は、ウェブサイトやモバイルアプリケーション、社内アプリケーション、IoT センサーやデバイスからのデータなど、どこからの、どのような量のデータでも保存と取得が可能なオブジェクトストレージです。</p>
+</blockquote>
+<ul>
+<li>保存するオブジェクトの数に制限はない</li>
+<li>1つのオブジェクトのサイズには5GBの制限<ul>
+<li>これを超える場合は、Multipart uploadを使用する</li>
+</ul>
+</li>
+<li>アクセスコントロール<ul>
+<li>ACL/BucketPolicy/IAMがあり、ルールの強さはACL &lt; BucketPolicy &lt; IAM</li>
+</ul>
+</li>
+<li>書き込み後読み込み整合性=&gt;PUTのみ</li>
+<li>結果整合性=&gt;PUTとDELETE</li>
+<li>毎秒100回以上のPUTリクエストがある場合、連続するキー名は避け、ランダムなプレフィックスを追加する</li>
+<li>オブジェクトを保護したい場合、バージョニング、または、削除の際にMFAを設定することができる</li>
+<li>Cross Region replicationを行うことができる</li>
+<li>署名付きURLについて</li>
+<li>ストレージクラスについて</li>
+</ul>
+<h2 id="storage-gateway"><a href="#Storage-Gateway" class="headerlink" title="Storage Gateway"></a>Storage Gateway</h2><blockquote>
+<p>AWS Storage Gateway では、テープや仮想テープライブラリシステムからクラウドにバックアップジョブを移行するシームレスな方法をIT組織に提供します。</p>
+</blockquote>
+<ul>
+<li>ファイルゲートウェイ/ボリュームゲートウェイ/テープゲートウェイの違い</li>
+<li>ボリュームゲートウェイのうち、キャッシュ型ボリューム/保管型ボリュームの違い</li>
+<li>ユースケースとしては、<ul>
+<li>企業内でのファイル共有</li>
+<li>オンプレミスの既存アプリケーションのバックアップ</li>
+<li>DR</li>
+<li>クラウドへのバックアップ</li>
+</ul>
+</li>
+</ul>
+<h2 id="route-53"><a href="#Route-53" class="headerlink" title="Route 53"></a>Route 53</h2><blockquote>
+<p>Amazon Route 53 は、可用性が高くスケーラブルなクラウドドメインネームシステム (DNS) ウェブサービスです</p>
+</blockquote>
+<ul>
+<li>Aliasレコードとは何か</li>
+<li>Geolocationルーティングについて</li>
+</ul>
+<h2 id="rds"><a href="#RDS" class="headerlink" title="RDS"></a>RDS</h2><blockquote>
+<p>Amazon Relational Database Service (Amazon RDS) を使用すると、クラウド内でリレーショナルデータベースを簡単に設定、運用、およびスケールできます。</p>
+</blockquote>
+<ul>
+<li>RDSインスタンスではOSへの操作権限はない</li>
+<li>Multi-AZについて</li>
+<li>Readレプリカについて</li>
+<li>Point-In-Timeリカバリーについて</li>
+</ul>
+<h2 id="その他"><a href="#その他" class="headerlink" title="その他"></a>その他</h2><p>上記のサービスに加え、DynamoDB、SQS、SNS、SWF、EMR、Import/Export(Snowball)、Redshiftあたりの概要とユースケースを知っておくと良いと思います。</p>
+<h2 id="おすすめのリソース"><a href="#おすすめのリソース" class="headerlink" title="おすすめのリソース"></a>おすすめのリソース</h2><p>個人的におすすめのリソースは以下です。</p>
+<ul>
+<li><a href="https://aws.amazon.com/jp/aws-jp-introduction/" target="_blank" rel="noopener">クラウドサービス活用資料集</a><ul>
+<li>まず基礎を学習するのに最適</li>
+<li>詳細を知った上でも、重要なポイントが書いてある</li>
+</ul>
+</li>
+<li><a href="http://jayendrapatil.com/" target="_blank" rel="noopener">Jayendra’s Blog</a><ul>
+<li>サービス名で検索すると記事が出てくる。ポイントが良くまとまっている</li>
+</ul>
+</li>
+<li><a href="https://aws.amazon.com/jp/certification/certified-solutions-architect-associate/" target="_blank" rel="noopener">模擬試験</a><ul>
+<li>実際の雰囲気感を掴む</li>
+</ul>
+</li>
+</ul>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>以上、参考になれば幸いです。実際の勉強法などは↓の参考リンクを見るといいかもしれません…。</p>
+<p>目的は試験対策ではありましたが、SAAの知識は実際の業務に役立つことが多いですし、過程で多くのAWSの基礎を学べたので、良かったかなと思います。Terraformも好きになりました。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://dev.classmethod.jp/cloud/aws/s3-acl-wakewakame/" target="_blank" rel="noopener">S3のアクセスコントロールが多すぎて訳が解らないので整理してみる ｜ Developers.IO</a></li>
+<li><a href="https://dev.classmethod.jp/cloud/aws/cost-of-eip/" target="_blank" rel="noopener">EIPで料金発生するパターンとしないパターン #AWS ｜ Developers.IO</a></li>
+<li><a href="https://www.slideshare.net/AmazonWebServicesJapan/aws-black-belt-tech-aws-storage-gateway" target="_blank" rel="noopener">AWS Black Belt Techシリーズ AWS Storage Gateway</a></li>
+<li><a href="https://blog.mmmcorp.co.jp/blog/2015/07/18/aws-solution-architect/">新卒入社4ヶ月でAWS 認定ソリューションアーキテクトに合格した話</a></li>
+<li><a href="https://blog.mmmcorp.co.jp/blog/2017/09/11/AWS_Certified_Solutions_Architect_Professional/">合計16時間の試験勉強でAWS認定ソリューションアーキテクト プロフェッショナルを取得した話</a></li>
+<li><a href="https://blog.mmmcorp.co.jp/blog/2017/05/12/my_way_to_pass_aws_certified_solutions_architect_associate/">私がAWS認定ソリューションアーキテクトに合格するためにした勉強法</a></li>
+<li><a href="https://blog.mmmcorp.co.jp/blog/2018/01/26/How_to_AWS_sol-arch-pro/">AWS認定ソリューションアーキテクトプロフェッショナルになる方法</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2018/07/06/how_to_pass_saa/" data-text="AWS認定ソリューションアーキテクト(アソシエイト)の合格に重要かもしれないことをまとめてみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2018/07/06/how_to_pass_saa/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2018/07/06/how_to_pass_saa/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2018/07/06/how_to_pass_saa/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2018/07/06/how_to_pass_saa/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS認定ソリューションアーキテクト(アソシエイト)の合格に重要かもしれないことをまとめてみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li></ul>
+
+
+      <p class="article-footer__author">by okp</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

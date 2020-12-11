@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>ぼくらのかんがえた さいきょうの DBスキーマうんよう(Rails版) | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="既に花粉症が出てきた下條です。タイトルは大げさです。すみません。 Ruby on RailsではDBスキーマの管理方法として、マイグレーション機能が標準で備わっています。これは小規模なシステムではうまく運用できますが、プロジェクトが増えたり、多くの開発者が参加すると運用が難しくなってくることがあります。最近よく遭遇するのは複数のプロジェクトが同一のDBを利用する場合です。例えばCMS, API,">
+<meta name="keywords" content="サーバーサイド,Ruby on Rails">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ぼくらのかんがえた さいきょうの DBスキーマうんよう(Rails版)">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2016/02/24/rails-db-schema/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="既に花粉症が出てきた下條です。タイトルは大げさです。すみません。 Ruby on RailsではDBスキーマの管理方法として、マイグレーション機能が標準で備わっています。これは小規模なシステムではうまく運用できますが、プロジェクトが増えたり、多くの開発者が参加すると運用が難しくなってくることがあります。最近よく遭遇するのは複数のプロジェクトが同一のDBを利用する場合です。例えばCMS, API,">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/rails-db-schema/1.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/rails-db-schema/2.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.138Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ぼくらのかんがえた さいきょうの DBスキーマうんよう(Rails版)">
+<meta name="twitter:description" content="既に花粉症が出てきた下條です。タイトルは大げさです。すみません。 Ruby on RailsではDBスキーマの管理方法として、マイグレーション機能が標準で備わっています。これは小規模なシステムではうまく運用できますが、プロジェクトが増えたり、多くの開発者が参加すると運用が難しくなってくることがあります。最近よく遭遇するのは複数のプロジェクトが同一のDBを利用する場合です。例えばCMS, API,">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/rails-db-schema/1.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-rails-db-schema" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2016-02-24T12:16:02.000Z" itemprop="datePublished">2016-02-24</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2016/02/24/rails-db-schema/">ぼくらのかんがえた さいきょうの DBスキーマうんよう(Rails版)</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/02/24/rails-db-schema/" data-text="ぼくらのかんがえた さいきょうの DBスキーマうんよう(Rails版)" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/02/24/rails-db-schema/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/02/24/rails-db-schema/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/02/24/rails-db-schema/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/02/24/rails-db-schema/" class="hatena-bookmark-button" data-hatena-bookmark-title="ぼくらのかんがえた さいきょうの DBスキーマうんよう(Rails版)" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>既に花粉症が出てきた下條です。タイトルは大げさです。すみません。</p>
+<p>Ruby on RailsではDBスキーマの管理方法として、マイグレーション機能が標準で備わっています。これは小規模なシステムではうまく運用できますが、プロジェクトが増えたり、多くの開発者が参加すると運用が難しくなってくることがあります。最近よく遭遇するのは複数のプロジェクトが同一のDBを利用する場合です。例えばCMS, API, SPAといった別々のプロジェクトが同一のDBを利用し、特にRails開発者とフロントエンドの開発者が一緒のDBを見るような場合に問題になることが多いです。こういった場合にRails標準のマイグレーション運用をすると下記のような課題・問題が発生します。</p>
+<ul>
+<li>どのプロジェクトでマイグレーションをすればよいのか。各プロジェクトでマイグレーションファイルが分散すると、開発のDBスキーマ管理が面倒なことになるので避けたい。</li>
+<li>どれか1つのプロジェクトのみでマイグレーションをする場合、各プロジェクトでいかにDBスキーマを最新に保つか。マイグレーションを実行したプロジェクトで生成されるスキーマファイル(db/schema.rb)をその他プロジェクトにも反映させるべきだが、忘れがち。</li>
+<li>マイグレーションについて通常意識しないフロントエンドの開発者が一緒に開発する際に、開発環境DBのマイグレーションでつまることが多い。(きちんとドキュメント化できていないという話もありますが。)</li>
+<li>複数プロジェクトに関わらない話だが、開発の初期段階にはDBスキーマが頻繁に変わることがあるため、膨大な数のマイグレーションファイルができてしまう。</li>
+</ul>
+<p><a href="http://techlife.cookpad.com/entry/2014/08/28/194147" target="_blank" rel="noopener">クックパッドにおける最近のActiveRecord運用事情</a>には、モノリシックアプリケーションでも早々にマイグレーション運用をあきらめたとの記述がありました。実際のところマイグレーション運用をしていないプロジェクトは世の中に多くあるのではないかと思っています。しかし、それではどうやってDBスキーマを管理すればよいのかというところを調べましたが、あまり情報は見当たりません。弊社では従来から基本的にはマイグレーションによるDBスキーマ管理を行ってきました。ただ、上記のような問題が頻発するようになったため、開発環境においてサーバーサイド開発者・フロントエンド開発者皆が常に最新のスキーマを容易に適用して開発でき、開発効率をアップすることを目的として、新たなDBスキーマ管理方法を運用しており、今回ご紹介したいと思います。</p>
+<p>なお、本記事は全くRails標準のマイグレーションを否定するものではなく、社内でも一般的なRailsアプリケーションではマイグレーションを利用しています。</p>
+<p>設計時には特に以下の点を考慮しました。</p>
+<ul>
+<li>アプリケーションのデプロイ時には、アプリケーションの修正とDBスキーマの修正は同時に適用されるようにすること。</li>
+<li>変更されたDBスキーマを開発環境DBに適用する手順を容易にすること。</li>
+<li>DBスキーマ変更時に開発環境DBのデータをクリアしてしまわないこと。</li>
+</ul>
+<h2 id="dbスキーマ変更を伴うアプリケーション改修フロー"><a href="#DBスキーマ変更を伴うアプリケーション改修フロー" class="headerlink" title="DBスキーマ変更を伴うアプリケーション改修フロー"></a>DBスキーマ変更を伴うアプリケーション改修フロー</h2><p>発想としてはシンプルで、マスターとなるDBスキーマファイルを持たせて、それを実際のDBにも同期させるという方針です。<br>各Railsプロジェクトの親となるプロジェクトを作成し、DBスキーマは親プロジェクトで管理します。子プロジェクトはGitのサブモジュールとして管理します。(<code>プロジェクト</code>は<code>リポジトリ</code>と読みかえていただいてもかまいません。)<br>スキーマファイルのDBへの適用には<a href="https://github.com/winebarrel/ridgepole" target="_blank" rel="noopener">Ridgepole gem</a>を利用します。これは、DBスキーマファイルと実際のDBのスキーマの差分を適用してくれるというgemです。</p>
+<p>まず親プロジェクトで下記図の通りDBスキーマの変更を行い、プルリクエスト(PR)します。</p>
+<p><img src="/images/rails-db-schema/1.png" alt=""></p>
+<h4 id="補足"><a href="#補足" class="headerlink" title="補足"></a>補足</h4><ul>
+<li>DBスキーマ更新コマンドでは以下の3つの処理を行っています。</li>
+</ul>
+<ol>
+<li>開発環境DBにSchemafile(Ridgepole gemのスキーマファイル)をもとにDBスキーマの変更を適用。</li>
+<li>最新のDBスキーマをstructure.sqlの形でダンプ。structure.sqlは、正しくDB構造が変更されているかを確認するために出力し、PRに含めています。</li>
+<li>親プロジェクトのSchemafileを各Railsプロジェクト配下にコピー。</li>
+</ol>
+<p>次に、サブモジュールであるRailsプロジェクトでアプリケーションの修正を行い、PRします。</p>
+<p><img src="/images/rails-db-schema/2.png" alt=""></p>
+<p>これで2つのPRができて、レビュー完了後にマージするわけですが、まずは親プロジェクトのスキーマ変更PRをマージした後で子プロジェクトのPRをマージします。子プロジェクトのマージ後にはCircleCIで自動的にテスト・デプロイ・DBスキーマ適用する処理となっているのですが、そこに親プロジェクトとのスキーマ差分をチェックする処理を入れており、子プロジェクトを先にマージするとデプロイ・DBスキーマ適用がコケるようにしてあります。これは親プロジェクトのスキーマファイルが必ず最新のものになっていることを保証するための仕組みです。</p>
+<h2 id="dbスキーマ変更の開発環境への適用手順"><a href="#DBスキーマ変更の開発環境への適用手順" class="headerlink" title="DBスキーマ変更の開発環境への適用手順"></a>DBスキーマ変更の開発環境への適用手順</h2><p>上記のように変更されたDBスキーマの開発環境DBへの適用手順は以下です。</p>
+<ol>
+<li>親プロジェクトで最新のmasterを取得する。</li>
+<li>親プロジェクトでDBスキーマ更新コマンドを実行する。</li>
+</ol>
+<p>簡単ですね！</p>
+<h2 id="具体的なディレクトリ構造について"><a href="#具体的なディレクトリ構造について" class="headerlink" title="具体的なディレクトリ構造について"></a>具体的なディレクトリ構造について</h2><p>詳細なディレクトリ構造のイメージは以下です。ただ、今回の話題とは外れるので書いていませんが、実際には開発環境はDocker化されています。この親プロジェクトにdocker-compose.ymlが配置されていて、開発時には必要に応じたRailsプロジェクトのコンテナを立ち上げられるようになっています。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">親プロジェクト</span><br><span class="line">│── db</span><br><span class="line">│   ├── ridgepole(適用するスキーマファイル郡を管理するディレクトリ。DBスキーマの管理はこのディレクトリですべて管理する)</span><br><span class="line">│   │   ├── Schemafile</span><br><span class="line">│   │   ├── 各テーブル名.schema</span><br><span class="line">│   │   └── ...</span><br><span class="line">│   └──  structure.sql(スキーマ更新後に出力された確認用スキーマファイル)</span><br><span class="line">│── scripts</span><br><span class="line">│   ├── update_schema.sh(DBスキーマ更新用スクリプト)</span><br><span class="line">│   ├── init_db.sh(DB初期化スクリプト)</span><br><span class="line">│   └── insert_mock.sh(モックデータ格納用スクリプト)</span><br><span class="line">├── RailsプロジェクトA(子プロジェクト)</span><br><span class="line">│   ├── db</span><br><span class="line">│   │   └── Schemafile(スキーマ更新時に自動で更新する。テストDBのスキーマ適用時、デプロイ時のスキーマ適用時に使用する。)</span><br><span class="line">├── RailsプロジェクトB(子プロジェクト)</span><br><span class="line">│   ├── db</span><br><span class="line">│   │   └── Schemafile(スキーマ更新時に自動で更新する。テストDBのスキーマ適用時、デプロイ時のスキーマ適用時に使用する。)</span><br></pre></td></tr></table></figure>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>DBスキーマの変更は若干ややこしい手順ですが、DBスキーマ変更の適用手順はとても簡単になり、開発者同士で最新のDB構造を同期するのが簡単になりました。</p>
+<p>ポイントは親プロジェクトにDBスキーマの管理機能をもたせたこと、DBスキーマ管理にRidgepoleを使うようにしたことです。Ridgepoleでは、スキーマファイルと実際のDBとの差分のみを実行するSQLを発行するため、マスターとなるスキーマファイルを持っておけば、スキーマファイルと実際のDBが可能となります。</p>
+<p>まだいろいろと改善の余地はあると思います。今後もよい運用を考えていきたいと思っています。</p>
+<p><a href="https://mmmcorp.co.jp/services/remote_system_engineering_service/ruby" target="_blank" rel="noopener">Ruby on Railsを活用したWebサービスや業務システム開発</a>をご検討の企業様は、是非MMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/02/24/rails-db-schema/" data-text="ぼくらのかんがえた さいきょうの DBスキーマうんよう(Rails版)" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/02/24/rails-db-schema/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/02/24/rails-db-schema/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/02/24/rails-db-schema/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/02/24/rails-db-schema/" class="hatena-bookmark-button" data-hatena-bookmark-title="ぼくらのかんがえた さいきょうの DBスキーマうんよう(Rails版)" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby-on-Rails/">Ruby on Rails</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーサイド/">サーバーサイド</a></li></ul>
+
+
+      <p class="article-footer__author">by 下條 真嗣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

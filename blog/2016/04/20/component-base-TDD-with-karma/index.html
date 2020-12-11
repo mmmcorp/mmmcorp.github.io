@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>karmaで始めるコンポーネントベースのTDD | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="高いところがダメな小飼です。再来週飛行機に乗ります。 さて、先日Angular1.x系のSPAにユニットテストを導入した話で、作成中のコンポーネントだけをブラウザに描画して、TDDっぽく開発を進めていく手法について触れました。今回はその具体的な手法について触れたいと思います。(あまり類似の記事を見たことがないのですが、もしかしたら記事にするまでもないことだったりして…) ヘッドレスなテストへの不安">
+<meta name="keywords" content="フロントエンド,JavaScript,テスト,karma,TDD">
+<meta property="og:type" content="article">
+<meta property="og:title" content="karmaで始めるコンポーネントベースのTDD">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2016/04/20/component-base-TDD-with-karma/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="高いところがダメな小飼です。再来週飛行機に乗ります。 さて、先日Angular1.x系のSPAにユニットテストを導入した話で、作成中のコンポーネントだけをブラウザに描画して、TDDっぽく開発を進めていく手法について触れました。今回はその具体的な手法について触れたいと思います。(あまり類似の記事を見たことがないのですが、もしかしたら記事にするまでもないことだったりして…) ヘッドレスなテストへの不安">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/component-base-TDD-with-karma/karma.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.138Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="karmaで始めるコンポーネントベースのTDD">
+<meta name="twitter:description" content="高いところがダメな小飼です。再来週飛行機に乗ります。 さて、先日Angular1.x系のSPAにユニットテストを導入した話で、作成中のコンポーネントだけをブラウザに描画して、TDDっぽく開発を進めていく手法について触れました。今回はその具体的な手法について触れたいと思います。(あまり類似の記事を見たことがないのですが、もしかしたら記事にするまでもないことだったりして…) ヘッドレスなテストへの不安">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/component-base-TDD-with-karma/karma.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-component-base-TDD-with-karma" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2016-04-20T09:00:00.000Z" itemprop="datePublished">2016-04-20</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2016/04/20/component-base-TDD-with-karma/">karmaで始めるコンポーネントベースのTDD</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/04/20/component-base-TDD-with-karma/" data-text="karmaで始めるコンポーネントベースのTDD" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/04/20/component-base-TDD-with-karma/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/04/20/component-base-TDD-with-karma/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/04/20/component-base-TDD-with-karma/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/04/20/component-base-TDD-with-karma/" class="hatena-bookmark-button" data-hatena-bookmark-title="karmaで始めるコンポーネントベースのTDD" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>高いところがダメな小飼です。再来週飛行機に乗ります。</p>
+<p>さて、先日<a href="http://blog.mmmcorp.co.jp/blog/2016/02/26/add-unit-test-to-angular/">Angular1.x系のSPAにユニットテストを導入した話</a>で、作成中のコンポーネントだけをブラウザに描画して、TDDっぽく開発を進めていく手法について触れました。<br>今回はその具体的な手法について触れたいと思います。<br>(あまり類似の記事を見たことがないのですが、もしかしたら記事にするまでもないことだったりして…)</p>
+<h2 id="ヘッドレスなテストへの不安"><a href="#ヘッドレスなテストへの不安" class="headerlink" title="ヘッドレスなテストへの不安"></a>ヘッドレスなテストへの不安</h2><p><code>PhantomJS</code>のようなヘッドレスブラウザや<code>jsdom</code>のような擬似ブラウザ環境でのテストは、実行が軽い反面、テストしたコンポーネントが実際にどういう動きをしているのか？どんな風に描画されているのかに確信を持ちづらいところがあります。</p>
+<p>どうにかして、自分が書いているテストが実際にどんなコンポーネントをブラウザに描画するのかを確認出来れば安心できるのですが…<br>ところでテストランナーの<code>karma</code>では、<code>PhantomJS</code>用に書いたテストコードを、追加設定不要でそのまま<code>chrome/firefox</code>などでも実行できる仕組みがあります。</p>
+<h2 id="ブラウザでテスト対象のコンポーネントを描画する"><a href="#ブラウザでテスト対象のコンポーネントを描画する" class="headerlink" title="ブラウザでテスト対象のコンポーネントを描画する"></a>ブラウザでテスト対象のコンポーネントを描画する</h2><p>まず最初に<code>karma</code>がどんな構成でテストを実行しているのかを簡単にさらってみたいと思います。</p>
+<p><img src="/images/component-base-TDD-with-karma/karma.png" alt="karmaのアーキテクチャ図"></p>
+<p>図のように、<code>karma</code>はkarmaランナープロセスがテスト用のサーバを起動し、<code>karma</code>が用意した<code>html</code>ファイルにテストファイルをブラウザが読み込んで、テストを逐次実行していく構成になっています。<br>この際テストサーバにアクセス(デフォルトだと<code>http://localhost:9876/</code>)すると、<code>karma.conf.js</code>で設定したテストのステータスが確認できます。<br>ここで<code>DEBUG</code>ボタンのリンク先である<code>/debug.html</code>ページを読み込みコンソール画面を開くと、ブラウザの内部で<code>PhantomJS</code>用に設定したのと同じテストが走っているのが確認できます。</p>
+<p>ロジックにまつわるテストのみを書いている場合、このページには何も表示されません。<br>しかしテスト対象のコンポーネントを<code>window</code>オブジェクトに挿入してあげることで、実際にコンポーネントをブラウザに描画してテストすることができます。</p>
+<p>こんな感じでコンポーネントを<code>window</code>オブジェクトに渡してあげます。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Angular.js(1.3)でのコード例</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createAngularElement</span>(<span class="params">componentTag</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> element;</span><br><span class="line">  inject(<span class="function"><span class="keyword">function</span> (<span class="params">$compile, $rootScope</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = $rootScope.$<span class="keyword">new</span>();</span><br><span class="line">    element = angular.element(componentTag);</span><br><span class="line">    $compile(element)(scope);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="built_in">document</span>.querySelector(<span class="string">'body'</span>).appendChild(element);</span><br><span class="line">  <span class="keyword">return</span> element;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">const</span> element = createAngularElement(<span class="string">'&lt;sample-component&gt;&lt;/sample-component&gt;'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// React.jsでのコード例</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createReactElement</span>(<span class="params">virtualDOM</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> element = <span class="built_in">document</span>.createElement(<span class="string">'div'</span>);</span><br><span class="line">  ReactDOM.render(virtualDOM, element);</span><br><span class="line"></span><br><span class="line">  <span class="built_in">document</span>.querySelector(<span class="string">'body'</span>).appendChild(element);</span><br><span class="line">  <span class="keyword">return</span> element;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">const</span> element = createAngularElement(<span class="xml"><span class="tag">&lt;<span class="name">SampleComponent</span> /&gt;</span>);</span></span><br></pre></td></tr></table></figure>
+<p>この時、<code>return element</code>などで作成したコンポーネントのDOMへの参照を、テストコードに渡してあげる必要があります。<br><code>window</code>オブジェクトに直接テスト対象のコンポーネントをappendしていくので、テスト毎にコンポーネントへの参照も分けて保持しておく必要があるからです。<br>(コンポーネントに<code>id</code>要素を指定して<code>getElementById</code>しようとしても、<code>id</code>付きのコンポーネントがいくつも<code>document</code>に描画されるので<code>id</code>は一意でなくなってしまいます)</p>
+<p>実際のテストコードはこんな感じになります。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">describe(<span class="string">'サンプルのテスト'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> element;</span><br><span class="line">  beforeEach(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    element = createAngularElement(<span class="string">'&lt;sample-component&gt;&lt;/sample-component&gt;'</span>);</span><br><span class="line">    <span class="comment">// element = createAngularElement(&lt;SampleComponent /&gt;);</span></span><br><span class="line">  &#125;);</span><br><span class="line">  it(<span class="string">'サンプルコンポーネントが描画できる'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    expect(element.querySelector(<span class="string">'sample-component'</span>).length).toBe(<span class="number">1</span>);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>これで任意のブラウザの<code>http://localhost:9876/debug.html</code>にアクセスすると、サンプルコンポーネントが描画されています。<br>(もちろん内部ではテストが実行されています)<br>これでどんなコンポーネントが描画されているのか、確信を持ってテスト出来ます！<br>もちろん、<code>click</code>などの各種イベントも発行可能です。</p>
+<h2 id="その他"><a href="#その他" class="headerlink" title="その他"></a>その他</h2><h3 id="アセットファイルのプロキシ設定"><a href="#アセットファイルのプロキシ設定" class="headerlink" title="アセットファイルのプロキシ設定"></a>アセットファイルのプロキシ設定</h3><p><code>karma</code>の概要を説明する段で、<code>karma</code>の立てるテストサーバに<code>テストコード</code>が挿入されているという仕組みを説明しました。<br>別の言い方をすると、CSSファイルや画像ファイルなんかはそのままではテスト環境で読み込まれないという事です。</p>
+<p>コンポーネントのスタイルも合わせて確認するためには、こんな感じの設定を追加してあげる必要があります。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// karma.conf.js</span></span><br><span class="line">files: [</span><br><span class="line">  <span class="string">'test/*.js'</span>,</span><br><span class="line">  <span class="string">'app/style.css'</span>,</span><br><span class="line">  &#123; <span class="attr">pattern</span>: <span class="string">'app/img/*'</span>, <span class="attr">watched</span>: <span class="literal">false</span>, <span class="attr">included</span>: <span class="literal">false</span>, <span class="attr">served</span>: <span class="literal">true</span>, <span class="attr">nocache</span>: <span class="literal">false</span> &#125;,</span><br><span class="line">],</span><br><span class="line">proxies: &#123;</span><br><span class="line">  <span class="string">'/img/*'</span>: <span class="string">'/base/app/img/*'</span>,</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+<p>CSSファイルは<code>link</code>タグで、画像ファイルはテストサーバの<code>/base/app/img/*</code>として読み込まれた後、<code>/img/*</code>として<code>karma</code>が中継して読み込んでくれます。<br>(<code>font</code>ファイルなんかも同じ感じです)</p>
+<h3 id="dom操作イベントのシミュレーション"><a href="#DOM操作イベントのシミュレーション" class="headerlink" title="DOM操作イベントのシミュレーション"></a>DOM操作イベントのシミュレーション</h3><p>前述の通り、<code>click</code>イベントなんかは生DOM APIでテストを書くことが出来ます。<br>ただし、テキストの入力やドラッグなんかのイベントは(無理ではないですが)書くのが面倒です。</p>
+<p>そこでDOM操作ライブラリの金字塔<code>jQuery</code>を使います。<br>例えばテキスト入力操作をテストしたいのであれば、<code>jQuery</code>に組み込み済みのイベント(<code>$(&#39;sample-component&#39;).val(&#39;テキスト入力&#39;).trigger(&#39;input&#39;)</code>)を発火させます。</p>
+<p>また、<code>jQuery</code>本体が発火できない(しづらい)イベント（例えばマウスドラッグ）は、<code>jQuery</code>が自身のテストのために使っているライブラリ(プラグイン)<a href="https://github.com/jquery/jquery-simulate" target="_blank" rel="noopener"><code>jquery-simulate</code></a>を使用するのが便利です。</p>
+<p>こんな感じでシミュレートできます。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="string">'sample-component'</span>).simulate(<span class="string">'drag'</span>, &#123; <span class="attr">dx</span>: <span class="number">15</span>, <span class="attr">dy</span>: <span class="number">0</span> &#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>コンポーネントをブラウザに実際に描画しつつテストする手法についてご紹介しましたが、いかがでしたでしょうか。<br>テストファーストで作るので、責任が小さくシンプルなコンポーネントを作りやすいく、かつCSSも他のコンポーネントに依存せずに作ることになるので、フロントエンドのコンポーネント作成手法としてはわりと気に入って使っています。</p>
+<p>また、DOMベースでのテストなので、FW・ライブラリに縛られずテストできる(いつでも同じ感じに書ける)ところもうれしいです。<br>(弊社の<code>React.js</code>を導入している別プロジェクトでも同様の手法でテストを書いています)</p>
+<p>コンポーネントベースのテストは、サイズを小さくシンプルにまとめやすいので、テスト変更の負荷が少ない(負債化しづらい)というメリットもあり、今後もこの手法を取り入れてテストを書いていきたと思っています。</p>
+<p>今回ご紹介したTDD手法を取り入れ、<a href="https://mmmcorp.co.jp/services/entrusted_development/" target="_blank" rel="noopener">品質の見える化を実現したサービス開発</a>をご検討の企業様は、是非MMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/04/20/component-base-TDD-with-karma/" data-text="karmaで始めるコンポーネントベースのTDD" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/04/20/component-base-TDD-with-karma/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/04/20/component-base-TDD-with-karma/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/04/20/component-base-TDD-with-karma/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/04/20/component-base-TDD-with-karma/" class="hatena-bookmark-button" data-hatena-bookmark-title="karmaで始めるコンポーネントベースのTDD" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TDD/">TDD</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/karma/">karma</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/テスト/">テスト</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li></ul>
+
+
+      <p class="article-footer__author">by 小飼 慎一</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Adobe XDのプロトタイプをPDFで保存する方法 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="炊飯器が壊れてしまい、数日間パックご飯で凌ぐことになった池島です。（一升炊きは在庫が少ないのです）前回に引き続き、Adobe XDの活用についてお話したいと思います。 Adobe XDのプロトタイプ機能は、ページ動線が設定できて、すぐに書き出せて、コメントが付けられて、とっても便利です。ただし、インターネット環境がないと見ることができないのと、クライアントさんが勝手にコメントを書き換えてしまう不">
+<meta name="keywords" content="ソリューション・サービス,Adobe XD,プロトタイプ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Adobe XDのプロトタイプをPDFで保存する方法">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2018/01/30/adobe-xd_archives-pdf/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="炊飯器が壊れてしまい、数日間パックご飯で凌ぐことになった池島です。（一升炊きは在庫が少ないのです）前回に引き続き、Adobe XDの活用についてお話したいと思います。 Adobe XDのプロトタイプ機能は、ページ動線が設定できて、すぐに書き出せて、コメントが付けられて、とっても便利です。ただし、インターネット環境がないと見ることができないのと、クライアントさんが勝手にコメントを書き換えてしまう不">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/adobe-xd_archives-pdf/image_main.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/adobe-xd_archives-pdf/image01.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/adobe-xd_archives-pdf/image02.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/adobe-xd_archives-pdf/image03.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/adobe-xd_archives-pdf/image04.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/adobe-xd_archives-pdf/image05.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/adobe-xd_archives-pdf/image06.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/adobe-xd_archives-pdf/image07.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/adobe-xd_archives-pdf/image11.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/adobe-xd_archives-pdf/image08.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/adobe-xd_archives-pdf/image09.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/adobe-xd_archives-pdf/image12.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/adobe-xd_archives-pdf/image10.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.150Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Adobe XDのプロトタイプをPDFで保存する方法">
+<meta name="twitter:description" content="炊飯器が壊れてしまい、数日間パックご飯で凌ぐことになった池島です。（一升炊きは在庫が少ないのです）前回に引き続き、Adobe XDの活用についてお話したいと思います。 Adobe XDのプロトタイプ機能は、ページ動線が設定できて、すぐに書き出せて、コメントが付けられて、とっても便利です。ただし、インターネット環境がないと見ることができないのと、クライアントさんが勝手にコメントを書き換えてしまう不">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/adobe-xd_archives-pdf/image_main.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-adobe-xd_archives-pdf" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2018-01-30T18:35:35.000Z" itemprop="datePublished">2018-01-30</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2018/01/30/adobe-xd_archives-pdf/">Adobe XDのプロトタイプをPDFで保存する方法</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2018/01/30/adobe-xd_archives-pdf/" data-text="Adobe XDのプロトタイプをPDFで保存する方法" data-counturl="https://blog.mmmcorp.co.jp/blog/2018/01/30/adobe-xd_archives-pdf/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2018/01/30/adobe-xd_archives-pdf/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2018/01/30/adobe-xd_archives-pdf/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2018/01/30/adobe-xd_archives-pdf/" class="hatena-bookmark-button" data-hatena-bookmark-title="Adobe XDのプロトタイプをPDFで保存する方法" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/adobe-xd_archives-pdf/image_main.png" alt=""></p>
+<p>炊飯器が壊れてしまい、数日間パックご飯で凌ぐことになった池島です。（一升炊きは在庫が少ないのです）<br>前回に引き続き、Adobe XDの活用についてお話したいと思います。</p>
+<p>Adobe XDのプロトタイプ機能は、ページ動線が設定できて、すぐに書き出せて、コメントが付けられて、とっても便利です。ただし、インターネット環境がないと見ることができないのと、クライアントさんが勝手にコメントを書き換えてしまう不安があるのがネックです（コメントを変更すると、通知は来ます）。</p>
+<p>そこで、ブラウザのアドオン（プラグイン）のPDF書き出し機能を使って、XDのプロトタイプをPDFに書き出す作業を行ってみました。（こういう機能がXDに標準装備される日を待っています。）</p>
+<h1 id="pdfの書き出しについて"><a href="#PDFの書き出しについて" class="headerlink" title="PDFの書き出しについて"></a>PDFの書き出しについて</h1><h2 id="pdf書き出しの準備"><a href="#PDF書き出しの準備" class="headerlink" title="PDF書き出しの準備"></a>PDF書き出しの準備</h2><p>PDFの書き出しにあたって、以下のものを用意します。</p>
+<h5 id="adobe-acrobat"><a href="#Adobe-Acrobat" class="headerlink" title="Adobe Acrobat"></a>Adobe Acrobat</h5><p>書き出したPDFを編集するために使います。</p>
+<p>Adobe Creative Cloudを契約していればAcrobatも含まれています。Adobe XDを単体で契約している場合は、Acrobatを別途購入するか、サードパーティー製のPDF編集ソフトをお使いください。</p>
+<h5 id="ブラウザ"><a href="#ブラウザ" class="headerlink" title="ブラウザ"></a>ブラウザ</h5><p>Adobe PDF ツールバーでの書き出しもできますが、印刷機能を使った方が簡単かと思います。</p>
+<p>参考）Adobe PDF ツールバーを使った場合のPDF書き出し方法です。<br><a href="https://helpx.adobe.com/jp/acrobat/using/converting-web-pages-pdf.html" target="_blank" rel="noopener">https://helpx.adobe.com/jp/acrobat/using/converting-web-pages-pdf.html</a></p>
+<h2 id="pdf書き出し"><a href="#PDF書き出し" class="headerlink" title="PDF書き出し"></a>PDF書き出し</h2><p>実際に書き出し作業を行っていきます。MacでGoogle Chromeを使った例を説明していきます。</p>
+<h5 id="1-ブラウザにxdプロトタイプを表示します"><a href="#1-ブラウザにXDプロトタイプを表示します。" class="headerlink" title="(1) ブラウザにXDプロトタイプを表示します。"></a>(1) ブラウザにXDプロトタイプを表示します。</h5><p><img src="/images/adobe-xd_archives-pdf/image01.png" alt="「返信」は、全て開いておきます。"></p>
+<h5 id="2-ブラウザのメニューの印刷をクリックします"><a href="#2-ブラウザのメニューの「印刷」をクリックします。" class="headerlink" title="(2) ブラウザのメニューの「印刷」をクリックします。"></a>(2) ブラウザのメニューの「印刷」をクリックします。</h5><p><img src="/images/adobe-xd_archives-pdf/image02.png" alt=""></p>
+<h5 id="3-印刷の設定をします"><a href="#3-印刷の設定をします。" class="headerlink" title="(3) 印刷の設定をします。"></a>(3) 印刷の設定をします。</h5><p><img src="/images/adobe-xd_archives-pdf/image03.png" alt=""></p>
+<blockquote>
+<p>送信先：「PDFに保存」<br>レイアウト：縦<br>用紙サイズ：A3</p>
+</blockquote>
+<p>レイアウトを縦、用紙サイズをA3にすると、イメージとコメントをバランス良く配置できるように思います。</p>
+<p>ワイヤーフレームやデザインの画面が横長ばかりだったり、コメントが少なかったりする場合は、横レイアウトやA4を選んでもよいと思います。</p>
+<p><img src="/images/adobe-xd_archives-pdf/image04.png" alt="ブラウザ幅を大きくしていると、画面イメージが切れてしまいます。"><br><img src="/images/adobe-xd_archives-pdf/image05.png" alt="画面イメージとコメントのサイズ比はこれくらいで。"></p>
+<h5 id="4-設定調整が終わったら-保存でpdfを書き出します"><a href="#4-設定・調整が終わったら、「保存」でPDFを書き出します。" class="headerlink" title="(4) 設定・調整が終わったら、「保存」でPDFを書き出します。"></a>(4) 設定・調整が終わったら、「保存」でPDFを書き出します。</h5><p><img src="/images/adobe-xd_archives-pdf/image06.png" alt="コメントが多く、1ページに収まらない場合は、コメントをスクロールしながら、複数回に分けて書き出します。"><br><img src="/images/adobe-xd_archives-pdf/image07.png" alt="「解決済みのコメント」も、忘れずに表示させて書き出します。"><br><img src="/images/adobe-xd_archives-pdf/image11.png" alt="画面イメージが長い場合は、XDから画像を書き出しておいて、PDFに貼り付けた方が早いです。&lt;br&gt;ピン止めのマークは、PDF上でオブジェクトに分割されます。"></p>
+<h2 id="pdfを編集"><a href="#PDFを編集" class="headerlink" title="PDFを編集"></a>PDFを編集</h2><p>続いて、書き出したPDFを編集していきます。ここからはAdobe Acrobatでの作業となります。</p>
+<p>書き出されたPDFを1ファイルにまとめ、余分な要素を削除します。</p>
+<h5 id="1-書き出したpdfを-ベースにするpdfファイルに挿入してまとめていきます"><a href="#1-書き出したPDFを、ベースにするPDFファイルに挿入してまとめていきます。" class="headerlink" title="(1) 書き出したPDFを、ベースにするPDFファイルに挿入してまとめていきます。"></a>(1) 書き出したPDFを、ベースにするPDFファイルに挿入してまとめていきます。</h5><p><img src="/images/adobe-xd_archives-pdf/image08.png" alt=""></p>
+<h5 id="2-不要な要素を削除します"><a href="#2-不要な要素を削除します。" class="headerlink" title="(2) 不要な要素を削除します。"></a>(2) 不要な要素を削除します。</h5><p>「ログアウト」や返信フォームなど、不要な要素を選択・削除します。<br>また、ページをまたぐコメントは、重複部分を削除し、読みやすいように位置を調整します。<br><img src="/images/adobe-xd_archives-pdf/image09.png" alt=""></p>
+<h5 id="3-切れている画面イメージは-xdから書き出した画像に差し替えます"><a href="#3-切れている画面イメージは、XDから書き出した画像に差し替えます。" class="headerlink" title="(3) 切れている画面イメージは、XDから書き出した画像に差し替えます。"></a>(3) 切れている画面イメージは、XDから書き出した画像に差し替えます。</h5><p>ピン止めのマークも、重なり順を上にして、位置を調整します。<br><img src="/images/adobe-xd_archives-pdf/image12.png" alt=""></p>
+<h5 id="4-必要に応じて-編集に制限をかけます"><a href="#4-必要に応じて、編集に制限をかけます。" class="headerlink" title="(4) 必要に応じて、編集に制限をかけます。"></a>(4) 必要に応じて、編集に制限をかけます。</h5><p><img src="/images/adobe-xd_archives-pdf/image10.png" alt="「PDFを編集」画面で、「編集を制限」にチェックを入れると、パスワードの設定ができます。"></p>
+<h5 id="5-再度-全体をチェックして完成です"><a href="#5-再度、全体をチェックして完成です。" class="headerlink" title="(5) 再度、全体をチェックして完成です。"></a>(5) 再度、全体をチェックして完成です。</h5><h1 id="最後に"><a href="#最後に" class="headerlink" title="最後に"></a>最後に</h1><p>XDのプロトタイプをPDFに書き出す、という必要に駆られることはあまりないかもしれませんが、お役に立てましたら幸いです。</p>
+<p>新たなツールAdobe XDを取り入れ、運用・活用方法を手探りで考えながら使っているところです。<br>XD自体、まだ未完成で成長段階にあると思いますし、これから次々に機能の追加や改善があることでしょう。<br>これからも、期待を持って、注目していきたいと思います。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2018/01/30/adobe-xd_archives-pdf/" data-text="Adobe XDのプロトタイプをPDFで保存する方法" data-counturl="https://blog.mmmcorp.co.jp/blog/2018/01/30/adobe-xd_archives-pdf/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2018/01/30/adobe-xd_archives-pdf/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2018/01/30/adobe-xd_archives-pdf/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2018/01/30/adobe-xd_archives-pdf/" class="hatena-bookmark-button" data-hatena-bookmark-title="Adobe XDのプロトタイプをPDFで保存する方法" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Adobe-XD/">Adobe XD</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/プロトタイプ/">プロトタイプ</a></li></ul>
+
+
+      <p class="article-footer__author">by 池島 彩佳</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

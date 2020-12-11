@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>ここ数年前から2015までのモダンフロントエンドを総まとめしてみた | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content=".fancybox img {     width: 400px; }   HTML5や、次々と台頭するJavaScriptフレームワークにみられるように、現在のフロントエンドは異常なほど動きがあります。 常にキャッチアップしていないと、いつのまにかOLDな技術を使い続けることになります。実際に今回記事にしてみて、ちょっとつらくなりました。。 しかし、フロントエンドエンジニアとしてコードを書い">
+<meta name="keywords" content="フロントエンド,AngularJS,JavaScript,React">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ここ数年前から2015までのモダンフロントエンドを総まとめしてみた">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2015/05/21/frontrend/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content=".fancybox img {     width: 400px; }   HTML5や、次々と台頭するJavaScriptフレームワークにみられるように、現在のフロントエンドは異常なほど動きがあります。 常にキャッチアップしていないと、いつのまにかOLDな技術を使い続けることになります。実際に今回記事にしてみて、ちょっとつらくなりました。。 しかし、フロントエンドエンジニアとしてコードを書い">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/react._logo.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.130Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ここ数年前から2015までのモダンフロントエンドを総まとめしてみた">
+<meta name="twitter:description" content=".fancybox img {     width: 400px; }   HTML5や、次々と台頭するJavaScriptフレームワークにみられるように、現在のフロントエンドは異常なほど動きがあります。 常にキャッチアップしていないと、いつのまにかOLDな技術を使い続けることになります。実際に今回記事にしてみて、ちょっとつらくなりました。。 しかし、フロントエンドエンジニアとしてコードを書い">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/react._logo.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-frontend" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2015-05-21T20:33:11.000Z" itemprop="datePublished">2015-05-21</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2015/05/21/frontrend/">ここ数年前から2015までのモダンフロントエンドを総まとめしてみた</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/05/21/frontrend/" data-text="ここ数年前から2015までのモダンフロントエンドを総まとめしてみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/05/21/frontrend/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/05/21/frontrend/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/05/21/frontrend/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/05/21/frontrend/" class="hatena-bookmark-button" data-hatena-bookmark-title="ここ数年前から2015までのモダンフロントエンドを総まとめしてみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/react._logo.png" alt=""></p>
+<style>
+.fancybox img {
+    width: 400px;
+}
+</style>
+
+<p>HTML5や、次々と台頭するJavaScriptフレームワークにみられるように、現在のフロントエンドは異常なほど動きがあります。</p>
+<p>常にキャッチアップしていないと、いつのまにかOLDな技術を使い続けることになります。実際に今回記事にしてみて、ちょっとつらくなりました。。</p>
+<p>しかし、フロントエンドエンジニアとしてコードを書いていて（最近は主にJavaScript）、そのおもしろさに日々驚いています。</p>
+<p>そこで今回は、<strong>ここ数年~2015年のフロントエンド界隈で一度は流行った技術、今後の動向などをまとめました</strong>。タイトルにモダンとありますが、その辺は適当です。ぜひ一度整理してみてください。</p>
+<p>(ここではフロントエンドというのを、ざっくりと<a href="https://gist.github.com/mizchi/757776f685805a1fddc5#%E7%AC%AC%E4%B8%80%E9%83%A8-%E3%83%95%E3%83%AD%E3%83%B3%E3%83%88%E3%82%A8%E3%83%B3%E3%83%89%E3%81%A8%E3%81%AF%E4%B8%80%E4%BD%93%E4%BD%95%E3%81%A0%E3%81%A3%E3%81%9F%E3%81%AE%E3%81%8B" target="_blank">HTML/CSS/JavascriptをつかったWeb技術のことをいうことにします</a>)。</p>
+<h2 id="目次"><a href="#目次" class="headerlink" title="目次"></a>目次</h2><ul>
+<li>Javascriptフレームワーク<ul>
+<li>React.js</li>
+<li>Angular.js</li>
+<li>Angular.js 2.0</li>
+<li>Backbone.js</li>
+<li>Vue.js</li>
+<li>Mithril.js</li>
+<li>Aurelia.js</li>
+<li>Knockout.js</li>
+<li>Ember.js</li>
+<li>Riot.js</li>
+<li>Ractive.js</li>
+<li>まとめ</li>
+</ul>
+</li>
+<li>ES6</li>
+<li>タスクランナー<ul>
+<li>Grunt / Gulp</li>
+<li>Yeoman</li>
+</ul>
+</li>
+<li>モジュール管理</li>
+<li>パッケージ管理</li>
+<li>ハイブリッドアプリ</li>
+<li>SPA<ul>
+<li>概要</li>
+<li>SEO</li>
+<li>HTML6</li>
+</ul>
+</li>
+<li>サーバーサイドJavascript<ul>
+<li>Node.js</li>
+<li>Express.js</li>
+<li>io.js</li>
+</ul>
+</li>
+<li>CSS<ul>
+<li>CSS3</li>
+<li>設計パターン</li>
+</ul>
+</li>
+<li>アートスクリプティング</li>
+<li>まとめ</li>
+</ul>
+<h2 id="javascriptフレームワーク"><a href="#Javascriptフレームワーク" class="headerlink" title="Javascriptフレームワーク"></a>Javascriptフレームワーク</h2><p>まずは、みんな大好きJavascriptフレームワークについて軽くまとめます。</p>
+<ul>
+<li><a href="http://paiza.hatenablog.com/entry/2015/03/11/Backbone_JS%E3%81%8B%E3%82%89Angular2%E3%81%BE%E3%81%A7%E3%80%81%E5%85%A89%E5%A4%A7JavaScript%E3%83%95%E3%83%AC%E3%83%BC%E3%83%A0%E3%83%AF%E3%83%BC%E3%82%AF%E3%82%92%E6%9B%B8%E3%81%8D%E6%AF%94%E3%81%B9" target="_blank">Backbone.JSからAngular2まで、全9大JavaScriptフレームワークを書き比べた!</a></li>
+<li><a href="http://yosuke-furukawa.hatenablog.com/entry/2014/07/17/011757" target="_blank">天下一クライアントサイドJS MV*レームワーク武道会を開催しました。</a></li>
+</ul>
+<h3 id="reactjs"><a href="#React-js" class="headerlink" title="React.js"></a>React.js</h3><ul>
+<li>最近注目を浴びているFacebook製のライブラリで、MVCアーキテクチャでいうViewにあたる機能を提供する</li>
+<li>JSX、Virtual DOMという、新しいアプローチ</li>
+<li>MVCとは違う、Fluxという設計パターン</li>
+<li><a href="http://postd.cc/from-angularjs-to-react-the-isomorphic-way/" target="_blank">Isomorphicなアーキテクチャ</a>が可能</li>
+<li><a href="https://speakerdeck.com/masuidrive/reactganazesu-qing-rasiifalseka" target="_blank">Reactがなぜ素晴らしいのか // Speaker Deck</a></li>
+<li><a href="http://qiita.com/okmttdhr/items/63a9191fa2ad37dc1133" target="_blank">React.jsプロジェクト構成ベストプラクティス検討 - Qiita</a></li>
+<li><a href="https://html5experts.jp/hokaccha/13301/" target="_blank">今話題のReact.jsはどのようなWebアプリケーションに適しているか？ Introduction To React─ Frontrend Conference | HTML5Experts.jp</a></li>
+</ul>
+<h3 id="angularjs"><a href="#Angular-js" class="headerlink" title="Angular.js"></a>Angular.js</h3><ul>
+<li>Google製人気MVCフレームワーク</li>
+<li>フルスタックで、できないことは殆ど無い</li>
+<li>Yeomanなどを使うとSPAが30分位で作れてしまう（SEOは残念）</li>
+<li>Angular Wayともいわれるが、モジュール化がきっちりされていて、汚いコードにはほぼならない</li>
+<li>実際に作ってみるのが早い<ul>
+<li><a href="https://docs.angularjs.org/tutorial" target="_blank">AngularJS: Tutorial: Tutorial</a></li>
+<li><a href="https://github.com/yeoman/generator-angular" target="_blank">yeoman/generator-angular</a></li>
+<li><a href="https://github.com/DaftMonk/generator-angular-fullstack" target="_blank">DaftMonk/generator-angular-fullstack</a></li>
+</ul>
+</li>
+</ul>
+<h3 id="angularjs-20"><a href="#Angular-js-2-0" class="headerlink" title="Angular.js 2.0"></a>Angular.js 2.0</h3><ul>
+<li>ES6等の最新のJavaScript規格を取り入れ、<strong>TypeScript</strong>をベースとし記述する</li>
+<li>Angular.jsとはかなり書き方が違う</li>
+<li>WebComopmentsを利用した、より厳密に独立したコンポーネント化を推進</li>
+<li><a href="http://wazanova.jp/items/1203" target="_blank">Angular 2.0 - ワザノバ | wazanova</a></li>
+<li><a href="http://paiza.hatenablog.com/entry/2015/03/11/%E5%A7%BF%E3%82%92%E7%8F%BE%E3%81%97%E3%81%9F%EF%BC%81%E6%AC%A1%E4%B8%96%E4%BB%A3JS%E3%83%95%E3%83%AC%E3%83%BC%E3%83%A0%E3%83%AF%E3%83%BC%E3%82%AFAngularJS2.0%E3%82%A2%E3%83%AB%E3%83%95%E3%82%A1%E7%89%88" target="_blank">姿を現した！次世代JSフレームワークAngularJS2.0アルファ版を試しみてた！ - paiza開発日誌</a></li>
+</ul>
+<h3 id="backbonejs"><a href="#Backbone-js" class="headerlink" title="Backbone.js"></a>Backbone.js</h3><ul>
+<li>単一データの管理を行うModel、複数件のモデルの管理を行うCollection、画面の管理を行うViewを組み立てていく</li>
+<li>Backbone.js自体は構造化の仕組みがなく、フレームワークとしてMarionette.jsと一緒に使われることが多い</li>
+<li>事例が案外多い（Buffer、Soundcloud、Trello、Qiitaなど）</li>
+<li><a href="http://www.cyokodog.net/blog/backbone-js/" target="_blank">Backbone.js ではじめるクライアントサイド MVC プログラミング | CYOKODOG</a></li>
+</ul>
+<h3 id="vuejs"><a href="#Vue-js" class="headerlink" title="Vue.js"></a>Vue.js</h3><ul>
+<li>MVVM</li>
+<li>作成したUIコンポーネントを組合せてページを構成することを前提にしている</li>
+<li>似ているといわれるが、AngularJSと設計思想は全く異なるもの</li>
+<li>理解しやすいフレームワークとして有名</li>
+<li><a href="http://qiita.com/okmttdhr/items/58be840c3cc64c5ff460" target="_blank">Vue.js on Railsパーフェクトガイド - Qiita</a></li>
+</ul>
+<h3 id="mithriljs"><a href="#Mithril-js" class="headerlink" title="Mithril.js"></a>Mithril.js</h3><ul>
+<li>Mercuryとともに、スピードがかなりはやいフレームワーク</li>
+<li><a href="https://speakerdeck.com/yosuke_furukawa/mithril-dot-js" target="_blank">mercury/mithril.js // Speaker Deck</a></li>
+</ul>
+<h3 id="aureliajs"><a href="#Aurelia-js" class="headerlink" title="Aurelia.js"></a>Aurelia.js</h3><ul>
+<li>ES6、ES7なシンタックス</li>
+<li>GoogleでAngularJSの開発に関わっていたRob Eisenbergさんが開発した</li>
+<li><a href="http://paiza.hatenablog.com/entry/2015/03/02/AngularJS%E3%81%AF%E3%82%82%E3%81%86%E5%8F%A4%E3%81%84%EF%BC%9F%E6%9C%AA%E6%9D%A5%E5%BF%97%E5%90%91%E3%83%95%E3%83%AC%E3%83%BC%E3%83%A0%E3%83%AF%E3%83%BC%E3%82%AFAurelia.JS%E3%82%92%E8%A9%A6%E3%81%97" target="_blank">AngularJSはもう古い？未来志向フレームワークAurelia.JSを試してみた！ - paiza開発日誌</a></li>
+</ul>
+<h3 id="knockoutjs"><a href="#Knockout-js" class="headerlink" title="Knockout.js"></a>Knockout.js</h3><ul>
+<li>MVVM</li>
+<li>Bindingに特化したフレームワーク</li>
+<li>機能は少ないが、導入するのが容易で、学習コストも低い</li>
+<li><a href="http://qiita.com/okmttdhr/items/72e302e0dec423033a9e" target="_blank">MVC(MVVM) JS フレームワークの中でKnockoutJsを選んだ理由 - Qiita</a></li>
+</ul>
+<h3 id="emberjs"><a href="#Ember-js" class="headerlink" title="Ember.js"></a>Ember.js</h3><ul>
+<li><a href="http://gihyo.jp/dev/serial/01/emberjs/0001" target="_blank">第1回　Ember.jsの世界：実践入門 Ember.js｜gihyo.jp … 技術評論社</a></li>
+</ul>
+<h3 id="riotjs"><a href="#Riot-js" class="headerlink" title="Riot.js"></a>Riot.js</h3><ul>
+<li><a href="http://qiita.com/cognitom/items/fb1295f3f93911e9e92d" target="_blank">Riot.js 2.0 を触ってみた — まだReactで消耗しているの? - Qiita</a></li>
+</ul>
+<h3 id="ractivejs"><a href="#Ractive-js" class="headerlink" title="Ractive.js"></a>Ractive.js</h3><ul>
+<li><a href="http://qiita.com/morisuke/items/640ba52a4acb0a6bdfc2" target="_blank">RactiveJS - 今すぐ使えるRactive.js入門 - Qiita</a></li>
+</ul>
+<h3 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h3><p>ざっと書いただけでこれなので、多すぎます。特にこだわりのない方は、上から5つくらいを覚えておけば普通にアプリケーションをつくる上では困ることはないと思いますので、残りは、参考程度にしてください。</p>
+<h2 id="es6"><a href="#ES6" class="headerlink" title="ES6"></a>ES6</h2><p>次に、次世代のフレームワークに続々採用されている、<strong>ES6</strong>を紹介します。</p>
+<p><strong>ES6とはECMAScript 6のことで、Javascriptの標準言語<a href="http://ja.wikipedia.org/wiki/ECMAScript" target="_blank">ECMAScript</a>の次期標準仕様となります</strong>。</p>
+<p><code>class</code>機能などが導入され、これまでのJavascriptとは大きく変わります（<strong>Angular.js 2.0</strong>の開発チームも採用した<strong>Typescript</strong>は、ES6の構文を積極的に取り入れています）。JavaScriptフレームワークなんて、何個か覚えておけばいいと書きましたが、ES6の流れを汲み取っているかは注意してみておいたほうがいいと思います。</p>
+<p>現状ES6を実行しても動かないので、<a href="https://babeljs.io/" target="_blank">Babel</a>や<a href="https://github.com/google/traceur-compiler" target="_blank">Traceur</a>をつかってコンパイルする必要がありますが、今後、遠くない未来にES6標準がくるので今のうちに取り入れたいですね。</p>
+<ul>
+<li><a href="http://techlife.cookpad.com/entry/2015/02/02/094607" target="_blank">ES6時代のJavaScript - クックパッド開発者ブログ</a></li>
+<li><a href="http://yoshiko-pg.github.io/slides/20150425-jsfes/" target="_blank">Hello, ES6 ~これから迎えるJSのミライ~ - @yoshiko_pg</a></li>
+</ul>
+<h2 id="タスクランナー"><a href="#タスクランナー" class="headerlink" title="タスクランナー"></a>タスクランナー</h2><h3 id="grunt-gulp"><a href="#Grunt-Gulp" class="headerlink" title="Grunt / Gulp"></a>Grunt / Gulp</h3><p>タスクランナーは、フロントエンドの様々な面倒事を自動化できるツールです。これなしのフロントエンドはもはや考えられない気がします。</p>
+<p>GulpとGruntが2代勢力ですが、できることは大差はありません。違いは調べればたくさん出てくるのでみてみてください。どちらを使うかは好みの問題だと思います。</p>
+<p><strong>Grunt</strong>だと、記述が長くなってみにくい、同期処理（タスクが1個1個順番に実行される）なので処理が遅い（非同期にするプラグインもありますが）、それに対して<strong>Gulp</strong>は、1個1個のタスクをコンパクトに書くことができ、また、タスクを同時実行できるという特徴があるので、個人的には<strong>Gulp</strong>の方が好きです。</p>
+<p>ファイルもGruntだとマッチョな感じになりますが、Gulpは可愛い印象です。</p>
+<ul>
+<li><a href="http://ics-web.jp/lab/archives/3290" target="_blank">5分で導入できる！タスクランナーGulpを使ってWeb制作を爆速にしよう</a></li>
+</ul>
+<h3 id="yeoman"><a href="#Yeoman" class="headerlink" title="Yeoman"></a>Yeoman</h3><p>タスクランナーではないのですが、セットで語られることも少なくないのでYeomanを紹介します。簡単にいうとフロントエンドの「scaffold」をやってくれるツールです。</p>
+<p>人気のものだとAngular.jsの<a href="https://github.com/DaftMonk/generator-angular-fullstack" target="_blank">generator-angular-fullstack</a>やWepアプリをつくる<a href="https://github.com/yeoman/generator-gulp-webapp" target="_blank">generator-gulp-webapp</a>、React.jsの<a href="https://github.com/newtriks/generator-react-webpack" target="_blank">generator-react-webpack</a>などもあります</p>
+<p>Gulp、Gruntのタスク、サーバー起動から本番用ビルドなど、基本的なものであればデフォルトで用意してくれるジェネレータが多く、非常に助かります。</p>
+<h2 id="モジュール管理"><a href="#モジュール管理" class="headerlink" title="モジュール管理"></a>モジュール管理</h2><p>概要は以下をみればわかると思います。</p>
+<ul>
+<li><a href="http://tsuchikazu.net/javascript-module/" target="_blank">JavaScriptのモジュール管理(CommonJSとかAMDとかBrowserifyとかwebpack)</a></li>
+<li><a href="http://yutapon.hatenablog.com/entry/2014/12/06/123000" target="_blank">gulp.jsを使ってフロントエンドのビルドをする【webpack, stylus】 - yutaponのブログ</a></li>
+<li><a href="http://blog.uu59.org/2015-01-03-browerify-webpack.html" target="_blank">browserifyとwebpack</a></li>
+<li><a href="https://www.google.com/trends/explore#q=Webpack%2C%20Browserify&cmpt=q&tz=" target="_blank">Google Trends -  webpack vs browserify</a></li>
+</ul>
+<p>BrowserifyとWebpackに関しては、タスクランナーと同じく、できることに大差はありません。Webpackが後発ですが、最近の新しいプロジェクトとかだとWebpackの採用事例も増えてきています。</p>
+<p>また、<strong>Browserifyが単一のJSファイルを出力するのに対して、Webpackは複数のJSを出力するのが容易</strong>、かつ、<strong>BrowserifyはGulpなどと組み合わせて使うのが一般的ですが、Webpackはそれがなくてもけっこうフルスタック</strong>でビルドができます。</p>
+<p>無理してWebpackにする必要はありませんが、新規でアプリを作る際は試してみるといいかもしれません。</p>
+<h2 id="パッケージ管理"><a href="#パッケージ管理" class="headerlink" title="パッケージ管理"></a>パッケージ管理</h2><p>概要は以下の記事が詳しいです。</p>
+<ul>
+<li><a href="http://havelog.ayumusato.com/develop/others/e630-npm_meets_frontend.html" target="_blank">npm とフロントエンドのパッケージ管理の未来 ::ハブろぐ</a></li>
+</ul>
+<p>パッケージ管理は、npm・Bowerで行います。簡単にいうと、npmが主にNode.jsの世界であるのに対して、Bowrはブラウザの世界で動くライブラリを管理します。</p>
+<p>最近は、<strong>「CommonJSスタイルでモジュール管理=&gt;ビルド」</strong>の流れでJavaScript開発をするのがデフォとなってきているので、<strong>npm&amp;Webpack(Browserify)でソースを管理し、<code>require(&#39;パッケージ名&#39;)</code>して読み込む</strong>、というパターンに落ち着く気がします。</p>
+<p>Angular.js 2.0やReact.jsなど、ES6の流れをくんでいるスクリプトは、Node.jsの世界で完結させることができるので、今後Bowerは使いドコロが減ってゆきそうです。</p>
+<h2 id="ハイブリッドアプリ"><a href="#ハイブリッドアプリ" class="headerlink" title="ハイブリッドアプリ"></a>ハイブリッドアプリ</h2><p>ハイブリッドアプリか、ネイティブアプリか？という話は<a href="http://readwrite.jp/archives/21539" target="_blank">宗教チック</a>になるのでここではしません。</p>
+<p>いつの間にか多すぎるほどできていて、気になるものはたくさんありますが、安心できそうなのは、<strong>Ionic、React Native、Meteor</strong>あたりでした。</p>
+<p>弊社ではReact Nativeでのアプリ開発がスタートしていて、さわり始めたばかりでいうのもアレなのですが、React.jsがさらに勢いをました場合、Webからモバイルまで同じ言語で動くものをつくれるというのはすごいのではないかな、と思います。実際にReact.jsでの開発と並行しても、頭のスイッチコストがかなり低いです。</p>
+<p>以下適当にリストアップします。</p>
+<ul>
+<li><p><a href="https://facebook.github.io/react-native/" target="_blank">React Native</a></p>
+<ul>
+<li><a href="http://qiita.com/naoya@github/items/ecda4d3089902dcbea53" target="_blank">React Native ファーストインプレッション - Qiita</a></li>
+<li><a href="http://www.raywenderlich.com/99473/introducing-react-native-building-apps-javascript" target="_blank">Introducing React Native: Building Apps with JavaScript</a></li>
+</ul>
+</li>
+<li><a href="https://www.meteor.com/" target="_blank">Meteor</a><ul>
+<li>フロントからバックエンドまでフルスタック。</li>
+<li>フォルダ構成などが綺麗</li>
+<li><a href="http://docs.meteor.com/#/basic/buildingmobileapps" target="_blank"><em>Once you’ve built your web app with Meteor, you can easily build a native wrapper for your app and publish it to the Google Play Store or iOS App Store with just a few commands</em></a></li>
+</ul>
+</li>
+<li><a href="http://ionicframework.com/" target="_blank">Ionic</a><ul>
+<li>Angular.js製</li>
+<li>React Nativeがでていなければこれを使っていたと思う</li>
+</ul>
+</li>
+<li><a href="https://www.nativescript.org/" target="_blank">Native Script</a><ul>
+<li>最近話題に</li>
+</ul>
+</li>
+<li><a href="http://reapp.io/" target="_blank">Reapp</a></li>
+<li><a href="https://tabrisjs.com/" target="_blank">Tabris.js</a></li>
+<li><a href="http://ja.onsen.io/" target="_blank">Onsen UI</a></li>
+<li><a href="http://phonegap.com/" target="_blank">PhoneGap</a></li>
+</ul>
+<h2 id="spa"><a href="#SPA" class="headerlink" title="SPA"></a>SPA</h2><h3 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h3><p><strong>Single Page Application</strong>の略で、JavaScriptフレームワークのおかげで、開発コストが大きく下がったアプリケーションアーキテクチャのひとつです。</p>
+<ul>
+<li><a href="http://blog.mitsuruog.info/2014/01/spa7.html" target="_blank">SPAを構築するときに知っておいた方がいい7つの課題</a></li>
+<li><a href="http://albatrosary.hateblo.jp/entry/2014/01/15/121608" target="_blank">「SPAを構築するときに知っておいた方がいい7つの課題」は課題ではない</a></li>
+<li><a href="http://qiita.com/yamazaki/items/f2aceb3f293e31e8ed60" target="_blank">SinglePageApplication - SPA Single Page Applicationを作る際のエトセトラ(入門的な取っ掛かり情報) - Qiita</a></li>
+</ul>
+<h3 id="seo"><a href="#SEO" class="headerlink" title="SEO"></a>SEO</h3><p>Angular.jsでは、SEOが問題になったりしましたが、React.jsのServer Side Renderingでそれが解決されるかも、とのこと。</p>
+<ul>
+<li><a href="http://blog.risingstack.com/from-angularjs-to-react-the-isomorphic-way/" target="_blank">From AngularJS to React: The Isomorphic Way</a></li>
+<li><a href="http://qiita.com/mizchi/items/dca6b82349e811a24158" target="_blank">reactjs - Reactでサーバーサイドで生成したHTMLに対してDOMを初期化せずにReactComponentとして状態を更新する - Qiita</a></li>
+<li><a href="https://speakerdeck.com/hokaccha/react-rails-1" target="_blank">react-rails // Speaker Deck</a></li>
+</ul>
+<h3 id="html6"><a href="#HTML6" class="headerlink" title="HTML6"></a>HTML6</h3><p><a href="https://lists.w3.org/Archives/Public/public-html/2015Mar/0066.html" target="_blank">こちらの記事</a>では、HTML6での「JSなしのSPA」について述べられており、議論をうみました。</p>
+<ul>
+<li><a href="http://www.infoq.com/jp/news/2015/04/html6-without-javascript" target="_blank">“JavaScriptを使わないシングルページアプリ”に対する非公式なHTML6提案が議論を引き起こした</a></li>
+</ul>
+<h2 id="サーバーサイドjavascript"><a href="#サーバーサイドJavascript" class="headerlink" title="サーバーサイドJavascript"></a>サーバーサイドJavascript</h2><h3 id="nodejs"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h3><p>まだ動きの激しいところとして、サーバーサイドJavaScript（Node.js）があります。</p>
+<ul>
+<li><a href="http://blog.anatoo.jp/entry/20110615/1308147251" target="_blank">Node.jsがどうして注目されているのか、もしくはどうして他のサーバーサイドJavaScriptはスルーされているのか - id:anatooのブログ</a></li>
+</ul>
+<p>JavaScriptなだけあって、非同期な処理をすぐに実装することができるので、<strong>リアルタイムなWeb</strong>をつくるときや、<strong>JSONを扱うAPIサーバー</strong>として使うのに向いています。</p>
+<h3 id="expressjs"><a href="#Express-js" class="headerlink" title="Express.js"></a>Express.js</h3><p>だいぶ前にMEAN StackのEとして話題に上がった、Node.jsのフレームワーク<strong>Express.js</strong>があります。RESTfulなAPIがシンプルに記述できます。</p>
+<ul>
+<li><a href="http://www.atmarkit.co.jp/ait/articles/1503/04/news047.html" target="_blank">MEANスタックで始めるWebアプリ開発入門（3）：Node.jsのMVCフレームワーク「Express」の基礎知識とインストール (1/3) - ＠IT</a></li>
+</ul>
+<h3 id="iojs"><a href="#io-js" class="headerlink" title="io.js"></a>io.js</h3><p>Node.jsの話に欠かせないのが<strong>io.js</strong>です。こちらもアンテナを張っておきたいところです。</p>
+<ul>
+<li><a href="http://yosuke-furukawa.hatenablog.com/entry/2015/05/13/100832" target="_blank">Node.js と io.js の統合は最終局面へ - from scratch</a></li>
+</ul>
+<h2 id="css"><a href="#CSS" class="headerlink" title="CSS"></a>CSS</h2><h3 id="css3"><a href="#CSS3" class="headerlink" title="CSS3"></a>CSS3</h3><p>これまでJavaScriptでやっていたことが、次々にCSSでできるようになっています。</p>
+<p>例えば、<strong>アニメーションにおいては、主要なJavaScriptフレームワークにおいても、すでにCSSが基本</strong>となっていて、<strong>GPUで処理されているため、処理能力の低いデバイス（スマホなど）でも滑らかに動きます</strong>。</p>
+<p>また、3DなどをJavaScriptなしで実装できるのも、WebGLがモバイル対応していない機器が多いいまは助かります。</p>
+<p>今後、より様々な技術がCSSでできるようになっていくのは間違いありません。</p>
+<ul>
+<li><a href="http://webgl.souhonzan.org/entry/?v=0202" target="_blank">CSS の極致！ 絶滅危惧種の動物たちを表現した In Pieces がすごい！</a></li>
+<li><a href="http://wild.as/timbre" target="_blank">Matrixをつかったサイト｜WILD - Timbre</a></li>
+<li><a href="http://design.kayac.com/topics/2011/06/css-programing.php" target="_blank">どう考えても無茶な「CSSプログラミング」が話題に</a></li>
+<li><a href="http://ginpen.com/2013/12/06/hardware-acceleration/" target="_blank">スムーズなアニメーションを実装するコツと仕組みを説明するよ。CPUとGPUを理解しハードウェアアクセラレーションを駆使するのだ！</a></li>
+<li><a href="http://codepen.io/johnblazek/full/nceyw" target="_blank">3Dでできたカルーセルのデモ</a></li>
+</ul>
+<h3 id="設計パターン"><a href="#設計パターン" class="headerlink" title="設計パターン"></a>設計パターン</h3><p>CSSの壊れやすさに関してはまだ進化しているとは残念ながらいえないと思います・・・。しかし、多くの概念やフレームワークが登場し、開発は楽になっています。</p>
+<h4 id="設計"><a href="#設計" class="headerlink" title="設計"></a>設計</h4><p>設計方法でいうと以下が有名です。どれも共通しているのが、<strong>CSSに構造を持たせて（プログラムのオブジェクト指向のように）設計しなさい</strong>ということです。なかでも簡単に導入できるのが<strong>BEM</strong>で、オレオレで設計するくらいなら絶対に入れるべき設計方針だと思います。</p>
+<ul>
+<li>BEM<ul>
+<li><a href="http://chroma.hatenablog.com/entry/2013/12/15/165511" target="_blank">SMACSS に BEM を取り入れよう - CHROMA</a></li>
+</ul>
+</li>
+<li>OOCSS<ul>
+<li><a href="https://app.codegrid.net/entry/oocss-1" target="_blank">知っておきたいHTMLテンプレート設計法 - OOCSSの基本 | CodeGrid</a></li>
+</ul>
+</li>
+<li>SMACCS<ul>
+<li><a href="https://app.codegrid.net/entry/smacss-1" target="_blank">SMACSSによるCSSの設計 - ベースとレイアウト | CodeGrid</a></li>
+</ul>
+</li>
+</ul>
+<h4 id="メタ言語"><a href="#メタ言語" class="headerlink" title="メタ言語"></a>メタ言語</h4><p>CSSを効率的にコーディングできるように拡張されたメタ言語が、<strong>SCSSとLESS</strong>になります。特にこだわりがないのであればSCSSを使うのがよいと思います。</p>
+<ul>
+<li><a href="http://d.hatena.ne.jp/nenjiru/20111101/css_scss_less" target="_blank">SCSSとLESSのどちらを導入するか迷って、SCSSに決めたポイント - 眠る前に布団にはいろうか</a></li>
+<li><a href="http://www.abe3.net/2013/05/scss-recommend/" target="_blank">SCSSを使ってあまりの便利さに素のCSSを書く気がしなくなりました</a></li>
+</ul>
+<h4 id="compass"><a href="#Compass" class="headerlink" title="Compass"></a>Compass</h4><p><strong>SCSSをさらに使いやすくしたフレームワークで有名なものがCompassです。</strong>Compassを使うと、便利なmixin群、スプライト自動作成、プロジェクトごとに設定ファイルを適用するなど、多くの機能を使うことができます。</p>
+<p>mixinが使えるのはいいですね。他にも、mixinが使えるライブラリは、Rails gemの<a href="http://bourbon.io/" target="_blank">Bourbon</a>があります。mixinがいらないよ、という方は、GruntやGulpのautoprefixerとかで事足りるかもしれません。</p>
+<ul>
+<li><a href="http://liginc.co.jp/designer/archives/11623" target="_blank">CSSの常識が変わる！「Compass」の基礎から応用まで！ | 株式会社LIG</a></li>
+</ul>
+<h4 id="フレームワーク"><a href="#フレームワーク" class="headerlink" title="フレームワーク"></a>フレームワーク</h4><p>これは多すぎて把握できていません。基本、Bootstrapで十分なのかなと思っています。</p>
+<p>ただ、2014-2015は、<a href="https://material.angularjs.org/#/" target="_blank">Angular.js</a>や<a href="http://material-ui.com/#/" target="_blank">React.js</a>でも取り入れているというのもあり、<a href="http://www.google.com/design/spec/material-design/introduction.html" target="_blank">Material design</a>系が増えたという印象があるので、さくっと導入したいですね。</p>
+<ul>
+<li><a href="http://qiita.com/komeda/items/a74bda1408141e9109c9" target="_blank">CSSフレームワークまとめ - Qiita</a></li>
+<li><a href="http://tech.eversense.co.jp/1023" target="_blank">2015年も注目したいCSSフレームワーク6選 | エバーセンス開発ブログ</a></li>
+</ul>
+<h2 id="アートスクリプティング"><a href="#アートスクリプティング" class="headerlink" title="アートスクリプティング"></a>アートスクリプティング</h2><p>HTML5のおかげで、かつてはフラッシュで行なっていたようなアートスクリプティングができるようになりました。</p>
+<p>これらも、VR機器やIoTのおかげで無視できない存在になっていると思っています。理由は2つあって、1つ目は、<strong>多様なAPI、美しいグラフィックなど、アウトプット(=デバイスで取得したデータの表現先)にはHTML5が優秀</strong>なこと。2つ目は、<strong>サーバーサイドは、HTML5との相性、サポートなどの面でNode.jsが優秀</strong>なことです。</p>
+<p>何より、未来なWeb UIをみるのはワクワクしますよね。</p>
+<ul>
+<li>webgl<ul>
+<li><a href="http://www.acnplwgl.com/" target="_blank">ACNPL\WGL</a></li>
+<li><a href="http://a-way-to-go.com/" target="_blank">WAY TO GO</a></li>
+<li><a href="http://lights.helloenjoy.com/" target="_blank">Lights</a></li>
+<li><a href="https://github.com/BabylonJS/Babylon.js" target="_blank">BabylonJS - 3D JavaScriptのフレームワーク</a></li>
+</ul>
+</li>
+<li>canvas<ul>
+<li><a href="http://map.ipviking.com/" target="_blank">Norse - IPViking Live</a></li>
+<li><a href="http://jviewz.com/" target="_blank">The DNA Project by j.viewz</a></li>
+</ul>
+</li>
+<li>VR<ul>
+<li><a href="http://webvr.info/" target="_blank">WebVR - Bringing Virtual Reality to the Web</a></li>
+<li><a href="http://mozvr.com/" target="_blank">MozVR</a></li>
+</ul>
+</li>
+<li>IoT<ul>
+<li><a href="http://www.slideshare.net/moongift/html5javascript-iot" target="_blank">HTML5/JavaScript ではじめるIoT</a></li>
+</ul>
+</li>
+<li>svg<ul>
+<li><a href="http://riccardoscalco.github.io/textures/" target="_blank">Textures.js</a></li>
+<li><a href="http://snapsvg.io/" target="_blank">Snap.svg - Home</a></li>
+<li><a href="http://svgpocketguide.com/book/" target="_blank">Pocket Guide to Writing SVG</a></li>
+<li><a href="http://blog.mmmcorp.co.jp/blog/2015/04/10/svg/" target="_blank">WebサイトでSVGを使ってみる | MMMブログ</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="まとめ"><a href="#まとめ-1" class="headerlink" title="まとめ"></a>まとめ</h2><p>以上、長くなりましたが、最近のフロントエンドをまとめてみました。</p>
+<ul>
+<li>Javascriptフレームワーク</li>
+<li>ES6</li>
+<li>タスクランナー</li>
+<li>モジュール管理</li>
+<li>パッケージ管理</li>
+<li>ハイブリッドアプリ</li>
+<li>SPA</li>
+<li>サーバーサイドJavascript</li>
+<li>CSS</li>
+<li>アートスクリプティング</li>
+<li>まとめ</li>
+</ul>
+<p>これ全部追いかけるのはたぶん無理ですが、やっぱりフロントおもしろいな、と。1年後にはまた状況が変わっているかもしれませんが・・・。</p>
+<p>なにか間違っていれば<a href="https://twitter.com/okmttdhr" target="_blank" rel="noopener">@okmttdhr</a>までご意見くださいm(.  .)m。参考になれば幸いです。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://gist.github.com/mizchi/757776f685805a1fddc5" target="_blank">フロントエンドを楽にするために</a></li>
+<li><a href="http://nobkz.hatenadiary.jp/entry/2015/03/20/175208" target="_blank">フロントエンド「エンジニア」とは何か? - nobkzのブログ</a></li>
+<li><a href="http://www.slideshare.net/dayoshi/20140821" target="_blank">10年以上Java屋してたおっさんが 今年からフロントエンジニアやっている話</a></li>
+<li><a href="http://postd.cc/javascript-framework-fatigue/" target="_blank">JavaScriptのフレームワークについて検討してみよう | プログラミング | POSTD</a></li>
+</ul>
+<p><a href="https://mmmcorp.co.jp/services/entrusted_development/" target="_blank" rel="noopener">最新のフロントエンド事情を把握した上で、適切なアーキテクチャによるシステム開発やモバイルアプリケーション開発</a>をご希望の企業様は、是非MMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/05/21/frontrend/" data-text="ここ数年前から2015までのモダンフロントエンドを総まとめしてみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/05/21/frontrend/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/05/21/frontrend/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/05/21/frontrend/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/05/21/frontrend/" class="hatena-bookmark-button" data-hatena-bookmark-title="ここ数年前から2015までのモダンフロントエンドを総まとめしてみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AngularJS/">AngularJS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/React/">React</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li></ul>
+
+
+      <p class="article-footer__author">by okp</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>AWS SDKを使ったアプリケーションを効率よく開発する方法 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="前田です。先日、AWS認定デベロッパー試験に無事に合格することができました。得点が69%で結構ギリギリな点数だったと思いますが、なんとか合格出来てよかったです。 今日は、AWS SDKを使ったアプリケーションを開発する時に自分なりに行っている効率がよいと思っている方法をまとめたいと思います。例として、下記ケースを題材に開発してみたいと思います。 題材先日、「AWS Batchで非同期ジョブシステム">
+<meta name="keywords" content="サーバーサイド,AWS,プログラミング">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWS SDKを使ったアプリケーションを効率よく開発する方法">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2017/10/27/develop-application-using-awssdk/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="前田です。先日、AWS認定デベロッパー試験に無事に合格することができました。得点が69%で結構ギリギリな点数だったと思いますが、なんとか合格出来てよかったです。 今日は、AWS SDKを使ったアプリケーションを開発する時に自分なりに行っている効率がよいと思っている方法をまとめたいと思います。例として、下記ケースを題材に開発してみたいと思います。 題材先日、「AWS Batchで非同期ジョブシステム">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/easily_execute_an_asynchronous_job_on_aws_batch/process.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/develop-application-using-awssdk/result.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.150Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AWS SDKを使ったアプリケーションを効率よく開発する方法">
+<meta name="twitter:description" content="前田です。先日、AWS認定デベロッパー試験に無事に合格することができました。得点が69%で結構ギリギリな点数だったと思いますが、なんとか合格出来てよかったです。 今日は、AWS SDKを使ったアプリケーションを開発する時に自分なりに行っている効率がよいと思っている方法をまとめたいと思います。例として、下記ケースを題材に開発してみたいと思います。 題材先日、「AWS Batchで非同期ジョブシステム">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/easily_execute_an_asynchronous_job_on_aws_batch/process.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-develop-application-using-awssdk" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2017-10-27T12:30:15.000Z" itemprop="datePublished">2017-10-27</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2017/10/27/develop-application-using-awssdk/">AWS SDKを使ったアプリケーションを効率よく開発する方法</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/10/27/develop-application-using-awssdk/" data-text="AWS SDKを使ったアプリケーションを効率よく開発する方法" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/10/27/develop-application-using-awssdk/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/10/27/develop-application-using-awssdk/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/10/27/develop-application-using-awssdk/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/10/27/develop-application-using-awssdk/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS SDKを使ったアプリケーションを効率よく開発する方法" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>前田です。<br>先日、AWS認定デベロッパー試験に無事に合格することができました。<br>得点が69%で結構ギリギリな点数だったと思いますが、なんとか合格出来てよかったです。</p>
+<p>今日は、AWS SDKを使ったアプリケーションを開発する時に自分なりに行っている効率がよいと思っている方法をまとめたいと思います。<br>例として、下記ケースを題材に開発してみたいと思います。</p>
+<h2 id="題材"><a href="#題材" class="headerlink" title="題材"></a>題材</h2><p>先日、「<a href="/blog/2017/08/31/easily_build_an_asynchronous_job_system_on_aws_batch/">AWS Batchで非同期ジョブシステムが簡単に構築出来た話</a>」という記事を書きました。<br>その時に下記のようなシステムを作った、という話をさせて頂いたのですが、改善したい箇所が１点ありました。</p>
+<p><img src="/images/easily_execute_an_asynchronous_job_on_aws_batch/process.png" alt=""></p>
+<p>それは②のGoで作ったAPIからAWS Batchにジョブをサブミットする箇所です。<br>AWS Batchにジョブをサブミットするのは下記のようなコマンドでサブミットできます。</p>
+<pre><code>aws batch submit-job \
+  --job-name submit_job_test \
+  --job-queue arn:aws:batch:ap-northeast-1:99999999999999:job-queue/test-job-queue \
+  --job-definition arn:aws:batch:ap-northeast-1:9999999999999:job-definition/test-job-definition:1 \
+  --parameters Hoge=test!
+</code></pre><p>Goアプリケーション側でGoのAWS SDKを使用して上記のような処理を実装しています。<br>サブミットする時にジョブキューやジョブディフィニジョンのARNを指定しているのですが、ジョブディフィニジョンを更新した時はジョブディフィニジョンのARNが変わるのでGoアプリケーションのジョブディフィニジョンのARNを変えなければいけません。<br>Goのアプリケーション内ではジョブディフィニジョンは定義してある環境変数から読み込むようにしておりますので、ソースコードではなくジョブディフィ二ジョンの環境変数を変更すればOKなのですが、AWS Batch側のジョブディフィニジョンを更新した時に、Goアプリケーション側のジョブディフィ二ジョンARNの環境変数を変え忘れる、という危惧があります。<br>ジョブディフィニジョンを更新した時にGo側の環境変数を更新するのを忘れなければいいので現在の設計でも問題はないかもしれませんが、Go側の変更漏れなどのミスを事前に防ぐ為に出来ればジョブディフィニジョンの名前だけで最新のARNを自動取得してAWS Batchにサブミットするようにしておきたいと考えていました。</p>
+<p>まとめると、やりたいことは下記のとおりです。</p>
+<ul>
+<li>Goアプリケーションで、ジョブディフィニジョンの最新のARNをジョブディフィニジョン名で取得する</li>
+</ul>
+<p>この題材を下記のステップで実装していきます。</p>
+<ol>
+<li>フィジビリティチェック</li>
+<li>SDKのリファレンスを見ながら実装</li>
+<li>実行して検証</li>
+</ol>
+<h2 id="1-フィジビリティチェック"><a href="#1-フィジビリティチェック" class="headerlink" title="1. フィジビリティチェック"></a>1. フィジビリティチェック</h2><p>いきなりGoのアプリケーションをコーディングしていくのではなく、まずフィジビリティ(実行可能性)をチェックします。</p>
+<ul>
+<li>Goアプリケーションで、ジョブディフィニジョンの最新のARNをジョブディフィニジョン名で取得する</li>
+</ul>
+<p>は、なんとなく出来そうだ、と思っていますが、AWS側が対応出来ていなくて実現出来ない可能性もあります。<br>なので実現可能かどうか、というのをまず最初にチェックしておくことが重要です。</p>
+<p>ここで私は<code>aws cli</code>を使います。<br>AWSのGoのSDKのリファレンスを見ながら実際にソースコードを書いてみてレスポンスを見たりして、、、という風にチェックしてもいいかもしれませんが、時間がかかるし面倒です。<br>フィジビリティチェックなので簡単に実現可能かどうかだけをチェックしたい、というのもあります。</p>
+<p>また、<code>aws cli</code>に用意されているAPIはSDKにもほとんど用意されています。(と思っています)<br>なので<code>aws cli</code>で実現可能ならほとんどのSDKでも実現可能だと思います。<br>まれにSDK側が追いついていないこともあるかと思いますが、基本的には<code>aws cli</code>にSDKが追従していっていると思っています。<br>また、もしSDK側の機能がまだ実装されていないとしても、最悪Goアプリケーションから<code>aws cli</code>コマンドを直接実行することによって可能になるので、<code>aws cli</code>で実現可能、ということが保証されればフィジビリティ的にはOKということになります。<br>できればGoアプリケーションから<code>aws cli</code>コマンドを叩く、という実装はやりたくありませんが。。</p>
+<p>ということで何はともあれフィジビリティを<code>aws cli</code>でチェックしていきます。</p>
+<p>AWS Batchの<code>aws cli</code>のドキュメンテーションはこちらです。</p>
+<p><a href="http://docs.aws.amazon.com/cli/latest/reference/batch/index.html#cli-aws-batch" target="_blank" rel="noopener">http://docs.aws.amazon.com/cli/latest/reference/batch/index.html#cli-aws-batch</a></p>
+<p><code>Available Commands</code>は下記のとおりですが、</p>
+<ul>
+<li>cancel-job</li>
+<li>create-compute-environment</li>
+<li>create-job-queue</li>
+<li>delete-compute-environment</li>
+<li>delete-job-queue</li>
+<li>deregister-job-definition</li>
+<li>describe-compute-environments</li>
+<li>describe-job-definitions</li>
+<li>describe-job-queues</li>
+<li>describe-jobs</li>
+<li>list-jobs</li>
+<li>register-job-definition</li>
+<li>submit-job</li>
+<li>terminate-job</li>
+<li>update-compute-environment</li>
+<li>update-job-queue</li>
+</ul>
+<p>該当しそうなものは<code>describe-job-definitions</code>と分かります。</p>
+<p><code>describe-job-definitions</code>の詳細を見てみると、<code>--job-definition-name</code>というオプションで絞り込むことも出来そうだし、なんとなく実現できそう、ということが分かりました。<br>AWS Batch上にジョブキューやジョブディフィニジョンを作成し、実際に<code>aws cli</code>コマンドを叩いてみます。</p>
+<hr>
+<p>ここで少し話は逸れますが、<code>aws cli</code>コマンドを試す時に手軽に試せるようになるテクニックを紹介します。<br>開発者の皆様は複数のAWSアカウントをお持ちの方が多いかと思います。<br>私もプライベート・会社用など複数のアカウントを所持しています。<br>複数のアカウントを所持している場合、AWSアクセスキーとAWSシークレットキーを<code>~/.aws/config</code>と<code>~/.aws/credentials</code>で定義し、<code>aws cli</code>コマンドに<code>--profile</code>オプションを付加してアカウントを使い分けているかと思います。<br>私もそうなのですが、<code>aws cli</code>コマンドを叩く時に毎回<code>--profile</code>オプションを設定するのが面倒だな、と思っていました。<br><code>AWS_DEFAULT_PROFILE</code>の環境変数に設定すれば、そのセッション中は<code>--profile</code>オプションを付加せずに<code>aws</code>コマンドを実行できるので便利なのですが、頻繁にアカウントを変えて実行したい時はまだちょっと不便に感じます。<br>なので、<code>peco</code>を使用し、下記alias設定をしておくことで簡単に切り替えられるようにしたら便利になりました。</p>
+<pre><code>alias p=&apos;export AWS_DEFAULT_PROFILE=$(grep -iE &quot;^[]+[^*]&quot; ~/.aws/credentials|tr -d []|peco)&apos;
+</code></pre><p>これで、<code>p</code>と叩けばインタラクティブに実行したいアカウントに切り替えでき、そのあとは<code>--profile</code>オプション無しに<code>aws</code>コマンドを実行出来るようになります。</p>
+<hr>
+<p>話が逸れましたが本題に戻ります。<br><code>describe-job-definitions</code>に<code>--job-definition-name</code>オプションを付与して実行してみます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ aws batch describe-job-definitions --job-definition-name test-job-definition</span><br><span class="line">JOBDEFINITIONS	arn:aws:batch:ap-northeast-1:999999999999:job-definition/test-job-definition:2	test-job-definition	2	INACTIVE	container</span><br><span class="line">CONTAINERPROPERTIES	busybox	2000	1</span><br><span class="line">COMMAND	echo</span><br><span class="line">COMMAND	&apos;hello world&apos;</span><br><span class="line">JOBDEFINITIONS	arn:aws:batch:ap-northeast-1:999999999999:job-definition/test-job-definition:3	test-job-definition	3	ACTIVE	container</span><br><span class="line">CONTAINERPROPERTIES	busybox	2000	1</span><br><span class="line">COMMAND	echo</span><br><span class="line">COMMAND	Ref::Hoge</span><br><span class="line">JOBDEFINITIONS	arn:aws:batch:ap-northeast-1:999999999999:job-definition/test-job-definition:1	test-job-definition	1	INACTIVE	container</span><br><span class="line">CONTAINERPROPERTIES	busybox	2000	2</span><br><span class="line">COMMAND	echo</span><br><span class="line">COMMAND	&apos;hello world&apos;</span><br></pre></td></tr></table></figure>
+<p>簡単に取得出来ました。<br>ちゃんとARNの情報も取得出来ているので大丈夫そうです。<br><code>ACTIVE</code>と<code>INACTIVE</code>があるので<code>ACTIVE</code>のものだけに絞り込めそうです。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ aws batch describe-job-definitions --job-definition-name test-job-definition --status ACTIVE</span><br><span class="line">JOBDEFINITIONS	arn:aws:batch:ap-northeast-1:999999999999:job-definition/test-job-definition:3	test-job-definition	3	ACTIVE	container</span><br><span class="line">CONTAINERPROPERTIES	busybox	2000	1</span><br><span class="line">COMMAND	echo</span><br><span class="line">COMMAND	Ref::Hoge</span><br></pre></td></tr></table></figure>
+<p>出来ました。<br>しかし、もし<code>ACTIVE</code>が複数ある場合は複数取得してしまいます。<br>また、ジョブディフィニジョンの作成日、などもレスポンスとして返ってこないため、作成が一番新しいもの、で取得することもできないようです。<br>が、ARNを見ると、<code>arn:aws:batch:ap-northeast-1:999999999999:job-definition/test-job-definition:3</code>となっており、この最後の<code>3</code>という数値が一番大きいものが最新のジョブディフィニジョンになるので、Goアプリケーションのほうでその判定をしてやればいけそうです。</p>
+<p>Goのテストアプリケーションを実装して、ということだとちょっと面倒そうでしたが、<code>aws cli</code>であれば簡単にフィジビリティを確認することが出来ました。<br>ということで次のステップにいきます。</p>
+<h2 id="2-sdkのリファレンスを見ながら実装"><a href="#2-SDKのリファレンスを見ながら実装" class="headerlink" title="2. SDKのリファレンスを見ながら実装"></a>2. SDKのリファレンスを見ながら実装</h2><p>ここでSDKのリファレンスを見ます。<br>GoのAWS Batchのリファレンスはこちらです。</p>
+<p><a href="https://docs.aws.amazon.com/sdk-for-go/api/service/batch/" target="_blank" rel="noopener">https://docs.aws.amazon.com/sdk-for-go/api/service/batch/</a></p>
+<p>ずばり<a href="https://docs.aws.amazon.com/sdk-for-go/api/service/batch/#Batch.DescribeJobDefinitions" target="_blank" rel="noopener">DescribeJobDefinitions</a>というメソッドがありました。<br>Exampleのコードを基にコーディングしました。</p>
+<p><code>main.go</code></p>
+<pre><code>package main
+
+import (
+    &quot;errors&quot;
+    &quot;fmt&quot;
+    &quot;github.com/aws/aws-sdk-go/aws&quot;
+    &quot;github.com/aws/aws-sdk-go/aws/awserr&quot;
+    &quot;github.com/aws/aws-sdk-go/aws/session&quot;
+    &quot;github.com/aws/aws-sdk-go/service/batch&quot;
+    &quot;os&quot;
+    &quot;strconv&quot;
+    &quot;strings&quot;
+)
+
+func main() {
+    result, err := getJobDefinitionARNByName(os.Getenv(&quot;JOB_DEFINITION_NAME&quot;))
+    if err != nil {
+        println(err.Error())
+    } else {
+        fmt.Println(result)
+    }
+}
+
+func getJobDefinitionARNByName(jobDefinitionName string) (string, error) {
+    svc := batch.New(session.New())
+    input := &amp;batch.DescribeJobDefinitionsInput{
+        Status:            aws.String(&quot;ACTIVE&quot;),
+        JobDefinitionName: aws.String(jobDefinitionName),
+    }
+
+    result, err := svc.DescribeJobDefinitions(input)
+    if err != nil {
+        if aerr, ok := err.(awserr.Error); ok {
+            switch aerr.Code() {
+            case batch.ErrCodeClientException:
+                fmt.Println(batch.ErrCodeClientException, aerr.Error())
+            case batch.ErrCodeServerException:
+                fmt.Println(batch.ErrCodeServerException, aerr.Error())
+            default:
+                fmt.Println(aerr.Error())
+            }
+        } else {
+            fmt.Println(err.Error())
+        }
+        return &quot;&quot;, err
+    }
+
+    ARN, err := getLatestARN(*result)
+    if err != nil {
+        return &quot;&quot;, err
+    }
+
+    return ARN, nil
+}
+
+func getLatestARN(output batch.DescribeJobDefinitionsOutput) (string, error) {
+    if len(output.JobDefinitions) == 0 {
+        return &quot;&quot;, errors.New(&quot;No defenitions&quot;)
+    }
+    comparition := 0
+    ARN := &quot;&quot;
+    for _, d := range output.JobDefinitions {
+        arn := strings.Split(*d.JobDefinitionArn, &quot;:&quot;)
+        c := arn[len(arn)-1]
+        i, _ := strconv.Atoi(c)
+        if comparition &lt; i {
+            comparition = i
+            ARN = *d.JobDefinitionArn
+        }
+    }
+    return ARN, nil
+}
+</code></pre><h3 id="3-実行して検証"><a href="#3-実行して検証" class="headerlink" title="3. 実行して検証"></a>3. 実行して検証</h3><p>下記環境変数をセットして実行します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">AWS_REGION</span><br><span class="line">AWS_ACCESS_KEY_ID</span><br><span class="line">AWS_SECRET_ACCESS_KEY</span><br><span class="line">JOB_DEFINITION_NAME</span><br></pre></td></tr></table></figure>
+<p>期待通りに取得できました。</p>
+<p><img src="/images/develop-application-using-awssdk/result.png" alt=""></p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>結局、<code>aws cli</code>でフィジビリティを確認する、というところがポイントで、もし無理なら実装しなくていいし、実装できるなら<code>aws cli</code>で呼び出した方法を参考に簡単にSDKで実装できる、ということでした。<br>実は今回はAWS Batch上に検証用のジョブキューとジョブディフィニジョンがすでにあったので<code>aws cli</code>コマンドですぐに確認できましたが、AWS側に環境がない場合は構築するのは面倒なのでリファレンスだけでフィジビリティを判定する場合もあるかと思います。<br>なのですべてのケースにおいて、この方法が最良かどうかは分かりませんが、<code>aws cli</code>で実際に返ってきたレスポンスを見ながらフィジビリティチェックしておくと、その後の実装はかなり安心です。<br>以上、お役に立てれば幸いです。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/10/27/develop-application-using-awssdk/" data-text="AWS SDKを使ったアプリケーションを効率よく開発する方法" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/10/27/develop-application-using-awssdk/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/10/27/develop-application-using-awssdk/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/10/27/develop-application-using-awssdk/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/10/27/develop-application-using-awssdk/" class="hatena-bookmark-button" data-hatena-bookmark-title="AWS SDKを使ったアプリケーションを効率よく開発する方法" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーサイド/">サーバーサイド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/プログラミング/">プログラミング</a></li></ul>
+
+
+      <p class="article-footer__author">by 前田 正樹</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

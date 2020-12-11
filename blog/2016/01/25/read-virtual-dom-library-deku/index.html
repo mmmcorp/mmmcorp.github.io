@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>仮想DOMライブラリのdekuを読んだ話 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="英語の勉強をするぞと意気込み、字幕なしで動画を観始めたところフランスが舞台のドキュンタリーを観ていたことに気付いた小飼です。 React.jsでアプリケーションを構築するにあたり、その内部実装について理解して使っているケースは必ずしも多くないと思います。特にReact.jsの情報があふれているような昨今では、内部実装をきちんと理解しようとすることが直接的にアプリケーション構築の生産性に寄与するとは">
+<meta name="keywords" content="フロントエンド,JavaScript,React,npm,deku,VirtualDOM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="仮想DOMライブラリのdekuを読んだ話">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2016/01/25/read-virtual-dom-library-deku/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="英語の勉強をするぞと意気込み、字幕なしで動画を観始めたところフランスが舞台のドキュンタリーを観ていたことに気付いた小飼です。 React.jsでアプリケーションを構築するにあたり、その内部実装について理解して使っているケースは必ずしも多くないと思います。特にReact.jsの情報があふれているような昨今では、内部実装をきちんと理解しようとすることが直接的にアプリケーション構築の生産性に寄与するとは">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.138Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="仮想DOMライブラリのdekuを読んだ話">
+<meta name="twitter:description" content="英語の勉強をするぞと意気込み、字幕なしで動画を観始めたところフランスが舞台のドキュンタリーを観ていたことに気付いた小飼です。 React.jsでアプリケーションを構築するにあたり、その内部実装について理解して使っているケースは必ずしも多くないと思います。特にReact.jsの情報があふれているような昨今では、内部実装をきちんと理解しようとすることが直接的にアプリケーション構築の生産性に寄与するとは">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-read-virtual-dom-library-deku" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2016-01-25T12:00:00.000Z" itemprop="datePublished">2016-01-25</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2016/01/25/read-virtual-dom-library-deku/">仮想DOMライブラリのdekuを読んだ話</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/01/25/read-virtual-dom-library-deku/" data-text="仮想DOMライブラリのdekuを読んだ話" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/01/25/read-virtual-dom-library-deku/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/01/25/read-virtual-dom-library-deku/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/01/25/read-virtual-dom-library-deku/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/01/25/read-virtual-dom-library-deku/" class="hatena-bookmark-button" data-hatena-bookmark-title="仮想DOMライブラリのdekuを読んだ話" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>英語の勉強をするぞと意気込み、字幕なしで動画を観始めたところフランスが舞台のドキュンタリーを観ていたことに気付いた小飼です。</p>
+<p><code>React.js</code>でアプリケーションを構築するにあたり、その内部実装について理解して使っているケースは必ずしも多くないと思います。<br>特に<code>React.js</code>の情報があふれているような昨今では、内部実装をきちんと理解しようとすることが直接的にアプリケーション構築の生産性に寄与するとは限りません。</p>
+<p>ただ、単なるライブラリのユーザーでいると思わぬ落とし穴に入り込まないとも限りませんし、<code>API</code>の変更があった場合にも唯々諾々と開発側の方針に倣うことしかできません。<br>もちろんそれは内部実装を理解していたところで大きく事情は変わりませんが、少なくとも自分なりの納得のいく理解は作れるかも知れませんし、もし自分の状況にそぐわないのであれば別のライブラリを選定するような選択肢も選び得ると思います。<br>その意味で(<code>React.js</code>に限った話ではありませんが)ライブラリの内部実装をきちんと理解しておくことは、とても大事で、かつ安心できる開発環境にもつながると考えています。</p>
+<p>さて、<code>React.js</code>の流行と共に、その本質である仮想DOMの実装がいくつも出てきました。<br>そこで本稿ではコードベースが大きく読み下すことが難しい<code>React.js</code>の前に、シンプルな仮想DOM実装を読んでみて、<br><code>React.js</code>が本質的にはどんな処理を担うライブラリであるかを理解する一助としてみたいと思います。</p>
+<p>いくつか実装の有る中で、コードベースが小さく提供するAPIがシンプルであるように意図された<code>deku</code>を選びました。</p>
+<p><a href="https://github.com/dekujs/deku" target="_blank" rel="noopener">dekuのgithubレポジトリ</a><br><a href="http://dekujs.github.io/deku/" target="_blank" rel="noopener">dekuのドキュメント</a></p>
+<p>なお、本稿執筆時点の最新公開版である<code>2.0.0-rc7</code>を対象としています。<br>非常に活発な開発が行われているライブラリですので、本稿公開時点で<code>2.0.0-rc13</code>にまでアップデートされていることに留意してください。<br>また、こちらはメジャーアップデート版ですので、過去に公開された<code>deku</code>の記事とは<code>API</code>が異なっているケースが多々あると思います。</p>
+<h2 id="npmモジュールを読む前に"><a href="#npmモジュールを読む前に" class="headerlink" title="npmモジュールを読む前に"></a>npmモジュールを読む前に</h2><p><code>deku</code>や<code>React.js</code>を始めとする<code>npm</code>で配布されているモジュールは、<code>require</code>されると<code>package.json</code>の<code>main</code>フィールドに記述されたパスを読み込むようになっています。<br><a href="https://docs.npmjs.com/files/package.json#main" target="_blank" rel="noopener">The main field is a module ID that is the primary entry point to your program</a></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">"main": "lib/index.js",</span><br></pre></td></tr></table></figure>
+<p>慣習的にこのエントリーポイントには、外部に公開する<code>API</code>を持ったモジュールを読み込むだけにしている場合が多いです。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// deku/src/index.js</span></span><br><span class="line"><span class="keyword">import</span> element <span class="keyword">from</span> <span class="string">'./element'</span></span><br><span class="line"><span class="keyword">import</span> string <span class="keyword">from</span> <span class="string">'./string'</span></span><br><span class="line"><span class="keyword">import</span> dom <span class="keyword">from</span> <span class="string">'./dom'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123;</span><br><span class="line">  element,</span><br><span class="line">  string,</span><br><span class="line">  dom</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>※本来<code>deku</code>が<code>require</code>された時に読み込むのは、<code>src/</code>ディレクトリ以下にあるファイルを<code>babel</code>で変換した<code>lib/</code>ディレクトリ以下のファイルになります。<br>一般に<code>babel</code>変換後のファイルは可読性が低く開発者の意図が見えづらいことから、以降は<code>src</code>ディレクトリを読んでいくものとします。</p>
+<p>また、余談ですが<code>babel-cli</code>を始めとする<code>CLI</code>ツールは、コマンドとして呼び出された時に<code>bin</code>フィールドに記述されたパスから処理が始まります。<br><a href="https://docs.npmjs.com/files/package.json#bin" target="_blank" rel="noopener">supply a bin field in your package.json which is a map of command name to local file name</a></p>
+<p>ビルド系ツールやテストランナーのコードを読む時は、この辺りから読み始める必要がありそうです。<br>数は少ないですが、CDNに対応するなど<code>script</code>タグとして読み込まれるような使い方を意図している場合は<code>window</code>オブジェクトへのひも付け処理が入る場合もあります。</p>
+<p>上述の通り、エントリーポイントにはライブラリのユーザーに対して露出されるモジュールが書かれているだけの場合が多いので、どんな処理が始まるのかはわかりません。<br>その場合は<code>README.md</code>の<code>Getting Started || Usage || Example</code>などの項を確認して、処理の開始点となっていそうな箇所から読んでいきます。<br>(<code>express</code>のように<code>createApplication</code>のような、明らかに処理の開始点となる関数が記述されている場合もあります)</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// express/lib/express.js</span></span><br><span class="line">exports = <span class="built_in">module</span>.exports = createApplication;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 多分ここから処理がはじまっている...</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createApplication</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> app = connect();</span><br><span class="line">  merge(app, proto);</span><br><span class="line">  app.request = &#123; <span class="attr">__proto__</span>: req, <span class="attr">app</span>: app &#125;;</span><br><span class="line">  app.response = &#123; <span class="attr">__proto__</span>: res, <span class="attr">app</span>: app &#125;;</span><br><span class="line">  app.init();</span><br><span class="line">  <span class="keyword">return</span> app;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="dekuのエントリーポイント"><a href="#dekuのエントリーポイント" class="headerlink" title="dekuのエントリーポイント"></a>dekuのエントリーポイント</h2><p><code>README.md</code>を見る限り、<code>createRenderer</code>というファクトリらしき関数から処理が始まっているようです。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123;dom, element&#125; <span class="keyword">from</span> <span class="string">'deku'</span></span><br><span class="line"><span class="comment">// (略)...</span></span><br><span class="line"><span class="keyword">let</span> &#123;createRenderer&#125; = dom</span><br><span class="line"></span><br><span class="line"><span class="comment">// (略)...</span></span><br><span class="line"><span class="comment">// Create a renderer that can turn vnodes into real DOM elements</span></span><br><span class="line"><span class="keyword">let</span> render = createRenderer(<span class="built_in">document</span>.body, store.dispatch)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Update the page and add redux state to the context</span></span><br><span class="line">render(</span><br><span class="line">  &lt;MyButton&gt;Hello World!<span class="xml"><span class="tag">&lt;/<span class="name">MyButton</span>&gt;</span></span>,</span><br><span class="line">  store.getState()</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h2 id="renderの生成"><a href="#renderの生成" class="headerlink" title="renderの生成"></a>renderの生成</h2><p><code>Create a renderer that can turn vnodes into real DOM elements</code>とコメントされているように、<br>引数に渡した仮想DOMを実際のDOMとしてブラウザに描画する関数を生成するようです。</p>
+<p>実際のコードはこんな感じです。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// deku/dom/createRenderer.js</span></span><br><span class="line"><span class="keyword">import</span> createElement <span class="keyword">from</span> <span class="string">'./createElement'</span></span><br><span class="line"><span class="keyword">import</span> &#123;diffNode&#125; <span class="keyword">from</span> <span class="string">'../diff'</span></span><br><span class="line"><span class="keyword">import</span> patch <span class="keyword">from</span> <span class="string">'./patch'</span></span><br><span class="line"><span class="keyword">import</span> uid <span class="keyword">from</span> <span class="string">'uid'</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Create a DOM renderer using a container element. Everything will be rendered</span></span><br><span class="line"><span class="comment"> * inside of that container. Returns a function that accepts new state that can</span></span><br><span class="line"><span class="comment"> * replace what is currently rendered.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> <span class="title">createDOMRenderer</span> (<span class="params">container, dispatch</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// container: 実際の描画でルートとなる実DOMノード Exampleではdocument.body</span></span><br><span class="line">  <span class="comment">// dispatch: Exampleではdispatcher</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> oldVnode = <span class="literal">null</span></span><br><span class="line">  <span class="keyword">let</span> node = <span class="literal">null</span></span><br><span class="line">  <span class="keyword">let</span> path = uid()</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (container &amp;&amp; container.childNodes.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    container.innerHTML = <span class="string">''</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> update = <span class="function">(<span class="params">newVnode, context</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// debugger</span></span><br><span class="line">    <span class="keyword">let</span> changes = diffNode(oldVnode, newVnode, path)</span><br><span class="line">    node = changes.reduce(patch(dispatch, context), node)</span><br><span class="line">    oldVnode = newVnode</span><br><span class="line">    <span class="keyword">return</span> node</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> create = <span class="function">(<span class="params">vnode, context</span>) =&gt;</span> &#123;</span><br><span class="line">    node = createElement(vnode, path, dispatch, context)</span><br><span class="line">    <span class="keyword">if</span> (container) container.appendChild(node)</span><br><span class="line">    oldVnode = vnode</span><br><span class="line">    <span class="keyword">return</span> node</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// createDOMRendererクロージャの中のnode変数にキャッシュされている`前回の描画状態`によって処理を振り分ける関数を返している</span></span><br><span class="line">  <span class="keyword">return</span> <span class="function">(<span class="params">vnode, context = &#123;&#125;</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> node !== <span class="literal">null</span></span><br><span class="line">      ? update(vnode, context)</span><br><span class="line">      : create(vnode, context)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>create(DOM)Renderer</code>クロージャの中で保持された<code>node</code>変数にキャッシュされている何かを判断材料に、呼びだす関数と結果を振り分ける関数を返していることがわかります。<br>では<code>node</code>にはどんなデータが入っているのでしょうか。</p>
+<h2 id="実際の描画"><a href="#実際の描画" class="headerlink" title="実際の描画"></a>実際の描画</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// update function</span></span><br><span class="line"><span class="keyword">let</span> changes = diffNode(oldVnode, newVnode, path)</span><br><span class="line">node = changes.reduce(patch(dispatch, context), node)</span><br><span class="line"></span><br><span class="line"><span class="comment">// create function</span></span><br><span class="line">node = createElement(vnode, path, dispatch, context)</span><br></pre></td></tr></table></figure>
+<p>となっていて、どうも何らかのDOMノード、それも<code>vnode</code>という<code>v</code>が前についた変数が別にあることから、実DOMノードをキャッシュしているように読み取れます。<br>実際にはどうなっているのでしょうか。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/dom/createElement.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> <span class="title">createElement</span> (<span class="params">vnode, path, dispatch, context</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// (略)...</span></span><br><span class="line">  <span class="keyword">let</span> DOMElement = cached.cloneNode(<span class="literal">false</span>)</span><br><span class="line">  <span class="comment">// (略)...</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// vnodeを再帰的に探索して子ノードを順次DOMElementに追加していっている</span></span><br><span class="line">  vnode.children.forEach(<span class="function">(<span class="params">node, index</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (node === <span class="literal">null</span> || node === <span class="literal">undefined</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> child = createElement(</span><br><span class="line">      node,</span><br><span class="line">      createPath(path, node.key || index),</span><br><span class="line">      dispatch,</span><br><span class="line">      context</span><br><span class="line">    )</span><br><span class="line">    DOMElement.appendChild(child)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 実DOMノードを返している</span></span><br><span class="line">  <span class="keyword">return</span> DOMElement</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>実DOMノードを返していることが確認できました。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// update function</span></span><br><span class="line"><span class="keyword">let</span> changes = diffNode(oldVnode, newVnode, path)</span><br><span class="line">node = changes.reduce(patch(dispatch, context), node)</span><br></pre></td></tr></table></figure>
+<p>初回に<code>render</code>関数を呼び出した時は一からDOMElementを構築してキャッシュする、二回目以降(<code>node</code>変数に値が保存されているので<code>update</code>関数が呼び出されることが読み取れます)は、これも初回にキャッシュされた古い仮想DOMノードと最新の仮想DOMノードの差分を算出(<code>diffNode</code>関数)、パッチを当てた実DOMノード(<code>patch</code>関数)を返すような仕組みになっているようです。</p>
+<p>以上のように、<code>render</code>関数に最新の状態オブジェクト(<code>store.getState()</code>)を渡して呼びだすことでアプリケーションを描画/更新するという処理の流れになっていることがわかりました。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p><code>deku</code>の実装をザッと読んでみることで、仮想DOMライブラリが一体どういった処理をしているのかを追ってみましたがいかがだったでしょうか。<br>実際の仮想DOMライブラリの選定においては、仮想DOM同士の差分検出アルゴリズムの効率性に各々の性能が出てくるはずですが、今回は全体の流れを追うという目的で省略しました。<br>(ひとに説明できるほど理解していないとも言いますが…)</p>
+<p><code>deku</code>の実装は非常に小さく、素直にコードを追っていくことで理解しやすいきれいなコードだと感じました。<br>仮想DOMライブラリとしては必要十分な機能を持っているように思います。</p>
+<p>サイズが軽いのがモバイルアプリケーション構築の時などには魅力的ですが、一方で全ての仮想DOMツリーをクロージャにキャッシュする関係上、パフォーマンス面で不安が残ります。<br>(これは他の実装であっても同様ですが…)</p>
+<p>いずれにしろ、全体の流れを把握することでプロジェクトに最適なライブラリの選定がしやすくなるのではないでしょうか。<br>本稿がその一助になれば幸いです。</p>
+<p><a href="https://mmmcorp.co.jp/services/remote_system_engineering_service/react" target="_blank" rel="noopener">Reactなどに代表される仮想DOMライブラリを活用したフロントエンドアプリケーション開発</a>をご検討の企業様は、是非MMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/01/25/read-virtual-dom-library-deku/" data-text="仮想DOMライブラリのdekuを読んだ話" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/01/25/read-virtual-dom-library-deku/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/01/25/read-virtual-dom-library-deku/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/01/25/read-virtual-dom-library-deku/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/01/25/read-virtual-dom-library-deku/" class="hatena-bookmark-button" data-hatena-bookmark-title="仮想DOMライブラリのdekuを読んだ話" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/React/">React</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/VirtualDOM/">VirtualDOM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/deku/">deku</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/npm/">npm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li></ul>
+
+
+      <p class="article-footer__author">by 小飼慎一</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

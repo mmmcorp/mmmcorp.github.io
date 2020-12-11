@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>ActiveAdminでちょっと使い勝手の良い管理画面を作るTips | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="最近はJavaでバッチ処理を書いていることが多い下條です。自分の中でエンタープライズJava熱が上がってきました。なので、Javaの話題でもいいんですけど、でも僕はRails。 Ruby on Railsで簡単に管理画面を作りたいときに使えるgemであるActiveAdmin。管理画面は一般的にあまり見た目の素敵さは要求されないことが多く、ActiveAdminである程度のレベルの管理画面が簡単に">
+<meta name="keywords" content="サーバーサイド,Rails,ActiveAdmin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ActiveAdminでちょっと使い勝手の良い管理画面を作るTips">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2015/02/18/activeadmin/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="最近はJavaでバッチ処理を書いていることが多い下條です。自分の中でエンタープライズJava熱が上がってきました。なので、Javaの話題でもいいんですけど、でも僕はRails。 Ruby on Railsで簡単に管理画面を作りたいときに使えるgemであるActiveAdmin。管理画面は一般的にあまり見た目の素敵さは要求されないことが多く、ActiveAdminである程度のレベルの管理画面が簡単に">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/activeadmin/1.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/activeadmin/2.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/activeadmin/3.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/activeadmin/4.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/activeadmin/5.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/activeadmin/6.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/activeadmin/7.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/activeadmin/8.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/activeadmin/9.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.130Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ActiveAdminでちょっと使い勝手の良い管理画面を作るTips">
+<meta name="twitter:description" content="最近はJavaでバッチ処理を書いていることが多い下條です。自分の中でエンタープライズJava熱が上がってきました。なので、Javaの話題でもいいんですけど、でも僕はRails。 Ruby on Railsで簡単に管理画面を作りたいときに使えるgemであるActiveAdmin。管理画面は一般的にあまり見た目の素敵さは要求されないことが多く、ActiveAdminである程度のレベルの管理画面が簡単に">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/activeadmin/1.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-activeadmin" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2015-02-18T08:11:19.000Z" itemprop="datePublished">2015-02-18</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2015/02/18/activeadmin/">ActiveAdminでちょっと使い勝手の良い管理画面を作るTips</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/02/18/activeadmin/" data-text="ActiveAdminでちょっと使い勝手の良い管理画面を作るTips" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/02/18/activeadmin/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/02/18/activeadmin/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/02/18/activeadmin/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/02/18/activeadmin/" class="hatena-bookmark-button" data-hatena-bookmark-title="ActiveAdminでちょっと使い勝手の良い管理画面を作るTips" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近はJavaでバッチ処理を書いていることが多い下條です。自分の中でエンタープライズJava熱が上がってきました。なので、Javaの話題でもいいんですけど、でも僕はRails。</p>
+<p>Ruby on Railsで簡単に管理画面を作りたいときに使えるgemであるActiveAdmin。管理画面は一般的にあまり見た目の素敵さは要求されないことが多く、ActiveAdminである程度のレベルの管理画面が簡単に作ることができる。ただ、本当にデフォルトのままだととても使いにくい管理画面になったりする。問題としては例えば、</p>
+<ul>
+<li>モデルのCRUDをそのまま実現するだけでは不便な管理フローとなる場合がある（多対多の中間モデルのデータ登録など）</li>
+<li>日本語化されていない</li>
+</ul>
+<p>などなど。今回は、簡単なサンプルアプリを作りながらこれらを改善していってみる。</p>
+<hr>
+<p>簡単な例として、書籍（Book）と著者（Author）を管理するアプリを作っていきながら見ていくことにする。モデルは以下。BookとAuthorはお互いにhas_manyの関係になっており、中間モデルが存在する例とする。</p>
+<p><img src="/images/activeadmin/1.png" alt="1.png"></p>
+<p>モデルや、マイグレーションファイル作成の手順はこんな感じで。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ rails g model Author name:string description:text</span><br><span class="line">$ rails g model Book title:string isbn:string published_date:date</span><br><span class="line">$ rails g model AuthorBook author_id:<span class="built_in">integer</span> book_id:<span class="built_in">integer</span></span><br><span class="line">$ rake db:migrate</span><br></pre></td></tr></table></figure>
+<p>それぞれのモデルにhas_manyとbelongs_toなどを追加。例えばapp/model/book.rbはこんな感じ。（バリデーションなんかはサボってます。）</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Book</span> &lt; ActiveRecord::Base</span></span><br><span class="line">  has_many <span class="symbol">:author_books</span>, <span class="symbol">dependent:</span> <span class="symbol">:destroy</span></span><br><span class="line">  has_many <span class="symbol">:authors</span>, <span class="symbol">through:</span> <span class="symbol">:author_books</span></span><br><span class="line">  accepts_nested_attributes_for <span class="symbol">:author_books</span>, <span class="symbol">allow_destroy:</span> <span class="literal">true</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>さっそくActiveAdmin導入。Gemfileに以下を追加し、</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gem <span class="string">'activeadmin'</span>, <span class="symbol">github:</span> <span class="string">'activeadmin'</span></span><br><span class="line">gem <span class="string">'inherited_resources'</span>, <span class="symbol">github:</span> <span class="string">'josevalim/inherited_resources'</span>, <span class="symbol">branch:</span> <span class="string">'rails-4-2'</span></span><br></pre></td></tr></table></figure>
+<p>bundle installした後、</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rails g active_admin:install --skip-users</span><br></pre></td></tr></table></figure>
+<p>とりあえず今回は簡単のため、’–skip-users’オプションを追加したため、ユーザなしで使える。</p>
+<p><a href="http://localhost:3000/admin" target="_blank" rel="noopener">http://localhost:3000/admin</a></p>
+<p>にアクセスすると早速管理画面ができている。<br>※config/initializers/adtive_admin.rbで<br>config.current_user_method = :current_admin_user<br>をコメントアウトしておく。</p>
+<p><img src="/images/activeadmin/2.png" alt="2.png"></p>
+<p>ここで、とりあえず全てのモデルをActiveAdminの管理対象に加えてみる。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ rails g active_admin:resource author</span><br><span class="line">$ rails g active_admin:resource book</span><br><span class="line">$ rails g active_admin:resource author_book</span><br></pre></td></tr></table></figure>
+<p>結果、app/admin/author.rb, app/admin/book.rb, app/admin/author_book.rbのファイルが追加される。<br>あとは、Strong Parameters対応で、permit_paramsを設定しておく。（たぶん各ファイルにサンプルが書かれていると思う。）</p>
+<p>これでひと通りのCRUD操作ができるようになった。さすがActiveAdmin。早い。例えば書籍の登録画面は以下のようになる。</p>
+<p><img src="/images/activeadmin/3.png" alt="3.png"></p>
+<h2 id="多対多の中間モデルのデータ登録"><a href="#多対多の中間モデルのデータ登録" class="headerlink" title="多対多の中間モデルのデータ登録"></a>多対多の中間モデルのデータ登録</h2><p>しかし、問答無用でモデルをActiveAdminでの管理対象にすると、不便な管理フローとなってしまう場合がある。多対多の中間モデルはその代表例である。<br>ActiveAdminはモデルをもとに、そのメンバを登録、編集、削除できるようにするだけなので、多対多の中間モデルをActiveAdminでの管理対象にすると、IDを2つ登録するUIとなる。<br>例えば今回のサンプルでは、書籍と著者を結びつける登録画面は以下のようになる。</p>
+<p><img src="/images/activeadmin/4.png" alt="4.png"></p>
+<p>うーむ。日本語化されてないというところはおいておいて、これだと、書籍と著者を紐付けるのに、まず書籍IDと著者IDを調べてから、この画面でIDを入れるという、おそらく非常に面倒な手順となる。<br>ここは、書籍の登録時にでも、その著者を複数登録できるようにしたいところである。<br>そこで、書籍の登録画面を変更してみる。</p>
+<p>app/admin/book.rb<br>でフォームをカスタマイズする。<br>以下のようにフォームのカスタム設定を追加。あとは、permit_paramsも追加。</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">ActiveAdmin.register Book <span class="keyword">do</span></span><br><span class="line">  permit_params <span class="symbol">:title</span>, <span class="symbol">:isbn</span>, <span class="symbol">:published_date</span>, <span class="symbol">author_books_attributes:</span> [<span class="symbol">:author_id</span>, <span class="symbol">:_destroy</span>, <span class="symbol">:id</span>]</span><br><span class="line"></span><br><span class="line">  form <span class="keyword">do</span> <span class="params">|f|</span></span><br><span class="line">    f.inputs <span class="string">'書籍登録'</span> <span class="keyword">do</span></span><br><span class="line">      f.input <span class="symbol">:title</span></span><br><span class="line">      f.input <span class="symbol">:isbn</span></span><br><span class="line">      f.input <span class="symbol">:published_date</span></span><br><span class="line">      f.has_many <span class="symbol">:author_books</span>, <span class="symbol">allow_destroy:</span> <span class="literal">true</span>, <span class="symbol">heading:</span> <span class="literal">false</span>,</span><br><span class="line">                                <span class="symbol">new_record:</span> <span class="literal">true</span> <span class="keyword">do</span> <span class="params">|ab|</span></span><br><span class="line">        ab.input <span class="symbol">:author_id</span>,</span><br><span class="line">                 <span class="symbol">label:</span> <span class="string">'著者'</span>,</span><br><span class="line">                 <span class="symbol">as:</span> <span class="symbol">:select</span>,</span><br><span class="line">                 <span class="symbol">collection:</span> Author.all.map &#123; <span class="params">|a|</span> [a.name, a.id] &#125;</span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">      f.actions</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>すると、こんな感じでフォームができ、書籍の登録、編集時に、紐付ける著者を著者名で登録できるようになり、ちょっと便利になった。</p>
+<p><img src="/images/activeadmin/5.png" alt="5.png"></p>
+<p>ただ、これだけだと登録完了画面には著者名が出てこない。</p>
+<p><img src="/images/activeadmin/6.png" alt="6.png"></p>
+<p>ついでに、この画面にcreated_atとupdate_atカラムの情報が出ているのもちょっと邪魔である。というわけで、それらを削除しつつ、著者名を追加してみる。</p>
+<p>再びapp/admin/book.rbでカスタマイズ。今度は以下を追加。</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">show <span class="keyword">do</span></span><br><span class="line">  attributes_table <span class="keyword">do</span></span><br><span class="line">    row <span class="string">'タイトル'</span> <span class="keyword">do</span></span><br><span class="line">      resource.title</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    row <span class="string">'ISBN'</span> <span class="keyword">do</span></span><br><span class="line">      resource.isbn</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    row <span class="string">'出版日'</span> <span class="keyword">do</span></span><br><span class="line">      resource.published_date</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    row <span class="string">'著者'</span> <span class="keyword">do</span></span><br><span class="line">      Author.where(<span class="symbol">id:</span> AuthorBook.where(<span class="symbol">book_id:</span> resource.id).all.pluck(<span class="symbol">:author_id</span>)).all.pluck(<span class="symbol">:name</span>).join(<span class="string">','</span>)</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">  <span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>結果。</p>
+<p><img src="/images/activeadmin/7.png" alt="7.png"></p>
+<p>だいぶマシになった。</p>
+<p>また、多対多の中間モデル以外でも、モデル設計によってはそのままActiveAdminで管理すると使い勝手が悪くなる場合が多々あるので、モデル設計が重要になるのと同時に、もし既存モデルをActiveAdminで管理したいという時にはどういうUIになるのかよく考えたほうがよいと思われる。まあ、ActiveAdminに合わせるというのは本末転倒だけれども。</p>
+<h2 id="日本語化"><a href="#日本語化" class="headerlink" title="日本語化"></a>日本語化</h2><p>上記で局所的に日本語化していたが、ちゃんと日本語をするにはI18nを使う。</p>
+<p>まずはconfig/locales/ja.ymlを作成。</p>
+<p><a href="https://github.com/svenfuchs/rails-i18n/blob/master/rails/locale/ja.yml" target="_blank" rel="noopener">https://github.com/svenfuchs/rails-i18n/blob/master/rails/locale/ja.yml</a></p>
+<p>ここらへんからもってくるとよい。そうすると、こんな感じ。</p>
+<p><img src="/images/activeadmin/8.png" alt="8.png"></p>
+<p>これだと「Book を作成する」とみたいにちょっとルー大柴的になっているので、モデルの日本語化をする。また、ついでに以下などの対応もやってみる。</p>
+<ul>
+<li>一覧のCreated At, Updated Atのカラムを見せたくないので削除</li>
+<li>検索条件のAuthor Books、Created At, Updated Atを削除</li>
+<li>メニューの「Author Books」は削除：app/admin/author_book.rbを削除。</li>
+</ul>
+<p>最終的なapp/admin/book.rbは以下。</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">ActiveAdmin.register Book <span class="keyword">do</span></span><br><span class="line">  permit_params <span class="symbol">:title</span>, <span class="symbol">:isbn</span>, <span class="symbol">:published_date</span>, <span class="symbol">author_books_attributes:</span> [<span class="symbol">:author_id</span>, <span class="symbol">:_destroy</span>, <span class="symbol">:id</span>]</span><br><span class="line">  filter <span class="symbol">:authors_name_eq</span>, <span class="symbol">label:</span> I18n.t(<span class="string">'activerecord.attributes.author.name'</span>), <span class="symbol">as:</span> <span class="symbol">:select</span>, <span class="symbol">collection:</span> Author.all.map &#123; <span class="params">|a|</span> [a.name, a.name] &#125;　<span class="comment"># ここの日本語化ができなかったのでちょっと強引にフィルターを入れてます。</span></span><br><span class="line">  filter <span class="symbol">:title</span></span><br><span class="line">  filter <span class="symbol">:isbn</span></span><br><span class="line">  filter <span class="symbol">:published_date</span></span><br><span class="line"></span><br><span class="line">  index <span class="symbol">title:</span> I18n.t(<span class="string">'activerecord.models.book'</span>) + <span class="string">'一覧'</span> <span class="keyword">do</span></span><br><span class="line">    column I18n.t(<span class="string">'activerecord.attributes.book.title'</span>), <span class="symbol">:title</span></span><br><span class="line">    column I18n.t(<span class="string">'activerecord.attributes.book.isbn'</span>), <span class="symbol">:isbn</span></span><br><span class="line">    column I18n.t(<span class="string">'activerecord.attributes.book.published_date'</span>), <span class="symbol">:published_date</span></span><br><span class="line">    column I18n.t(<span class="string">'activerecord.attributes.author.name'</span>) <span class="keyword">do</span> <span class="params">|book|</span></span><br><span class="line">      Author.where(<span class="symbol">id:</span> AuthorBook.where(<span class="symbol">book_id:</span> book.id).all.pluck(<span class="symbol">:author_id</span>)).all.pluck(<span class="symbol">:name</span>).join(<span class="string">', '</span>)</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    actions</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">  form <span class="keyword">do</span> <span class="params">|f|</span></span><br><span class="line">    f.inputs I18n.t(<span class="string">'activerecord.models.book'</span>) + <span class="string">'登録'</span> <span class="keyword">do</span></span><br><span class="line">      f.input <span class="symbol">:title</span></span><br><span class="line">      f.input <span class="symbol">:isbn</span></span><br><span class="line">      f.input <span class="symbol">:published_date</span></span><br><span class="line">      f.has_many <span class="symbol">:author_books</span>, <span class="symbol">allow_destroy:</span> <span class="literal">true</span>, <span class="symbol">heading:</span> <span class="literal">false</span>,</span><br><span class="line">                                <span class="symbol">new_record:</span> <span class="literal">true</span> <span class="keyword">do</span> <span class="params">|ab|</span></span><br><span class="line">        ab.input <span class="symbol">:author_id</span>,</span><br><span class="line">                 <span class="symbol">label:</span> I18n.t(<span class="string">'activerecord.attributes.author.name'</span>),</span><br><span class="line">                 <span class="symbol">as:</span> <span class="symbol">:select</span>,</span><br><span class="line">                 <span class="symbol">collection:</span> Author.all.map &#123; <span class="params">|a|</span> [a.name, a.id] &#125;</span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">      f.actions</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">  show <span class="keyword">do</span></span><br><span class="line">    attributes_table <span class="keyword">do</span></span><br><span class="line">      row I18n.t(<span class="string">'activerecord.attributes.book.title'</span>) <span class="keyword">do</span></span><br><span class="line">        resource.title</span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">      row I18n.t(<span class="string">'activerecord.attributes.book.isbn'</span>) <span class="keyword">do</span></span><br><span class="line">        resource.isbn</span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">      row I18n.t(<span class="string">'activerecord.attributes.book.published_date'</span>) <span class="keyword">do</span></span><br><span class="line">        resource.published_date</span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">      row I18n.t(<span class="string">'activerecord.attributes.author.name'</span>) <span class="keyword">do</span></span><br><span class="line">        Author.where(<span class="symbol">id:</span> AuthorBook.where(<span class="symbol">book_id:</span> resource.id).all.pluck(<span class="symbol">:author_id</span>)).all.pluck(<span class="symbol">:name</span>).join(<span class="string">', '</span>)</span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>その結果の画面がこちら。</p>
+<p><img src="/images/activeadmin/9.png" alt="9.png"></p>
+<p>だいぶマシになったのではないだろうか。</p>
+<p>いろいろとまだまだ改善・機能追加などできるが、キリがないのでとりあえず今回は主にフォーム・日本語化についてご紹介した。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>他にも簡単にカスタマイズできる部分はいろいろとある。ActiveAdminはユーザが多いため、情報がたくさんネット上に転がっているから、実現したい機能で検索すればやり方が出てくることも多い。</p>
+<p>ただし、ここからが一番強調したいところなのだが、<br>今回見てきたActiveAdminの機能を使ったカスタマイズは簡単な例で、結局ごりごりと自分でビュー、コントローラを書かないといけないような場合もある。例えば「登録の確認画面を出す」場合。これは自分でビュー、コントローラを書かないといけない。ActiveAdminでも<strong><em>がんばれば</em></strong>なんでもできるのは確かだが、こういったごりごりカスタマイズが増えてくるとActiveAdminを使う意味が薄れてくる。</p>
+<p>そして、前提として、管理画面を作ろうとするときに、ActiveAdminありきで考えないということは大事である。ActiveAdminありきで考えてしまうとActiveAdminが標準で提供している機能ベースで機能設計を考えてしまいがちになる。大事なのは、お客様が管理画面に何を望んでいるか、何が必要なのかをまずしっかりと考え、その上でActiveAdminが適しているかどうかを判断することであろう。その際にはActiveAdminで簡単にできること、できないことを知っておくことが重要なのだが、私もまだ勉強中の身なのであまり大それたことは言えない。今後とも調べていこうと思っている。</p>
+<p><a href="https://mmmcorp.co.jp/services/remote_system_engineering_service/ruby" target="_blank" rel="noopener">Ruby on Railsを活用したWebサービスや業務システム開発</a>をご検討の企業様は、是非MMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/02/18/activeadmin/" data-text="ActiveAdminでちょっと使い勝手の良い管理画面を作るTips" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/02/18/activeadmin/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/02/18/activeadmin/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/02/18/activeadmin/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/02/18/activeadmin/" class="hatena-bookmark-button" data-hatena-bookmark-title="ActiveAdminでちょっと使い勝手の良い管理画面を作るTips" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ActiveAdmin/">ActiveAdmin</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Rails/">Rails</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーサイド/">サーバーサイド</a></li></ul>
+
+
+      <p class="article-footer__author">by 下條 真嗣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

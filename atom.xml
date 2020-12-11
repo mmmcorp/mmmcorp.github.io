@@ -1,0 +1,749 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>MMMブログ</title>
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="https://blog.mmmcorp.co.jp/"/>
+  <updated>2020-12-11T04:55:28.170Z</updated>
+  <id>https://blog.mmmcorp.co.jp/</id>
+  
+  <author>
+    <name>株式会社MMM</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Apple Watchのススメ</title>
+    <link href="https://blog.mmmcorp.co.jp/blog/2020/12/11/life_with_apple_watch/"/>
+    <id>https://blog.mmmcorp.co.jp/blog/2020/12/11/life_with_apple_watch/</id>
+    <published>2020-12-11T01:00:00.000Z</published>
+    <updated>2020-12-11T04:55:28.170Z</updated>
+    
+    <content type="html"><![CDATA[<p>私は4年ほど前からApple Watchを愛用しています。最初に買ったときは、本当に使うかなーと少し疑っていたのですが、今ではApple Watchなしの生活は考えられません。最近は最新のSeries 6に買い替えました。今回はApple Watchの良さを啓蒙したいと思います。ひたすら良い点を挙げていきます。</p>
+<h2 id="iphoneの通知が受けられる"><a href="#iPhoneの通知が受けられる" class="headerlink" title="iPhoneの通知が受けられる"></a>iPhoneの通知が受けられる</h2><p>iPhoneに来た電話、LINE、Facebookメッセンジャーなどの通知が受けられます。<br>ただ、時計を見るという行為は、周りの人から何か急いでるのかなとか、せっかちな人だなと思われる可能性もありますので、そこは気をつけたほうがいいかもしれません。</p>
+<h2 id="電子マネー支払いが簡単"><a href="#電子マネー支払いが簡単" class="headerlink" title="電子マネー支払いが簡単"></a>電子マネー支払いが簡単</h2><p>僕はよくコンビニに行きます。ほぼ毎日利用しています。<br>iPhoneで電子マネーで支払いをしようとすると、iPhoneのロック解除をする必要があります。マスクが必須の今の時代、FaceIDでのロック解除は非常に不便です。<br>Apple Watchでの電子マネー支払いはボタンを2回押すだけで支払いモードに変更できます。これは非常に便利です。</p>
+<h2 id="suicaだと支払いがもっと簡単"><a href="#Suicaだと支払いがもっと簡単" class="headerlink" title="Suicaだと支払いがもっと簡単"></a>Suicaだと支払いがもっと簡単</h2><p>Suicaについてはエクスプレスカードと言って利用時に明示的なロック解除が不要です。したがって電車の改札などではApple Watchをかざすだけで通れるわけです。</p>
+<p>ちなみに改札で使おうとすると、左手に時計を付けている人 (特に利き手が右手の人) には問題が発生します。Apple Watchを左手に付けていると改札で若干手の動きがつらいです。そういう意味では右手につけるという手はあるのですが、一番良いのは右手にApple Watch、左手に普通の腕時計をつけることでしょう。これはちょっと奇異な目で見られる可能性がありますがおすすめです。</p>
+<h2 id="充電は寝る前のタイミングに一日一回だけ"><a href="#充電は寝る前のタイミングに一日一回だけ" class="headerlink" title="充電は寝る前のタイミングに一日一回だけ"></a>充電は寝る前のタイミングに一日一回だけ</h2><p>Apple Watchのデメリットはバッテリーがあまり持たないことです。毎日充電が必要になります。<br>ただ、毎日充電が必要なのは逆にメリットとも言えます。一週間など電池が持ってしまうと、逆に充電タイミングを忘れます。<br>実際、私は腕につけるフィットネストラッカーを以前使っていたのですが、いつの間にか電池が切れているというケースが多発しました。<br>Apple Watchであれば1日に一回は充電が必要になってきますので、充電がルーティンになり、忘れることがありません。</p>
+<h2 id="睡眠のトラッキングができる"><a href="#睡眠のトラッキングができる" class="headerlink" title="睡眠のトラッキングができる"></a>睡眠のトラッキングができる</h2><p>Apple Watchは寝るときもつけることをおすすめします。睡眠のトラッキングができるからです。<br>Apple Watchによる睡眠時間のトラッキングはかなり正確です。睡眠時間の履歴と自分の体調を比べることで、自分にどのくらいの睡眠が必要かがよくわかりますし、ちょっと睡眠不足で調子が悪いかなーといったことも明確にわかります。</p>
+<h2 id="心拍数のトラッキングができる"><a href="#心拍数のトラッキングができる" class="headerlink" title="心拍数のトラッキングができる"></a>心拍数のトラッキングができる</h2><p>睡眠のトラッキング同様、体調のバロメーターとして使えます。疲れているときは心拍数が多い傾向がある気がします。</p>
+<h2 id="時間が常に確認できる常時表示ディスプレイ-series-5以降"><a href="#時間が常に確認できる常時表示ディスプレイ-Series-5以降" class="headerlink" title="時間が常に確認できる常時表示ディスプレイ (Series 5以降)"></a>時間が常に確認できる常時表示ディスプレイ (Series 5以降)</h2><p>Apple Watch Series 4までは盤面は標準で何も表示されず、腕を上げたときに実際の時計の盤面が表示されるようになっていました。<br>基本的にはきちんと反応してくれるので、ほぼほぼ困ることはないのですが、寝っ転がっているときなどうまく反応してくれず、盤面が表示されないことがあります。<br>Series 5以降は常時非表示になったため、この不便は解消されています。かなり便利です。</p>
+<h2 id="airpodsの音量調整ができる"><a href="#AirPodsの音量調整ができる" class="headerlink" title="AirPodsの音量調整ができる"></a>AirPodsの音量調整ができる</h2><p>AirPodsはなかなか良いワイヤレスイヤホンなのですが、唯一の不満としてイヤホン側で音量調整ができないという問題があります。Apple Watchを持っていればデジタルクラウンを使って音量調整ができます。</p>
+<h2 id="siriが使える"><a href="#Siriが使える" class="headerlink" title="Siriが使える"></a>Siriが使える</h2><p>ほとんど使うことはないのですが、カップラーメンを使うときのタイマーとして非常に便利です。</p>
+<h2 id="血中酸素濃度が測れる-series-6のみ"><a href="#血中酸素濃度が測れる-Series-6のみ" class="headerlink" title="血中酸素濃度が測れる (Series 6のみ)"></a>血中酸素濃度が測れる (Series 6のみ)</h2><p>かなりブレがあるので、使い物にならないというのが正直な感想です。</p>
+<h2 id="ベルトがカスタマイズできる"><a href="#ベルトがカスタマイズできる" class="headerlink" title="ベルトがカスタマイズできる"></a>ベルトがカスタマイズできる</h2><p>Apple Watchはベルトを自由にカスタマイズできるので、個性をアピールできます。<br>これまでたくさんのベルトを買ってきましたが、今は友人が作ったレザーベルトを愛用しています。</p>
+<hr>
+<p>いかがでしょうか？<br>実は今日の朝、会社メンバーに上記のApple Watchの良いところを伝えたのですが、皆そこまでピンときていないようでした。<br>実際、ひとつひとつのメリットは小さいように見えるのですが、トータルでは非常に便利になります。そこがなかなか伝えにくいのがもどかしいところです。まずは騙されたと思ってぜひ使ってみてください！Apple Watch仲間が増えればうれしいです！</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;私は4年ほど前からApple Watchを愛用しています。最初に買ったときは、本当に使うかなーと少し疑っていたのですが、今ではApple Watchなしの生活は考えられません。最近は最新のSeries 6に買い替えました。今回はApple Watchの良さを啓蒙したいと思い
+    
+    </summary>
+    
+    
+      <category term="プライベート" scheme="https://blog.mmmcorp.co.jp/tags/%E3%83%97%E3%83%A9%E3%82%A4%E3%83%99%E3%83%BC%E3%83%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>夜中になったらAWSアクセスキーを自動的に無効化する仕組みを作ろう</title>
+    <link href="https://blog.mmmcorp.co.jp/blog/2020/12/09/deactivate-aws-access-key/"/>
+    <id>https://blog.mmmcorp.co.jp/blog/2020/12/09/deactivate-aws-access-key/</id>
+    <published>2020-12-09T12:23:02.000Z</published>
+    <updated>2020-12-11T04:55:28.170Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="はじめに"><a href="#はじめに" class="headerlink" title="はじめに"></a>はじめに</h2><p><img src="/images/2020-12-09-deactivate-aws-access-key/IAM.png" alt="Identity-and-Access-Management"></p>
+<p>西藤です。</p>
+<p>みなさんはAWSの各種サービスを使った開発を行う際、AWSの各種操作の権限を取得するための「アクセスキー」の取り扱いはどのようにしていますか？</p>
+<p>アクセスキー（とシークレットキー）は漏洩した場合、不正にAWSリソースを作成・利用されてしまう恐れなどがあります。</p>
+<p>そのため、不正利用を防ぐために</p>
+<ul>
+<li>アクセスキーを用いず、「ロール」ベースでの権限付与</li>
+<li>アクセスキー自体に付与する権限を必要最低限のものにする</li>
+</ul>
+<p>などの対策が考えられます。</p>
+<p>しかし、「個人的に何かAWSを使って検証したい」というようなときには「権限を最小限に絞って….」などの調整は後回しにしてしまいがちです。<br>「AWSを使った検証」が目的なのですから、「権限の調整」に時間を取られたくはありませんよね。<br>とはいえ、不正利用されないためのなんらかの措置は講じておきたいもの….</p>
+<p>今回はそんな開発者の方に使っていただきたい自動化設定の実装例を紹介いたします。</p>
+<h2 id="実装想定"><a href="#実装想定" class="headerlink" title="実装想定"></a>実装想定</h2><p>今回は次のような場面を想定しています。</p>
+<ul>
+<li>IAMユーザーを発行しており、それに紐づくアクセスキーを使用している</li>
+</ul>
+<p>仮にこのIAMユーザー名を <code>access-key-user</code>としましょう。<br>AWSマネジメントコンソールの画面で言うとこんな感じでしょうか</p>
+<p><img src="/images/2020-12-09-deactivate-aws-access-key/1.png" alt="IAMユーザーの例"></p>
+<p>そして、今回は</p>
+<ul>
+<li>日本時刻0:00になったら <code>access-key-user</code>のアクセスキーを無効化する。</li>
+</ul>
+<p>という仕組みを実装します。<br>（”Serverless Framework”を使用しますが、デプロイ自体の解説は割愛いたします。）</p>
+<h2 id="実装用のコード内容"><a href="#実装用のコード内容" class="headerlink" title="実装用のコード内容"></a>実装用のコード内容</h2><h3 id="lambda関数"><a href="#Lambda関数" class="headerlink" title="Lambda関数"></a>Lambda関数</h3><p>Lambda関数はPythonで実装して、コードは次の通りです。</p>
+<p>handler.py</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> boto3</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">deactivate_access_key</span><span class="params">(access_key)</span>:</span></span><br><span class="line">    responce = access_key.deactivate()</span><br><span class="line">    print(responce)</span><br><span class="line">    HTTPStatusCode = responce[<span class="string">'ResponseMetadata'</span>][<span class="string">'HTTPStatusCode'</span>]</span><br><span class="line">    print(<span class="string">"HTTPStatusCode:"</span>)</span><br><span class="line">    print(HTTPStatusCode)</span><br><span class="line">    accessKeyId = access_key.access_key_id</span><br><span class="line">    print(accessKeyId + <span class="string">" is deactivated."</span>)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">(event, context)</span>:</span></span><br><span class="line">    <span class="comment"># 環境変数から取得</span></span><br><span class="line">    targetAccessKeyUserName = os.environ[<span class="string">'TARGET_ACCESS_KEY_USER_NAME'</span>]</span><br><span class="line">    targetAccessKeyId = os.environ[<span class="string">'TARGET_ACCESS_KEY_ID'</span>]</span><br><span class="line">    <span class="comment"># IAMのリソース作成</span></span><br><span class="line">    iamResource = boto3.resource(<span class="string">'iam'</span>)</span><br><span class="line">    access_key = iamResource.AccessKey(targetAccessKeyUserName, targetAccessKeyId)</span><br><span class="line">    <span class="comment"># アクセスキーの無効化</span></span><br><span class="line">    deactivate_access_key(access_key)</span><br><span class="line">    <span class="keyword">return</span></span><br></pre></td></tr></table></figure>
+<p>コード内には環境変数が2つありますが、それぞれ<br><code>TARGET_ACCESS_KEY_USER_NAME</code>は無効化を行いたいアクセスキーが紐づくIAMユーザー名（今回の例では <code>access-key-user</code>）<br><code>TARGET_ACCESS_KEY_ID</code>は無効化を行いたいアクセスキー（<code>AKIAIOSFODNN7EXAMPLE</code>のような英数字で表される）<br>を適用します。<br>※もし、Serverless Frameworkを使わない場合はLambdaの環境変数設定にて記載してください。</p>
+<p>そして、このLambda関数が実行されるとターゲットとなるアクセスキーが無効化されます。</p>
+<h3 id="serverless-frameworkの実装準備"><a href="#Serverless-Frameworkの実装準備" class="headerlink" title="Serverless Frameworkの実装準備"></a>Serverless Frameworkの実装準備</h3><p>次に、上記のLambda関数を毎日0:00に自動実行する設定を行なっていきます。<br>Serverless Frameworkでの実装で使う<code>.env</code>ファイルと<code>serverless.yml</code>ファイルは次のようになります。</p>
+<p>.env</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">AWS_ACCESS_KEY_ID=&lt;Serverless Frameworkでデプロイを行う用のアクセスキー&gt;</span><br><span class="line">AWS_SECRET_ACCESS_KEY=&lt;Serverless Frameworkでデプロイを行う用のシークレットキー&gt;</span><br><span class="line">TARGET_ACCESS_KEY_USER_NAME=access-key-user</span><br><span class="line">TARGET_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE</span><br></pre></td></tr></table></figure>
+<p>serverless.yml</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">service:</span> <span class="string">deactivate-access-key</span></span><br><span class="line"></span><br><span class="line"><span class="attr">plugins:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">serverless-dotenv-plugin</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">serverless-prune-plugin</span></span><br><span class="line"></span><br><span class="line"><span class="attr">custom:</span></span><br><span class="line"><span class="attr">  dotenv:</span></span><br><span class="line"><span class="attr">    include:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">TARGET_ACCESS_KEY_USER_NAME</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">TARGET_ACCESS_KEY_ID</span></span><br><span class="line"><span class="attr">  prune:</span></span><br><span class="line"><span class="attr">    automatic:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">    number:</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="attr">package:</span></span><br><span class="line"><span class="attr">  exclude:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">./**</span></span><br><span class="line"><span class="attr">  include:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">./handler.py</span></span><br><span class="line"></span><br><span class="line"><span class="attr">provider:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">aws</span></span><br><span class="line"><span class="attr">  runtime:</span> <span class="string">python3.8</span></span><br><span class="line"><span class="attr">  region:</span> <span class="string">ap-northeast-1</span></span><br><span class="line"><span class="attr">  stage:</span> <span class="string">dev</span></span><br><span class="line"><span class="attr">  memorySize:</span> <span class="number">128</span></span><br><span class="line"><span class="attr">  iamRoleStatements:</span></span><br><span class="line"><span class="attr">    - Effect:</span> <span class="string">Allow</span></span><br><span class="line"><span class="attr">      Action:</span></span><br><span class="line"><span class="bullet">        -</span> <span class="string">"iam:UpdateAccessKey"</span></span><br><span class="line"><span class="attr">      Resource:</span></span><br><span class="line"><span class="bullet">        -</span> <span class="string">"*"</span></span><br><span class="line"></span><br><span class="line"><span class="attr">functions:</span></span><br><span class="line"><span class="attr">  deactivate-access-key:</span></span><br><span class="line"><span class="attr">    description:</span> <span class="string">アクセスキーの無効化</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">deactivate-access-key</span></span><br><span class="line"><span class="attr">    handler:</span> <span class="string">handler.main</span></span><br><span class="line"><span class="attr">    events:</span></span><br><span class="line"><span class="attr">      - schedule:</span></span><br><span class="line"><span class="attr">          name:</span> <span class="string">deactivate-access-key</span></span><br><span class="line"><span class="attr">          description:</span> <span class="string">JST</span> <span class="number">0</span><span class="string">:00にアクセスキーを無効化する</span></span><br><span class="line"><span class="attr">          rate:</span> <span class="string">cron(00</span> <span class="number">15</span> <span class="string">*</span> <span class="string">*</span> <span class="string">?</span> <span class="string">*)</span></span><br></pre></td></tr></table></figure>
+<p>注目していただきたいのは、最後、数行分の部分です。<br>cronでの指定がありますがこれにより上記のLambda関数が毎日JST 0:00に実行されるようにCloudWatch Eventsルールの設定が付きますので、<br>「夜になったらAWSアクセスキーを自動的に無効化」が実現します。</p>
+<p>あと、Dockerベースでデプロイできるようにしましょう。<br><code>Dockerfile</code>と<code>docker-compose.yml</code>は次の通りです。</p>
+<p>Dockerfile</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> node:<span class="number">15.3</span>.<span class="number">0</span>-alpine</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> npm update -g</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash"><span class="comment"># install serverless framework</span></span></span><br><span class="line"><span class="bash">RUN npm install -g serverless</span></span><br><span class="line"><span class="bash"><span class="comment"># install serverless plugins</span></span></span><br><span class="line"><span class="bash">RUN npm i -D serverless-dotenv-plugin</span></span><br><span class="line"><span class="bash">RUN npm install --save-dev serverless-prune-plugin</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash"><span class="comment"># change work directory</span></span></span><br><span class="line"><span class="bash">WORKDIR /app</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">COPY . /app/</span></span><br></pre></td></tr></table></figure>
+<p>docker-compose.yml</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">"3.8"</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line"><span class="attr">  serverless:</span></span><br><span class="line"><span class="attr">    build:</span></span><br><span class="line"><span class="attr">      context:</span> <span class="string">.</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">.:/app</span></span><br><span class="line"><span class="attr">    env_file:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">.env</span></span><br></pre></td></tr></table></figure>
+<h2 id="実装結果"><a href="#実装結果" class="headerlink" title="実装結果"></a>実装結果</h2><p>以上を踏まえて、デプロイすると次のようになります。</p>
+<p>Lambda関数<br><img src="/images/2020-12-09-deactivate-aws-access-key/2.png" alt="Lambda関数"></p>
+<p>CloudWatch Eventsルール<br><img src="/images/2020-12-09-deactivate-aws-access-key/3.png" alt="CloudWatch Eventsルール"></p>
+<p>JST 0:00になるとアクセスキーを無効化するLambda関数が実行される。と言う形です。</p>
+<p>そして、この設定を終えて、Lambda実行ログを見ますと</p>
+<p><img src="/images/2020-12-09-deactivate-aws-access-key/4.png" alt="Lambdaの実行ログ"></p>
+<p>と言うようにアクセスキーの無効化が実行された旨表示されており、アクセスキーのあるIAMユーザーの情報を見にいくと</p>
+<p><img src="/images/2020-12-09-deactivate-aws-access-key/5.png" alt="無効化されたアクセスキー"></p>
+<p>ちゃんと、アクセスキーが無効になっています。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>以上でAWSアクセスキーを自動的に無効化する実装の完了です。</p>
+<p>このようにしておけば、仮にAWSアクセスキーに強力な権限を付与したまま残してしまっていても、少なくとも毎日0:00になったらアクセスキー自体が無効化されるので、「強い権限付与した状態を忘れたまま放置してしまっていた」と言うような場面は回避できます。</p>
+<p>本来は最小権限の原則に則って必要な権限を必要なだけ付与する、アクセスキーの漏洩に注意しキー自体も定期的なローテーションを行うなど、IAMのベストプラクティスに沿った運用を行うことが大原則ではありますが、安全にアクセスキーを使うための1つのアイディアとして参考になれば幸いです。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;はじめに&quot;&gt;&lt;a href=&quot;#はじめに&quot; class=&quot;headerlink&quot; title=&quot;はじめに&quot;&gt;&lt;/a&gt;はじめに&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/images/2020-12-09-deactivate-aws-access-key/IAM.png
+    
+    </summary>
+    
+    
+      <category term="AWS" scheme="https://blog.mmmcorp.co.jp/tags/AWS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>イチオシのesaドキュメントを紹介活動始めました</title>
+    <link href="https://blog.mmmcorp.co.jp/blog/2020/12/05/recommend-esa/"/>
+    <id>https://blog.mmmcorp.co.jp/blog/2020/12/05/recommend-esa/</id>
+    <published>2020-12-05T10:49:42.000Z</published>
+    <updated>2020-12-11T04:55:28.170Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/images/recommend-esa/doc.png" alt=""></p>
+<p>社内で「イチオシのesaドキュメント紹介活動」を始めました。  </p>
+<h2 id="暗黙知の形式知化"><a href="#暗黙知の形式知化" class="headerlink" title="暗黙知の形式知化"></a>暗黙知の形式知化</h2><p>弊社では、創業当初からメンバー全員がリモートワークをしていることもあり、かなり初期からできるだけ暗黙知を減らすべく、さまざまなことをドキュメントに書き起こすよう啓蒙してきました。</p>
+<p>【参考】  </p>
+<ul>
+<li><a href="https://blog.mmmcorp.co.jp/blog/2017/10/14/nice-esa/">ナイスesa活動 | MMMブログ</a></li>
+</ul>
+<p>また、記事が探しやすいように、ディレクトリのルールを制定したり、タグ付け運用を整備したりもしてきました。</p>
+<p>【参考】  </p>
+<ul>
+<li><a href="https://blog.mmmcorp.co.jp/blog/2017/02/03/esa_document_base_maintenance/">esa.ioをベースとした社内ドキュメント基盤の整備活動 | MMMブログ</a></li>
+</ul>
+<p>こういった活動もあってか、今や記事数が2,500を超えています。<br>しかし、せっかく有益な記事があっても、</p>
+<p>「そんな記事があったなんて知らなかった」<br>「せっかく渾身の記事を書いたのに、チームメンバーが見てくれなかった」  </p>
+<p>という状況があったので、社内で「イチオシのesaドキュメント紹介活動」を始めることにしました。</p>
+<h2 id="実施方法"><a href="#実施方法" class="headerlink" title="実施方法"></a>実施方法</h2><p>実施方法としては下記のとおりです。</p>
+<ul>
+<li>毎週金曜日の朝会までに、イチオシの記事を各自ピックアップ</li>
+<li>朝会の場で、ピックアップした記事の内容の紹介、ピックアップした理由を共有</li>
+</ul>
+<h2 id="ねらい"><a href="#ねらい" class="headerlink" title="ねらい"></a>ねらい</h2><p>この活動を行うことで、以下のような効果が達成できるといいなと期待しています。</p>
+<ul>
+<li>各自で紹介する記事を探してもらうことで、これまで読んでいなかった記事を見てもらえるようになる</li>
+<li>「実際のプロジェクトのxxxな場面で役に立った」という情報共有することで、どういった情報が役に立つのかがチーム内で明確になり、今後のドキュメントの品質アップにつながる</li>
+<li>ドキュメントの中には、個人的な趣味について書かれた記事もあり、他のメンバーについてより深く理解できるようになる</li>
+<li>記事を書いた本人が、記事に書ききれなかったことを口頭で補足することで、さらに深い理解につながる</li>
+<li>記事の情報が古かった場合に、気づいたメンバーが情報を更新・削除することで、ドキュメントのメンテナンスにもつながる</li>
+</ul>
+<h2 id="やってみた感想"><a href="#やってみた感想" class="headerlink" title="やってみた感想"></a>やってみた感想</h2><p>数回実施してみた感想としては、上記のねらい以外にも、</p>
+<p>「過去にどういうメンバーがいたのか知れて面白い」<br>「5年前はこういうリアクション使ってましたねー！」<br>「合宿楽しそう！やってみたい」  </p>
+<p>など、活発なコミュニケーションにもつながっていて、今のところ良い取り組みになっているかな、という印象です。</p>
+<p><img src="/images/recommend-esa/pickup_articles.png" alt=""></p>
+<p>この活動を通して、さらにesaドキュメントが充実していくようになれば嬉しいなと期待しています。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/images/recommend-esa/doc.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;社内で「イチオシのesaドキュメント紹介活動」を始めました。  &lt;/p&gt;
+&lt;h2 id=&quot;暗黙知の形式知化&quot;&gt;&lt;a href=&quot;#暗黙知の形式知化&quot; class=
+    
+    </summary>
+    
+    
+      <category term="社内制度" scheme="https://blog.mmmcorp.co.jp/tags/%E7%A4%BE%E5%86%85%E5%88%B6%E5%BA%A6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>AWS新機能「AWS Lambda Container Image Support」利用時のCI/CDパイプライン構築</title>
+    <link href="https://blog.mmmcorp.co.jp/blog/2020/12/04/aws_lambda_container_image_support_cicd_pipeline/"/>
+    <id>https://blog.mmmcorp.co.jp/blog/2020/12/04/aws_lambda_container_image_support_cicd_pipeline/</id>
+    <published>2020-12-04T23:07:23.000Z</published>
+    <updated>2020-12-11T04:55:28.170Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="はじめに"><a href="#はじめに" class="headerlink" title="はじめに"></a>はじめに</h2><p>2020年11月30日から開催されているAWSのグローバルカンファレンス<a href="https://reinvent.awsevents.com/" target="_blank" rel="noopener">AWS re:Invent 2020</a> にて、「<a href="https://aws.amazon.com/jp/blogs/aws/new-for-aws-lambda-container-image-support/" target="_blank" rel="noopener">AWS Lambda Container Image Support</a>」 という新サービスが発表されました。</p>
+<p>AWS Lambda Container Image Supportは、AWSのサーバーレスコンピューティング「AWS Lambda」にて、仮想コンテナ技術を利用できるようになる画期的なサービスです。</p>
+<p>本検証では、AWS Lambda Container Image Supportを使い、任意のDockerイメージをデプロイするまでのContinuous Integration(CI) / Continuous Delivery(CD)の実装をご紹介いたします。</p>
+<h2 id="目次"><a href="#目次" class="headerlink" title="目次"></a>目次</h2><!-- toc -->
+<ul>
+<li><a href="#検証の背景と目的">検証の背景と目的</a></li>
+<li><a href="#検証の流れ">検証の流れ</a><ul>
+<li><a href="#1-python39-alpine312ベースのdockerイメージビルド">1. <code>python:3.9-alpine3.12</code>ベースのDockerイメージビルド</a></li>
+<li><a href="#2-amazon-ecrにリポジトリを作成">2. Amazon ECRにリポジトリを作成</a></li>
+<li><a href="#3-ビルドしたコンテナイメージをamazon-ecrにプッシュする">3. ビルドしたコンテナイメージをAmazon ECRにプッシュする</a></li>
+<li><a href="#4-プッシュしたコンテナイメージからlambda関数を作成する">4. プッシュしたコンテナイメージからLambda関数を作成する</a></li>
+<li><a href="#5-cicdパイプラインの実装">5. CI/CDパイプラインの実装</a></li>
+</ul>
+</li>
+<li><a href="#検証の振り返り">検証の振り返り</a></li>
+<li><a href="#aws-lambdaのビジネス活用をサポート">AWS Lambdaのビジネス活用をサポート</a></li>
+</ul>
+<!-- tocstop -->
+<h2 id="検証の背景と目的"><a href="#検証の背景と目的" class="headerlink" title="検証の背景と目的"></a>検証の背景と目的</h2><p>MMMでは運用しているLambdaワークロードで <code>wget</code> および <code>awscli</code> を利用しているケースがあります。</p>
+<p>しかし、Lambda実行環境には <code>wget</code> がインストールされておらす、これまではビルドした <code>wget</code> バイナリを追加して利用するという手法を取っていました。ビルドの実行環境によって生成されるバイナリは異なるため、今後のLambda環境の変更により、バイナリが動作しなくなるというリスクが内包していました。</p>
+<p>また、AWSコマンドスクリプトを作成してプロジェクトに追加することによって、Lambda内で <code>awscli</code> を利用し <code>aws s3 sync</code> コマンドを実行しているケースもあります。</p>
+<p>今回のAWS Lambda Container Image Supportの活用により、<code>wget</code> そして <code>awscli</code> をDockerビルドプロセスの中でインストールし、プロジェクト構成の簡略化及びワークロードの安定性を高めることを目的としています。</p>
+<h2 id="検証の流れ"><a href="#検証の流れ" class="headerlink" title="検証の流れ"></a>検証の流れ</h2><ol>
+<li><code>python:3.9-alpine3.12</code>をベースイメージとし<code>awscli</code>を<code>pip</code> <code>wget</code>を<code>apk add</code>でそれぞれインストール</li>
+<li>Amazon ECRにリポジトリを作成</li>
+<li>ビルドしたコンテナイメージをAmazon ECRにプッシュ</li>
+<li>プッシュしたコンテナイメージからLambda関数を作成</li>
+<li>上記1-4を自動化するCI/CDパイプラインを実装</li>
+</ol>
+<p>対象ワークロードの概念は以下のとおりです。</p>
+<p><img src="/images/aws_lambda_container_image_support_cicd_pipeline/aws-architecture.png" alt="ワークロードイメージ図"></p>
+<h3 id="1-python39-alpine312ベースのdockerイメージビルド"><a href="#1-python-3-9-alpine3-12ベースのDockerイメージビルド" class="headerlink" title="1. python:3.9-alpine3.12ベースのDockerイメージビルド"></a>1. <code>python:3.9-alpine3.12</code>ベースのDockerイメージビルド</h3><p>今回は<code>python:3.9-alpine3.12</code>をベースイメージとして使用し、このイメージに対して <code>wget</code>と<code>awscli</code>をインストールしていきます。</p>
+<p>プロジェクトにDockerを利用する前後で、下記ディレクトリ構成に変更しています。</p>
+<p><strong>Docker利用前</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── aws</span><br><span class="line">├── bin</span><br><span class="line">│   └── wget</span><br><span class="line">├── main.py</span><br><span class="line">└── rename.sh</span><br></pre></td></tr></table></figure>
+<p><strong>Docker利用後</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── .circleci</span><br><span class="line">│   └── config.yml</span><br><span class="line">├── Dockerfile</span><br><span class="line">├── app</span><br><span class="line">│   ├── main.py</span><br><span class="line">│   └── rename.sh</span><br><span class="line">└── scripts</span><br><span class="line">    ├── circleci_lambda.sh</span><br><span class="line">    ├── create_envfile.sh</span><br><span class="line">    └── docker-build.sh</span><br></pre></td></tr></table></figure>
+<p>本検証では下記Dockerfileを作成します。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Define global args</span></span><br><span class="line"><span class="keyword">ARG</span> FUNCTION_DIR=<span class="string">"/home/app/"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Stage 1 - bundle base image + runtime</span></span><br><span class="line"><span class="comment"># Grab a fresh copy of the image and install GCC</span></span><br><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.9</span>-alpine3.<span class="number">12</span> AS python-alpine</span><br><span class="line"><span class="comment"># Install GCC (Alpine uses musl but we compile and link dependencies with GCC)</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apk add --no-cache \</span></span><br><span class="line"><span class="bash">    libstdc++</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash"><span class="comment"># Stage 2 - build function and dependencies</span></span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash"><span class="comment"># Install aws-lambda-cpp build dependencies</span></span></span><br><span class="line"><span class="bash">RUN apk add --no-cache \</span></span><br><span class="line"><span class="bash">    build-base \</span></span><br><span class="line"><span class="bash">    libtool \</span></span><br><span class="line"><span class="bash">    autoconf \</span></span><br><span class="line"><span class="bash">    automake \</span></span><br><span class="line"><span class="bash">    libexecinfo-dev \</span></span><br><span class="line"><span class="bash">    make \</span></span><br><span class="line"><span class="bash">    cmake \</span></span><br><span class="line"><span class="bash">    libcurl \</span></span><br><span class="line"><span class="bash">    wget \</span></span><br><span class="line"><span class="bash">    bash \</span></span><br><span class="line"><span class="bash">    <span class="built_in">which</span> \</span></span><br><span class="line"><span class="bash">    groff</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash"><span class="comment"># Install AWS CLI</span></span></span><br><span class="line"><span class="bash">RUN pip install awscli</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">FROM python-alpine AS build-image</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash"><span class="comment"># Authenticating with AWS CLI</span></span></span><br><span class="line"><span class="bash">ARG AWS_ACCESS_KEY_ID</span></span><br><span class="line"><span class="bash">ARG AWS_SECRET_ACCESS_KEY</span></span><br><span class="line"><span class="bash">ENV AWS_ACCESS_KEY_ID=<span class="variable">$&#123;AWS_ACCESS_KEY_ID&#125;</span></span></span><br><span class="line"><span class="bash">ENV AWS_SECRET_ACCESS_KEY=<span class="variable">$&#123;AWS_SECRET_ACCESS_KEY&#125;</span></span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash"><span class="comment"># Include global args in this stage of the build</span></span></span><br><span class="line"><span class="bash"><span class="comment"># Create function directory</span></span></span><br><span class="line"><span class="bash">RUN mkdir -p /home/app/</span></span><br><span class="line"><span class="bash"><span class="comment"># Copy handler function</span></span></span><br><span class="line"><span class="bash">COPY app/* /home/app/</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">RUN ls -la /home/app/</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">RUN chmod 755 /home/app/rename.sh</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">RUN ls -la /home/app/</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash"><span class="comment"># Install the function's dependencies</span></span></span><br><span class="line"><span class="bash">RUN aws s3 cp s3://aws-lambda-runtime-clients/python/awslambdaruntimeclient-0.0.1.tar.gz awslambdaruntimeclient.tar.gz &amp;&amp; \</span></span><br><span class="line"><span class="bash">    python3.9 -m pip install \</span></span><br><span class="line"><span class="bash">    awslambdaruntimeclient.tar.gz \</span></span><br><span class="line"><span class="bash">    --target /home/app/</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash"><span class="comment"># Stage 3 - final runtime image</span></span></span><br><span class="line"><span class="bash"><span class="comment"># Grab a fresh copy of the Python image</span></span></span><br><span class="line"><span class="bash">FROM python-alpine</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash"><span class="comment"># Set working directory to function root directory</span></span></span><br><span class="line"><span class="bash">WORKDIR /home/app/</span></span><br><span class="line"><span class="bash"><span class="comment"># Copy in the built dependencies</span></span></span><br><span class="line"><span class="bash">COPY --from=build-image /home/app/ /home/app/</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">RUN ls -la /home/app/</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">RUN ls -la /usr/<span class="built_in">local</span>/bin</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">RUN ls -la /usr/bin</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">ENTRYPOINT [ <span class="string">"/usr/local/bin/python"</span>, <span class="string">"-m"</span>, <span class="string">"awslambdaruntimeclient"</span> ]</span></span><br><span class="line"><span class="bash">CMD [ <span class="string">"main.lambda_handler"</span> ]</span></span><br></pre></td></tr></table></figure>
+<p>Dockerfile作成後、イメージビルドを実施します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ docker build . \</span><br><span class="line">-f Dockerfile \</span><br><span class="line">-t lambda/python:3.9-alpine3.12 \</span><br><span class="line">--build-arg AWS_ACCESS_KEY_ID=&quot;$(aws configure get mmm-test-env.aws_access_key_id)&quot; \</span><br><span class="line">--build-arg AWS_SECRET_ACCESS_KEY=&quot;$(aws configure get mmm-test-env.aws_secret_access_key)&quot;</span><br></pre></td></tr></table></figure>
+<p>ビルドが成功し、<code>wget</code>や<code>awscli</code>がインストールされていることが確認できます。</p>
+<h3 id="2-amazon-ecrにリポジトリを作成"><a href="#2-Amazon-ECRにリポジトリを作成" class="headerlink" title="2. Amazon ECRにリポジトリを作成"></a>2. Amazon ECRにリポジトリを作成</h3><p>コンテナイメージが用意できたら、次はイメージをプッシュするAmazon Elastic Container Registry(ECR)を用意します。</p>
+<p>今回は<code>docker-lambda</code>という名前でリポジトリを用意しました。</p>
+<p><img src="/images/aws_lambda_container_image_support_cicd_pipeline/ecr.png" alt="ECR"></p>
+<h3 id="3-ビルドしたコンテナイメージをamazon-ecrにプッシュする"><a href="#3-ビルドしたコンテナイメージをAmazon-ECRにプッシュする" class="headerlink" title="3. ビルドしたコンテナイメージをAmazon ECRにプッシュする"></a>3. ビルドしたコンテナイメージをAmazon ECRにプッシュする</h3><p>ビルドしたコンテナイメージにタグ付けを行い、先ほど作成したECRリポジトリにプッシュします。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ docker tag lambda/python:3.9-alpine3.12 000000000000.dkr.ecr.sa-east-1.amazonaws.com/docker-lambda:v1.0.0</span><br><span class="line"></span><br><span class="line">$ export AWS_ACCESS_KEY_ID=&lt;YOUR_AWS_ACCESS_KEY_ID&gt;</span><br><span class="line">$ export AWS_SECRET_ACCESS_KEY=&lt;YOUR_AWS_SECRET_ACCESS_KEY&gt;</span><br><span class="line">$(aws ecr get-login --region sa-east-1 --no-include-email)</span><br><span class="line"></span><br><span class="line">$ docker push 000000000000.dkr.ecr.sa-east-1.amazonaws.com/docker-lambda:v1.0.0</span><br></pre></td></tr></table></figure>
+<p>AWSコンソールでECRを開くと、先程プッシュしたイメージがリポジトリに追加されていることが確認できます。</p>
+<p><img src="/images/aws_lambda_container_image_support_cicd_pipeline/image.png" alt="Image"></p>
+<h3 id="4-プッシュしたコンテナイメージからlambda関数を作成する"><a href="#4-プッシュしたコンテナイメージからLambda関数を作成する" class="headerlink" title="4. プッシュしたコンテナイメージからLambda関数を作成する"></a>4. プッシュしたコンテナイメージからLambda関数を作成する</h3><p>イメージプッシュが完了できたら、早速Lambda関数を作成していきましょう。</p>
+<p>下記コマンドのように<code>--code ImageUri=&lt;YOUR_IMAGE_URI&gt;</code>で先程プッシュしたイメージのURIを指定してあげます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ aws lambda --region sa-east-1 create-function \</span><br><span class="line">--function-name docker-lambda-function --package-type Image \</span><br><span class="line">--code ImageUri=&lt;YOUR_IMAGE_URI&gt; \</span><br><span class="line">--role &lt;YOUR_IAM_ROLE_ARN&gt;</span><br></pre></td></tr></table></figure>
+<p>AWSコンソールからLambda関数が作成できていることが確認できます。(作成完了までに多少時間がかかることがあります)</p>
+<p><img src="/images/aws_lambda_container_image_support_cicd_pipeline/lambda-list.png" alt="Lambda"></p>
+<p>関数を作成できたら環境変数をセットします。今回はAmazon S3に静的ファイルをアップロードするというワークロードのため、<code>S3BUCKET</code>というキーに対して任意のバケット名を設定します。</p>
+<p><img src="/images/aws_lambda_container_image_support_cicd_pipeline/lambda-list.png" alt="Lambda"></p>
+<p>また、Lambdaではデフォルトでタイムアウト3秒に設定されているため、60秒程度に延長しておきます。</p>
+<p>次に関数をテストしていきます。</p>
+<p>今回は下記のようなテストイベントを作成しました。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;url&quot;: &quot;https://mmmcorp.co.jp/&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/images/aws_lambda_container_image_support_cicd_pipeline/func-test.png" alt="Test"></p>
+<p>S3バケットを確認すると、静的ファイルがアップロードされており、DockerイメージがLambda上で正常に動作していることが確認できます。</p>
+<p><img src="/images/aws_lambda_container_image_support_cicd_pipeline/s3-bucket.png" alt="S3Bucket"></p>
+<h3 id="5-cicdパイプラインの実装"><a href="#5-CI-CDパイプラインの実装" class="headerlink" title="5. CI/CDパイプラインの実装"></a>5. CI/CDパイプラインの実装</h3><p>次に、イメージビルド、ECRへのイメージプッシュ、Lambda関数のアップデートの一連の流れを、masterブランチへのPushをトリガーに、CI/CDパイプラインとして実装してきます。</p>
+<p>CI/CDにはCircleCIを利用し、実装イメージは下記となります。</p>
+<p>masterブランチへのPush・マージを起点として、Dockerコンテナ内でイメージビルドを実行。ビルドしたコンテナイメージをECRにプッシュし、awscliでLambda関数をアップデートするという流れです。</p>
+<p><img src="/images/aws_lambda_container_image_support_cicd_pipeline/cicd-pipeline.png" alt="Pipeline"></p>
+<p>早速、<code>.circleci/config.yml</code>と、ymlファイル内で実行するスクリプトファイルを準備します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">defaults: &amp;defaults</span><br><span class="line">    working_directory: ~/app</span><br><span class="line">    machine:</span><br><span class="line">      image: ubuntu-1604:201903-01</span><br><span class="line">      docker_layer_caching: true</span><br><span class="line">version: 2.1</span><br><span class="line">jobs:</span><br><span class="line">  build:</span><br><span class="line">    &lt;&lt;: *defaults</span><br><span class="line">    steps:</span><br><span class="line">      - checkout</span><br><span class="line">      - run:</span><br><span class="line">          name: ls</span><br><span class="line">          command: ls</span><br><span class="line">      - run:</span><br><span class="line">          name: create .env file</span><br><span class="line">          command: ./scripts/create_envfile.sh</span><br><span class="line">      - persist_to_workspace:</span><br><span class="line">          root: ~/app</span><br><span class="line">          paths:</span><br><span class="line">              - ./*</span><br><span class="line">  deploy:</span><br><span class="line">    working_directory: ~/app</span><br><span class="line">    docker:</span><br><span class="line">      - image: docker:19-git</span><br><span class="line">    steps:</span><br><span class="line">      - attach_workspace:</span><br><span class="line">          at: ~/app</span><br><span class="line">      - setup_remote_docker</span><br><span class="line">      - run:</span><br><span class="line">          name: install python, pip, awscli</span><br><span class="line">          command: |</span><br><span class="line">            apk add --update python2 \</span><br><span class="line">            jq \</span><br><span class="line">            python2-dev \</span><br><span class="line">            py-pip \</span><br><span class="line">            build-base \</span><br><span class="line">            gcc \</span><br><span class="line">            abuild \</span><br><span class="line">            binutils \</span><br><span class="line">            binutils-doc \</span><br><span class="line">            gcc-doc \</span><br><span class="line">            bash \</span><br><span class="line">            &amp;&amp; pip install --no-cache-dir awscli</span><br><span class="line">      - run:</span><br><span class="line">          name: ls</span><br><span class="line">          command: ls</span><br><span class="line">      - run:</span><br><span class="line">          name: docker build</span><br><span class="line">          command: ./scripts/docker-build.sh</span><br><span class="line">      - run:</span><br><span class="line">          name: ECR login</span><br><span class="line">          command: $(aws ecr get-login --region sa-east-1 --no-include-email)</span><br><span class="line">      - run:</span><br><span class="line">          name: ECR deploy</span><br><span class="line">          no_output_timeout: 2400</span><br><span class="line">          command: ./scripts/circleci_lambda.sh</span><br><span class="line">workflows:</span><br><span class="line">  version: 2</span><br><span class="line">  build_and_deploy:</span><br><span class="line">    jobs:</span><br><span class="line">      - build</span><br><span class="line">      - deploy:</span><br><span class="line">          requires:</span><br><span class="line">            - build</span><br><span class="line">          filters:</span><br><span class="line">            branches:</span><br><span class="line">              only:</span><br><span class="line">                - master</span><br></pre></td></tr></table></figure>
+<p>今回、CircleCIのジョブの中で3種類のスクリプトファイルを呼び出して実行しています。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line">env | sort | grep AWS_ &gt; .env</span><br><span class="line">cat .env</span><br><span class="line"></span><br><span class="line">exit 0</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line">docker build . -f Dockerfile --tag &lt;YOUR_ECR_REPOSITORY_NAME&gt;:&lt;YOUR_TAG&gt; --build-arg AWS_ACCESS_KEY_ID=&quot;$&#123;AWS_ACCESS_KEY_ID&#125;&quot; --build-arg AWS_SECRET_ACCESS_KEY=&quot;$&#123;AWS_SECRET_ACCESS_KEY&#125;&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line">echo &quot;Push Image to ECR...&quot;</span><br><span class="line">docker push &lt;YOUR_ECR_REPOSITORY_NAME&gt;:&lt;YOUR_TAG&gt;</span><br><span class="line"></span><br><span class="line">echo &quot;Download the model update from Amazon S3 to enable the AWS Lambda private beta feature...&quot;</span><br><span class="line">aws s3 cp s3://aws-lambda-image-beta-tooling/cli/lambda-2015-03-31.normal.json .</span><br><span class="line"></span><br><span class="line">echo &quot;Install the model...&quot;</span><br><span class="line">aws configure add-model --service-model file://lambda-2015-03-31.normal.json --service-name lambda</span><br><span class="line"></span><br><span class="line">echo &quot;build done and running lambda update...&quot;</span><br><span class="line">aws lambda update-function-code --region sa-east-1 --function-name &lt;YOUR_LAMBDA_FUNCTION_NAME&gt; --image-uri &lt;YOUR_IMAGE_URI&gt;</span><br><span class="line"></span><br><span class="line">RETURNCD=$?</span><br><span class="line">if [ $&#123;RETURNCD&#125; -ne 0 ]; then</span><br><span class="line">  echo</span><br><span class="line">  echo &quot;Lambda Update FAILED&quot;</span><br><span class="line">  echo</span><br><span class="line">  exit $&#123;RETURNCD&#125;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">exit 0</span><br></pre></td></tr></table></figure>
+<h2 id="検証の振り返り"><a href="#検証の振り返り" class="headerlink" title="検証の振り返り"></a>検証の振り返り</h2><p>今回の検証ではAWS Lambda Container Image Supportを活用して、既存ワークロードの改善を図っています。プロジェクトをコンテナでパッケージ化することで、Lambda基盤に依存しない形でのワークロード実行が可能になり、ワークロードの安定性を向上させることができました。</p>
+<h2 id="aws-lambdaのビジネス活用をサポート"><a href="#AWS-Lambdaのビジネス活用をサポート" class="headerlink" title="AWS Lambdaのビジネス活用をサポート"></a>AWS Lambdaのビジネス活用をサポート</h2><p>株式会社MMMは 、AWS Lambdaのビジネス活用に豊富な実績を持っており、<a href="https://blog.mmmcorp.co.jp/blog/2019/11/15/aws_service_delivery_program_aws_lambda/">AWS LambdaのAWSサービスデリバリーパートナーにも認定</a>されています。</p>
+<p>MMMは、多種多様なAWSマネージドサービスをクラウドのベストプラクティスに準拠した形で活用することで、クラウドの真の旨味である柔軟性や俊敏性をお客様のビジネスに組み込むことを得意としています。</p>
+<p>今回リリースされたAWS  Lambda Container Image Supportも含め、 <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank" rel="noopener">サーバーレスアーキテクチャ（AWS Lambda）</a> の導入や無料相談に関しては次のページよりお気軽にご相談ください。</p>
+<ul>
+<li><a href="https://mmmcorp.co.jp/inquiry" target="_blank" rel="noopener">お問い合わせ・AWS無料相談会</a></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;はじめに&quot;&gt;&lt;a href=&quot;#はじめに&quot; class=&quot;headerlink&quot; title=&quot;はじめに&quot;&gt;&lt;/a&gt;はじめに&lt;/h2&gt;&lt;p&gt;2020年11月30日から開催されているAWSのグローバルカンファレンス&lt;a href=&quot;https://reinvent.
+    
+    </summary>
+    
+    
+      <category term="AWS" scheme="https://blog.mmmcorp.co.jp/tags/AWS/"/>
+    
+      <category term="Lambda" scheme="https://blog.mmmcorp.co.jp/tags/Lambda/"/>
+    
+      <category term="サーバーレス" scheme="https://blog.mmmcorp.co.jp/tags/%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%83%AC%E3%82%B9/"/>
+    
+      <category term="Docker" scheme="https://blog.mmmcorp.co.jp/tags/Docker/"/>
+    
+      <category term="サーバーレスアーキテクチャ" scheme="https://blog.mmmcorp.co.jp/tags/%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%83%AC%E3%82%B9%E3%82%A2%E3%83%BC%E3%82%AD%E3%83%86%E3%82%AF%E3%83%81%E3%83%A3/"/>
+    
+      <category term="サーバーレスコンピューティング" scheme="https://blog.mmmcorp.co.jp/tags/%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%83%AC%E3%82%B9%E3%82%B3%E3%83%B3%E3%83%94%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>AWSの新機能「AWS Lambda Container Image Support」を用いて、サーバーレス環境の移行を検証しました</title>
+    <link href="https://blog.mmmcorp.co.jp/blog/2020/12/02/aws_lambda_container_image_support_jp/"/>
+    <id>https://blog.mmmcorp.co.jp/blog/2020/12/02/aws_lambda_container_image_support_jp/</id>
+    <published>2020-12-02T01:12:20.000Z</published>
+    <updated>2020-12-11T04:55:28.170Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/images/aws_lambda_container_image_support_jp/lambda_docker.png" alt=""></p>
+<p>2020年11月30日から開催されているAWSのグローバルカンファレンス<a href="https://reinvent.awsevents.com/" target="_blank" rel="noopener">AWS re:Invent 2020</a> にて、「<a href="https://aws.amazon.com/jp/blogs/aws/new-for-aws-lambda-container-image-support/" target="_blank" rel="noopener">AWS Lambda Container Image Support</a>」 という新サービスが発表されました。</p>
+<p>AWS Lambda Container Image Supportは、AWSのサーバーレスコンピューティング「AWS Lambda」にて、仮想コンテナ技術を利用できるようになる画期的なサービスです。</p>
+<h2 id="aws-lambda-container-image-supportのメリット"><a href="#AWS-Lambda-Container-Image-Supportのメリット" class="headerlink" title="AWS Lambda Container Image Supportのメリット"></a>AWS Lambda Container Image Supportのメリット</h2><p>今回のAWS Lambda Container Image Supportのリリースにより、AWS Lambdaで仮想コンテナ技術「Docker」を利用することができるようになりました。</p>
+<p>DockerコンテナベースのアプリケーションをAWS Lambda上で実行できるようになることで、これまでAWS Lambdaでは難しかったユースケースに対応できるようになります。その例としては次のようなものがあります。</p>
+<h3 id="1-ライブラリ依存のパッケージを活用する"><a href="#1-ライブラリ依存のパッケージを活用する" class="headerlink" title="1. ライブラリ依存のパッケージを活用する"></a>1. ライブラリ依存のパッケージを活用する</h3><p>AWS Lambda Container Image Supportによって、コンテナイメージにAWS CLIをインストールすることができます。</p>
+<p>それにより、AWS SDKでは用意されていない「s3 sync」をはじめとして、OSライブラリや特定パッケージに依存する機能・コマンドを、AWS Lambdaでも利用できるようになります。</p>
+<h3 id="2-他プラットフォームのサーバーレス環境をaws-lambdaへ移行する"><a href="#2-他プラットフォームのサーバーレス環境をAWS-Lambdaへ移行する" class="headerlink" title="2. 他プラットフォームのサーバーレス環境をAWS Lambdaへ移行する"></a>2. 他プラットフォームのサーバーレス環境をAWS Lambdaへ移行する</h3><p>AWS Lambda Container Image Supportを用いれば、Azure Functionsのようなコンテナイメージ上で稼働するサーバーレスアプリケーションを、AWS Lambda上でも稼働させることができます。</p>
+<p>例えば、Azure FunctionsにてWeb-APIサーバーのコンテナアプリケーションが稼働している場合、ProxyライブラリとAPI Gatewayを利用して、アプリケーションをAWS Lambdaへ移行することも検討できます。</p>
+<p>今回はこのケースを想定し、Azure Functions Container Imageで稼働するアプリケーションをAWS Lambdaに移行できるかどうか、検証を行ってみました。</p>
+<h2 id="azure-functionsからaws-lambdaへの移行の検証"><a href="#Azure-FunctionsからAWS-Lambdaへの移行の検証" class="headerlink" title="Azure FunctionsからAWS Lambdaへの移行の検証"></a>Azure FunctionsからAWS Lambdaへの移行の検証</h2><p>移行するアプリケーションとして、<a href="https://docs.microsoft.com/ja-jp/azure/azure-functions/functions-create-function-linux-custom-image?tabs=bash%2Cportal&amp;pivots=programming-language-python" target="_blank" rel="noopener">こちら</a>で公開されているシンプルなコードを採用しました。</p>
+<p>移行作業のアーキテクチャ（システム構成図）は次の通りです。</p>
+<p><img width="1478" alt="image.png (122.9 kB)" src="https://img.esa.io/uploads/production/attachments/1854/2020/11/24/45223/8b68e4db-a674-48d9-9a71-461b5a67fa88.png"></p>
+<h3 id="実施した作業"><a href="#実施した作業" class="headerlink" title="実施した作業"></a>実施した作業</h3><p>まずは、AWS Lambda Container Image Supportを動作させるために、Microsoft Azureのサーバーレス環境「Azure Functions」で稼働しているDockerイメージに対して、AWS Lambda Runtime Interface Clientをインストールしました。</p>
+<p>このコンテナにLambdaハンドラーを加え、エントリーポイントはハンドラーを指定するようにDockerfileを設定しました。</p>
+<h4 id="dockerfileの設定例"><a href="#Dockerfileの設定例：" class="headerlink" title="Dockerfileの設定例："></a>Dockerfileの設定例：</h4><p>DockerfileではAWS Lambda Runtime Clientをインストールしました。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Azure Functions Container</span></span><br><span class="line">FROM xblood/azurefunctionsimage:v1.0.0</span><br><span class="line"></span><br><span class="line">ARG FUNCTION_DIR=<span class="string">"/home/app/"</span></span><br><span class="line">ARG RUNTIME_VERSION</span><br><span class="line">ARG DISTRO_VERSION</span><br><span class="line"></span><br><span class="line">RUN apt-get install -y libtool autoconf automake make cmake</span><br><span class="line"><span class="comment"># build-base, libexecinfo-dev, libcurl</span></span><br><span class="line">RUN apt-get install -y curl build-essential</span><br><span class="line">RUN pip install awscli</span><br><span class="line">ARG AWS_ACCESS_KEY_ID</span><br><span class="line">ARG AWS_SECRET_ACCESS_KEY</span><br><span class="line">ARG AWS_SESSION_TOKEN</span><br><span class="line">ENV AWS_ACCESS_KEY_ID=<span class="variable">$&#123;AWS_ACCESS_KEY_ID&#125;</span></span><br><span class="line">ENV AWS_SECRET_ACCESS_KEY=<span class="variable">$&#123;AWS_SECRET_ACCESS_KEY&#125;</span></span><br><span class="line">RUN mkdir -p <span class="variable">$&#123;FUNCTION_DIR&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Copy Lambda Handler</span></span><br><span class="line">COPY handler.py <span class="variable">$&#123;FUNCTION_DIR&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Install AWS Lambda Runtime Interface Client</span></span><br><span class="line">RUN python<span class="variable">$&#123;RUNTIME_VERSION&#125;</span> -m pip install \</span><br><span class="line">    awslambdaric \</span><br><span class="line">    --target /home/app/</span><br><span class="line"></span><br><span class="line">WORKDIR <span class="variable">$&#123;FUNCTION_DIR&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Set the CMD to handler</span></span><br><span class="line">ENTRYPOINT [ <span class="string">"/usr/local/bin/python"</span>, <span class="string">"-m"</span>, <span class="string">"awslambdaruntimeclient"</span> ]</span><br><span class="line">CMD [ <span class="string">"handler.lambda_handler"</span> ]</span><br></pre></td></tr></table></figure>
+<p>※本Dockerfileで指定している <code>xblood/azurefunctionsimage</code> は <a href="https://docs.microsoft.com/ja-jp/azure/azure-functions/functions-create-function-linux-custom-image?tabs=bash%2Cportal&amp;pivots=programming-language-python#build-the-container-image-and-test-locally" target="_blank" rel="noopener">こちらのチュートリアル</a> に沿って事前作成されたイメージです</p>
+<h4 id="docker-imageのビルド"><a href="#Docker-Imageのビルド" class="headerlink" title="Docker Imageのビルド"></a>Docker Imageのビルド</h4><p>続いて、以下のコマンドを実行しコンテナをビルドしました。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker build . \</span><br><span class="line">-f Dockerfile \</span><br><span class="line">-t lambda-container-image \</span><br><span class="line">--build-arg AWS_ACCESS_KEY_ID=<span class="string">"[YOUR AWS ACCESS KEY ID]"</span> \</span><br><span class="line">--build-arg AWS_SECRET_ACCESS_KEY=<span class="string">"[YOUR AWS SECRET ACCESS KEY]"</span> \</span><br><span class="line">--build-arg RUNTIME_VERSION=<span class="string">"3.8"</span> \</span><br><span class="line">--build-arg DISTRO_VERSION=<span class="string">"3.12"</span></span><br></pre></td></tr></table></figure>
+<h4 id="ecrへのプッシュ"><a href="#ECRへのプッシュ" class="headerlink" title="ECRへのプッシュ"></a>ECRへのプッシュ</h4><p>作成したコンテナイメージにタグを設定し、Amazon Elastic Container Registry(ECR)にプッシュしました。<br>※事前にECRリポジトリの作成とDockerログインが必要です</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker push xxxxxxxxxxxx.dkr.ecr.sa-east-1.amazonaws.com/lambda-container-image:latest</span><br></pre></td></tr></table></figure>
+<h4 id="lambdaの作成"><a href="#Lambdaの作成" class="headerlink" title="Lambdaの作成"></a>Lambdaの作成</h4><p>次に、AWS Lambda Container Image Supportを使ってLambdaを作成しました。</p>
+<p>今回はAWS CLIを利用し、IAMロールは下記ポリシーで事前に作成しておきました。</p>
+<h5 id="iamロールポリシー例-lambda-container-image-iam-role"><a href="#IAMロールポリシー例-lambda-container-image-iam-role" class="headerlink" title="IAMロールポリシー例( lambda-container-image-iam-role )"></a>IAMロールポリシー例( <code>lambda-container-image-iam-role</code> )</h5><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">   <span class="attr">"Statement"</span>:[</span><br><span class="line">      &#123;</span><br><span class="line">         <span class="attr">"Sid"</span>:<span class="string">"VisualEditor0"</span>,</span><br><span class="line">         <span class="attr">"Effect"</span>:<span class="string">"Allow"</span>,</span><br><span class="line">         <span class="attr">"Action"</span>:[</span><br><span class="line">            <span class="string">"ecr:SetRepositoryPolicy"</span>,</span><br><span class="line">            <span class="string">"ecr:GetRepositoryPolicy"</span></span><br><span class="line">         ],</span><br><span class="line">         <span class="attr">"Resource"</span>:<span class="string">"arn:aws:ecr:&lt;region&gt;:&lt;account&gt;:repository/&lt;repo name&gt;/"</span></span><br><span class="line">      &#125;</span><br><span class="line">   ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>AWS Lambda Container Image Supportによって追加された <code>ImageUri</code> オプションを指定し、先程の手順でECRにPush済みのコンテナイメージを指定しました。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">aws lambda create-function \</span><br><span class="line">--function-name lambda-container-image-function \</span><br><span class="line">--package-type Image \</span><br><span class="line">--Image URI=xxxxxxxxxxxx.dkr.ecr.sa-east-1.amazonaws.com/lambda-container-image:latest \</span><br><span class="line">--role arn:aws:iam::xxxxxxxxxxxx:role/lambda-container-image-iam-role</span><br></pre></td></tr></table></figure>
+<h4 id="lambdaを起動する"><a href="#Lambdaを起動する" class="headerlink" title="Lambdaを起動する"></a>Lambdaを起動する</h4><p>AWS マネジメントコンソールから作成したLambdaをテストすると、Lambda関数が正常に実行されたことを確認できました。</p>
+<p><img width="1730" alt="image.png (48.3 kB)" src="https://img.esa.io/uploads/production/attachments/1854/2020/11/25/45223/5d002ab5-0e47-442f-960b-1fa800ba9d32.png"></p>
+<h3 id="より実践的なユースケースに対応するには"><a href="#より実践的なユースケースに対応するには" class="headerlink" title="より実践的なユースケースに対応するには"></a>より実践的なユースケースに対応するには</h3><p>今回は検証のためシンプルなコードを用いましたが、実際のサーバーレスアプリケーションをAWS Lambdaへ移行する際や、マルチクラウド戦略を採用する際には、各クラウドベンダーのAPIを差異を考慮することが必要です。</p>
+<p>昨今では <a href="https://github.com/serverless/multicloud" target="_blank" rel="noopener">Serverless Multicloud Library</a> のようなライブラリを活用して解決できるケースもあります。</p>
+<h2 id="aws-lambdaのビジネス活用をサポート"><a href="#AWS-Lambdaのビジネス活用をサポート" class="headerlink" title="AWS Lambdaのビジネス活用をサポート"></a>AWS Lambdaのビジネス活用をサポート</h2><p>株式会社MMMは 、AWS Lambdaのビジネス活用に豊富な実績を持っており、<a href="https://blog.mmmcorp.co.jp/blog/2019/11/15/aws_service_delivery_program_aws_lambda/">AWS LambdaのAWSサービスデリバリーパートナーにも認定</a>されています。</p>
+<p>MMMは、多種多様なAWSマネージドサービスをクラウドのベストプラクティスに準拠した形で活用することで、クラウドの真の旨味である柔軟性や俊敏性をお客様のビジネスに組み込むことを得意としています。</p>
+<p>今回リリースされたAWS  Lambda Container Image Supportも含め、 <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank" rel="noopener">サーバーレスアーキテクチャ（AWS Lambda）</a> の導入や無料相談に関しては次のページよりお気軽にご相談ください。</p>
+<ul>
+<li><a href="https://mmmcorp.co.jp/inquiry" target="_blank" rel="noopener">お問い合わせ・AWS無料相談会</a></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/images/aws_lambda_container_image_support_jp/lambda_docker.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;2020年11月30日から開催されているAWSのグローバルカンファレンス&lt;a href=&quot;ht
+    
+    </summary>
+    
+    
+      <category term="AWS" scheme="https://blog.mmmcorp.co.jp/tags/AWS/"/>
+    
+      <category term="Lambda" scheme="https://blog.mmmcorp.co.jp/tags/Lambda/"/>
+    
+      <category term="サーバーレス" scheme="https://blog.mmmcorp.co.jp/tags/%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%83%AC%E3%82%B9/"/>
+    
+      <category term="Docker" scheme="https://blog.mmmcorp.co.jp/tags/Docker/"/>
+    
+      <category term="サーバーレスアーキテクチャ" scheme="https://blog.mmmcorp.co.jp/tags/%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%83%AC%E3%82%B9%E3%82%A2%E3%83%BC%E3%82%AD%E3%83%86%E3%82%AF%E3%83%81%E3%83%A3/"/>
+    
+      <category term="サーバーレスコンピューティング" scheme="https://blog.mmmcorp.co.jp/tags/%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%83%AC%E3%82%B9%E3%82%B3%E3%83%B3%E3%83%94%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Migration from Azure Functions to AWS Lambda with AWS Lambda Container Image Support</title>
+    <link href="https://blog.mmmcorp.co.jp/blog/2020/12/02/migration-from-azure-functions-to-aws-lambda-with-aws-lambda-container-image-support/"/>
+    <id>https://blog.mmmcorp.co.jp/blog/2020/12/02/migration-from-azure-functions-to-aws-lambda-with-aws-lambda-container-image-support/</id>
+    <published>2020-12-02T01:12:02.000Z</published>
+    <updated>2020-12-11T04:55:28.170Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/images/migration-from-azure-functions-to-aws-lambda-with-aws-lambda-container-image-support/lambda_docker.png" alt=""></p>
+<p><a href="https://aws.amazon.com/jp/blogs/aws/new-for-aws-lambda-container-image-support/" target="_blank" rel="noopener">AWS Lambda Container Image Support</a> was announced at <a href="https://reinvent.awsevents.com/" target="_blank" rel="noopener">AWS re:Invent 2020</a>!</p>
+<h2 id="what-is-aws-lambda-container-image-support"><a href="#What-is-AWS-Lambda-Container-Image-Support" class="headerlink" title="What is AWS Lambda Container Image Support?"></a>What is AWS Lambda Container Image Support?</h2><p>With the release of AWS Lambda Container Image Support, AWS Lambda can now take advantage of Docker container images in Lambda.</p>
+<p>By using Docker images, you can take advantage of library-dependent packages (such as the AWS CLI) that were previously difficult to use in Lambda, and run Docker container-based applications in Lambda.</p>
+<h2 id="use-cases-of-aws-lambda-container-image-support"><a href="#Use-cases-of-AWS-Lambda-Container-Image-Support" class="headerlink" title="Use cases of AWS Lambda Container Image Support"></a>Use cases of AWS Lambda Container Image Support</h2><p>Here are some use cases for AWS Lambda Container Image Support.</p>
+<h3 id="1-running-the-aws-cli-in-lambda"><a href="#1-Running-the-AWS-CLI-in-Lambda" class="headerlink" title="1. Running the AWS CLI in Lambda"></a>1. Running the AWS CLI in Lambda</h3><p>Now it is possible to use features or commands on Lambda that depend on OS libraries or specific packages.</p>
+<p>For example, if you want to use “s3 sync”, which is not available in the AWS SDK, you can use it by installing the AWS CLI on the Docker image.</p>
+<h3 id="2-migrating-a-serverless-environment-running-on-other-platforms"><a href="#2-Migrating-a-serverless-environment-running-on-other-platforms" class="headerlink" title="2. Migrating a serverless environment running on other platforms"></a>2. Migrating a serverless environment running on other platforms</h3><p>Serverless applications that run on Docker container images, such as Azure Functions, can also run on Lambda.</p>
+<p>For example, if your Web-API server container application is running on Azure Functions, you can consider moving it to Lambda by using the Proxy library and Amazon API Gateway.</p>
+<p>In this case, we will assume this use case and create a <a href="https://docs.microsoft.com/ja-jp/azure/azure-functions/functions-create-function-linux-custom-image?tabs=bash%2Cportal&amp;pivots=programming-language-python" target="_blank" rel="noopener">sample application</a> to validate the migration to Lambda.</p>
+<p>We used a <a href="https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-function-linux-custom-image?tabs=bash%2Cportal&amp;pivots=programming-language-python" target="_blank" rel="noopener">Azure Functions sample application</a>  and validated the migration to Lambda.</p>
+<h2 id="migration-approach"><a href="#Migration-approach" class="headerlink" title="Migration approach"></a>Migration approach</h2><p><img width="1478" alt="image.png (122.9 kB)" src="https://img.esa.io/uploads/production/attachments/1854/2020/11/24/45223/8b68e4db-a674-48d9-9a71-461b5a67fa88.png"></p>
+<h3 id="how-to-migrate"><a href="#How-to-migrate" class="headerlink" title="How to migrate"></a>How to migrate</h3><p>We Installed the AWS Lambda Runtime Interface Client, based on the Azure Functions Container Image.</p>
+<p>We added a Lambda handler to this container and configure the Dockerfile so that the entrypoint specifies the handler.</p>
+<h4 id="example-of-dockerfile-configuration"><a href="#Example-of-Dockerfile-configuration" class="headerlink" title="Example of Dockerfile configuration:"></a>Example of Dockerfile configuration:</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Azure Functions Container</span></span><br><span class="line">FROM xblood/azurefunctionsimage:v1.0.0</span><br><span class="line"></span><br><span class="line">ARG FUNCTION_DIR=<span class="string">"/home/app/"</span></span><br><span class="line">ARG RUNTIME_VERSION</span><br><span class="line">ARG DISTRO_VERSION</span><br><span class="line"></span><br><span class="line">RUN apt-get install -y libtool autoconf automake make cmake</span><br><span class="line"><span class="comment"># build-base, libexecinfo-dev, libcurl</span></span><br><span class="line">RUN apt-get install -y curl build-essential</span><br><span class="line">RUN pip install awscli</span><br><span class="line">ARG AWS_ACCESS_KEY_ID</span><br><span class="line">ARG AWS_SECRET_ACCESS_KEY</span><br><span class="line">ARG AWS_SESSION_TOKEN</span><br><span class="line">ENV AWS_ACCESS_KEY_ID=<span class="variable">$&#123;AWS_ACCESS_KEY_ID&#125;</span></span><br><span class="line">ENV AWS_SECRET_ACCESS_KEY=<span class="variable">$&#123;AWS_SECRET_ACCESS_KEY&#125;</span></span><br><span class="line">RUN mkdir -p <span class="variable">$&#123;FUNCTION_DIR&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Copy Lambda Handler</span></span><br><span class="line">COPY handler.py <span class="variable">$&#123;FUNCTION_DIR&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Install AWS Lambda Runtime Interface Client</span></span><br><span class="line">RUN python<span class="variable">$&#123;RUNTIME_VERSION&#125;</span> -m pip install \</span><br><span class="line">    awslambdaric \</span><br><span class="line">    --target /home/app/</span><br><span class="line"></span><br><span class="line">WORKDIR <span class="variable">$&#123;FUNCTION_DIR&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Set the CMD to handler</span></span><br><span class="line">ENTRYPOINT [ <span class="string">"/usr/local/bin/python"</span>, <span class="string">"-m"</span>, <span class="string">"awslambdaruntimeclient"</span> ]</span><br><span class="line">CMD [ <span class="string">"handler.lambda_handler"</span> ]</span><br><span class="line">`</span><br></pre></td></tr></table></figure>
+<p>The <code>xblood/azurefunctionsimage</code> specified in this Dockerfile is a pre-built image based on <a href="https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-function-linux-custom-image?tabs=bash%2Cportal&amp;pivots=programming-language-python" target="_blank" rel="noopener">Azure Functions tutorial</a>.</p>
+<h4 id="building-docker-image"><a href="#Building-Docker-Image" class="headerlink" title="Building Docker Image"></a>Building Docker Image</h4><p>In this example, we built the container by executing the following command.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker build . \</span><br><span class="line">-f Dockerfile \</span><br><span class="line">-t lambda-container-image \</span><br><span class="line">--build-arg AWS_ACCESS_KEY_ID=<span class="string">"[YOUR AWS ACCESS KEY ID]"</span> \</span><br><span class="line">--build-arg AWS_SECRET_ACCESS_KEY=<span class="string">"[YOUR AWS SECRET ACCESS KEY]"</span> \</span><br><span class="line">--build-arg RUNTIME_VERSION=<span class="string">"3.8"</span> \</span><br><span class="line">--build-arg DISTRO_VERSION=<span class="string">"3.12"</span></span><br></pre></td></tr></table></figure>
+<h4 id="push-to-ecr"><a href="#Push-to-ECR" class="headerlink" title="Push to ECR"></a>Push to ECR</h4><p>We set tags on the Docker image and pushed it to Amazon Elastic Container Registry (ECR).<br>ECR repository must be created and the login to ECR is required beforehand.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker push xxxxxxxxxxxx.dkr.ekr.sa-east-1.amazonaws.com/lambda-container-image:latest</span><br></pre></td></tr></table></figure>
+<h4 id="creating-lambda-function"><a href="#Creating-Lambda-Function" class="headerlink" title="Creating Lambda Function"></a>Creating Lambda Function</h4><p>Next, we created a Lambda Function using AWS Lambda Container Image Support.</p>
+<p>In this case, we created the IAM role in advance with the following policy.</p>
+<h5 id="example-iam-role-policy-lambda-container-image-iam-role"><a href="#Example-IAM-role-policy-lambda-container-image-iam-role" class="headerlink" title="Example IAM role policy ( lambda-container-image-iam-role )"></a>Example IAM role policy ( <code>lambda-container-image-iam-role</code> )</h5><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">   <span class="attr">"Statement"</span>:[[</span><br><span class="line">      &#123;</span><br><span class="line">         <span class="attr">"Sid"</span>: <span class="string">"VisualEditor0"</span>,</span><br><span class="line">         <span class="attr">"Effect"</span>: <span class="string">"Allow"</span>,</span><br><span class="line">         <span class="attr">"Action"</span>:[<span class="string">"Action"</span>:[</span><br><span class="line">            <span class="string">"ecr:SetRepositoryPolicy"</span>,</span><br><span class="line">            <span class="string">"ecr:GetRepositoryPolicy"</span></span><br><span class="line">         ],</span><br><span class="line">         <span class="string">"Resource"</span>: <span class="string">"arn:aws:ecr:&lt;region&gt;:&lt;account&gt;:repository/&lt;repo name&gt;/"</span></span><br><span class="line">      &#125;</span><br><span class="line">   ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Specify the <code>ImageUri</code> option, added by AWS Lambda Container Image Support, for the container image you have just pushed to the ECR.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Aws lambda create-function</span><br><span class="line">--function-name lambda-container-image-function</span><br><span class="line">--package-type Image</span><br><span class="line">--Image URI=xxxxxxxxxxxxxxxxxxxx.dkr.ekr.sa-east-1.amazonaws.com/lambda-container-image:latest</span><br><span class="line">--role arn:aws:iam::xxxxxxxxxxxxxxxxxxxxx:role/lambda-container-image-iam-role</span><br></pre></td></tr></table></figure>
+<h4 id="launch-lambda-function"><a href="#Launch-Lambda-Function" class="headerlink" title="Launch  Lambda Function"></a>Launch  Lambda Function</h4><p>We tested the Lambda function from the AWS Management Console and confirmed the Lambda function has been successfully executed.</p>
+<p><img width="1730" alt="image.png (48.3 kB)" src="https://img.esa.io/uploads/production/attachments/1854/2020/11/25/45223/5d002ab5-0e47-442f-960b-1fa800ba9d32.png"></p>
+<h4 id="for-a-more-practical-use-case"><a href="#For-a-more-practical-use-case" class="headerlink" title="For a more practical use case"></a>For a more practical use case</h4><p>In this article, we have used sample code for validation purposes. However, when migrating a real serverless application to AWS Lambda, or in a multi-cloud strategy, you need to consider the dependencies of each cloud vendor with their interfaces.</p>
+<p>Nowadays, in some cases, this can be solved by leveraging libraries such as <a href="https://github.com/serverless/multicloud" target="_blank" rel="noopener">Serverless Multicloud Library</a>.</p>
+<h2 id="take-advantage-of-aws-lambda-with-mmm"><a href="#Take-advantage-of-AWS-Lambda-with-MMM" class="headerlink" title="Take advantage of AWS Lambda with MMM!"></a>Take advantage of AWS Lambda with MMM!</h2><p>We have been certified as an <a href="https://blog.mmmcorp.co.jp/blog/2019/11/15/aws_service_delivery_program_aws_lambda/">AWS Service Delivery Partner (AWS Lambda Partner)</a>. We have a strong technical expertise and a proven track record in the business use of AWS Lambda, including the new AWS Lambda Container Image Support feature.</p>
+<p>Including the new AWS Lambda Container Image Support feature, we are strongly good at embedding the advantages of the cloud - flexibility and agility - into our customers’ businesses by using a wide variety of AWS managed services in a best-practice manner.</p>
+<p>Find more information at  <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank" rel="noopener">Serverless Architecture (AWS Lambda)</a>, and feel free to contact us at <a href="https://mmmcorp.co.jp/inquiry" target="_blank" rel="noopener">https://mmmcorp.co.jp/inquiry</a> !</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/images/migration-from-azure-functions-to-aws-lambda-with-aws-lambda-container-image-support/lambda_docker.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;
+    
+    </summary>
+    
+    
+      <category term="AWS" scheme="https://blog.mmmcorp.co.jp/tags/AWS/"/>
+    
+      <category term="Lambda" scheme="https://blog.mmmcorp.co.jp/tags/Lambda/"/>
+    
+      <category term="サーバーレス" scheme="https://blog.mmmcorp.co.jp/tags/%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%83%AC%E3%82%B9/"/>
+    
+      <category term="Docker" scheme="https://blog.mmmcorp.co.jp/tags/Docker/"/>
+    
+      <category term="サーバーレスアーキテクチャ" scheme="https://blog.mmmcorp.co.jp/tags/%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%83%AC%E3%82%B9%E3%82%A2%E3%83%BC%E3%82%AD%E3%83%86%E3%82%AF%E3%83%81%E3%83%A3/"/>
+    
+      <category term="サーバーレスコンピューティング" scheme="https://blog.mmmcorp.co.jp/tags/%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%83%AC%E3%82%B9%E3%82%B3%E3%83%B3%E3%83%94%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Google Play Consoleのアプリ権限設定画面から「役割(Role)」が消えた件</title>
+    <link href="https://blog.mmmcorp.co.jp/blog/2020/11/21/google-play-console-role/"/>
+    <id>https://blog.mmmcorp.co.jp/blog/2020/11/21/google-play-console-role/</id>
+    <published>2020-11-21T13:24:45.000Z</published>
+    <updated>2020-12-11T04:55:28.170Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/images/2020-11-21-google-play-console-role/logo.svg" width="400"></p>
+<h2 id="google-play-consoleがリニューアル"><a href="#Google-Play-Consoleがリニューアル" class="headerlink" title="Google Play Consoleがリニューアル"></a>Google Play Consoleがリニューアル</h2><p>2020年11月2日より、Google Play Consoleはベータ版を卒業しました。<br>開発者は今後、新しいGoogle Play Consoleを利用することになります。</p>
+<p>新しいGoogle Play ConsoleではUI/UXの改善やパフォーマンスの向上が期待されています。</p>
+<p><a href="https://android-developers-jp.googleblog.com/2020/09/all-developers-will-get-new-google-play-console.html?utm_source=feedburner&amp;utm_medium=feed&amp;utm_campaign=Feed%3A+AndroidDevJapanBlog+%28Android+Developers+Japan+Blog%29" target="_blank" rel="noopener">2020年11月2日より全デベロッパーに新しいGoogle Play Consoleを適用します</a></p>
+<h2 id="アプリ権限画面に役割role選択欄がなくなった"><a href="#アプリ権限画面に「役割-Role-」選択欄がなくなった" class="headerlink" title="アプリ権限画面に「役割(Role)」選択欄がなくなった"></a>アプリ権限画面に「役割(Role)」選択欄がなくなった</h2><p>Google Play Consoleアカウントユーザーの各アプリへのアクセス権限を設定する際、<br>ベータ版のコンソールでは以下の画像のように「役割」(英語では:「Role」)が表示されます。</p>
+<p>例えば「役割」で「管理者」を選択すると、「権限」欄の全てのチェックボックスがONになります。<br>「役割」に「管理者」以外を選択すると、特定の「権限」のみがONになり、それ以外はOFFとなります。</p>
+<p><img src="/images/2020-11-21-google-play-console-role/console_old.png"></p>
+<p>一方で、新しいGoogle Play Consoleではこの「役割」欄が表示されません。</p>
+<p><img src="/images/2020-11-21-google-play-console-role/console_new.png"></p>
+<h2 id="どうすれば良いのか"><a href="#どうすれば良いのか" class="headerlink" title="どうすれば良いのか"></a>どうすれば良いのか</h2><p>「権限」欄は無くなりましたが、「アプリのアクセス権」「売上データ」「リリース」等の個別の権限はベータ版と同様に新しいGoogle Play Console上からでもON/OFF設定ができます。<br>なので今後はこれら個別の権限を直接ON/OFF設定する必要があります。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/images/2020-11-21-google-play-console-role/logo.svg&quot; width=&quot;400&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;google-play-consoleがリニューアル&quot;&gt;&lt;a href=&quot;#Google-Pla
+    
+    </summary>
+    
+    
+      <category term="プログラミング" scheme="https://blog.mmmcorp.co.jp/tags/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0/"/>
+    
+      <category term="Android" scheme="https://blog.mmmcorp.co.jp/tags/Android/"/>
+    
+      <category term="アンドロイド" scheme="https://blog.mmmcorp.co.jp/tags/%E3%82%A2%E3%83%B3%E3%83%89%E3%83%AD%E3%82%A4%E3%83%89/"/>
+    
+      <category term="モバイルアプリ" scheme="https://blog.mmmcorp.co.jp/tags/%E3%83%A2%E3%83%90%E3%82%A4%E3%83%AB%E3%82%A2%E3%83%97%E3%83%AA/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Vimで効率よくプログラミングをするために、まず知っておくと良い操作方法</title>
+    <link href="https://blog.mmmcorp.co.jp/blog/2020/11/20/vim-basic/"/>
+    <id>https://blog.mmmcorp.co.jp/blog/2020/11/20/vim-basic/</id>
+    <published>2020-11-20T15:37:17.000Z</published>
+    <updated>2020-12-11T04:55:28.170Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/images/uchiko/vim-basic/computer_programming_man.png" alt=""></p>
+<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>エンジニアの内山です。<br>この記事では、Vimで効率よくプログラミングをするために、まず知っておくと良い操作方法を紹介しています。</p>
+<p>以下の書籍の簡易版となっています。</p>
+<p><a href="https://www.amazon.co.jp/dp/B00HWLJI3U" target="_blank" rel="noopener">実践Vim　思考のスピードで編集しよう！</a></p>
+<p>基本的なVimの操作方法に関することが学べるので、拡張機能が入っていないVimや他エディタのVimエミュレータを使う際にも役立ちます。余裕があれば、書籍を読むことをおすすめします。</p>
+<h2 id="モード"><a href="#モード" class="headerlink" title="モード"></a>モード</h2><p>Vimを操作する上で、以下の3つのモードを理解する必要があります。</p>
+<h3 id="ノーマルモード"><a href="#ノーマルモード" class="headerlink" title="ノーマルモード"></a>ノーマルモード</h3><p>コマンドを入力するモードです。カーソル移動やファイル保存などは、このモードで行います。<br>コマンドを駆使すれば、テキストの編集作業はノーマルモードで完結できます。</p>
+<p>他のモードからノーマルモードに移る場合は、<code>ESC</code> または <code>Control</code> + <code>]</code> を入力します。</p>
+<h3 id="挿入モード"><a href="#挿入モード" class="headerlink" title="挿入モード"></a>挿入モード</h3><p>テキストを入力するモードです。他のエディタと同じような動きをします。</p>
+<h3 id="ビジュアルモード"><a href="#ビジュアルモード" class="headerlink" title="ビジュアルモード"></a>ビジュアルモード</h3><p>テキストの範囲選択をするモードです。<br>ノーマルモード時に、<code>v</code> を入力するとビジュアルモードになります。<br><code>Control</code> + <code>v</code> を入力すると矩形選択のビジュアルモードになります。</p>
+<p>範囲選択した後、<code>d</code> を入力すれば削除、<code>y</code>を入力すればコピーが実行されます。</p>
+<h2 id="まずは覚えるコマンド"><a href="#まずは覚えるコマンド" class="headerlink" title="まずは覚えるコマンド"></a>まずは覚えるコマンド</h2><h3 id="ノーマルモードで使えるコマンド一覧"><a href="#ノーマルモードで使えるコマンド一覧" class="headerlink" title="ノーマルモードで使えるコマンド一覧"></a>ノーマルモードで使えるコマンド一覧</h3><table>
+<thead>
+<tr>
+<th>コマンド</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>h</code> <code>j</code> <code>k</code> <code>l</code></td>
+<td>カーソル移動</td>
+</tr>
+<tr>
+<td><code>:w</code></td>
+<td>ファイル保存</td>
+</tr>
+<tr>
+<td><code>:q</code></td>
+<td>ファイルを閉じる</td>
+</tr>
+<tr>
+<td><code>:q!</code></td>
+<td>ファイルを強制的に閉じる</td>
+</tr>
+<tr>
+<td><code>dd</code></td>
+<td>1行削除</td>
+</tr>
+<tr>
+<td><code>yy</code></td>
+<td>1行コピー</td>
+</tr>
+<tr>
+<td><code>kk</code></td>
+<td>1行コピーして削除</td>
+</tr>
+<tr>
+<td><code>p</code></td>
+<td>ペースト</td>
+</tr>
+<tr>
+<td><code>w</code></td>
+<td>1単語ずつ移動</td>
+</tr>
+<tr>
+<td><code>$</code></td>
+<td>文末に移動</td>
+</tr>
+<tr>
+<td><code>^</code></td>
+<td>行頭に移動</td>
+</tr>
+<tr>
+<td><code>:</code> + <code>{数字}</code> + <code>Enter</code></td>
+<td>{数字} の行まで移動</td>
+</tr>
+<tr>
+<td><code>/</code> + <code>{文字列}</code> + <code>Enter</code></td>
+<td>{文字列}でファイル内検索。<br><code>n</code> と <code>N</code> で該当箇所に移動</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>i</code></td>
+<td>カーソルの位置で挿入モードに移行</td>
+</tr>
+<tr>
+<td><code>o</code></td>
+<td>カーソルの1つ下に1行追加して、挿入モードに移行</td>
+</tr>
+<tr>
+<td><code>Shift</code> + <code>o</code></td>
+<td>カーソルの1つ上に1行追加して、挿入モードに移行</td>
+</tr>
+<tr>
+<td><code>v</code></td>
+<td>ビジュアルモードに移行</td>
+</tr>
+<tr>
+<td><code>Shift</code> + <code>v</code></td>
+<td>ビジュアルモード(矩形選択)に移行</td>
+</tr>
+<tr>
+<td><code>Shift</code> + <code>g</code></td>
+<td>ファイルの最後の行</td>
+</tr>
+</tbody>
+</table>
+<h3 id="組み合わせコマンド"><a href="#組み合わせコマンド" class="headerlink" title="組み合わせコマンド"></a>組み合わせコマンド</h3><table>
+<thead>
+<tr>
+<th>コマンド</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>:wq</code></td>
+<td>ファイルを保存して閉じる</td>
+</tr>
+<tr>
+<td><code>{数字}</code> + <code>dd</code></td>
+<td>{数字}行だけ削除</td>
+</tr>
+<tr>
+<td><code>{数字}</code> + <code>yy</code></td>
+<td>{数字}行だけコピー</td>
+</tr>
+<tr>
+<td><code>dw</code></td>
+<td>1単語(word)削除</td>
+</tr>
+<tr>
+<td><code>cw</code></td>
+<td>1単語(word)削除して、挿入モードに移行</td>
+</tr>
+</tbody>
+</table>
+<p>上記に見られるように、コマンドは規則性を持っています。それを手がかりに覚えておくと良いです。</p>
+<h3 id="マイクロマクロ"><a href="#マイクロマクロ" class="headerlink" title="マイクロマクロ"></a>マイクロマクロ</h3><table>
+<thead>
+<tr>
+<th>コマンド</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.</code></td>
+<td>一つ前の操作を実行(マイクロマクロ)</td>
+</tr>
+</tbody>
+</table>
+<p>例えば、 一行削除コマンド<code>dd</code>を実行した後に、カーソル移動して、<code>.</code> を入力すると、再び一行削除コマンドが実行されます。</p>
+<p>タイプ数が減らせるので、マイクロマクロを活用することをおすすめします。</p>
+<h2 id="vim操作に慣れるには"><a href="#Vim操作に慣れるには" class="headerlink" title="Vim操作に慣れるには"></a>Vim操作に慣れるには</h2><p>操作方法に関しては、知識を学ぶだけではなく、実際に使えるようになる必要があります。<br>実際に使えるようになるためには、実際に学んだ操作方法を使って見る必要があります。<br>慣れないうちは、プログラミングの効率が落ちてしまうかもしれません。<br>しかし、一時的に効率が落ちることは覚悟して、普段のプログラミングを行う時にVimキーバインドを絶対に使うようにしてみることをおすすめします。<br>つっかえたり調べたりしながらの操作になると思いますが、繰り返していくうちに自然と手に馴染むようになります。</p>
+<p>ゲーム感覚で学びたい場合は、VimGolf というサイトがあります。</p>
+<p><a href="https://www.vimgolf.com/" target="_blank" rel="noopener">https://www.vimgolf.com/</a></p>
+<p>「お題になっている編集作業を、どれだけ少ないタイプ数で完了できるか」を競うゲームとなっています。他の人の操作方法を参考にできるので勉強になります。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/images/uchiko/vim-basic/computer_programming_man.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;概要&quot;&gt;&lt;a href=&quot;#概要&quot; class=&quot;headerlink&quot; title=&quot;概要&quot;&gt;&lt;/a&gt;
+    
+    </summary>
+    
+    
+      <category term="プログラミング　" scheme="https://blog.mmmcorp.co.jp/tags/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>陳腐化するドキュメントのメンテナンスをどうするか</title>
+    <link href="https://blog.mmmcorp.co.jp/blog/2020/11/13/old-document/"/>
+    <id>https://blog.mmmcorp.co.jp/blog/2020/11/13/old-document/</id>
+    <published>2020-11-13T15:00:00.000Z</published>
+    <updated>2020-12-11T04:55:28.170Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/images/2020-11-13-old-document/document.png" alt=""></p>
+<h1 id="ソフトウェア開発にとってのドキュメントの重要性"><a href="#ソフトウェア開発にとってのドキュメントの重要性" class="headerlink" title="ソフトウェア開発にとってのドキュメントの重要性"></a>ソフトウェア開発にとってのドキュメントの重要性</h1><p>ソフトウェア開発の現場において、既存のプロジェクトに後から参加するときや、久々に触れるシステムについて復習するときなど、まずはドキュメントを確認することがよくあります。ここで適切なドキュメントがあると、以下のようなメリットが得られます。</p>
+<ul>
+<li>アプリケーションの機能が追加された経緯、設計の背景の理解<br>これらをコードとコメントだけで表現するのは難しいと思うので、親切な記述があると素早く理解できます。</li>
+<li>暗黙知の明文化<br>該当プロジェクトに参加した人だけが知っている経験的な知識や、成果物からはわかりにくい開発プロセスに関する知識は、ドキュメントに残さないと埋もれがちなので、まとめてあると重宝します。</li>
+<li>失敗の共有<br>意外に皆似たようなところでハマったり、ミスったりするものです。失敗についても恥ずかしがらずにまとめてあると、後の人が同じ作業をする時や同様の作業をする時に誤ってしまうことを避けやすくなります。</li>
+</ul>
+<h1 id="ドキュメントの陳腐化によって起きる問題"><a href="#ドキュメントの陳腐化によって起きる問題" class="headerlink" title="ドキュメントの陳腐化によって起きる問題"></a>ドキュメントの陳腐化によって起きる問題</h1><p>頻繁に更新されるプロジェクトや、久しぶりに関わるプロジェクトのドキュメントの場合、大抵は内容と執筆当時の状況とが大きく変わっており、古いドキュメントが役に立たなくなっていることがよくあります。<br>この対処にはついつい滞りがちな人間の手によるメンテナンスに代わって、ドキュメント生成(<a href="https://github.com/swaggo/gin-swagger" target="_blank" rel="noopener">API設計書の自動生成</a>など)やコード管理(<a href="https://www.terraform.io/" target="_blank" rel="noopener">インフラストラクチャのコード管理</a>など)への集中といった自動的な対応を用いて</p>
+<ul>
+<li>コストの削減</li>
+<li>直し忘れ防止</li>
+<li>レビューによる確認ミス軽減・精度の向上</li>
+</ul>
+<p>を図るのが一つの解決策だと思いますが、全てのドキュメントに対してこれらを仕組み化するのは難しいと思うので、今回はそれら以外の方法について考えてみます。</p>
+<h1 id="現実的な方法"><a href="#現実的な方法" class="headerlink" title="現実的な方法"></a>現実的な方法</h1><p>このようなドキュメントの陳腐化を防ぐためには継続的なメンテナンスが必要になりますが、多くのドキュメントがある場合に漏らさず行うのは非常にコストがかかります。一方、ドキュメントが少なければメンテナンスコストは低くすみます。極端な話まったくドキュメントが無ければ陳腐化の問題も起こりませんが、先述のメリットは一切得られないことになってしまいます。必要最小限のドキュメントを書き、保持することでメンテナンスコストを抑えつつ、陳腐化を軽減したいところです。<br>以下にそのための具体的な方法を挙げます。</p>
+<h2 id="プロジェクトごとにコアな少数のドキュメントを用意する"><a href="#プロジェクトごとにコアな少数のドキュメントを用意する" class="headerlink" title="プロジェクトごとにコアな少数のドキュメントを用意する"></a>プロジェクトごとにコアな少数のドキュメントを用意する</h2><p>できる限り少数、可能なら1本のドキュメントに本当に重要な内容をまとめます。これだけはしっかりメンテナンスしていく必要があります。これ以外のドキュメントを一切書いてはいけないということではなく、コアなものを1本決めるということです。</p>
+<h2 id="無駄を省く"><a href="#無駄を省く" class="headerlink" title="無駄を省く"></a>無駄を省く</h2><p>MMMの精神としてもドキュメント自体はどんどん書いていきたいので、その分内容には注意を払う必要があると思います。</p>
+<ul>
+<li>コード管理できる部分は最小限に抑える</li>
+<li>コードには含めづらい設計の経緯や実装の説明といった部分</li>
+<li>図解を適切に用いて、文章量を減らす</li>
+</ul>
+<p>など、書く時にじっくり確認しましょう。</p>
+<h2 id="ソースコードのコメントを手厚く"><a href="#ソースコードのコメントを手厚く" class="headerlink" title="ソースコードのコメントを手厚く"></a>ソースコードのコメントを手厚く</h2><p>やっていることをできる限りコードそのものでわかりやすく表すのは重要なことです。しかし、コメントで説明することが適切な内容もたくさんあると思います。こうすることで、ドキュメントに任せる部分を適切に抑えます。</p>
+<h2 id="思い切って削除"><a href="#思い切って削除" class="headerlink" title="思い切って削除"></a>思い切って削除</h2><p>大部分が古いものが残っていたら思い切って削除してしまっても良いかもしれません。</p>
+<h2 id="せめて印をつける"><a href="#せめて印をつける" class="headerlink" title="せめて印をつける"></a>せめて印をつける</h2><p>古くなっている記述に気づいたら、例えば「!!古い情報です。最新の状態は〜を実際に参照してください」とか、何かしら印をつけます。ある程度陳腐化を諦めるという感じです。少なくとも該当の箇所は古い内容だから、注意して読む必要があることは伝わります。</p>
+<h1 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h1><p>現在を元に情報化したものが、時と共に陳腐化し、新しいものと乖離しがちになるのはソフトウェアに限ったことではなく、とても難しい問題だと思います。<br>ドキュメントが確かに有用である以上、陳腐化を無くすことはできないので上手に付き合っていく方法をこれからも試していきます。</p>
+<h2 id="参考url"><a href="#参考URL" class="headerlink" title="参考URL"></a>参考URL</h2><ul>
+<li><a href="https://moneyforward.com/engineers_blog/2016/01/06/documentation/" target="_blank" rel="noopener">エンジニア３大がっかりのひとつ　ドキュメントの陳腐化への対応</a></li>
+<li><a href="https://medium.com/@laqiiz/%E6%88%91%E3%80%85%E3%81%AF%E3%81%84%E3%81%8B%E3%81%AB%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0%E9%96%8B%E7%99%BA%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88%E8%85%90%E3%82%8B%E5%95%8F%E9%A1%8C%E3%81%A8%E6%88%A6%E3%81%88%E3%81%B0%E8%89%AF%E3%81%84%E3%81%AE%E3%81%8B-7c7c3774689f" target="_blank" rel="noopener">我々はいかにシステム開発におけるドキュメント腐る問題と戦えば良いのか</a></li>
+<li><a href="https://note.com/tofu76/n/nbe14e694eca4" target="_blank" rel="noopener">陳腐化と見える化</a></li>
+<li><a href="https://jp.quora.com/%E3%82%BD%E3%83%95%E3%83%88%E3%82%A6%E3%82%A7%E3%82%A2%E9%96%8B%E7%99%BA%E3%81%AB%E3%81%8A%E3%81%84%E3%81%A6-%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88%E3%82%92%E9%99%B3%E8%85%90%E5%8C%96%E3%81%95" target="_blank" rel="noopener">ソフトウェア開発において、ドキュメントを陳腐化させないようにするためにどのような取り組みを行っていますか？</a></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/images/2020-11-13-old-document/document.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;ソフトウェア開発にとってのドキュメントの重要性&quot;&gt;&lt;a href=&quot;#ソフトウェア開発にとってのドキュメントの重要性&quot; c
+    
+    </summary>
+    
+    
+      <category term="プロジェクト管理" scheme="https://blog.mmmcorp.co.jp/tags/%E3%83%97%E3%83%AD%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E7%AE%A1%E7%90%86/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>技術情報キャッチアップ会を始めました</title>
+    <link href="https://blog.mmmcorp.co.jp/blog/2020/10/31/catch-up-on-the-updates/"/>
+    <id>https://blog.mmmcorp.co.jp/blog/2020/10/31/catch-up-on-the-updates/</id>
+    <published>2020-10-31T10:41:50.000Z</published>
+    <updated>2020-12-11T04:55:28.170Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/images/catch-up-on-the-updates/catch-up.png" alt=""></p>
+<p>社内で「技術情報キャッチアップ会」を始めました。  </p>
+<h2 id="awsの最新情報キャッチアップ会"><a href="#AWSの最新情報キャッチアップ会" class="headerlink" title="AWSの最新情報キャッチアップ会"></a>AWSの最新情報キャッチアップ会</h2><p>AWSのアップデートの情報のキャッチアップ会については、これまでも月に一度のペースで行っていました。</p>
+<p>オンライン通話で、<a href="https://amzn.to/2ZyvWjG" target="_blank" rel="noopener">AWS の最新情報 – クラウドイノベーション &amp; ニュース</a>を見ながら、直近1ヶ月のアップデートの情報を確認しつつ、</p>
+<p>「この機能ができるようになったら、何が嬉しいの？」<br>「この機能はあのお客さんの環境で使えるかも」<br>「おお。これは便利。是非使いたいね」<br>「これは技術検証してみないと！」  </p>
+<p>など、話し合いながら気になった情報をピックアップし、「AWS最新アップデート情報(2020年◯月度)」としてまとめて、お客様にも共有しております。</p>
+<p>この取り組みを、AWS以外の技術要素についてもやった方が良いのでは？という話が上がり、実施することになりました。</p>
+<h2 id="きっかけ"><a href="#きっかけ" class="headerlink" title="きっかけ"></a>きっかけ</h2><p>そもそも「AWS以外の技術要素についても、同期的なキャッチアップ会を実施した方が良いのでは？」という話が出たきっかけは、<a href="http://isucon.net/" target="_blank" rel="noopener">ISUCON</a>でした。  </p>
+<p>弊社メンバーも参加したのですが、その振り返りで、MySQLを8.0にバージョンアップするだけでもパフォーマンスが良くなったということを知らなかったので、そういう発想にも至らなかったということがありました。  </p>
+<p>これまで、OSやミドルウェアなどのアップデート情報のキャッチアップについては、エンジニア各人に任せていましたが、それでは <strong>顧客に対して常にビジネス課題を適切に解決できる技術選定とナレッジ提供ができることが強みとしている会社としてはまずい</strong>のではないか。<br>会社として業務時間内にしっかりと時間を取って、同期的にコミュニケーションを取りながら、アップデート情報の内容を議論、理解を深めること。<br>そして、キャッチアップの重要性についてもっとチームメンバーへ意識付けしていくこと。<br>こういったことが非常に重要ではないのか、という結論になり、AWS以外のアップデート情報のキャッチアップ会も実施することが決まりました。</p>
+<h2 id="キャッチアップする技術の対象"><a href="#キャッチアップする技術の対象" class="headerlink" title="キャッチアップする技術の対象"></a>キャッチアップする技術の対象</h2><p>キャッチアップする技術の対象としては大まかに、</p>
+<ul>
+<li>プログラミング言語(Ruby、Golang、Pythonなど)</li>
+<li>OS(Amazon Linux、Ubuntu、Android、iOSなど)</li>
+<li>ミドルウェア(MySQL、PostgreSQL、Nginx、Dockerなど)</li>
+<li>フレームワーク(Ruby on Rails、Djangoなど)</li>
+<li>ライブラリ・ツール群(WordPressなど)</li>
+<li>SaaS(CircleCI、Datadogなど)</li>
+</ul>
+<p>というカテゴリーを設けて、弊社が扱っている技術要素をピックアップして、対象を決めました。<br>その後、誰がアップデート情報を調べるのかという担当を振り分けました。</p>
+<h2 id="調査方針"><a href="#調査方針" class="headerlink" title="調査方針"></a>調査方針</h2><p>担当者は、業務時間で1時間〜2時間を目安に、担当となった技術要素に対して</p>
+<ul>
+<li>キャッチアップ情報源の精査・ピックアップ</li>
+<li>見逃せないアップデート・修正情報の深堀り</li>
+<li>ドキュメントへのアウトプット</li>
+</ul>
+<p>を行うことにしました。</p>
+<h2 id="キャッチアップ会の実施方式"><a href="#キャッチアップ会の実施方式" class="headerlink" title="キャッチアップ会の実施方式"></a>キャッチアップ会の実施方式</h2><p>同期的なキャッチアップ会は下記の方針で実施することになりました。</p>
+<ul>
+<li>事前調査・アウトプットを前提に、カテゴリー単位で、毎週火曜日1時間前後を目処に、Zoomで同期的に情報共有会を実施</li>
+<li>基本的には全員参加</li>
+<li>業務やその他の理由で参加できないメンバーのために、Zoomは全て録画。後で見返せるようにする</li>
+</ul>
+<h2 id="やってみた感想"><a href="#やってみた感想" class="headerlink" title="やってみた感想"></a>やってみた感想</h2><p>初回は、プログラミング言語のカテゴリーで、アップデート情報のキャッチアップ会を行いました。<br>新規実装された機能について、具体的なコード例を提示してくれるメンバーもいて、普段自分が扱っていない言語の仕様を知ることができたり、各言語の設計思想やアップデート方針などについても議論ができたり、非常に有意義な会となったと感じました。<br>また、みんなで情報を調べてきた情報を持ち寄ることで、1人で行うより効率的にキャッチアップができるし、理解も深まると実感しました。<br>次回以降のOSやミドルウェアなども楽しみです。</p>
+<h2 id="参考url"><a href="#参考URL" class="headerlink" title="参考URL"></a>参考URL</h2><ul>
+<li><a href="https://matsuu.hatenablog.com/entry/2020/09/13/131145" target="_blank" rel="noopener">ISUCON10予選で12位になり本選進出を決めました - Gマイナー志向</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/descending-indexes.html" target="_blank" rel="noopener">MySQL :: MySQL 8.0 Reference Manual :: 8.3.13 Descending Indexes</a></li>
+<li><a href="https://amzn.to/2ZyvWjG" target="_blank" rel="noopener">AWS の最新情報 – クラウドイノベーション &amp; ニュース</a></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/images/catch-up-on-the-updates/catch-up.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;社内で「技術情報キャッチアップ会」を始めました。  &lt;/p&gt;
+&lt;h2 id=&quot;awsの最新情報キャッチアップ会&quot;&gt;&lt;a href=&quot;
+    
+    </summary>
+    
+    
+      <category term="フロントエンド" scheme="https://blog.mmmcorp.co.jp/tags/%E3%83%95%E3%83%AD%E3%83%B3%E3%83%88%E3%82%A8%E3%83%B3%E3%83%89/"/>
+    
+      <category term="サーバーサイド" scheme="https://blog.mmmcorp.co.jp/tags/%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%82%B5%E3%82%A4%E3%83%89/"/>
+    
+      <category term="社内制度" scheme="https://blog.mmmcorp.co.jp/tags/%E7%A4%BE%E5%86%85%E5%88%B6%E5%BA%A6/"/>
+    
+  </entry>
+  
+</feed>

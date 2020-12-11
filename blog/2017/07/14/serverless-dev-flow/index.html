@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Serverless Framework+Node.jsをつかったLambda関数の開発フロー | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="今回は、Serverless Framework+Node.jsをつかったLambda関数の具体的な開発フローを書いてみる。動作確認やテスト、CI連携まで一貫して行なったので、参考になればと思う。 つくったものWebアプリケーション側である変更がはいった際に、複数のRDBとElasticsearchにまたがるデータを合わせて更新する、という、中間的な役割を実装した。S3に更新のデータが5分毎にPU">
+<meta name="keywords" content="フロントエンド,AWS,サーバーレス">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Serverless Framework+Node.jsをつかったLambda関数の開発フロー">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2017/07/14/serverless-dev-flow/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="今回は、Serverless Framework+Node.jsをつかったLambda関数の具体的な開発フローを書いてみる。動作確認やテスト、CI連携まで一貫して行なったので、参考になればと思う。 つくったものWebアプリケーション側である変更がはいった際に、複数のRDBとElasticsearchにまたがるデータを合わせて更新する、という、中間的な役割を実装した。S3に更新のデータが5分毎にPU">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.146Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Serverless Framework+Node.jsをつかったLambda関数の開発フロー">
+<meta name="twitter:description" content="今回は、Serverless Framework+Node.jsをつかったLambda関数の具体的な開発フローを書いてみる。動作確認やテスト、CI連携まで一貫して行なったので、参考になればと思う。 つくったものWebアプリケーション側である変更がはいった際に、複数のRDBとElasticsearchにまたがるデータを合わせて更新する、という、中間的な役割を実装した。S3に更新のデータが5分毎にPU">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-serverless-dev-flow" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2017-07-14T14:29:03.000Z" itemprop="datePublished">2017-07-14</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2017/07/14/serverless-dev-flow/">Serverless Framework+Node.jsをつかったLambda関数の開発フロー</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/07/14/serverless-dev-flow/" data-text="Serverless Framework+Node.jsをつかったLambda関数の開発フロー" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/07/14/serverless-dev-flow/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/07/14/serverless-dev-flow/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/07/14/serverless-dev-flow/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/07/14/serverless-dev-flow/" class="hatena-bookmark-button" data-hatena-bookmark-title="Serverless Framework+Node.jsをつかったLambda関数の開発フロー" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今回は、Serverless Framework+Node.jsをつかったLambda関数の具体的な開発フローを書いてみる。動作確認やテスト、CI連携まで一貫して行なったので、参考になればと思う。</p>
+<h2 id="つくったもの"><a href="#つくったもの" class="headerlink" title="つくったもの"></a>つくったもの</h2><p>Webアプリケーション側である変更がはいった際に、複数のRDBとElasticsearchにまたがるデータを合わせて更新する、という、中間的な役割を実装した。S3に更新のデータが5分毎にPUTされるので、そこからイベントを取る。</p>
+<h2 id="目次"><a href="#目次" class="headerlink" title="目次"></a>目次</h2><!-- toc -->
+<ul>
+<li><a href="#フロー全体">フロー全体</a></li>
+<li><a href="#アーキテクチャ">アーキテクチャ</a></li>
+<li><a href="#ロジック実装テスト">ロジック実装/テスト</a><ul>
+<li><a href="#aws-sdkのテスト">AWS SDKのテスト</a></li>
+<li><a href="#関数の分離">関数の分離</a></li>
+<li><a href="#node-functionをpromise化">Node FunctionをPromise化</a></li>
+<li><a href="#エラーログ">エラーログ</a></li>
+</ul>
+</li>
+<li><a href="#ローカルでの結合テスト">ローカルでの結合テスト</a></li>
+<li><a href="#development環境での結合テスト"><code>development</code>環境での結合テスト</a><ul>
+<li><a href="#awsの設定">AWSの設定</a></li>
+<li><a href="#デプロイ実行">デプロイ・実行</a></li>
+</ul>
+</li>
+<li><a href="#pr作成ciでテストの実行">PR作成(CIでテストの実行)</a></li>
+<li><a href="#レビュー-マージciでテストの実行">レビュー、マージ(CIでテストの実行)</a></li>
+<li><a href="#stagingproduction環境へデプロイ"><code>staging</code>(<code>production</code>)環境へデプロイ</a></li>
+<li><a href="#stagingproduction環境での結合テスト"><code>staging</code>(<code>production</code>)環境での結合テスト</a></li>
+<li><a href="#その他">その他</a></li>
+<li><a href="#まとめ">まとめ</a></li>
+</ul>
+<!-- tocstop -->
+<h2 id="フロー全体"><a href="#フロー全体" class="headerlink" title="フロー全体"></a>フロー全体</h2><p>一連の開発フローとしては以下のような流れになる。</p>
+<ol>
+<li>ロジック実装/ユニットテスト</li>
+<li>ローカルでの結合テスト</li>
+<li><code>development</code>環境での結合テスト</li>
+<li>PR作成(CIでテストの実行)</li>
+<li>レビュー</li>
+<li>マージ(CIでテストの実行)</li>
+<li><code>staging</code>(<code>production</code>)環境へデプロイ</li>
+<li><code>staging</code>(<code>production</code>)環境での結合テスト</li>
+</ol>
+<p>UIがないというのもあり、型とテストを主軸に開発をすすめるスタイルとなった。型・テストで動作担保しつつ、ローカルで動作確認、デプロイして結合動作確認、本番へ、というイメージ。以下、一つ一つ説明していく。</p>
+<h2 id="アーキテクチャ"><a href="#アーキテクチャ" class="headerlink" title="アーキテクチャ"></a>アーキテクチャ</h2><p><a href="http://blog.mmmcorp.co.jp/blog/2017/05/19/ServerlessFrameworkWithNode/">Serverless Framework+Node.jsで普通に設計する</a>という記事にも書いたが、構成としては以下のような感じである。</p>
+<ul>
+<li>デプロイ/パッケージング<ul>
+<li>Serverless Framework</li>
+</ul>
+</li>
+<li>ビルド<ul>
+<li>webpack+Babel</li>
+</ul>
+</li>
+<li>開発効率系<ul>
+<li>AVA</li>
+<li>Flow</li>
+<li>eslint</li>
+<li>yarn</li>
+</ul>
+</li>
+<li>その他<ul>
+<li>axios/bluebird/lodash/momentなど</li>
+</ul>
+</li>
+</ul>
+<p>モジュール等はLambdaのサイズを削減するため、例えば以下のような読み込み方をしている。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 👌使いたいモジュールのみを読み込む</span></span><br><span class="line"><span class="keyword">import</span> &#123;isArray&#125; <span class="keyword">from</span> <span class="string">'lodash'</span>;</span><br><span class="line">isArray([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 🙅モジュール全部を読み込む</span></span><br><span class="line"><span class="keyword">import</span> lodash <span class="keyword">from</span> <span class="string">'lodash'</span>;</span><br><span class="line">lodash.isArray([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);</span><br></pre></td></tr></table></figure>
+<p>Lambda関係なしにこうするべきだが、今回は特に心がけた。それでもAWSコンソール上で書くLambda関数よりはだいぶ大きくなってしまうが…そこは多少複雑になるとやむを得ないのかなと思う。もしくは、webpack以外のbundlerを使って容量を削減するのは正しい気がする。</p>
+<p>UIを考慮する必要がない分かなりシンプルな設計に落とし込めたと。特にフレームワーク等も使う必要はなかったが、モジュール単位で開発ができたのは品質に貢献したかなと思う。普段使っているスタックと変わらない構成で開発ができたが、特に、開発効率系がそのまま使えたのは嬉しかった。</p>
+<h2 id="ロジック実装テスト"><a href="#ロジック実装-テスト" class="headerlink" title="ロジック実装/テスト"></a>ロジック実装/テスト</h2><h3 id="aws-sdkのテスト"><a href="#AWS-SDKのテスト" class="headerlink" title="AWS SDKのテスト"></a>AWS SDKのテスト</h3><p><a href="https://serverless.com/framework/docs/providers/aws/guide/testing/" target="_blank" rel="noopener">Writing Testable AWS Lambda Functions</a>や<a href="https://speakerdeck.com/twada/testable-lambda-working-effectively-with-legacy-lambda" target="_blank" rel="noopener">Testable Lambda: Working Effectively with Legacy Lambda</a>でも述べられているが、Seam(接合部)に着目し、ロジックを切り分ければテストを書くのは難しくない。最初の記事ではLocalStackを使用しているが、今回はそこまでのことはせず、関数の責務を切り分け、テスタブルになるよう実装した。例えば以下のような感じである。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> putToS3 = <span class="function">(<span class="params">params: TParams, s3: TS3Instance = S3Instance</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> putObject = promisify(s3.putObject, &#123;<span class="attr">context</span>: s3&#125;);</span><br><span class="line">  <span class="keyword">return</span> putObject(params)</span><br><span class="line">    .then(<span class="function">(<span class="params">data</span>) =&gt;</span> data)</span><br><span class="line">    .catch(<span class="function">(<span class="params">error</span>) =&gt;</span> error);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 実際に使う時</span></span><br><span class="line"><span class="keyword">import</span> S3 <span class="keyword">from</span> <span class="string">'aws-sdk/clients/s3'</span>;</span><br><span class="line">putToS3(<span class="keyword">new</span> S3());</span><br><span class="line"></span><br><span class="line"><span class="comment">// テスト</span></span><br><span class="line"><span class="keyword">import</span> S3 <span class="keyword">from</span> <span class="string">'aws-sdk/clients/s3'</span>;</span><br><span class="line"><span class="keyword">const</span> s3Mock = &#123;</span><br><span class="line">  putObject: <span class="function">(<span class="params">param, callback</span>) =&gt;</span> &#123;</span><br><span class="line">    callback(<span class="string">''</span>, DATA_SUCCESS); <span class="comment">// レスポンスもモックを返す</span></span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line">putToS3(s3Mock);</span><br></pre></td></tr></table></figure>
+<p>これだけだと意味がないテストのようにも見えるが、実際には複数の関数が結合されるので、この手法を応用してテストを書いておくと、リファクタや機能追加時にかなり安心できる。RDBのテストも、コレと同じ要領でDBインスタンスをモックしてやったり、<a href="https://github.com/mfncooper/mockery" target="_blank" rel="noopener">mockery</a>を使うなどしてまるごと書き換えたりをした。これにより、あとあとになって開発効率が上がってゆく感じになりとてもよかった。</p>
+<h3 id="関数の分離"><a href="#関数の分離" class="headerlink" title="関数の分離"></a>関数の分離</h3><p>↑の話ともかぶってしまうのだが、関数の責務をわけて、なるべく副作用のない<a href="http://postd.cc/httpstaltz-comis-your-javascript-function-actually-pure/" target="_blank" rel="noopener">純粋関数</a>になるように気をつけた。これによってLambda関数がテスタブルになるというのはもちろんだが、責務が小さいために、実装のスピードにも影響すると感じた。</p>
+<h3 id="node-functionをpromise化"><a href="#Node-FunctionをPromise化" class="headerlink" title="Node FunctionをPromise化"></a>Node FunctionをPromise化</h3><p>他に気をつけた点として、例外が起きた時のビジネス的な損失が大きな機能だったため、Node FunctionなどはすべてPromise化して、どこでエラーが起きても<code>catch</code>できるようにしたというのがある。例えば以下のような感じである。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> xml2js <span class="keyword">from</span> <span class="string">'xml2js'</span>;</span><br><span class="line"><span class="keyword">const</span> parser = <span class="keyword">new</span> xml2js.Parser();</span><br><span class="line"><span class="keyword">const</span> parseString = promisify(parser.parseString, &#123;<span class="attr">context</span>: parser&#125;);</span><br><span class="line"><span class="keyword">return</span> parseString(xmlData)</span><br><span class="line">  .then(<span class="function">(<span class="params">results</span>) =&gt;</span> results)</span><br><span class="line">  .catch(<span class="function">(<span class="params">error</span>) =&gt;</span> error);</span><br></pre></td></tr></table></figure>
+<p>このようにシンプルな処理ならもちろんNode Functionでもよいのだが、やはりPromiseにした方が見通しが良くなり値が扱いやすいのと、万が一、成功時の処理のなかでエラーが起きても<code>catch</code>されるので安心できた。</p>
+<h3 id="エラーログ"><a href="#エラーログ" class="headerlink" title="エラーログ"></a>エラーログ</h3><p>前述したが、例外が起きた時の損失に耐えうるように、基本的に確認しうるすべての箇所でエラーログをとった(CloudWatchにログされる)。また、Slackやメール通知、Lambda自体の監視(こちらはコードの管轄外だが)も行なった。</p>
+<h2 id="ローカルでの結合テスト"><a href="#ローカルでの結合テスト" class="headerlink" title="ローカルでの結合テスト"></a>ローカルでの結合テスト</h2><p>Serverless Frameworkを使うとLambda関数をローカルでも実行できる。これはWeb開発でいうと、ブラウザでの動作確認のようなもので、基本的に開発フローとしては、テストが通った後に結合テスト的な意味合いで確認した。例えば、<code>handler.js</code>にLambdaへ露出させる関数を以下のように書いていたとする。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> runDeleteFromDB = <span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> ids = [<span class="string">'50681112'</span>, <span class="string">'50733612'</span>];</span><br><span class="line">  <span class="keyword">const</span> result = <span class="keyword">await</span> deleteFromDB(ids);</span><br><span class="line">  <span class="built_in">console</span>.log(result);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>これは下記のようなコマンドで実行できる(実際はyarnコマンドにまとめてある)。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(npm bin)/serverless webpack invoke --<span class="keyword">function</span> runDeleteFromDB</span><br></pre></td></tr></table></figure>
+<p>DBの環境はDockerで用意してもらっていたが、関数を実行することできちんとローカルのDBに対して更新の処理をかけることができる。また、イベントなども任意で指定できる。</p>
+<h2 id="development環境での結合テスト"><a href="#development環境での結合テスト" class="headerlink" title="development環境での結合テスト"></a><code>development</code>環境での結合テスト</h2><p>一通りテストと動作確認ができたら、デプロイして結合テストを行う。これは、あらかじめ<code>development</code>環境を用意しておき、本番にいく前に確認する。</p>
+<h3 id="awsの設定"><a href="#AWSの設定" class="headerlink" title="AWSの設定"></a>AWSの設定</h3><p>Serverless Frameworkではデプロイする関数に対して指定するIAMロールを自動生成してくれる。例えば以下のように指定すると、<code>BUCKET_NAME</code>に対してS3のGETアクションがかけられるようになる。</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">provider:</span></span><br><span class="line"><span class="attr">  iamRoleStatements:</span></span><br><span class="line"><span class="attr">    - Effect:</span> <span class="string">Allow</span></span><br><span class="line"><span class="attr">      Action:</span></span><br><span class="line"><span class="attr">        - s3:</span><span class="string">GetObject</span></span><br><span class="line"><span class="attr">      Resource:</span> <span class="string">"arn:aws:s3:::BUCKET_NAME/*"</span></span><br></pre></td></tr></table></figure>
+<p><code>BUCKET_NAME</code>などの値を環境毎に切り替えるには以下のように記述できる。これで、Serverless CLIの<code>stage</code>オプションによってバケット名が切り替えられたりする。環境毎に値を切り替えたければ基本的に<code>custom</code>に環境ごとの値を作っておけば切り分けができる。</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">provider:</span></span><br><span class="line"><span class="attr">  iamRoleStatements:</span></span><br><span class="line"><span class="attr">    - Effect:</span> <span class="string">Allow</span></span><br><span class="line"><span class="attr">      Action:</span></span><br><span class="line"><span class="attr">        - s3:</span><span class="string">GetObject</span></span><br><span class="line"><span class="attr">      Resource:</span> <span class="string">"arn:aws:s3:::$&#123;self:custom.bucketNameForUpload.$&#123;opt:stage&#125;&#125;/*"</span></span><br><span class="line"></span><br><span class="line"><span class="attr">custom:</span></span><br><span class="line"><span class="attr">  bucketNameForUpload:</span></span><br><span class="line"><span class="attr">    development:</span> <span class="string">$&#123;env:S3_BUCKET_NAME_FOR_UPLOAD_LOCAL&#125;</span> <span class="comment"># $&#123;env:&#125;で環境変数を取得できる</span></span><br><span class="line"><span class="attr">    staging:</span> <span class="string">$&#123;env:S3_BUCKET_NAME_FOR_UPLOAD_STAGING&#125;</span></span><br><span class="line"><span class="attr">    production:</span> <span class="string">$&#123;env:S3_BUCKET_NAME_FOR_UPLOAD_PRODUCTION&#125;</span></span><br></pre></td></tr></table></figure>
+<p>VPCも以下のように設定できる。</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">provider:</span></span><br><span class="line"><span class="attr">  vpc:</span> <span class="string">$&#123;self:custom.vpc.$&#123;opt:stage&#125;&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">custom:</span></span><br><span class="line"><span class="attr">  vpc:</span></span><br><span class="line"><span class="attr">    development:</span></span><br><span class="line"><span class="attr">      securityGroupIds:</span></span><br><span class="line"><span class="attr">      subnetIds:</span></span><br><span class="line"><span class="attr">    staging:</span></span><br><span class="line"><span class="attr">      securityGroupIds:</span></span><br><span class="line"><span class="bullet">        -</span> <span class="string">sg-xxx</span></span><br><span class="line"><span class="attr">      subnetIds:</span></span><br><span class="line"><span class="bullet">        -</span> <span class="string">subnet-xxx</span></span><br><span class="line"><span class="bullet">        -</span> <span class="string">subnet-xxx</span></span><br><span class="line"><span class="attr">    production:</span></span><br><span class="line"><span class="attr">      securityGroupIds:</span></span><br><span class="line"><span class="bullet">        -</span> <span class="string">sg-yyy</span></span><br><span class="line"><span class="attr">      subnetIds:</span></span><br><span class="line"><span class="bullet">        -</span> <span class="string">subnet-yyy</span></span><br><span class="line"><span class="bullet">        -</span> <span class="string">subnet-yyy</span></span><br></pre></td></tr></table></figure>
+<p>このように、実装によってAWSの設定を変更する場合があればその対応をする。</p>
+<h3 id="デプロイ実行"><a href="#デプロイ・実行" class="headerlink" title="デプロイ・実行"></a>デプロイ・実行</h3><p>準備ができたら<code>development</code>環境へデプロイし、動作確認する。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># デプロイ</span></span><br><span class="line">$(npm bin)/serverless deploy --stage development</span><br><span class="line"></span><br><span class="line"><span class="comment"># アップロードされているLambda関数をターミナルから実行</span></span><br><span class="line">$(npm bin)/serverless invoke --<span class="built_in">log</span> --stage development --<span class="keyword">function</span> runDeleteFromDB</span><br></pre></td></tr></table></figure>
+<h2 id="pr作成ciでテストの実行"><a href="#PR作成-CIでテストの実行" class="headerlink" title="PR作成(CIでテストの実行)"></a>PR作成(CIでテストの実行)</h2><p>ここまでできたらプッシュして、PRを作成する。CIでテストの実行は、<code>yarn test</code>でlintとユニットテストが流れる。</p>
+<h2 id="レビュー-マージciでテストの実行"><a href="#レビュー、マージ-CIでテストの実行" class="headerlink" title="レビュー、マージ(CIでテストの実行)"></a>レビュー、マージ(CIでテストの実行)</h2><p>レビューで指摘事項があれば修正し、マージする。マージ後、再度CIでテストが実行される。</p>
+<h2 id="stagingproduction環境へデプロイ"><a href="#staging-production-環境へデプロイ" class="headerlink" title="staging(production)環境へデプロイ"></a><code>staging</code>(<code>production</code>)環境へデプロイ</h2><p>マージ先がmasterブランチならステージングへ、releaseなら本番環境へデプロイされる。</p>
+<h2 id="stagingproduction環境での結合テスト"><a href="#staging-production-環境での結合テスト" class="headerlink" title="staging(production)環境での結合テスト"></a><code>staging</code>(<code>production</code>)環境での結合テスト</h2><p>Webでもなんでもそうかもしれないが、本番へデプロイされたら結合テストを行い、動作確認終了、これにて一連のフローが完了である。</p>
+<h2 id="その他"><a href="#その他" class="headerlink" title="その他"></a>その他</h2><ul>
+<li>MySQLのコネクションは実行終了後に毎回切っておかないと、例えばVPCの設定を接続できないように変えても、同じインスタンスで接続し続けてしまうので、Lambdaであるにもかかわらずステートレスでなくなってしまう。また、JS側の側での接続インスタンス作成処理は、変数などにいれずに毎回リフレッシュしないと、これも同じインスタンスを使い続けてしまう。</li>
+<li>稀に、Lambdaの関数実行中のタイミングと合わせてデプロイすると(?)、<code>Unable to import module &#39;handler&#39;: Error</code>みたいなエラーが起こることがあって、詳細まで原因を切り分けられていない…。そのため、デプロイのタイミングは実際にはCI自動デプロイではなく、手動でやることも多かった。もしわかる方いれば教えてください。</li>
+<li>ハマった時にAWS側の基礎知識がそこそこ必要。僕のように普段フロントエンドをやってる人は最初は辛い時があるかも</li>
+<li>既存のS3バケットにトリガーをアタッチするときは<a href="http://qiita.com/okmttdhr/items/29905b94b4084fa1b91f" target="_blank" rel="noopener">こちら</a></li>
+</ul>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>Webの開発フローをかなり踏襲できるとはいえ、Lambda特有のくせもあったので、今回やってみて、Lambdaの開発フローを通しでできたのは良かった。しっかり設計を行って開発ができたことは、品質(に対する要求を楽に実装するために…)に貢献したと思う。まだLambdaの開発フローは確立されていないところがあるので、よりよいスタイルを目指してやっていきたい。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/07/14/serverless-dev-flow/" data-text="Serverless Framework+Node.jsをつかったLambda関数の開発フロー" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/07/14/serverless-dev-flow/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/07/14/serverless-dev-flow/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/07/14/serverless-dev-flow/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/07/14/serverless-dev-flow/" class="hatena-bookmark-button" data-hatena-bookmark-title="Serverless Framework+Node.jsをつかったLambda関数の開発フロー" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li></ul>
+
+
+      <p class="article-footer__author">by okp</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

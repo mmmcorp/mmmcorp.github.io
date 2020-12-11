@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>CirlcleCI で実行している Protractor テストを並列実行してみた | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="CirlcleCI で実行している Protractor テストを並列実行してみた最近 Protractor のテストが CircleCI 側のテスト環境の負荷が高くなっているせいか、たびたびコケるようになってきた。ローカルの開発環境では通るのに。テストがコケる場所も実行するときによって違ったり、再度実行すると問題なく通ったり、という状況だ。また、テストの実行時間も25分前後かかるようになってきた">
+<meta name="keywords" content="プロジェクト管理,Protractor,CircleCI">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CirlcleCI で実行している Protractor テストを並列実行してみた">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2015/03/23/circleci-protractor-parallel/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="CirlcleCI で実行している Protractor テストを並列実行してみた最近 Protractor のテストが CircleCI 側のテスト環境の負荷が高くなっているせいか、たびたびコケるようになってきた。ローカルの開発環境では通るのに。テストがコケる場所も実行するときによって違ったり、再度実行すると問題なく通ったり、という状況だ。また、テストの実行時間も25分前後かかるようになってきた">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/circleci_parallel/circleci_para.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/circleci_parallel/circle_containers.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.130Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CirlcleCI で実行している Protractor テストを並列実行してみた">
+<meta name="twitter:description" content="CirlcleCI で実行している Protractor テストを並列実行してみた最近 Protractor のテストが CircleCI 側のテスト環境の負荷が高くなっているせいか、たびたびコケるようになってきた。ローカルの開発環境では通るのに。テストがコケる場所も実行するときによって違ったり、再度実行すると問題なく通ったり、という状況だ。また、テストの実行時間も25分前後かかるようになってきた">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/circleci_parallel/circleci_para.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-circleci-protractor-parallel" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2015-03-23T08:18:55.000Z" itemprop="datePublished">2015-03-23</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2015/03/23/circleci-protractor-parallel/">CirlcleCI で実行している Protractor テストを並列実行してみた</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/03/23/circleci-protractor-parallel/" data-text="CirlcleCI で実行している Protractor テストを並列実行してみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/03/23/circleci-protractor-parallel/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/03/23/circleci-protractor-parallel/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/03/23/circleci-protractor-parallel/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/03/23/circleci-protractor-parallel/" class="hatena-bookmark-button" data-hatena-bookmark-title="CirlcleCI で実行している Protractor テストを並列実行してみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="cirlcleci-で実行している-protractor-テストを並列実行してみた"><a href="#CirlcleCI-で実行している-Protractor-テストを並列実行してみた" class="headerlink" title="CirlcleCI で実行している Protractor テストを並列実行してみた"></a>CirlcleCI で実行している Protractor テストを並列実行してみた</h3><p>最近 Protractor のテストが CircleCI 側のテスト環境の負荷が高くなっているせいか、たびたびコケるようになってきた。<br>ローカルの開発環境では通るのに。<br>テストがコケる場所も実行するときによって違ったり、再度実行すると問題なく通ったり、という状況だ。<br>また、テストの実行時間も25分前後かかるようになってきた。</p>
+<p>そこで、Protractor のテストを3つのコンテナに分割して並列実行するように修正してみた。</p>
+<h3 id="circleci-の料金プラン"><a href="#CircleCI-の料金プラン" class="headerlink" title="CircleCI の料金プラン"></a>CircleCI の料金プラン</h3><p>CircleCI で複数のコンテナを動かすには、有料プランの契約が必要となる。<br>CircleCI は、無料プランだと1コンテナのみ、追加の1コンテナごとに$50という料金体系。  </p>
+<h3 id="circleci-側の設定"><a href="#CircleCI-側の設定" class="headerlink" title="CircleCI 側の設定"></a>CircleCI 側の設定</h3><p>複数のコンテナでテストを実行するには、CircleCI 側で設定が必要となる。<br>下記ドキュメントが参考になる。<br><a href="https://circleci.com/docs/setting-up-parallelism" target="_blank" rel="noopener">https://circleci.com/docs/setting-up-parallelism</a><br><a href="https://circleci.com/docs/parallel-manual-setup" target="_blank" rel="noopener">https://circleci.com/docs/parallel-manual-setup</a>  </p>
+<p>CircleCI の Project Settings から、変更するコンテナ数をクリックする。<br><img src="/images/circleci_parallel/circleci_para.png" alt="コンテナ数変更画面"><br>上記は、3つコンテナを選択した場合。  </p>
+<h3 id="circleyml-修正"><a href="#circle-yml-修正" class="headerlink" title="circle.yml 修正"></a>circle.yml 修正</h3><p>そのままテストを実行すると、1つ目のコンテナでしか Protractor のテストが通らないはず。<br>バックグラウンドで起動する必要があるサーバーが1つ目でしか実行されないためである。<br>3つのコンテナで実行させるように、circle.yml の修正も必要となってくる。  </p>
+<p>【修正前】</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">test:</span><br><span class="line">  pre:</span><br><span class="line">    - grunt serve:</span><br><span class="line">      background: true</span><br><span class="line">    - sleep 5</span><br></pre></td></tr></table></figure>
+<p>【修正後】<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">test:</span><br><span class="line">  pre:</span><br><span class="line">    - grunt serve:</span><br><span class="line">        background: true</span><br><span class="line">        parallel: true</span><br><span class="line">    - sleep 5:</span><br><span class="line">        parallel: true</span><br><span class="line">  override:</span><br><span class="line">    - bash test.sh:</span><br><span class="line">        parallel: true</span><br></pre></td></tr></table></figure></p>
+<p><code>parallel: true</code> を各コンテナで実行する必要がある処理に追加する。<br>また、テストについて並列実行するシェルスクリプトを実行するように、<code>override</code> に記述する。  </p>
+<h3 id="テスト実行用シェルスクリプト"><a href="#テスト実行用シェルスクリプト" class="headerlink" title="テスト実行用シェルスクリプト"></a>テスト実行用シェルスクリプト</h3><h4 id="サンプルスクリプト"><a href="#サンプルスクリプト" class="headerlink" title="サンプルスクリプト"></a>サンプルスクリプト</h4><p><a href="https://circleci.com/docs/parallel-manual-setup" target="_blank" rel="noopener">こちら</a>に例示していあるサンプルスクリプトをベースに修正する。  </p>
+<p>【サンプルスクリプト】<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">i=0</span><br><span class="line">files=()</span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> $(find ./<span class="built_in">test</span> -name <span class="string">"*.py"</span> | sort)</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  <span class="keyword">if</span> [ $((<span class="variable">$i</span> % <span class="variable">$CIRCLE_NODE_TOTAL</span>)) -eq <span class="variable">$CIRCLE_NODE_INDEX</span> ]</span><br><span class="line">  <span class="keyword">then</span></span><br><span class="line">    files+=<span class="string">" <span class="variable">$file</span>"</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line">  ((i++))</span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">test</span>-runner <span class="variable">$&#123;files[@]&#125;</span></span><br></pre></td></tr></table></figure></p>
+<h5 id="環境変数"><a href="#環境変数" class="headerlink" title="環境変数"></a>環境変数</h5><p>スクリプト内に入っている環境変数について。  </p>
+<h6 id="circle_node_total"><a href="#CIRCLE-NODE-TOTAL" class="headerlink" title="CIRCLE_NODE_TOTAL"></a>CIRCLE_NODE_TOTAL</h6><p>ビルドに使用されるコンテナの合計数。  </p>
+<h6 id="circle_node_index"><a href="#CIRCLE-NODE-INDEX" class="headerlink" title="CIRCLE_NODE_INDEX"></a>CIRCLE_NODE_INDEX</h6><p>ビルドが実行されているコンテナの番号。0から始まる。  </p>
+<h5 id="スクリプト修正"><a href="#スクリプト修正" class="headerlink" title="スクリプト修正"></a>スクリプト修正</h5><p>サンプルスクリプトを基に、Protractor 用にスクリプトを修正する。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">i=0</span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> $(find ./<span class="built_in">test</span> -name <span class="string">"*E2Etest.coffee"</span> | sort)</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  <span class="keyword">if</span> [ $((<span class="variable">$i</span> % <span class="variable">$CIRCLE_NODE_TOTAL</span>)) -eq <span class="variable">$CIRCLE_NODE_INDEX</span> ]; <span class="keyword">then</span></span><br><span class="line">    grunt <span class="built_in">test</span> --specs <span class="variable">$file</span></span><br><span class="line">    RETURN_CD=$?</span><br><span class="line">    <span class="keyword">if</span> [ <span class="variable">$RETURN_CD</span> -ne 0 ]; <span class="keyword">then</span></span><br><span class="line">      <span class="built_in">exit</span> <span class="variable">$RETURN_CD</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line">  ((i++))</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure></p>
+<p><code>test</code> ディレクトリ配下の、<code>*E2Etest.coffee</code> をソートして、1つ目のコンテナ、2つ目のコンテナというように、機械的に各コンテナに振り分けて、1つずつ実行していく形にした。<br>途中、テストが通らなかったら <code>exit</code> で処理を抜けるように修正。<br>(これを入れないと、テストが通る、通らないにかかわらずすべて正常終了してしまうため)  </p>
+<h5 id="テスト実行"><a href="#テスト実行" class="headerlink" title="テスト実行"></a>テスト実行</h5><p>上記を実装後に、テストを実行すると下記のように複数のコンテナでテストが並列実行される。<br><img src="/images/circleci_parallel/circle_containers.png" alt="複数コンテナで並列実行">  </p>
+<h3 id="今後の対応として"><a href="#今後の対応として" class="headerlink" title="今後の対応として"></a>今後の対応として</h3><p>今回はスクリプト内のテスト振り分けの部分を、何も考えずに機械的に振り分けてしまったので、テストの実行処理時間にそれほど大きな差はなかった。<br>(1つのコンテナに重いテストが集中してしまったため)<br>テストの振り分けを各コンテナでうまく振り分けることができればテストの実行時間をかなり削減できそうではある。<br>今後はこのあたりの改善をして行きたい。</p>
+<p><a href="https://mmmcorp.co.jp/services/entrusted_development/" target="_blank" rel="noopener">CircleCIを活用した継続的インテグレーションによるシステム開発・モバイルアプリケーション開発</a>をご検討の企業様は、是非MMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/03/23/circleci-protractor-parallel/" data-text="CirlcleCI で実行している Protractor テストを並列実行してみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/03/23/circleci-protractor-parallel/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/03/23/circleci-protractor-parallel/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/03/23/circleci-protractor-parallel/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/03/23/circleci-protractor-parallel/" class="hatena-bookmark-button" data-hatena-bookmark-title="CirlcleCI で実行している Protractor テストを並列実行してみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CircleCI/">CircleCI</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Protractor/">Protractor</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/プロジェクト管理/">プロジェクト管理</a></li></ul>
+
+
+      <p class="article-footer__author">by 佐々木 悠人</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

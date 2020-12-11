@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Amazon Connectで担当者直通電話システムの開発 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="Amazon Connectの概要Amazon Connectでは、多機能(IVRや着電管理、ケース追跡など)なコールセンターの応対フローを素早くスケーラブルに作成することができます。例えば、ユーザの入力した番号によって担当者を変えたり、電話番号によってどのオペレータにつながるか指定することができます。 今回は、Amazon Connectを使って、弊社のお客様向けに、担当者直通電話システムを開発">
+<meta name="keywords" content="AWS,ソリューション・サービス">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Amazon Connectで担当者直通電話システムの開発">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2017/11/09/amazon-connect-customer-support/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="Amazon Connectの概要Amazon Connectでは、多機能(IVRや着電管理、ケース追跡など)なコールセンターの応対フローを素早くスケーラブルに作成することができます。例えば、ユーザの入力した番号によって担当者を変えたり、電話番号によってどのオペレータにつながるか指定することができます。 今回は、Amazon Connectを使って、弊社のお客様向けに、担当者直通電話システムを開発">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-connect-customer-support/0.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-connect-customer-support/2.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-connect-customer-support/1.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-connect-customer-support/3.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-connect-customer-support/4.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-connect-customer-support/5.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-connect-customer-support/6.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-connect-customer-support/7.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-connect-customer-support/8.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-connect-customer-support/9.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-connect-customer-support/10.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/amazon-connect-customer-support/11.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.150Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Amazon Connectで担当者直通電話システムの開発">
+<meta name="twitter:description" content="Amazon Connectの概要Amazon Connectでは、多機能(IVRや着電管理、ケース追跡など)なコールセンターの応対フローを素早くスケーラブルに作成することができます。例えば、ユーザの入力した番号によって担当者を変えたり、電話番号によってどのオペレータにつながるか指定することができます。 今回は、Amazon Connectを使って、弊社のお客様向けに、担当者直通電話システムを開発">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/amazon-connect-customer-support/0.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-amazon-connect-customer-support" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2017-11-09T16:13:48.000Z" itemprop="datePublished">2017-11-09</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2017/11/09/amazon-connect-customer-support/">Amazon Connectで担当者直通電話システムの開発</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/11/09/amazon-connect-customer-support/" data-text="Amazon Connectで担当者直通電話システムの開発" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/11/09/amazon-connect-customer-support/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/11/09/amazon-connect-customer-support/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/11/09/amazon-connect-customer-support/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/11/09/amazon-connect-customer-support/" class="hatena-bookmark-button" data-hatena-bookmark-title="Amazon Connectで担当者直通電話システムの開発" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="amazon-connectの概要"><a href="#Amazon-Connectの概要" class="headerlink" title="Amazon Connectの概要"></a>Amazon Connectの概要</h2><p>Amazon Connectでは、多機能(IVRや着電管理、ケース追跡など)なコールセンターの応対フローを素早くスケーラブルに作成することができます。例えば、ユーザの入力した番号によって担当者を変えたり、電話番号によってどのオペレータにつながるか指定することができます。</p>
+<p>今回は、Amazon Connectを使って、弊社のお客様向けに、<code>担当者直通電話システム</code>を開発いたしましたので、ご紹介いたします。</p>
+<h2 id="目次"><a href="#目次" class="headerlink" title="目次"></a>目次</h2><!-- toc -->
+<ul>
+<li><a href="#機能概要">機能概要</a></li>
+<li><a href="#実装詳細">実装詳細</a><ul>
+<li><a href="#営業日判定">営業日判定</a></li>
+<li><a href="#祝祭日">祝祭日</a></li>
+<li><a href="#顧客番号入力">顧客番号入力</a></li>
+<li><a href="#顧客番号からキューを取得">顧客番号からキューを取得</a></li>
+<li><a href="#エージェントへの転送">エージェントへの転送</a></li>
+<li><a href="#対応音声">対応音声</a><ul>
+<li><a href="#顧客番号入力時">顧客番号入力時</a></li>
+<li><a href="#顧客番号入力エラー時">顧客番号入力エラー時</a></li>
+<li><a href="#エージェントへの転送時">エージェントへの転送時</a></li>
+</ul>
+</li>
+<li><a href="#録音履歴管理">録音/履歴管理</a></li>
+</ul>
+</li>
+<li><a href="#料金">料金</a></li>
+<li><a href="#おわりに">おわりに</a></li>
+<li><a href="#参考">参考</a></li>
+</ul>
+<!-- tocstop -->
+<h2 id="機能概要"><a href="#機能概要" class="headerlink" title="機能概要"></a>機能概要</h2><p>機能としては、弊社へ電話でのお問合わせ時に、お客様専用の<code>顧客番号</code>を入力していただくと、プロジェクトに最も詳しい担当者(<code>エージェント</code>)に直通電話が繋がるというものです。(<code>顧客番号</code>は、お客様ごとに一意に採番され、データベース(今回はDynamoDB)で管理されております)。</p>
+<p>これによって、お客様にとっては、プロジェクトの前提知識などが共有されている担当者に問い合わせをすることができ、また、担当者が別のプロジェクトの電話対応をしている場合は、次にプロジェクトに詳しい担当者へ順に転送されるため、待ち時間を極力少なく、素早く問題解決にご協力することができます。</p>
+<p>全体の流れとしては、以下のようになります。</p>
+<p><img src="/images/amazon-connect-customer-support/0.png" alt=""></p>
+<p>今回利用するAmazon Connectの主な機能は次の8つです。</p>
+<ul>
+<li><code>Play prompt</code>: 音声を再生する</li>
+<li><code>Check hours of operation</code>: オペレーションを行う時間を確認する</li>
+<li><code>Check contact attributes</code>: 情報を元に処理を分岐させる</li>
+<li><code>Store customer input</code>: ユーザの番号入力を受け取り、保存する</li>
+<li><code>Invoke AWS Lambda function</code>: Lambda関数を実行する</li>
+<li><code>Set call recording behavior</code>: 録音を開始する</li>
+<li><code>Transfer to queue</code>: 該当のスキルを持つ担当者に電話を転送する</li>
+<li><code>Disconnect / hang up</code>: 電話を切る</li>
+</ul>
+<p>Amazon Connectで用意されている処理の一覧は<a href="http://docs.aws.amazon.com/ja_jp/connect/latest/userguide/contactflow.html" target="_blank" rel="noopener">こちら</a>を御覧ください。</p>
+<h2 id="実装詳細"><a href="#実装詳細" class="headerlink" title="実装詳細"></a>実装詳細</h2><p>では、ひとつずつ<code>Contact Flow</code>を実装をしてゆきます。</p>
+<h3 id="営業日判定"><a href="#営業日判定" class="headerlink" title="営業日判定"></a>営業日判定</h3><p>営業日かどうかを判定するため、<code>Check hours of operation</code>を使用します。予め、<code>Routing &gt; Hours of operation</code>から営業時間を決めておきます。</p>
+<p><img src="/images/amazon-connect-customer-support/2.png" alt=""></p>
+<p>その後、Contact Flowで、作成した営業時間を選択します。チームごとに別の営業時間を決めておくようなことも可能です。</p>
+<p><img src="/images/amazon-connect-customer-support/1.png" alt=""></p>
+<h3 id="祝祭日"><a href="#祝祭日" class="headerlink" title="祝祭日"></a>祝祭日</h3><p>祝祭日判定は、Lambdaを呼び出し、Google Calendarの<code>日本の祝日カレンダー</code>を取得して、それを祝日としました。<code>Invoke AWS Lambda function</code>で作成した関数を指定します。</p>
+<p><img src="/images/amazon-connect-customer-support/3.png" alt=""><br><img src="/images/amazon-connect-customer-support/4.png" alt=""></p>
+<p>Lambda側では、取得した祝日一覧に当日が含まれているかどうかを返却し、<code>Check contact attributes</code>で分岐を行い、祝日でなければ次の処理へ続くようにしています。</p>
+<h3 id="顧客番号入力"><a href="#顧客番号入力" class="headerlink" title="顧客番号入力"></a>顧客番号入力</h3><p>ここからお客様の操作が開始します。顧客番号を入力していただき、どの担当者に転送するかをDynamoDBから取得するので、まずは、<code>Store customer input</code>を使用して、数字の入力を保存します。</p>
+<p><img src="/images/amazon-connect-customer-support/5.png" alt=""></p>
+<p>入力後、<code>StoredCustomerInput</code>として値をLambdaに渡します。</p>
+<p><img src="/images/amazon-connect-customer-support/6.png" alt=""></p>
+<h3 id="顧客番号からキューを取得"><a href="#顧客番号からキューを取得" class="headerlink" title="顧客番号からキューを取得"></a>顧客番号からキューを取得</h3><p>Lambdaで、Amazon Connectで入力した顧客番号を受取り、DynamoDBからキューの名前を取得して、返却します。キューがDBに存在しない場合は<code>404</code>、エラーが起きた際は<code>500</code>を返すようにしました。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle</span><span class="params">(event, context)</span>:</span></span><br><span class="line">    customer_id = event[<span class="string">'Details'</span>][<span class="string">'Parameters'</span>][<span class="string">'StoredCustomerInput'</span>]</span><br><span class="line">    dynamodb = boto3.resource(</span><br><span class="line">        <span class="string">'dynamodb'</span>,</span><br><span class="line">        region_name=<span class="string">'ap-northeast-1'</span>,</span><br><span class="line">    )</span><br><span class="line">    table = dynamodb.Table(os.environ[<span class="string">'TABLE_NAME_AMAZON_CONNECT_QUEUE'</span>])</span><br><span class="line">    response = table.query(</span><br><span class="line">        KeyConditionExpression=Key(<span class="string">'CustomerId'</span>).eq(int(customer_id))</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    is_success = response[<span class="string">'ResponseMetadata'</span>][<span class="string">'HTTPStatusCode'</span>] == <span class="number">200</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> is_success:</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">'status'</span>: <span class="number">500</span>,</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    queue_name = <span class="keyword">None</span></span><br><span class="line">    <span class="keyword">for</span> r <span class="keyword">in</span> response[<span class="string">'Items'</span>]:</span><br><span class="line">        queue_name = r[<span class="string">'Name'</span>]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> queue_name:</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">'status'</span>: <span class="number">200</span>,</span><br><span class="line">            <span class="string">'queue_name'</span>: queue_name,</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">'status'</span>: <span class="number">404</span>,</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>それをAmazon Connect側で受け取ります。まず<code>status</code>をチェックして例外を除外し、<code>404</code>は入力ミスとして扱いもう一度入力させる等のフローを作成します。</p>
+<p><img src="/images/amazon-connect-customer-support/7.png" alt=""></p>
+<p>キューの取得に成功した場合、次のフローで<code>queue_name(キューの名前)</code>をチェックし、キューを特定したら、予め作成したキューに転送できるよう、<code>Set queue</code>を行います。</p>
+<p><img src="/images/amazon-connect-customer-support/8.png" alt=""></p>
+<h3 id="エージェントへの転送"><a href="#エージェントへの転送" class="headerlink" title="エージェントへの転送"></a>エージェントへの転送</h3><p>前の手順で<code>queue_name</code>によって<code>Set queue</code>を行なったので、別々のキューに転送します。今回は、顧客ごとにキューを作成していますが、例えば、サーバーサイドチーム、UIデザインチームなどの単位でキューを作成して担当者を振り分けることも可能です。</p>
+<p><img src="/images/amazon-connect-customer-support/9.png" alt=""></p>
+<p>キューに対して通話を転送すると、予め定義した優先順位で<a href="https://blog.mmmcorp.co.jp/blog/2017/11/02/amazon-connect-skills-based-routing/">スキルベースルーティング</a>が自動的に行われます。これによって、プロジェクトごとに最適、かつ、手が開いている担当者を自動的に探し出し、対応を行うことができます。</p>
+<h3 id="対応音声"><a href="#対応音声" class="headerlink" title="対応音声"></a>対応音声</h3><p>再生する音声は、Amazon Pollyで生成しています。例えば、<code>顧客番号入力</code>などは、以下のような音声が流れます。</p>
+<h4 id="顧客番号入力時"><a href="#顧客番号入力時" class="headerlink" title="顧客番号入力時"></a>顧客番号入力時</h4><audio src="/images/amazon-connect-customer-support/store-customer-number.mp3" controls><br>  あなたのブラウザーはaudio要素をサポートしていません。<br></audio>
+
+<h4 id="顧客番号入力エラー時"><a href="#顧客番号入力エラー時" class="headerlink" title="顧客番号入力エラー時"></a>顧客番号入力エラー時</h4><audio src="/images/amazon-connect-customer-support/store-customer-number-404.mp3" controls><br>  あなたのブラウザーはaudio要素をサポートしていません。<br></audio>
+
+<h4 id="エージェントへの転送時"><a href="#エージェントへの転送時" class="headerlink" title="エージェントへの転送時"></a>エージェントへの転送時</h4><audio src="/images/amazon-connect-customer-support/transfer-to-queue.mp3" controls><br>  あなたのブラウザーはaudio要素をサポートしていません。<br></audio>
+
+
+<p>今回は、音声ファイルを<code>Routing &gt; Prompts</code>で登録して再生していますが、Lambda等で返した動的な音声ファイルや、テキストをそのまま再生させることもできるため、より柔軟な音声再生フローも作成可能です。</p>
+<h3 id="録音履歴管理"><a href="#録音-履歴管理" class="headerlink" title="録音/履歴管理"></a>録音/履歴管理</h3><p>Amazon Connectでは録音にも対応しています。<code>Set call recording behavior</code>を使用すると、担当者との通話がAmazonn S3に保存されます。やり方は、担当者に転送する前に、以下のようなフローを加えておくだけです。</p>
+<p><img src="/images/amazon-connect-customer-support/10.png" alt=""></p>
+<p>録音する対象も指定することができます。</p>
+<p><img src="/images/amazon-connect-customer-support/11.png" alt=""></p>
+<p>保存先もS3なので、管理を考える必要がなくいいですね。また、コンタクトの対応履歴は、<code>Metrics and quality</code>で確認することができます。キューや担当者、日付、対応時間などで検索ができるので、コールセンターの品質にもつなげることができます。</p>
+<h2 id="料金"><a href="#料金" class="headerlink" title="料金"></a>料金</h2><p>Amazon Connectの料金は、電話番号の取得と、通話時間の従量課金となっております。</p>
+<ul>
+<li><a href="https://aws.amazon.com/jp/connect/pricing/" target="_blank" rel="noopener">料金 - Amazon Connect</a></li>
+</ul>
+<p>例えば、日本で直通ダイヤルインの番号でインバウンドコールを対応すると、1分あたり<code>0.0056 USD</code>かかりますが、従量課金となっているため、お問合わせが少ない月など、システムの維持コストを低く抑えることができます。そのため、これまでコールセンターを導入しづらかった中小企業にもメリットがあると考えます。</p>
+<h2 id="おわりに"><a href="#おわりに" class="headerlink" title="おわりに"></a>おわりに</h2><p>今回開発した機能は、一部のお客様から番号をお伝えし、実際に使用を開始していただいております。</p>
+<p>大企業などで採用しているイメージのあるコールセンターがこのように素早くノンプログラミングで開発できるのは素晴らしいですね。弊社ではAmazon Connectを使用したコールセンターのシステム開発も行っておりますので、ぜひお気軽にお問い合わせください。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://aws.amazon.com/documentation/connect/" target="_blank" rel="noopener">Amazon Connect Documentation</a></li>
+<li><a href="https://aws.amazon.com/jp/connect/faqs/" target="_blank" rel="noopener">よくある質問 - Amazon Connect</a></li>
+<li><a href="https://dev.classmethod.jp/cloud/aws/reboot-ec2-by-amazon-connect/" target="_blank" rel="noopener">Amazon Connectを使って電話からEC2を再起動する ｜ Developers.IO</a></li>
+</ul>
+<style>
+.article .article-entry img {
+  max-height: 500px;  
+}  
+</style>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/11/09/amazon-connect-customer-support/" data-text="Amazon Connectで担当者直通電話システムの開発" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/11/09/amazon-connect-customer-support/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/11/09/amazon-connect-customer-support/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/11/09/amazon-connect-customer-support/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/11/09/amazon-connect-customer-support/" class="hatena-bookmark-button" data-hatena-bookmark-title="Amazon Connectで担当者直通電話システムの開発" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li></ul>
+
+
+      <p class="article-footer__author">by okp</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>RxJSを例とした独学の10ステップ | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="エンジニアは常に学習していく職種ということで、自分で学習の計画をたてられることは重要だと考える。今回は、Soft Skillsという本で、独学の方法について触れていたので、それを少し整理してみようと思う。 学習の10ステップあげられていた10のステップは以下だった。  Get the big picture Determine scope Define success Find resources">
+<meta name="keywords" content="フロントエンド,JavaScript,Rx,RxJS,Reactive_Programming">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RxJSを例とした独学の10ステップ">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2017/01/25/learn-rxjs/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="エンジニアは常に学習していく職種ということで、自分で学習の計画をたてられることは重要だと考える。今回は、Soft Skillsという本で、独学の方法について触れていたので、それを少し整理してみようと思う。 学習の10ステップあげられていた10のステップは以下だった。  Get the big picture Determine scope Define success Find resources">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.146Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RxJSを例とした独学の10ステップ">
+<meta name="twitter:description" content="エンジニアは常に学習していく職種ということで、自分で学習の計画をたてられることは重要だと考える。今回は、Soft Skillsという本で、独学の方法について触れていたので、それを少し整理してみようと思う。 学習の10ステップあげられていた10のステップは以下だった。  Get the big picture Determine scope Define success Find resources">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-learn-rxjs" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2017-01-25T15:43:02.000Z" itemprop="datePublished">2017-01-25</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2017/01/25/learn-rxjs/">RxJSを例とした独学の10ステップ</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/01/25/learn-rxjs/" data-text="RxJSを例とした独学の10ステップ" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/01/25/learn-rxjs/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/01/25/learn-rxjs/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/01/25/learn-rxjs/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/01/25/learn-rxjs/" class="hatena-bookmark-button" data-hatena-bookmark-title="RxJSを例とした独学の10ステップ" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>エンジニアは常に学習していく職種ということで、自分で学習の計画をたてられることは重要だと考える。今回は、Soft Skillsという本で、独学の方法について触れていたので、それを少し整理してみようと思う。</p>
+<h2 id="学習の10ステップ"><a href="#学習の10ステップ" class="headerlink" title="学習の10ステップ"></a>学習の10ステップ</h2><p>あげられていた10のステップは以下だった。</p>
+<ol>
+<li>Get the big picture</li>
+<li>Determine scope</li>
+<li>Define success</li>
+<li>Find resources</li>
+<li>Create a learning plan</li>
+<li>Filter resources</li>
+<li>Learn enough to get started</li>
+<li>Play around</li>
+<li>Learn enough to do something useful</li>
+<li>Teach</li>
+</ol>
+<p>詳しい例や説明は本を読むのが1番良いと思うので割愛するが、ここでは、これらを<code>RxJSの学習</code>を例に取り、試しにプロセスを作成してみる。</p>
+<h2 id="get-the-big-picture"><a href="#Get-the-big-picture" class="headerlink" title="Get the big picture"></a>Get the big picture</h2><p>ここでは、<code>何がわからないかわからないままやみくもに学習をすすめる</code>ことは、効率が悪いということを述べていた。例えば、いきなりRxJSの書籍を読み始めたりしても、<code>自分はいま全体のどの地点にいるのか？</code>や<code>どの程度理解度が進んでいるのだろうか？</code>がわからず、やみくもに学習しているのと同じになってしまう(あくまで、書籍を読むこと自体は否定しておらず、全体像をつかむことをまずはじめに行うべき、ということを言っていた)。</p>
+<p>ここで全体像を示すなら、以下のようなものになると自分は考えた。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">* </span>Reactive Extensionsとは？</span><br><span class="line"><span class="bullet">* </span>Streamとは？</span><br><span class="line"><span class="bullet">* </span>RxJSとは？</span><br><span class="line"><span class="bullet">* </span>Observableとは？</span><br><span class="line"><span class="bullet">* </span>Subjectとは？</span><br><span class="line"><span class="bullet">* </span>Operatorsとは？</span><br><span class="line"><span class="bullet">* </span>RxJSにおける実装例はどんなものがある？</span><br><span class="line"><span class="bullet">* </span>RxJSのAPIにはどんなものがある？何をしてくれる？</span><br><span class="line"><span class="bullet">* </span>設計にはどんな手法がある？</span><br><span class="line"><span class="bullet">* </span>RxJSを使用したフレームワークは？</span><br><span class="line"><span class="bullet">* </span>テストはどのように書く？</span><br></pre></td></tr></table></figure>
+<h2 id="determine-scope"><a href="#Determine-scope" class="headerlink" title="Determine scope"></a>Determine scope</h2><p><code>「物理学」を学習しよう</code>と思っても無理がある。ここでは、すべて学びたい欲求を抑えてscopeを決めろ、ということを言っている。今回は例なので、以下のようにscopeを定義してみた。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">* </span>RxJSが何をするものなのか</span><br><span class="line"><span class="bullet">* </span>Observable/Subjectなど、基本的なオブジェクトについて</span><br><span class="line"><span class="bullet">* </span>Operatorを使用したRxJSによるStreamの操作</span><br></pre></td></tr></table></figure>
+<h2 id="define-success"><a href="#Define-success" class="headerlink" title="Define success"></a>Define success</h2><p>学習のゴールを決めろとのことで、今回のゴールを決めてみる。本記事では、以下のように定義した。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">RxJSの簡単なコード例を読んで理解することができる。</span><br><span class="line"></span><br><span class="line">具体的には、</span><br><span class="line">Observableを作成し、Operatorを使用して操作された、</span><br><span class="line">数十行程度のコードを理解/実装することができる。</span><br></pre></td></tr></table></figure>
+<h2 id="find-resources"><a href="#Find-resources" class="headerlink" title="Find resources"></a>Find resources</h2><p>ここでは、学習のためのリソースを片っ端から調べ上げる。</p>
+<h3 id="awesome"><a href="#Awesome" class="headerlink" title="Awesome"></a>Awesome</h3><ul>
+<li><a href="https://github.com/ichpuchtli/awesome-rxjs" target="_blank" rel="noopener">ichpuchtli/awesome-rxjs: A collection of awesome RxJS resources</a></li>
+<li><a href="https://github.com/jsynowiec/awesome-rxjs" target="_blank" rel="noopener">jsynowiec/awesome-rxjs: A collection of awesome RxJS resources</a></li>
+</ul>
+<h3 id="web"><a href="#Web" class="headerlink" title="Web"></a>Web</h3><ul>
+<li><a href="http://reactivex.io/" target="_blank" rel="noopener">ReactiveX</a></li>
+<li><a href="http://reactivex.io/rxjs/" target="_blank" rel="noopener">RxJS API Document</a></li>
+<li><a href="https://gist.github.com/staltz/868e7e9bc2a7b8c1f754" target="_blank" rel="noopener">The introduction to Reactive Programming you’ve been missing</a></li>
+<li><a href="http://rxmarbles.com/" target="_blank" rel="noopener">RxMarbles: Interactive diagrams of Rx Observables</a></li>
+<li><a href="http://qiita.com/advent-calendar/2015/rxjs" target="_blank" rel="noopener">RxJS Advent Calendar 2015 - Qiita</a></li>
+<li><a href="http://r7kamura.hatenablog.com/entry/2015/10/07/071900" target="_blank" rel="noopener">cycle.jsでのMVI分割時にどう考えてるか - ✘╹◡╹✘</a></li>
+<li><a href="http://r7kamura.hatenablog.com/entry/2015/10/04/062333" target="_blank" rel="noopener">エディタの実装をcycle.jsでMVIベースにしてみた話 - ✘╹◡╹✘</a></li>
+<li><a href="http://blog.mmmcorp.co.jp/blog/2015/12/20/prepare-to-rxjs/">Rx(JS)に入門する前に知っておきたいN個のこと</a></li>
+<li><a href="http://blog.mmmcorp.co.jp/blog/2016/06/25/testing-rxjs-5/">RxJS(5.x)で行うテストファーストな機能開発</a></li>
+<li><a href="http://blog.mmmcorp.co.jp/blog/2016/07/22/why-rx/">なぜReactive Extensionsを導入するのか？</a></li>
+<li><a href="https://liginc.co.jp/web/js/151272" target="_blank" rel="noopener">「RxJS」初心者入門 - JavaScriptの非同期処理の常識を変えるライブラリ | 株式会社LIG</a></li>
+<li><a href="http://qiita.com/toRisouP/items/f6088963037bfda658d3" target="_blank" rel="noopener">RxのHotとColdについて - Qiita</a></li>
+<li><a href="http://qiita.com/ovrmrw/items/8cca6f40d5f78909a3dc" target="_blank" rel="noopener">Reduxの概念をRxJSとTypeScriptで理解する ver.2 - Qiita</a></li>
+<li><a href="https://angular.io/docs/ts/latest/tutorial/toh-pt6.html#!#sts=Import%20RxJS%20operators" target="_blank" rel="noopener">Angular HTTP TUTORIAL</a></li>
+<li><a href="https://github.com/staltz/rxjs-training" target="_blank" rel="noopener">staltz/rxjs-training: RxJS Workshop exercises for MLOC.js</a></li>
+<li><a href="https://github.com/ng-book/angular2-rxjs-chat" target="_blank" rel="noopener">ng-book/angular2-rxjs-chat: Example Chat Application using RxJS and Angular 2</a></li>
+<li><a href="https://github.com/fdecampredon/react-rxjs-todomvc" target="_blank" rel="noopener">fdecampredon/react-rxjs-todomvc: TodoMVC implementation with React and RxJS</a></li>
+<li><a href="https://nodejs.org/api/stream.html" target="_blank" rel="noopener">Stream | Node.js v7.4.0 Documentation</a></li>
+<li><a href="https://github.com/substack/stream-handbook" target="_blank" rel="noopener">substack/stream-handbook: how to write node programs with streams</a></li>
+<li><a href="https://www.tutorialspoint.com/nodejs/nodejs_streams.htm" target="_blank" rel="noopener">Node.js Streams</a></li>
+<li><a href="https://egghead.io/lessons/rxjs-what-is-rxjs" target="_blank" rel="noopener">What Is RxJS? - rx Video Tutorial #free @eggheadio</a></li>
+<li><a href="https://egghead.io/lessons/rxjs-creating-observable-from-scratch" target="_blank" rel="noopener">Creating Observable From Scratch - rx Video Tutorial #free @eggheadio</a></li>
+<li><a href="https://egghead.io/lessons/rxjs-introduction-to-rxjs-marble-testing" target="_blank" rel="noopener">Introduction to RxJS Marble Testing - rx Video Tutorial #free @eggheadio</a></li>
+<li><a href="https://www.reddit.com/r/javascript/comments/3zr6i0/conversation_whats_the_core_differences_between/" target="_blank" rel="noopener">CONVERSATION: What’s the core differences between the observables/signals approach of Cycle.js and Elm vs React’s pseudo FRP manually-triggered branch re-rendering approach? : javascript</a></li>
+</ul>
+<h3 id="書籍"><a href="#書籍" class="headerlink" title="書籍"></a>書籍</h3><ul>
+<li><a href="https://www.learnrxjs.io/" target="_blank" rel="noopener">learn-rxjs</a><ul>
+<li>GitBook</li>
+</ul>
+</li>
+<li><a href="https://xgrommx.github.io/rx-book/index.html" target="_blank" rel="noopener">RxJS - Javascript library for functional reactive programming.</a><ul>
+<li>GitBook</li>
+</ul>
+</li>
+<li><a href="https://www.amazon.co.jp/dp/B01ATYZTI4/ref=dp-kindle-redirect?_encoding=UTF8&amp;btkr=1" target="_blank" rel="noopener">Reactive Programming with RxJS</a></li>
+<li><a href="https://www.amazon.co.jp/Introduction-Rx-Reactive-Extensions-English-ebook/dp/B008GM3YPM/ref=sr_1_1?s=digital-text&amp;ie=UTF8&amp;qid=1485394768&amp;sr=1-1&amp;keywords=Introduction+to+Rx" target="_blank" rel="noopener">Introduction to Rx</a></li>
+</ul>
+<h2 id="create-a-learning-plan"><a href="#Create-a-learning-plan" class="headerlink" title="Create a learning plan"></a>Create a learning plan</h2><p>定義したscopeを元に、<code>learning plan</code>を考える。今回はscopeもscopeだが、学ぶ内容もいってしまえば<code>ライブラリ</code>なので、ざっくりと以下のような感じでも問題ないかと考えた。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">* </span>RxJSが何をするものなのか</span><br><span class="line"><span class="bullet">* </span>Observable/Subjectなど、基本的なオブジェクトについて</span><br><span class="line"><span class="bullet">* </span>Operatorを使用したRxJSによるStreamの操作</span><br></pre></td></tr></table></figure>
+<p>( ˘⊖˘) 。o（scopeと同じになってしまったがこれでいいのだろうか…）とも思ったが、scope自体そんなにたいそれたトピックではないので、今回はこれでよしとして、次に進もうと思う。</p>
+<h2 id="filter-resources"><a href="#Filter-resources" class="headerlink" title="Filter resources"></a>Filter resources</h2><p>与えられたscopeやゴールを考え、集めたリソースの中でどれが重要かをフィルターしておく。今回は以下のようになった。</p>
+<ul>
+<li><a href="http://reactivex.io/rxjs/" target="_blank" rel="noopener">RxJS API Document</a></li>
+<li><a href="https://gist.github.com/staltz/868e7e9bc2a7b8c1f754" target="_blank" rel="noopener">The introduction to Reactive Programming you’ve been missing</a></li>
+<li><a href="https://github.com/ichpuchtli/awesome-rxjs" target="_blank" rel="noopener">ichpuchtli/awesome-rxjs: A collection of awesome RxJS resources</a></li>
+<li><a href="https://github.com/jsynowiec/awesome-rxjs" target="_blank" rel="noopener">jsynowiec/awesome-rxjs: A collection of awesome RxJS resources</a></li>
+<li><a href="https://xgrommx.github.io/rx-book/index.html" target="_blank" rel="noopener">RxJS - Javascript library for functional reactive programming.</a></li>
+<li><a href="http://qiita.com/advent-calendar/2015/rxjs" target="_blank" rel="noopener">RxJS Advent Calendar 2015 - Qiita</a></li>
+<li><a href="http://blog.mmmcorp.co.jp/blog/2015/12/20/prepare-to-rxjs/">Rx(JS)に入門する前に知っておきたいN個のこと</a></li>
+<li><a href="http://blog.mmmcorp.co.jp/blog/2016/06/25/testing-rxjs-5/">RxJS(5.x)で行うテストファーストな機能開発</a></li>
+<li><a href="https://github.com/ng-book/angular2-rxjs-chat" target="_blank" rel="noopener">angular2-rxjs-chat: Example Chat Application using RxJS and Angular 2</a></li>
+<li><a href="https://github.com/fdecampredon/react-rxjs-todomvc" target="_blank" rel="noopener">react-rxjs-todomvc: TodoMVC implementation with React and RxJS</a></li>
+<li><a href="http://rxmarbles.com/" target="_blank" rel="noopener">RxMarbles: Interactive diagrams of Rx Observables</a></li>
+</ul>
+<p>目的に合わせて、書籍は割愛した。ただし、<a href="https://www.amazon.co.jp/dp/B01ATYZTI4/ref=dp-kindle-redirect?_encoding=UTF8&amp;btkr=1" target="_blank" rel="noopener">Reactive Programming with RxJS</a>の1-2章あたりは順を追って説明がされているので、使い方を考えると良いリソースだと考える。それでいうと、awesome-rxjsなども用法用量も守ってみてゆきたい。</p>
+<h2 id="learn-enough-to-get-started"><a href="#Learn-enough-to-get-started" class="headerlink" title="Learn enough to get started"></a>Learn enough to get started</h2><p>ここまで、調査がメインだったが、やはり最終的には何か作ってみることが重要だと言っている。ただし、いきなり作り始めてもそれはそれで良くなく、<code>作り始められるだけの最小限のインプット</code>をしてからが効率がいいと述べている。</p>
+<p>ここでいうと、<a href="http://reactivex.io/rxjs/" target="_blank" rel="noopener">公式</a>のIntroduction、Tutorialレベルのものが理解できれば、簡単なサンプルを書き始めることはできるのかなと考える。すべてのリソースをみたい欲求を抑えて、最小限で我慢するのが良いらしい。自分は、記事や書籍、GitHubを読んだりして、まずベストプラクティスを探してしまうことが多いので、このやり方も参考になった。</p>
+<h2 id="play-around"><a href="#Play-around" class="headerlink" title="Play around"></a>Play around</h2><p>このステップでは、実際にコードを書いて遊んでみる。何かプロダクトをつくるとかを決めなくても良く、ただ好きなようにコードを書いたり修正したりしてテストしてみるのが重要だと言っている。</p>
+<p>今回のscopeでいうと、<a href="http://rxmarbles.com/" target="_blank" rel="noopener">RxMarbles</a>をみながらAPIを試してみたり、<a href="http://reactivex.io/rxjs/manual/overview.html#categories-of-operators" target="_blank" rel="noopener">Creation Operators</a>をみながらいろんなStreamをつくって遊んでみたり…だろうか。簡単なアプリを作りながら遊ぶのも、流れを理解できていいかもしれない。</p>
+<p>個人的には、GitHubでソースを読むのが遊びという意味では好きで、<a href="https://github.com/ng-book/angular2-rxjs-chat" target="_blank" rel="noopener">angular2-rxjs-chat</a>とか<a href="https://github.com/fdecampredon/react-rxjs-todomvc" target="_blank" rel="noopener">react-rxjs-todomvc</a>、<a href="https://github.com/cyclejs/cyclejs/tree/master/examples" target="_blank" rel="noopener">cyclejs/examples</a>をみて遊んでいた。このステップに当てはめるとするならば、サンプルのコードを変更しながら動作を見て遊ぶ感じになるだろうか。</p>
+<h2 id="learn-enough-to-do-something-useful"><a href="#Learn-enough-to-do-something-useful" class="headerlink" title="Learn enough to do something useful"></a>Learn enough to do something useful</h2><p><code>Play around</code>のステップで、学びや疑問が出てくるはずで、それをひとつひとつ消化してゆくのがこのステップである。このステップになり初めて、<code>Filter resources</code>で調査したリソースを本格的に見てゆくことになる。ただし、その際も、すべてを見てゆく必要はなく、<code>Play around</code>ででてきた疑問や問題を解決する手立てとして活用するのが良いらしい。ベストプラクティスを調査したりするのはこのステップでやるべきことなのかなと思った。また、<code>Create a learning plan</code>で決めた学習のプロセスを達成できているかを見て、理解を深めてゆく。</p>
+<h2 id="teach"><a href="#Teach" class="headerlink" title="Teach"></a>Teach</h2><p>最後のステップでは、人に教えることがあげられている。<code>教える</code>方法の一覧として、が以下がリストされていた。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">* </span>Write a blog post.</span><br><span class="line"><span class="bullet">* </span>Create a YouTube video or tutorial.</span><br><span class="line"><span class="bullet">* </span>Give a presentation.</span><br><span class="line"><span class="bullet">* </span>Have a conversation with a friend or your spouse.</span><br><span class="line"><span class="bullet">* </span>Answer questions in an online forum.</span><br></pre></td></tr></table></figure>
+<p><code>YouTube video</code>はハードル高いだろ…と思ってしまうのだが、顔出しをせず、スクリーンを映しながらの講座ならできなくもないのだろうか。個人的には、1番手っ取り早いのはブログやQiitaで知見を共有することかと思った。また、社内に環境があるのなら、勉強会など開いてもいいかもしれないし、イベントで登壇するなどもよさそう。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>ここまで学習のプロセスをまとめてみたが、個人的な見解に基づくものなので、ご了承いただきたい。あくまでこの記事でやってみたかったのは、学習のプロセスを自分で作ってゆくということだった。具体的には、以下の10ステップを通して、どんな技術でも自分で学習できる状態をつくることができるのでは？ということだ。</p>
+<ol>
+<li>Get the big picture</li>
+<li>Determine scope</li>
+<li>Define success</li>
+<li>Find resources</li>
+<li>Create a learning plan</li>
+<li>Filter resources</li>
+<li>Learn enough to get started</li>
+<li>Play around</li>
+<li>Learn enough to do something useful</li>
+<li>Teach</li>
+</ol>
+<p>自分の普段の学習プロセスとは異なる部分があったので、参考にしたい。ちょっといろいろ理解が甘いところはあるかもしれないので、その時はご指摘頂けるとありがたいですm(. .)m</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://www.amazon.co.jp/Soft-Skills-Software-Developers-Manual/dp/1617292397" target="_blank" rel="noopener">Soft Skills: The Software Developer’s Life Manual: Scott Hanselman, Robert C. Martin, John Z. Sonmez</a></li>
+</ul>
+<blockquote>
+<ul>
+<li>Most developers crack open a book and start reading through it with- out even knowing what they don’t know. They leave these “unknown unknowns” for later discovery.</li>
+<li>You can’t learn everything about digital photography in any reasonable amount of time, so you’ll have to decide what areas to focus on and what the scope should be.</li>
+<li>You can only learn one thing at a time. You can always come back later and learn about other subtopics that branch off of your original topic, but for now, pick one narrowly focused thing and go with it.</li>
+<li>Scope your topic down to the appropriate size that fits your overall reason for learning and fits into the timeframe that’s available to you.</li>
+<li>Now that you have some resources, you can use those resources to get an idea of what you should learn and in what order you should learn it.</li>
+<li>But now it’s time to whittle those resources down to the handful of most valuable ones that will help you achieve your goal.</li>
+<li>It’s easy to get carried away and start consuming all the resources you have on the module you’re trying to learn, but you’ll find the most success if you can avoid that temptation.</li>
+<li>Most people will attempt to learn a subject by reading a book or watching a video about that subject. They’ll try to absorb as much information upfront and then take action later. The problem with this approach is that when they’re reading about their subject, they have no idea what is important.</li>
+<li>You might go through your resources and look up everything pertaining to light or any other ques- tions that came up while you were playing around.</li>
+<li>Remember, though, you still don’t have to completely consume every single resource you gathered.</li>
+</ul>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/01/25/learn-rxjs/" data-text="RxJSを例とした独学の10ステップ" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/01/25/learn-rxjs/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/01/25/learn-rxjs/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/01/25/learn-rxjs/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/01/25/learn-rxjs/" class="hatena-bookmark-button" data-hatena-bookmark-title="RxJSを例とした独学の10ステップ" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Reactive-Programming/">Reactive_Programming</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Rx/">Rx</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RxJS/">RxJS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li></ul>
+
+
+      <p class="article-footer__author">by okp</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

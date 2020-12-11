@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>フロントエンド学習 ECMAScript 第2回 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="前回に引き続きECMAScriptをまとめていきたいと思います。 今回は前回紹介できなかった、関数 組み込みオブジェクト オブジェクト指向構文 についてです。  関数デフォルト値従来のJavaScriptでは、引数にデフォルト値を設定することができず、引数が渡せされているかのチェックをし、デフォルト値をセットするといった処理を書かなければなりませんでしたが、ECMAScript6では引数にデフォル">
+<meta name="keywords" content="フロントエンド,書評">
+<meta property="og:type" content="article">
+<meta property="og:title" content="フロントエンド学習 ECMAScript 第2回">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2017/05/30/ecmascript02/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="前回に引き続きECMAScriptをまとめていきたいと思います。 今回は前回紹介できなかった、関数 組み込みオブジェクト オブジェクト指向構文 についてです。  関数デフォルト値従来のJavaScriptでは、引数にデフォルト値を設定することができず、引数が渡せされているかのチェックをし、デフォルト値をセットするといった処理を書かなければなりませんでしたが、ECMAScript6では引数にデフォル">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.146Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="フロントエンド学習 ECMAScript 第2回">
+<meta name="twitter:description" content="前回に引き続きECMAScriptをまとめていきたいと思います。 今回は前回紹介できなかった、関数 組み込みオブジェクト オブジェクト指向構文 についてです。  関数デフォルト値従来のJavaScriptでは、引数にデフォルト値を設定することができず、引数が渡せされているかのチェックをし、デフォルト値をセットするといった処理を書かなければなりませんでしたが、ECMAScript6では引数にデフォル">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-post-title" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2017-05-30T14:00:50.000Z" itemprop="datePublished">2017-05-30</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2017/05/30/ecmascript02/">フロントエンド学習 ECMAScript 第2回</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/05/30/ecmascript02/" data-text="フロントエンド学習 ECMAScript 第2回" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/05/30/ecmascript02/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/05/30/ecmascript02/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/05/30/ecmascript02/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/05/30/ecmascript02/" class="hatena-bookmark-button" data-hatena-bookmark-title="フロントエンド学習 ECMAScript 第2回" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="http://blog.mmmcorp.co.jp/blog/2017/05/19/ecmascript01/">前回</a>に引き続き<strong>ECMAScript</strong>をまとめていきたいと思います。</p>
+<p>今回は前回紹介できなかった、<strong>関数</strong> <strong>組み込みオブジェクト</strong> <strong>オブジェクト指向構文</strong> についてです。</p>
+<hr>
+<h2 id="関数"><a href="#関数" class="headerlink" title="関数"></a>関数</h2><h3 id="デフォルト値"><a href="#デフォルト値" class="headerlink" title="デフォルト値"></a>デフォルト値</h3><p>従来のJavaScriptでは、引数にデフォルト値を設定することができず、引数が渡せされているかのチェックをし、デフォルト値をセットするといった処理を書かなければなりませんでしたが、ECMAScript6では引数にデフォルト値をセットできるようになりました。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const show = (name = &apos;太郎&apos;) =&gt; &#123;</span><br><span class="line">  console.log(`私の名前は$&#123;name&#125;です`);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">show();</span><br><span class="line">// 結果：私の名前は太郎です</span><br><span class="line"></span><br><span class="line">show(&apos;花子&apos;);</span><br><span class="line">// 結果：私の名前は花子です</span><br></pre></td></tr></table></figure>
+<p>このデフォルト値が適応されるのは、引数が未指定の場合のみです。<br>nullやfalseなどが渡された場合は、デフォルト値は無視されます。</p>
+<p>また、デフォルト値に関数を指定できるので、引数がない場合にエラーと返すという処理も実現可能です。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">const required = () =&gt; &#123;</span><br><span class="line">  console.error(&apos;必須項目になります、入力して下さい&apos;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">const hoge = (value = required()) =&gt; &#123;</span><br><span class="line">  return value;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">hoge();</span><br><span class="line">// 結果：必須項目になります、入力して下さい</span><br></pre></td></tr></table></figure>
+<h3 id="可変長引数"><a href="#可変長引数" class="headerlink" title="可変長引数"></a>可変長引数</h3><p>仮引数に <code>...</code> を付与することで、可変長引数となります。<br>これは、渡された任意個数の引数を配列としてまとめて受け取る機能です。</p>
+<p>従来のJavaScriptではargumentsオブジェクトを介す必要がありましたが、このようなしくみが用意された事によりぐんとコードの可読性が向上しましたね！</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">const sum = (...args) =&gt; &#123;</span><br><span class="line">  let result = 0;</span><br><span class="line">  for (let arg of args) &#123;</span><br><span class="line">    result += arg;</span><br><span class="line">  &#125;</span><br><span class="line">  return result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(sum(10, 20, 30));</span><br><span class="line">// 結果：60</span><br></pre></td></tr></table></figure>
+<h3 id="アロー関数"><a href="#アロー関数" class="headerlink" title="アロー関数"></a>アロー関数</h3><p>アロー関数を利用することで、関数リテラルをシンプルに記述できます。</p>
+<p><strong>[従来の関数リテラルでの表記]</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let data = [1, 2, 3];</span><br><span class="line">let formatted = data.map((value, index) =&gt; &#123;</span><br><span class="line">  return value * value;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p><strong>[アロー関数による表記]</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let data = [1, 2, 3];</span><br><span class="line">let formatted = data.map((value, index) =&gt; value * value);</span><br></pre></td></tr></table></figure></p>
+<h2 id="組み込みオブジェクト"><a href="#組み込みオブジェクト" class="headerlink" title="組み込みオブジェクト"></a>組み込みオブジェクト</h2><h3 id="promiseオブジェクト"><a href="#Promiseオブジェクト" class="headerlink" title="Promiseオブジェクト"></a>Promiseオブジェクト</h3><p>Promiseを使用することで、非同期処理を同期処理のように扱うことができます。<br>jQueryの$.defenedやAngularJSの$.qなど、類似の機能が提供されていることもあり利用した方も多いかと思います。</p>
+<p>以下は文字列が渡されると2000ミリ秒後に「入力値はXXです」を、文字列が空の場合には「入力値が空です」というメッセージを返す非同期処理の例です。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">const hoge (value) =&gt; &#123;</span><br><span class="line">  return new Promise((resolve, reject) =&gt; &#123;</span><br><span class="line">    setTimeout(() =&gt; &#123;</span><br><span class="line">      if (value) &#123;</span><br><span class="line">        resolve(`入力値は$&#123;value&#125;です`);</span><br><span class="line">      &#125;</span><br><span class="line">      reject(&apos;入力値が空です&apos;);</span><br><span class="line">    &#125;, 2000);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">hoge(&apos;山田太郎&apos;).then(</span><br><span class="line">  response =&gt; &#123;console.log(response)&#125;,</span><br><span class="line">  error =&gt; &#123;console.log(error)&#125;</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">// 結果：入力値は山田太郎です</span><br></pre></td></tr></table></figure>
+<p>私は、このPromiseで結構混乱することが多かったです・・・。</p>
+<p>もっと理解を深めたいという方は<a href="http://azu.github.io/promises-book/" target="_blank" rel="noopener">JavaScript Promiseの本</a>も参考にしてみてください。</p>
+<h3 id="proxyオブジェクト"><a href="#Proxyオブジェクト" class="headerlink" title="Proxyオブジェクト"></a>Proxyオブジェクト</h3><p>Proxyオブジェクトは、オブジェクトの標準的な操作を独自の操作で差し替えるためのものです。</p>
+<p>以下のように、存在しないプロパティを取得しようとした際に、デフォルト値として「？」を返すようにカスタマイズできます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">let obj = &#123;hoge: &apos;ほげ&apos;, foo: &apos;ふー&apos;&#125;;</span><br><span class="line"></span><br><span class="line">const p_obj = new Proxy(obj, &#123;</span><br><span class="line">  get(target, prop) &#123;</span><br><span class="line">    return prop in target ? target[prop] : &apos;？&apos;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">console.log(p_obj.hoge);</span><br><span class="line">// 結果：ほげ</span><br><span class="line"></span><br><span class="line">console.log(p_obj.noting);</span><br><span class="line">// 結果：？</span><br></pre></td></tr></table></figure>
+<p>上記では、getメソッドを使ってターゲット(target)のプロパティ(prop)が存在していれば、その値である「target[prop]」を返し、存在していなければ、「？」を返す例となります。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ner Proxy(target, handler);</span><br><span class="line"></span><br><span class="line">target：操作を差し込む対象のオブジェクト</span><br><span class="line">handler：ターゲットの操作を定義したオブジェクト</span><br></pre></td></tr></table></figure>
+<p>上記のhandlerでは、以下のメソッドが定義できます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// プロパティの取得</span><br><span class="line">get function(target, prop, receiver) -&gt; any</span><br><span class="line"></span><br><span class="line">// プロパティの設定</span><br><span class="line">set function(target, prop, value, receiver) -&gt; boolean</span><br><span class="line"></span><br><span class="line">// for...in命令による列挙</span><br><span class="line">enumerate function(target) -&gt; [string]</span><br><span class="line"></span><br><span class="line">// for...of命令による列挙</span><br><span class="line">iterate function(target) -&gt; iterator</span><br><span class="line"></span><br><span class="line">// delete命令によるプロパティの削除</span><br><span class="line">deleteProperty function(target, prop) -&gt; boolean</span><br></pre></td></tr></table></figure>
+<p>少しわかりづらいかもしれませんが、例えば上記のsetメソッドを使って、Proxyを適応したオブジェクトに数字を入れると値が倍になって格納されるようにしたりもできます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">let obj = &#123;&#125;;</span><br><span class="line"></span><br><span class="line">const p_obj = new Proxy(obj, &#123;</span><br><span class="line">  set(target, prop, value)&#123;</span><br><span class="line">    if(typeof value === &quot;number&quot;) &#123;</span><br><span class="line">      value *= 2;</span><br><span class="line">    &#125;</span><br><span class="line">    target[prop] = value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">p_obj.a = 100;</span><br><span class="line">p_obj.b = 200;</span><br><span class="line">p_obj.c = &quot;200&quot;;</span><br><span class="line"></span><br><span class="line">console.log(p_obj);</span><br><span class="line">// 結果：&#123;a: 200, b:400, c:&quot;200&quot;&#125;</span><br></pre></td></tr></table></figure>
+<p>オブジェクトに格納する際に、処理を挟みたい場合など結構ありそうなので使用頻度は高そうですね！</p>
+<h3 id="map-set"><a href="#Map-Set" class="headerlink" title="Map / Set"></a>Map / Set</h3><p>ECMAScript6では、コレクションを管理するための専用オブジェクトとして、Map / Setが追加されました。</p>
+<p>まず、Mapオブジェクトは、キー／値のセットでデータを管理するオブジェクトです。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">let obj = &#123;&#125;;</span><br><span class="line"></span><br><span class="line">// マップの生成＆値の登録</span><br><span class="line">let m = new Map();</span><br><span class="line">m.set(&apos;hoge&apos;, &apos;ほげ&apos;);</span><br><span class="line">m.set(&apos;foo&apos;, &apos;ふー&apos;);</span><br><span class="line">m.set(&apos;piyo&apos;, &apos;ぴよ&apos;);</span><br><span class="line"></span><br><span class="line">// オブジェクトをキーに設定</span><br><span class="line">m.set(obj, &apos;オブジェクト&apos;);</span><br><span class="line"></span><br><span class="line">// 値の取得</span><br><span class="line">console.log(m.get(&apos;hoge&apos;));</span><br><span class="line">  // 結果：ほげ</span><br><span class="line">console.log(m.get(obj));</span><br><span class="line">  // 結果：オブジェクト</span><br><span class="line"></span><br><span class="line">// オブジェクトリテラルでマップにアクセス</span><br><span class="line">console.log(m.has(&apos;hoge&apos;));</span><br><span class="line">  // 結果：true</span><br><span class="line"></span><br><span class="line">// マップのキーを列挙</span><br><span class="line">for (let key of m.keys()) &#123;</span><br><span class="line">  console.log(key);</span><br><span class="line">&#125;</span><br><span class="line">  // 結果：hoge, foo, piyo, &#123;&#125;</span><br><span class="line"></span><br><span class="line">// マップの値を列挙</span><br><span class="line">for (let value of m.values()) &#123;</span><br><span class="line">  console.log(value);</span><br><span class="line">&#125;</span><br><span class="line">  // 結果：ほげ, ふー, ぴよ, オブジェクト</span><br><span class="line"></span><br><span class="line">// マップのキー／値を列挙</span><br><span class="line">for (let [key, value] of m) &#123;</span><br><span class="line">  console.log(`$&#123;key&#125;:$&#123;value&#125;`);</span><br><span class="line">&#125;</span><br><span class="line">  // 結果：hoge:ほげ、foo:ふー、piyo:ぴよ、[Object Object]:オブジェクト</span><br><span class="line"></span><br><span class="line">// キーの削除</span><br><span class="line">m.delete(&apos;hoge&apos;);</span><br><span class="line"></span><br><span class="line">// すべてのキーを削除</span><br><span class="line">m.clear();</span><br></pre></td></tr></table></figure>
+<p>Mapを利用することで</p>
+<ul>
+<li><strong>任意の値でキーを設定できる</strong></li>
+<li><strong>マップのサイズをsizeプロパティで簡単に取得できる</strong></li>
+<li><strong>クリーンなマップを作成できる</strong></li>
+</ul>
+<p>という利点があります。</p>
+<p>次に、Setオブジェクトについてです。<br>Setオブジェクトを利用することで、重複しない値の集合を管理できます。</p>
+<p>重複した値が追加された場合は、無視されます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">let obj = &#123;&#125;;</span><br><span class="line"></span><br><span class="line">// セットの生成＆値の登録</span><br><span class="line">let s = new Set();</span><br><span class="line">s.add(1);</span><br><span class="line">s.add(2);</span><br><span class="line">s.add(3);</span><br><span class="line"></span><br><span class="line">// 重複した内容は追加されない</span><br><span class="line">s.add(3);</span><br><span class="line"></span><br><span class="line">// オブジェクト型を登録</span><br><span class="line">s.add(obj);</span><br><span class="line"></span><br><span class="line">// セットの内容を確認</span><br><span class="line">console.log(s.size);</span><br><span class="line">  // 結果：3</span><br><span class="line"></span><br><span class="line">console.log(s.has(1));</span><br><span class="line">  // 結果：true</span><br><span class="line"></span><br><span class="line">// セットから値を削除</span><br><span class="line">s.delete(1);</span><br><span class="line"></span><br><span class="line">// セットの値を列挙</span><br><span class="line">for (let value of s) &#123;</span><br><span class="line">  console.log(value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// セットの内容をクリア</span><br><span class="line">s.clear();</span><br></pre></td></tr></table></figure>
+<p>Map / Setでは、Object型をはじめ任意の方を指定できますが、参照型をキーにした場合、getやhasメソッドでの取得では<strong>変数objとリテラル{}の参照先は別</strong>なので、値をた正しく参照することができないので注意が必要です。</p>
+<h2 id="オブジェクト指向構文"><a href="#オブジェクト指向構文" class="headerlink" title="オブジェクト指向構文"></a>オブジェクト指向構文</h2><p>オブジェクトリテラルがよりシンプルに表現できるようになりました。</p>
+<h3 id="変数を同名プロパティに設定する"><a href="#変数を同名プロパティに設定する" class="headerlink" title="変数を同名プロパティに設定する"></a>変数を同名プロパティに設定する</h3><p>プロパティの名前と、その値が同名の場合に値の指定を省略できるようになりました。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;title: title, price: price, publish: publish&#125;</span><br><span class="line"></span><br><span class="line">↓</span><br><span class="line"></span><br><span class="line">&#123;title, price, publish&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="メソッドを定義する"><a href="#メソッドを定義する" class="headerlink" title="メソッドを定義する"></a>メソッドを定義する</h3><p>従来は、 <code>名前:function(params){...}</code> のように関数型のプロパティとして表記しなければなりませんでしたが、ECMAScript6では <code>名前(params){...}</code> という表記が許されるようになりました。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">let book = &#123;</span><br><span class="line">  title: &apos;タイトル&apos;,</span><br><span class="line">  price: 2000,</span><br><span class="line">  toString() &#123;</span><br><span class="line">    console.log(`$&#123;this.title&#125;:$&#123;this.price&#125;`);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="プロパティ名を動的に生成できる"><a href="#プロパティ名を動的に生成できる" class="headerlink" title="プロパティ名を動的に生成できる"></a>プロパティ名を動的に生成できる</h3><p>プロパティ名を <code>[]</code> で括ることで、式の値から動的にプロパティ名を生成できるようになりました。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">let i = 0;</span><br><span class="line">let data = &#123;</span><br><span class="line">  [&apos;hoge&apos; + ++i]: 15,</span><br><span class="line">  [&apos;hoge&apos; + ++i]: 20,</span><br><span class="line">  [&apos;hoge&apos; + ++i]: 25,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">console.log(data);</span><br><span class="line">// 結果：&#123;&apos;hoge1&apos;: 15, &apos;hoge2&apos;: 20, &apos;hoge3&apos;: 25&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="class命令"><a href="#class命令" class="headerlink" title="class命令"></a>class命令</h3><p>ECMAscript6では、いよいよclass命令が利用できるようになりました。やっとか・・・という感じがします( 笑 )</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class Person &#123;</span><br><span class="line">  constructor(name, sex) &#123;</span><br><span class="line">    this.name = name;</span><br><span class="line">    this.sex = sex;</span><br><span class="line">  &#125;</span><br><span class="line">  show() &#123;</span><br><span class="line">    return `$&#123;this.name&#125;は$&#123;this.sex&#125;です。`;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let p = new Person(&apos;花子&apos;, &apos;女&apos;);</span><br><span class="line">console.log(p.show());</span><br><span class="line">// 結果：花子は女です。</span><br></pre></td></tr></table></figure>
+<p>とても直感的に書けるようになりました。</p>
+<p>ただ、 <code>関数として呼び出すことはできない</code> <code>定義前の呼び出しはできない</code> という点にご注意ください。</p>
+<p>static修飾子やgetter、setterなども利用できます。</p>
+<p>[static修飾子の利用例]<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">class Figure  &#123;</span><br><span class="line">  static triangle(base, height) &#123;</span><br><span class="line">    return base * height / 2;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(Figure,triangle(10, 5));</span><br><span class="line">// 結果：25</span><br></pre></td></tr></table></figure></p>
+<p>[getter、setterの利用例]<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">class Person &#123;</span><br><span class="line">  constructor(name, sex) &#123;</span><br><span class="line">    this.name = name;</span><br><span class="line">    this.sex = sex;</span><br><span class="line">  &#125;</span><br><span class="line">  get age() &#123;</span><br><span class="line">    return this._age;</span><br><span class="line">  &#125;</span><br><span class="line">  set age(value) &#123;</span><br><span class="line">    this._age = value;</span><br><span class="line">  &#125;</span><br><span class="line">  show() &#123;</span><br><span class="line">    return `$&#123;this.name&#125;は$&#123;this.sex&#125;、$&#123;this.age&#125;歳です。`;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let p = new Person(&apos;花子&apos;, &apos;女&apos;);</span><br><span class="line">p.age = 10;</span><br><span class="line">console.log(p.show());</span><br><span class="line">// 結果：花子は女、10歳です。</span><br></pre></td></tr></table></figure></p>
+<p>※ECMAscript6では、classブロックの中で <code>let age = 10;</code> のような、 <strong>インスタンスフィールドを定義することはできない</strong> 為、上記のgetter、setterを利用しましょう。</p>
+<h3 id="extendsキーワード"><a href="#extendsキーワード" class="headerlink" title="extendsキーワード"></a>extendsキーワード</h3><p>extendsキーワードを利用することで、既存のclassを軽傷してサブクラスを定義することができます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">class Person &#123;</span><br><span class="line">  constructor(name, sex) &#123;</span><br><span class="line">    this.name = name;</span><br><span class="line">    this.sex = sex;</span><br><span class="line">  &#125;</span><br><span class="line">  show() &#123;</span><br><span class="line">    return `$&#123;this.name&#125;は$&#123;this.sex&#125;です。`;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class BusinessPerson extends Person &#123;</span><br><span class="line">  constructor(name, sex, clazz) &#123;</span><br><span class="line">    super(name, sex);</span><br><span class="line">    this.clazz = clazz;</span><br><span class="line">  &#125;</span><br><span class="line">  show() &#123;</span><br><span class="line">    return `$&#123;super.show()&#125;　役職は$&#123;this.clazz&#125;です。`;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let bp = new BusinessPerson(&apos;花子&apos;, &apos;女&apos;, &apos;主任&apos;);</span><br><span class="line">console.log(bp.show());</span><br><span class="line">// 結果：花子は女です。　役職は主任です。</span><br></pre></td></tr></table></figure>
+<p>ECMAScript6では、Array / Date / Errorなどの組み込みオブジェクトをextendsキーワードで継承できるようになりました。</p>
+<p>独自の例外オブジェクトを実装したい場合など便利そうですね(゜゜)</p>
+<hr>
+<p>いかがでしたでしょうか。<br>こうしてまとめてみると、まだまだ実務で生かせていない部分などもちらほらあり個人的にもこうして勉強＆まとめることでよい勉強になりました！</p>
+<p>今回でECMAScript6については終わりとなります。<br>次回からは、Reduxの学習に入っていきます！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/05/30/ecmascript02/" data-text="フロントエンド学習 ECMAScript 第2回" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/05/30/ecmascript02/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/05/30/ecmascript02/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/05/30/ecmascript02/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/05/30/ecmascript02/" class="hatena-bookmark-button" data-hatena-bookmark-title="フロントエンド学習 ECMAScript 第2回" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/書評/">書評</a></li></ul>
+
+
+      <p class="article-footer__author">by osa</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

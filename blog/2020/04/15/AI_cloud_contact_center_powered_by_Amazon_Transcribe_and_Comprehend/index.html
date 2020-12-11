@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Amazon ConnectにAIサービス(Comprehend / Transcribe)を組み合わせたクラウドコンタクトセンターの検証 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="新型コロナウイルス感染症に関連する様々な問題を一つの契機としてAWSのコンタクトセンターサービス Amazon Connect を活用し「テレワーク(在宅勤務)環境でもコンタクトセンターを運営できるようにしたい」というご相談をいただく機会が弊社でも増え始めています。 昨今、コンタクトセンター(PBX)市場においても、クラウド化の流れが急激に進んでおり Amazon Connect でも  いつで">
+<meta name="keywords" content="テレワーク,クラウド,AWS,AmazonConnect,AmazonComprehend,AmazonTranscribe,コンタクトセンター">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Amazon ConnectにAIサービス(Comprehend &#x2F; Transcribe)を組み合わせたクラウドコンタクトセンターの検証">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/04/15/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="新型コロナウイルス感染症に関連する様々な問題を一つの契機としてAWSのコンタクトセンターサービス Amazon Connect を活用し「テレワーク(在宅勤務)環境でもコンタクトセンターを運営できるようにしたい」というご相談をいただく機会が弊社でも増え始めています。 昨今、コンタクトセンター(PBX)市場においても、クラウド化の流れが急激に進んでおり Amazon Connect でも  いつで">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/contact-customer-service.jpg">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/AmazonConnect_AI_Architecture.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/case1_entity_count.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/case1_entity_heatmap.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/case2_entity_count.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/case2_entity_heatmap.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Amazon ConnectにAIサービス(Comprehend &#x2F; Transcribe)を組み合わせたクラウドコンタクトセンターの検証">
+<meta name="twitter:description" content="新型コロナウイルス感染症に関連する様々な問題を一つの契機としてAWSのコンタクトセンターサービス Amazon Connect を活用し「テレワーク(在宅勤務)環境でもコンタクトセンターを運営できるようにしたい」というご相談をいただく機会が弊社でも増え始めています。 昨今、コンタクトセンター(PBX)市場においても、クラウド化の流れが急激に進んでおり Amazon Connect でも  いつで">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/contact-customer-service.jpg">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-AI-cloud-contact-center-powered-by-Amazon-Transcribe-and-Comprehend" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-04-15T04:14:53.000Z" itemprop="datePublished">2020-04-15</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/04/15/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/">Amazon ConnectにAIサービス(Comprehend / Transcribe)を組み合わせたクラウドコンタクトセンターの検証</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/04/15/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/" data-text="Amazon ConnectにAIサービス(Comprehend / Transcribe)を組み合わせたクラウドコンタクトセンターの検証" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/04/15/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/04/15/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/04/15/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/04/15/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/" class="hatena-bookmark-button" data-hatena-bookmark-title="Amazon ConnectにAIサービス(Comprehend / Transcribe)を組み合わせたクラウドコンタクトセンターの検証" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/contact-customer-service.jpg" alt=""></p>
+<p>新型コロナウイルス感染症に関連する様々な問題を一つの契機としてAWSのコンタクトセンターサービス <a href="https://aws.amazon.com/jp/connect/" target="_blank" rel="noopener">Amazon Connect</a> を活用し「テレワーク(在宅勤務)環境でもコンタクトセンターを運営できるようにしたい」というご相談をいただく機会が弊社でも増え始めています。</p>
+<p>昨今、コンタクトセンター(PBX)市場においても、クラウド化の流れが急激に進んでおり <a href="https://aws.amazon.com/jp/connect/" target="_blank" rel="noopener">Amazon Connect</a> でも</p>
+<ul>
+<li>いつでも、どこでも、アクセスが可能なクラウド方式</li>
+<li>電話とチャットを統合したコンタクトセンター</li>
+<li>スキルベースルーティング</li>
+<li>チャット・電話の全録音</li>
+<li>高品質の日本語ボイス機能</li>
+<li>グラフィカルでわかりやすいコールフロー制御</li>
+<li>データ分析</li>
+</ul>
+<p>これら機能が搭載され、大規模コンタクトセンター運営にも十分耐えうるレベルまで進化を遂げていますが、Amazon Connectの一番の強みは、多種多様なAWSサービスとの連携によって、コンタクトセンター業務にクラウドのテクノロジーを投入し、ビジネス競争力を強化できる(デジタル・トランスフォーメーション支援が可能な)点であると考えています。</p>
+<p>そこで、今回は弊社で先日検証した、AWSのAIサービスである「Amazon Comprehend」と「Amazon Transcribe」をAmazon Connectと組み合わせることで実現できる、AI連携型のクラウドコンタクトセンターをご紹介します。</p>
+<h2 id="目次"><a href="#目次" class="headerlink" title="目次"></a>目次</h2><!-- toc -->
+<ul>
+<li><a href="#ビジネス上の想定要件">ビジネス上の想定要件</a></li>
+<li><a href="#利用するawsサービス">利用するAWSサービス</a><ul>
+<li><a href="#amazon-comprehendとは">Amazon Comprehendとは？</a></li>
+<li><a href="#amazon-transcribeとは">Amazon Transcribeとは？</a></li>
+</ul>
+</li>
+<li><a href="#クラウドコンタクトセンター検証の構成">クラウドコンタクトセンター検証の構成</a></li>
+<li><a href="#検証の進め方">検証の進め方</a><ul>
+<li><a href="#トークスクリプトの内容について">トークスクリプトの内容について</a><ul>
+<li><a href="#ケース1トークスクリプト全文">ケース1.トークスクリプト全文</a></li>
+<li><a href="#ケース2トークスクリプト全文">ケース2.トークスクリプト全文</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#音声テキスト化と会話分析の検証結果">音声テキスト化と会話分析の検証結果</a><ul>
+<li><a href="#1-amazon-transcribeによる音声テキスト化の精度">1. Amazon Transcribeによる音声テキスト化の精度</a><ul>
+<li><a href="#ケース1のテキスト化結果">ケース1.のテキスト化結果</a></li>
+<li><a href="#ケース2のテキスト化結果">ケース2.のテキスト化結果</a></li>
+<li><a href="#誤変換誤用があった箇所">誤変換・誤用があった箇所</a></li>
+</ul>
+</li>
+<li><a href="#2-amazon-comprehendでの感情エンティティ分析">2. Amazon Comprehendでの感情・エンティティ分析</a><ul>
+<li><a href="#感情分析の結果">感情分析の結果</a></li>
+<li><a href="#エンティティ固有名詞分析の結果">エンティティ(固有名詞)分析の結果</a><ul>
+<li><a href="#検出できる分類">検出できる分類</a></li>
+<li><a href="#ユースケース1のエンティティグラフ化">ユースケース1.のエンティティグラフ化</a></li>
+<li><a href="#ユースケース2のエンティティグラフ化">ユースケース2.のエンティティグラフ化</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#今後の展望とまとめ">今後の展望とまとめ</a></li>
+</ul>
+<!-- tocstop -->
+<h2 id="ビジネス上の想定要件"><a href="#ビジネス上の想定要件" class="headerlink" title="ビジネス上の想定要件"></a>ビジネス上の想定要件</h2><p>コンタクトセンターに日々蓄積される「お客様の声」をデータ化し、会話の分析・可視化を進めることで、各メンバーのナレッジを形式知化し、最終的に顧客満足度とロイヤリティの向上につなげていきたい。</p>
+<p>これらの実現に向け</p>
+<ul>
+<li>音声通話の全録音</li>
+<li>録音データのテキスト化</li>
+<li>会話の分析</li>
+<li>解析データの可視化</li>
+</ul>
+<p>このようなシステム基盤が必要となります。</p>
+<h2 id="利用するawsサービス"><a href="#利用するAWSサービス" class="headerlink" title="利用するAWSサービス"></a>利用するAWSサービス</h2><p>今回のクラウドコンタクトセンター検証では、下記5つのサービスを活用します。</p>
+<table>
+<thead>
+<tr>
+<th>サービス名</th>
+<th>検証での主な用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://aws.amazon.com/jp/connect/" target="_blank" rel="noopener">Amazon Connect</a></td>
+<td>コンタクトセンターでの音声通話・録音とコールフロー制御</td>
+</tr>
+<tr>
+<td><a href="https://aws.amazon.com/jp/comprehend/" target="_blank" rel="noopener">Amazon Comprehend</a></td>
+<td>会話から感情分析とエンティティの抽出</td>
+</tr>
+<tr>
+<td><a href="https://aws.amazon.com/jp/transcribe/" target="_blank" rel="noopener">Amazon Transcribe</a></td>
+<td>録音された音声のテキスト変換</td>
+</tr>
+<tr>
+<td><a href="https://aws.amazon.com/jp/lambda/" target="_blank" rel="noopener">AWS Lambda</a></td>
+<td>ビジネスロジックと各コンポーネントの連携</td>
+</tr>
+<tr>
+<td><a href="https://aws.amazon.com/jp/quicksight/" target="_blank" rel="noopener">Amazon QuickSight</a></td>
+<td>解析データの可視化(グラフ化)</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p>AWSではデータを準備するだけでAPIから機械学習を簡単に利用できるAIサービスが多数あり、その中で今回はAmazon Comprehend、そしてAmazon Transcribeを利用します。</p>
+<h3 id="amazon-comprehendとは"><a href="#Amazon-Comprehendとは？" class="headerlink" title="Amazon Comprehendとは？"></a>Amazon Comprehendとは？</h3><p>機械学習によってインプットされたテキストから有用な情報を分析・発見する自然言語処理サービスであり、データから「キーフレーズ」「構文」「エンティティ」「言語情報」「感情分析」を抽出できます。(2019年11月から日本語にも対応)</p>
+<h3 id="amazon-transcribeとは"><a href="#Amazon-Transcribeとは？" class="headerlink" title="Amazon Transcribeとは？"></a>Amazon Transcribeとは？</h3><p>音声をテキストデータに変換するサービスであり、音声ファイルからの変換はもちろん、言語によってはリアルタイム変換も可能。(2020年4月時点では日本語はリアルタイム変換には未対応)</p>
+<h2 id="クラウドコンタクトセンター検証の構成"><a href="#クラウドコンタクトセンター検証の構成" class="headerlink" title="クラウドコンタクトセンター検証の構成"></a>クラウドコンタクトセンター検証の構成</h2><p>Amazon Connectで生成した会話録音ファイルをAmazon Transcribeによってテキスト化、その後Amazon Comprehendで解析していきます。</p>
+<p><img src="/images/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/AmazonConnect_AI_Architecture.png" alt=""></p>
+<p>連携にはAWS Lambdaを用いてAWSマネージドサービスのみでサーバーレスな構成を組みました。加えてAmazon Comprehendでの解析結果はBIサービスであるAmazon QuickSightを使い、可視化します。</p>
+<h2 id="検証の進め方"><a href="#検証の進め方" class="headerlink" title="検証の進め方"></a>検証の進め方</h2><p>コンタクトセンターで発生する会話ケースとして</p>
+<ul>
+<li>ケース1. オンラインショップでの商品購入者に対して電話アンケートを実施</li>
+<li>ケース2. 新商品キャンペーンに関するコンタクトセンターへの問い合わせ対応</li>
+</ul>
+<p>の2つを準備しました。</p>
+<p>それぞれトークスクリプトを使い「コールセンター担当役」「お客様役」を切り替えて、Amazon Connectに準備されたコールセンターへ架電・会話し、録音から解析までの一連の流れを実行します。</p>
+<h3 id="トークスクリプトの内容について"><a href="#トークスクリプトの内容について" class="headerlink" title="トークスクリプトの内容について"></a>トークスクリプトの内容について</h3><p>「ケース1.」は、コールセンターからの電話を受けた顧客は “迷惑だな…” と感じながらも、最後まで回答するパターンを想定。</p>
+<p>「ケース2.」は、新商品キャンペーンに興味を持った顧客が、コールセンターへ問い合わせし、淡々と回答していく。というパターンです。</p>
+<p>少し長い文面ですが全文を確認したい方向けに掲載します。</p>
+<h4 id="ケース1トークスクリプト全文"><a href="#ケース1-トークスクリプト全文" class="headerlink" title="ケース1.トークスクリプト全文"></a>ケース1.トークスクリプト全文</h4><p><span style="font-size: 75%;"><em>担当者「突然のお電話にて、申し訳ございません。私、MMMショップの佐々木と申します。こちらは、国本様のお電話でお間違いないでしょうか？」</em></span></p>
+<p><span style="font-size: 75%;">お客様「はい、国本です。どういったご用件でしょうか？」</span></p>
+<p><span style="font-size: 75%;"><em>担当者「このたびは、当店でパソコンをご購入下さり誠にありがとうございます。実際に使った感想などをうかがいたく、お電話した次第です。ただ今、お時間1～2分程度、よろしいでしょうか？」</em></span></p>
+<p><span style="font-size: 75%;">お客様「いま、忙しいんですが、本当に1分くらいなら大丈夫ですけど….」</span></p>
+<p><span style="font-size: 75%;"><em>担当者「有難うございます。では、いくつか質問させていただきます。まず、パソコンを買い替えられた理由は何でしょうか？」</em></span></p>
+<p><span style="font-size: 75%;">お客様「重くて、外出時の持ち運びが不便だったからです」</span></p>
+<p><span style="font-size: 75%;"><em>担当者「持ち運びに手間がかかると、大変ですものね。お気持ちは、よく分かります。新しいパソコンは、問題ありませんか？」</em></span></p>
+<p><span style="font-size: 75%;">お客様「はい！とても軽いので、移動が疲れず助かっています」</span></p>
+<p><span style="font-size: 75%;"><em>担当者「ほかに気に入っている点はございますか？」</em></span></p>
+<p><span style="font-size: 75%;">お客様「もう、時間がないんで、いい加減にしてもらえますか？迷惑です！」</span></p>
+<p><span style="font-size: 75%;"><em>担当者「申し訳ございません。大変失礼しました。アンケートにご協力下さり、感謝いたします。最後にお客様からご質問があれば、おうかがいします」</em></span></p>
+<p><span style="font-size: 75%;">お客様「特に、ないです…..。」</span></p>
+<p><span style="font-size: 75%;"><em>担当者「ありがとうございます。これからも引き続き当ショップをご利用下さい。では、失礼いたします」</em></span></p>
+<h4 id="ケース2トークスクリプト全文"><a href="#ケース2-トークスクリプト全文" class="headerlink" title="ケース2.トークスクリプト全文"></a>ケース2.トークスクリプト全文</h4><p><span style="font-size: 75%;"><em>担当者「お電話、ありがとうございます。株式会社MMM キャンペーン事業部です」</em></span></p>
+<p><span style="font-size: 75%;">お客様「今、そちらで開催している新商品の販促キャンペーンはいつまで行っていますか？」</span></p>
+<p><span style="font-size: 75%;"><em>担当者「キャンペーンの実施期間に関するお問い合わせですね。今回は、4月1日から4月14日までの2週間にわたって実施しています」</em></span></p>
+<p><span style="font-size: 75%;">お客様「開催場所についても、聞きたいのですが・・・」</span></p>
+<p><span style="font-size: 75%;"><em>担当者「キャンペーン会場は、国際センターです」</em></span></p>
+<p><span style="font-size: 75%;">お客様「その辺りはよく知らないので、最寄り駅とかも教えてもらえますか？」</span></p>
+<p><span style="font-size: 75%;"><em>担当者「最寄り駅は山の手線の高田馬場駅です。南口の改札を出ると、そこから直通の連絡通路で会場までつながっています。現地には案内地図も出ているので、そちらも確認していただければ迷わずに到着できると思います」</em></span></p>
+<p><span style="font-size: 75%;">お客様「駅からは遠いですか？」</span></p>
+<p><span style="font-size: 75%;"><em>担当者「徒歩5分くらいの距離ですが、キャンペーン中は混雑するため入場するまでに30分ほどお待ちいただく場合もあります。ご不便をおかけして、申し訳ございません」</em></span></p>
+<p><span style="font-size: 75%;">お客様「あと、入場料はいくらですか？」</span></p>
+<p><span style="font-size: 75%;"><em>担当者「大人の方もお子様も、無料で入場していただけます」</em></span></p>
+<p><span style="font-size: 75%;">お客様「分かりました。いろいろ、ありがとうございます」</span></p>
+<p><span style="font-size: 75%;"><em>担当者「恐れ入ります。もしほかにも不明点がありましたら、弊社のホームページもご確認下さい。では、失礼いたします」</em></span></p>
+<h2 id="音声テキスト化と会話分析の検証結果"><a href="#音声テキスト化と会話分析の検証結果" class="headerlink" title="音声テキスト化と会話分析の検証結果"></a>音声テキスト化と会話分析の検証結果</h2><p>2つの会話ケースで実施した検証結果から</p>
+<ol>
+<li>通話データをAmazon Transcribeでテキスト化した精度</li>
+<li>テキスト会話をAmazon Comprehendで分析したデータ</li>
+</ol>
+<p>に焦点を当て見てみます。</p>
+<h3 id="1-amazon-transcribeによる音声テキスト化の精度"><a href="#1-Amazon-Transcribeによる音声テキスト化の精度" class="headerlink" title="1. Amazon Transcribeによる音声テキスト化の精度"></a>1. Amazon Transcribeによる音声テキスト化の精度</h3><p>実際にAmazon Transcribeでテキスト化された結果を全文記載します。</p>
+<h4 id="ケース1のテキスト化結果"><a href="#ケース1-のテキスト化結果" class="headerlink" title="ケース1.のテキスト化結果"></a>ケース1.のテキスト化結果</h4><p><span style="font-size: 75%;">Speaker 0:</span><br><span style="font-size: 75%;">はい もしもし</span></p>
+<p><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">突然 電話 し て 申し訳 ござい ませ ん 私 ショップ の 佐々木 と 申し ます</span><br><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">こちら 栗本 様 の お 間違い ない でしょ う か</span></p>
+<p><span style="font-size: 75%;">Speaker 0:</span><br><span style="font-size: 75%;">はい 国本 です どう いっ た ご 用件 でしょ か</span></p>
+<p><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">この たび 当店 パソコン ご 購入 ください 誠 に ありがとう ござい ます 実際 に 使っ た 感想 など を お 伺い し たく て 電話 し た 次第 です</span><br><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">ただいま お 時間 一 二 分 程度 よろしい でしょ</span></p>
+<p><span style="font-size: 75%;">Speaker 0:</span><br><span style="font-size: 75%;">う か?</span><br><span style="font-size: 75%;">Speaker 0:</span><br><span style="font-size: 75%;">今、 忙しい です けど 本当 に 一 分 ぐらい だっ たら 大丈夫 です けど</span></p>
+<p><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">ありがとう ござい ます</span><br><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">で は いく つ か 質問 さ せ て いただき ます まず パソコン を 買い換え られ た 理由 は 何 でしょ う</span></p>
+<p><span style="font-size: 75%;">Speaker 0:</span><br><span style="font-size: 75%;">か 重く て! 外出 時 の 持ち運び が すごく 不便 だっ た から です ね</span></p>
+<p><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">持ち運び に 手間 が かかる の かかる と 大変 です ね はい ええ</span><br><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">お 気持ち は よく わかり ます 新しい パソコン 問題 あり ませ ん か</span></p>
+<p><span style="font-size: 75%;">Speaker 0:</span><br><span style="font-size: 75%;">はい とても 軽い で 移動 が 疲れ ず に 助かっ て ます</span></p>
+<p><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">他 に 気 に 入っ て いる よう で ござい ます か</span></p>
+<p><span style="font-size: 75%;">Speaker 0:</span><br><span style="font-size: 75%;">もう 時間 が ない ん で 本当 に ちょっと もう いい 加減 に し て 貰っ て いい です か 結構 迷惑 です</span></p>
+<p><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">申し訳 ござい ませ ん 大変 失礼 し まし た アンケート に ご 協力 ください 感謝 いたし ます 最後 に お 客 様 から ご 質問 が あれ ば お 願い いたし ます か</span></p>
+<p><span style="font-size: 75%;">Speaker 0:</span><br><span style="font-size: 75%;">いや 特に ない です</span></p>
+<p><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">ありがとう ござい ます これ から も 引き続き 当 ショップ を ご 利用 ください じゃあ 失礼 いたし ます</span></p>
+<p><span style="font-size: 75%;">Speaker 0:</span><br><span style="font-size: 75%;">おい</span></p>
+<h4 id="ケース2のテキスト化結果"><a href="#ケース2-のテキスト化結果" class="headerlink" title="ケース2.のテキスト化結果"></a>ケース2.のテキスト化結果</h4><p><span style="font-size: 75%;">Speaker 0:</span><br><span style="font-size: 75%;">俺 も ありがとう ござい ます 株式 会社 メール キャンペーン 事業 部 です</span></p>
+<p><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">今 そちら で 開催 する 新 商品 の 販促 キャンペーン</span><br><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">で 行なっ て ます か</span></p>
+<p><span style="font-size: 75%;">Speaker 0:</span><br><span style="font-size: 75%;">キャンペーン 実施 期間 に 関する お 問合せ です ね 今回 は です ね 四 月 二 日 から 四 月 十 四 日 まで の 二 週間 に 渡っ て 実施 し て い ます</span></p>
+<p><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">開催 場所 に つい て も 聞き たい! ん です けど あ</span></p>
+<p><span style="font-size: 75%;">Speaker 0:</span><br><span style="font-size: 75%;">処置 し まし た キャンペーン 会場 は です ね か 国際 センター で ござい ます</span></p>
+<p><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">そう なっ たら よく 知ら ない んで あの 最寄り 駅 と か 教え て もらえ ます か</span></p>
+<p><span style="font-size: 75%;">Speaker 0:</span><br><span style="font-size: 75%;">承知 いたし まし た 最寄り駅 は です ね 山手 線 高田馬場 駅 で ござい ます 南口 の 開発 札 を 出る と そっ から 直通 の 連絡 通路 で 会場 まで 繋がっ て おり ます の で 現地 に は 案内 地図 も 出 て いる の で そちら を ご 確認 し て 頂けれ ば まず 到着 できる と 思い ます</span></p>
+<p><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">駅 から 遠い です ね</span></p>
+<p><span style="font-size: 75%;">Speaker 0:</span><br><span style="font-size: 75%;">徒歩 五 分 くらい の 距離 です が キャンペーン 中 は 混雑 する ため に 利用 する まで 三 十 分 ほど 待ち いただく こと も ござい ます ご 不便 を お 掛け し て 申し訳 ござい ませ ん</span></p>
+<p><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">うん</span></p>
+<p><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">あと に 重量 いくら です か</span></p>
+<p><span style="font-size: 75%;">Speaker 0:</span><br><span style="font-size: 75%;">大人 の 方 も お 子 様 無料 で 入場 し て いただけ ます</span></p>
+<p><span style="font-size: 75%;">Speaker 1:</span><br><span style="font-size: 75%;">分かり まし た 色々 ありがとう ござい ます</span></p>
+<p><span style="font-size: 75%;">Speaker 0:</span><br><span style="font-size: 75%;">恐れ入り ます もし 他 に も 不明 点 ござい まし たら 弊社 の ホーム ページ を! ご 確認 ください で は 失礼 いたし ます</span><br><span style="font-size: 75%;">Speaker 0:</span><br><span style="font-size: 75%;">うん</span></p>
+<h4 id="誤変換誤用があった箇所"><a href="#誤変換・誤用があった箇所" class="headerlink" title="誤変換・誤用があった箇所"></a>誤変換・誤用があった箇所</h4><p>Amazon Transcribeによるテキスト化で、明らかな誤変換や誤用があった箇所を目検チェックすると</p>
+<table>
+<thead>
+<tr>
+<th>対象</th>
+<th>誤変換・誤用・文脈誤り</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>会話ケース1.</td>
+<td>4箇所</td>
+</tr>
+<tr>
+<td>会話ケース2.</td>
+<td>6箇所</td>
+</tr>
+</tbody>
+</table>
+<p>このような結果となりました。</p>
+<p>Amazon Connectでの通話時の発声ボリューム、抑揚、発音により、結果は変動するとは思いますが、本検証ではテキスト化を意識してゆっくり話すという考慮はせずプレーンな会話状況から考えると、用途によっては十分実用に耐えうるレベルではないでしょうか。<br><span style="font-size: 75%;">※余談ですが弊社「MMM(エムエムエム)」の社名はすべてテキスト時に欠落していました… ＿|￣|○</span></p>
+<h3 id="2-amazon-comprehendでの感情エンティティ分析"><a href="#2-Amazon-Comprehendでの感情・エンティティ分析" class="headerlink" title="2. Amazon Comprehendでの感情・エンティティ分析"></a>2. Amazon Comprehendでの感情・エンティティ分析</h3><p>Amazon Transcribeでテキスト化した会話を、Amazon Comprehendによる自然言語処理で「感情」と「エンティティ(固有名詞)」分析を実施した結果を見てみます。</p>
+<h4 id="感情分析の結果"><a href="#感情分析の結果" class="headerlink" title="感情分析の結果"></a>感情分析の結果</h4><p>Amazon Comprehendでの感情分析は</p>
+<ul>
+<li>中立： <code>Neutral</code></li>
+<li>肯定的： <code>Positive</code> </li>
+<li>否定的： <code>Negative</code></li>
+<li>混在： <code>Mixed</code></li>
+</ul>
+<p>この4分類でスコア表示され、2つの会話ケースは下記結果となりました。</p>
+<table>
+<thead>
+<tr>
+<th>対象</th>
+<th>中立</th>
+<th>肯定的</th>
+<th>否定的</th>
+<th>混在</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ケース1.</td>
+<td>0.42</td>
+<td><strong>0.55</strong></td>
+<td>0.01</td>
+<td>0.00</td>
+</tr>
+<tr>
+<td>ケース2.</td>
+<td><strong>0.83</strong></td>
+<td>0.16</td>
+<td>0.00</td>
+<td>0.00</td>
+</tr>
+</tbody>
+</table>
+<p>ケース2.については、新商品キャンペーンの問い合わせに対して淡々と回答するという内容であったため「中立」スコアが高いという納得感があるものの、ケース1.については「肯定的」スコアが高く「否定的」なやりとりが考慮されていない点が気に掛かりました。</p>
+<p>今回の検証では両ケースとも「テキスト全文を一括に」感情分析しましたが、より細かく文脈や行単位で解析を進めることで、結果も大きく変動すると考えられます。</p>
+<h4 id="エンティティ固有名詞分析の結果"><a href="#エンティティ-固有名詞-分析の結果" class="headerlink" title="エンティティ(固有名詞)分析の結果"></a>エンティティ(固有名詞)分析の結果</h4><p>Amazon Comprehendでは、テキストの内容を分析し、<a href="https://docs.aws.amazon.com/ja_jp/comprehend/latest/dg/how-entities.html" target="_blank" rel="noopener">Detect Entities</a> として定義されている単語・分類を検出することが可能です。</p>
+<h5 id="検出できる分類"><a href="#検出できる分類" class="headerlink" title="検出できる分類"></a>検出できる分類</h5><table>
+<thead>
+<tr>
+<th>タイプ</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>COMMERCIAL_ITEM</code></td>
+<td>商品やブランド名称</td>
+</tr>
+<tr>
+<td><code>DATE</code></td>
+<td>日付・時刻</td>
+</tr>
+<tr>
+<td><code>EVENT</code></td>
+<td>フェスティバル、コンサートなどのイベント</td>
+</tr>
+<tr>
+<td><code>LOCATION</code></td>
+<td>国、都市などの特定場所</td>
+</tr>
+<tr>
+<td><code>ORGANIZATION</code></td>
+<td>政府、企業などの大規模組織</td>
+</tr>
+<tr>
+<td><code>OTHER</code></td>
+<td>他のカテゴリのいずれにもあたらないエンティティ</td>
+</tr>
+<tr>
+<td><code>PERSON</code></td>
+<td>個人、集団、ニックネーム</td>
+</tr>
+<tr>
+<td><code>QUANTITY</code></td>
+<td>通貨、パーセント、数値、バイトなどの数量・金額</td>
+</tr>
+<tr>
+<td><code>TITLE</code></td>
+<td>映画、本、歌、などの作品名</td>
+</tr>
+</tbody>
+</table>
+<p>エンティティ分類された生データでは視覚的に把握しづらいため、今回はAWSのBIサービスである、Amazon QuickSightに解析結果を投入しグラフ化しました。</p>
+<h5 id="ユースケース1のエンティティグラフ化"><a href="#ユースケース1-のエンティティグラフ化" class="headerlink" title="ユースケース1.のエンティティグラフ化"></a>ユースケース1.のエンティティグラフ化</h5><p><img src="/images/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/case1_entity_count.png" alt=""><br><img src="/images/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/case1_entity_heatmap.png" alt=""></p>
+<h5 id="ユースケース2のエンティティグラフ化"><a href="#ユースケース2-のエンティティグラフ化" class="headerlink" title="ユースケース2.のエンティティグラフ化"></a>ユースケース2.のエンティティグラフ化</h5><p><img src="/images/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/case2_entity_count.png" alt=""><br><img src="/images/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/case2_entity_heatmap.png" alt=""></p>
+<p>「ございます」といった言い回しが <code>DATE</code> <code>EVENT</code> <code>LOCATION</code> に分類されている箇所がありますが、コールセンター対応における感情可視化や、対話の主要なキーフレーズ、エンティティのデータ蓄積とインデックス化を進めることで、ビジネス用途に即した様々なデータ活用が考えられるのではないでしょうか。</p>
+<h2 id="今後の展望とまとめ"><a href="#今後の展望とまとめ" class="headerlink" title="今後の展望とまとめ"></a>今後の展望とまとめ</h2><p>Amazon Transcribeの今後のアップデートによって、多言語同様に日本語もリアルタイムテキスト化をサポートした場合は、Amazon Connectでの会話をストリーミングデータとして取り扱い、リアルタイムで音声会話をテキスト化・解析が可能となり、即時性の高い判断が求められるコンタクトセンタービジネスにも、よりAI活用の範囲が進むのではないかと期待しています。</p>
+<p>弊社では今回ご紹介したAmazon Connectはもちろん、AWSクラウドを徹底的に活用した企業のデジタルトランスフォーメーション(DX)を全方位で支援できる実績とナレッジがあります。</p>
+<p>Amazon Connectやサーバーレス、その他AWSを活用したビジネスアプリケーション開発に関して相談をしたい方は、ぜひお気軽に<a href="https://mmmcorp.co.jp/inquiry" target="_blank" rel="noopener">株式会社MMMお問合せページ</a>からご連絡ください！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/04/15/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/" data-text="Amazon ConnectにAIサービス(Comprehend / Transcribe)を組み合わせたクラウドコンタクトセンターの検証" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/04/15/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/04/15/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/04/15/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/04/15/AI_cloud_contact_center_powered_by_Amazon_Transcribe_and_Comprehend/" class="hatena-bookmark-button" data-hatena-bookmark-title="Amazon ConnectにAIサービス(Comprehend / Transcribe)を組み合わせたクラウドコンタクトセンターの検証" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AmazonComprehend/">AmazonComprehend</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AmazonConnect/">AmazonConnect</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AmazonTranscribe/">AmazonTranscribe</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/クラウド/">クラウド</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/コンタクトセンター/">コンタクトセンター</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/テレワーク/">テレワーク</a></li></ul>
+
+
+      <p class="article-footer__author">by 国本 廷宣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

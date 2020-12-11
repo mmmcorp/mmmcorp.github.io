@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Nuxt.jsの新規プロジェクトでいい感じのテスト環境をつくる@2018 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="現在、新規プロジェクトで、Nuxt.js+TypeScriptを使ったSPAの開発を行っています。この記事では、そういったケースにおいての、Nuxt.jsアプリケーションでのテストに対する考え方と、その方法を紹介します。 TL;DR ユニットテスト/結合テスト=&amp;gt;Jest UIテスト=&amp;gt;Storybookをベースに、Jestで足りない部分を補う  プロジェクトの技術スタック Nuxt.">
+<meta name="keywords" content="フロントエンド">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nuxt.jsの新規プロジェクトでいい感じのテスト環境をつくる@2018">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2018/10/29/testing-nuxtjs/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="現在、新規プロジェクトで、Nuxt.js+TypeScriptを使ったSPAの開発を行っています。この記事では、そういったケースにおいての、Nuxt.jsアプリケーションでのテストに対する考え方と、その方法を紹介します。 TL;DR ユニットテスト/結合テスト=&amp;gt;Jest UIテスト=&amp;gt;Storybookをベースに、Jestで足りない部分を補う  プロジェクトの技術スタック Nuxt.">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://i.gyazo.com/1b48e52e09f472c0fd2cfa2103db7d85.gif">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.154Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Nuxt.jsの新規プロジェクトでいい感じのテスト環境をつくる@2018">
+<meta name="twitter:description" content="現在、新規プロジェクトで、Nuxt.js+TypeScriptを使ったSPAの開発を行っています。この記事では、そういったケースにおいての、Nuxt.jsアプリケーションでのテストに対する考え方と、その方法を紹介します。 TL;DR ユニットテスト/結合テスト=&amp;gt;Jest UIテスト=&amp;gt;Storybookをベースに、Jestで足りない部分を補う  プロジェクトの技術スタック Nuxt.">
+<meta name="twitter:image" content="https://i.gyazo.com/1b48e52e09f472c0fd2cfa2103db7d85.gif">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-nuxtjs-test" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2018-10-29T19:27:18.000Z" itemprop="datePublished">2018-10-29</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2018/10/29/testing-nuxtjs/">Nuxt.jsの新規プロジェクトでいい感じのテスト環境をつくる@2018</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2018/10/29/testing-nuxtjs/" data-text="Nuxt.jsの新規プロジェクトでいい感じのテスト環境をつくる@2018" data-counturl="https://blog.mmmcorp.co.jp/blog/2018/10/29/testing-nuxtjs/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2018/10/29/testing-nuxtjs/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2018/10/29/testing-nuxtjs/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2018/10/29/testing-nuxtjs/" class="hatena-bookmark-button" data-hatena-bookmark-title="Nuxt.jsの新規プロジェクトでいい感じのテスト環境をつくる@2018" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>現在、新規プロジェクトで、Nuxt.js+TypeScriptを使ったSPAの開発を行っています。この記事では、そういったケースにおいての、Nuxt.jsアプリケーションでのテストに対する考え方と、その方法を紹介します。</p>
+<h2 id="tldr"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h2><ul>
+<li><strong>ユニットテスト/結合テスト=&gt;Jest</strong></li>
+<li><strong>UIテスト=&gt;Storybookをベースに、Jestで足りない部分を補う</strong></li>
+</ul>
+<h2 id="プロジェクトの技術スタック"><a href="#プロジェクトの技術スタック" class="headerlink" title="プロジェクトの技術スタック"></a>プロジェクトの技術スタック</h2><ul>
+<li>Nuxt.js</li>
+<li>Vue.js</li>
+<li>Vuex</li>
+<li>TypeScript</li>
+<li>Docker</li>
+</ul>
+<h2 id="目次"><a href="#目次" class="headerlink" title="目次"></a>目次</h2><!-- toc -->
+<ul>
+<li><a href="#テスト種別の整理">テスト種別の整理</a></li>
+<li><a href="#新規プロジェクトにおけるテストの考え方">新規プロジェクトにおけるテストの考え方</a></li>
+<li><a href="#テスト方針">テスト方針</a></li>
+<li><a href="#基本のテスト">基本のテスト</a></li>
+<li><a href="#vuex実装のテスト">Vuex実装のテスト</a></li>
+<li><a href="#コンポーネントのテスト">コンポーネントのテスト</a><ul>
+<li><a href="#見た目のテスト">見た目のテスト</a></li>
+<li><a href="#振る舞いのテスト">振る舞いのテスト</a></li>
+<li><a href="#dom構造のテスト">DOM構造のテスト</a></li>
+<li><a href="#その他">その他</a></li>
+</ul>
+</li>
+<li><a href="#typescriptについて">TypeScriptについて</a></li>
+<li><a href="#まとめ">まとめ</a></li>
+<li><a href="#参考">参考</a></li>
+</ul>
+<!-- tocstop -->
+<h2 id="テスト種別の整理"><a href="#テスト種別の整理" class="headerlink" title="テスト種別の整理"></a>テスト種別の整理</h2><p>簡単に、今回登場するテスト種別の整理をしておきます。より詳しくは、ググったり書籍を読んだりするのをおすすめします。</p>
+<ul>
+<li>ユニットテスト - 個別の関数やクラス、コンポーネントをテストする。</li>
+<li>結合テスト - 複数の関数やコンポーネントをつなぎこんでテストする。</li>
+<li>UIテスト - ブラウザを使って見た目を含めてテストする。</li>
+<li>ブラックボックステスト - 機能の実際の振る舞いをベースにテストする手法</li>
+<li>ホワイトボックステスト - 機能のロジックや入出力をベースにテストする手法</li>
+</ul>
+<p>これに加えて、フロントエンドのテストではブラウザ環境かNode環境かという違いも出てくるため、テストを導入する際はプロジェクトによって方針を決めておくのがいいと思います。</p>
+<p>細かな注意としては、以下のような点です。</p>
+<ul>
+<li>コンポーネントはユニットテスト環境でもテストできる</li>
+<li>UIテストはブラックボックステストになりがちだが、ホワイトボックスだったり、ユニットテストに近い形でも利用できる</li>
+<li>すべてのテストを実装する必要はない。それぞれどこをテストするか責務を明確にし、コストを掛けすぎず、うまい%でテストへの実装工数を配分することが重要</li>
+</ul>
+<h2 id="新規プロジェクトにおけるテストの考え方"><a href="#新規プロジェクトにおけるテストの考え方" class="headerlink" title="新規プロジェクトにおけるテストの考え方"></a>新規プロジェクトにおけるテストの考え方</h2><p><strong>テストを書くことで多くのメリットがありますが、なぜか書かれないこともあります</strong>。その理由の一つには、「<strong>とにかく時間がない</strong>」というのがあるのではないでしょうか。特に、新規プロジェクトだと、テスト環境を整備するのにも工数がかかるため、とりあえず開発がゴーになってしまい、テストを導入する間もなく時間が過ぎてゆく、みたいなことはありがちです。</p>
+<p><strong>ただし、テストを書くことで開発中期以降、確実に楽になりますし、品質面でも、人間の手動チェックでは検出できない箇所は増えてきます</strong>。</p>
+<p>そこで、個人的に思う<strong>新規プロジェクトにおけるテストの考え方</strong>を書いてみます。<br>(小規模なプロジェクトや継続的な開発がないプロジェクトは除きます)。</p>
+<p><strong>まず、ユニットテストは100%書くことをおすすめします</strong>。ロジックは網羅できていなくても、少なくともテストファイルを作成して簡単なアサーションを書いておく、これだけでもいいと思います。たしかに最初は少し工数を取られるとは思いますが、テストを書くことで、開発後期でも安心できますし、手動でのバグ検出時間を削減でき、効率も上がってきます。</p>
+<p><strong>次に、結合テストにはユニットテストほど時間を割くべきではないと考えます</strong>。ユニットテストを100%とすると、初期のプロジェクトでは10%-20%ほどが目安です。テストピラミッドは意識しますが、正三角形よりは<a href="https://www.google.co.jp/search?q=%E3%82%A2%E3%82%B9%E3%83%86%E3%83%AD%E3%82%A4%E3%83%89%E6%9B%B2%E7%B7%9A&amp;rlz=1C5CHFA_enJP698JP698&amp;source=lnms&amp;tbm=isch&amp;sa=X&amp;ved=0ahUKEwi4zcio66zeAhWBzbwKHQ41C0oQ_AUIDigB&amp;biw=1440&amp;bih=767" target="_blank" rel="noopener">アステロイド</a>のようなイメージです。</p>
+<p>ただし、これは以下の条件が前提となってきます。</p>
+<ul>
+<li>ユニットテストで機能を担保できるレベルで責務を切り分けられている</li>
+<li>あくまでシナリオベースの手動テストは最低限行っている</li>
+</ul>
+<p>もちろん理想的には両方あるといいのですが、ユニットテストにある程度任せられるからこそ、結合テストは最小限にしたり後回しにすることができます。のちほど紹介しますが、例えばコンポーネントのテストで、子コンポーネントのテストを重点的に行っているのはそのためです。</p>
+<p><strong>長くなりましたが、後回しできるところは後回しにして、最小限のコストで、かつ、開発者も楽になれるようなテストとの付き合い方が、新規プロジェクトでは理想かと考えます</strong>。</p>
+<h2 id="テスト方針"><a href="#テスト方針" class="headerlink" title="テスト方針"></a>テスト方針</h2><p>TL;DRにも書きましたが、簡単にテスト方針をまとめると、以下のようになります。</p>
+<ul>
+<li><strong>ユニットテスト/結合テスト=&gt;Jest</strong></li>
+<li><strong>UIテスト=&gt;Storybookをベースに、Jestで足りない部分を補う</strong></li>
+</ul>
+<p>それぞれ、テスト対象にわけて見てゆきます。</p>
+<h2 id="基本のテスト"><a href="#基本のテスト" class="headerlink" title="基本のテスト"></a>基本のテスト</h2><p>基本は<a href="https://jestjs.io/docs/en/getting-started" target="_blank" rel="noopener">Jest</a>を使って普通にテストを書いてゆきます。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sum</span>(<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">test(<span class="string">'adds 1 + 2 to equal 3'</span>, <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  expect(sum(<span class="number">1</span>, <span class="number">2</span>)).toBe(<span class="number">3</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>これを応用して続くテストも書いてゆきます。</p>
+<h2 id="vuex実装のテスト"><a href="#Vuex実装のテスト" class="headerlink" title="Vuex実装のテスト"></a>Vuex実装のテスト</h2><p>Vuex実装のテストは、主にユニットテストでまかなうことができます。基本的にはReduxなどと同様に、以下のような観点でテストをしています。</p>
+<ul>
+<li>action - mutationをコミットし、状態管理ができること</li>
+<li>mutation - stateを更新できること</li>
+</ul>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// actionのテスト例</span></span><br><span class="line">it(<span class="string">'リソース一覧を取得できること'</span>, <span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">  nock(apiServer())</span><br><span class="line">    .get(SOME_ENDPOINT)</span><br><span class="line">    .query(SOME_QUERY)</span><br><span class="line">    .reply(<span class="number">200</span>, &#123;</span><br><span class="line">      message: <span class="string">'OK'</span>,</span><br><span class="line">      resources: [...]</span><br><span class="line">    &#125;);</span><br><span class="line">  <span class="keyword">const</span> success = <span class="keyword">await</span> testAction(</span><br><span class="line">    actions.getResources,</span><br><span class="line">    <span class="literal">null</span>,</span><br><span class="line">    STATE_MOCK,</span><br><span class="line">    [</span><br><span class="line">      &#123; <span class="keyword">type</span>: <span class="string">'request'</span> &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="keyword">type</span>: <span class="string">'success'</span>,</span><br><span class="line">        payload: &#123;</span><br><span class="line">          resources: [...]</span><br><span class="line">        &#125;,</span><br><span class="line">      &#125;,</span><br><span class="line">    ],</span><br><span class="line">    &#123; rootState: ROOT_STATE_MOCK &#125;,</span><br><span class="line">  );</span><br><span class="line">  expect(success).toBe(<span class="literal">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>詳細は<a href="https://vuex.vuejs.org/guide/testing.html" target="_blank" rel="noopener">ドキュメント</a>を見ると良いですが、actionのテストでは、mutationの<code>commit</code>の他に、別actionの<code>dispatch</code>もテストできるように<a href="https://gist.github.com/okmttdhr/8dc5ace9d0f766be2fc4fca4856893a2" target="_blank" rel="noopener"><code>testAction</code>関数を調整しています</a>。</p>
+<p>また、ファットactionを防ぐため、共通のactionはヘルパーとして外出ししたり、バリデーションの処理などactionの責務に関係ないロジックを別の関数に移したり等をしています。そうすることで、テストの複雑度を上げずに網羅性を高めることにもつながります。</p>
+<h2 id="コンポーネントのテスト"><a href="#コンポーネントのテスト" class="headerlink" title="コンポーネントのテスト"></a>コンポーネントのテスト</h2><p>コンポーネントのテストに関してはStorybookをベースとし、Jestで足りない部分を補っています。</p>
+<p>大まかな方針として、コンポーネントをできるだけステートレスにして、親コンポーネントよりも子コンポーネントの振る舞いに注意してテストしてゆくということを考えました。具体的には以下のような事柄です。</p>
+<ul>
+<li>コンポーネントの責務をなるべく小さく保つ</li>
+<li>ロジックはできる限りVuex側に移譲する</li>
+<li>コンポーネントごとにStorybookとテストを書く</li>
+<li>DOMをすべてつなぎこんだ結合テストにこだわらない</li>
+</ul>
+<p>子コンポーネントに着目するため、テストは自然とユニットテスト的、ホワイトボックス的になります。それでも機能が担保できるように、以下のような観点でテストができるといいかなと考えています。詳しく見てゆきます。</p>
+<h3 id="見た目のテスト"><a href="#見た目のテスト" class="headerlink" title="見た目のテスト"></a>見た目のテスト</h3><p>実際のDOMの見た目のテストです。これはStorybookの本来の目的で、まずはUIをドキュメントとして残しておくことができます。例えばフォームの正常系と異常系のドキュメントは以下のようになります。</p>
+<p><a href="https://gyazo.com/1b48e52e09f472c0fd2cfa2103db7d85" target="_blank" rel="noopener"><img src="https://i.gyazo.com/1b48e52e09f472c0fd2cfa2103db7d85.gif" alt=""></a></p>
+<p>2重管理は辛いので、描画するstoryはJestで書いたものを流用します。例えば、以下のようなテストケースがあったとしたら、</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; noop &#125; <span class="keyword">from</span> <span class="string">'lodash'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; shallowMount &#125; <span class="keyword">from</span> <span class="string">'@vue/test-utils'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; usersStateMock &#125; <span class="keyword">from</span> <span class="string">'~/test/mock/'</span>;</span><br><span class="line"><span class="keyword">import</span> C <span class="keyword">from</span> <span class="string">'./users.vue'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> template = <span class="string">`&lt;C :items="items" :get-list="getList" /&gt;`</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> story = &#123;</span><br><span class="line">  components: &#123; C &#125;,</span><br><span class="line">  data() &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      items: usersStateMock(),</span><br><span class="line">      getList: noop,</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">  template: template,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> storyError = &#123;</span><br><span class="line">  components: &#123; C &#125;,</span><br><span class="line">  data() &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      items: usersStateMock(&#123;</span><br><span class="line">        errorMessage: <span class="string">'ユーザーが見つかりません。'</span>,</span><br><span class="line">      &#125;),</span><br><span class="line">      getList: noop,</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">  template: template,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">describe(<span class="string">'components/users'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  it(<span class="string">'ユーザーの一覧を描画できる'</span>, <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> wrapper = shallowMount(C, &#123;</span><br><span class="line">      propsData: story.data(),</span><br><span class="line">    &#125;);</span><br><span class="line">    expect(wrapper.element).toMatchSnapshot();</span><br><span class="line">  &#125;);</span><br><span class="line">  it(<span class="string">'エラーメッセージを描画できる'</span>, <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> wrapper = shallowMount(C, &#123;</span><br><span class="line">      propsData: storyError.data(),</span><br><span class="line">    &#125;);</span><br><span class="line">    expect(wrapper.element).toMatchSnapshot();</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>Storybook側では以下のようにJestからテストケースごとのstoryをインポートします。こうすることでテストとUIドキュメントを連動させることができます。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; storiesOf &#125; <span class="keyword">from</span> <span class="string">'@storybook/vue'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; story, storyError &#125; <span class="keyword">from</span> <span class="string">'~/components/users.spec.ts'</span>;</span><br><span class="line"></span><br><span class="line">storiesOf(<span class="string">'components/users'</span>, <span class="keyword">module</span>)</span><br><span class="line">  .add('正常系', () =&gt; &#123;</span><br><span class="line">    <span class="keyword">return</span> story;</span><br><span class="line">  &#125;)</span><br><span class="line">  .add(<span class="string">'異常系'</span>, <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> storyError;</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<p>加えてこのテスト領域には、Visual Regressionテストもはいってくると思います。Visual Regressionテストはその名の通り、UIのスクリーンショットを比較して差分検出するテストのことです。数年前などはつらみのあったこの手法ですが、最近ではHeadless Chromeなどの恩恵もありずいぶんやりやすくなりました。まだ現在のプロジェクトには導入していませんが、プロジェクト後期にいれても問題はないと考えています。</p>
+<h3 id="振る舞いのテスト"><a href="#振る舞いのテスト" class="headerlink" title="振る舞いのテスト"></a>振る舞いのテスト</h3><p>クリックや入力などのDOMイベントに対する振る舞いのテストです。こちらがコンポーネントの主なユニットテストとなると思います。JestとVue Test Utilsを用いて、例えば以下のように実装します。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">it(<span class="string">'クリックの例'</span>, <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  expect(wrapper.vm.count).toBe(<span class="number">0</span>)</span><br><span class="line">  <span class="keyword">const</span> button = wrapper.find(<span class="string">'button'</span>)</span><br><span class="line">  button.trigger(<span class="string">'click'</span>)</span><br><span class="line">  expect(wrapper.vm.count).toBe(<span class="number">1</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">it(<span class="string">'キーアップの例'</span>, <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> wrapper = mount(QuantityComponent)</span><br><span class="line">  wrapper.trigger(<span class="string">'keydown.up'</span>)</span><br><span class="line">  expect(wrapper.vm.quantity).toBe(<span class="number">1</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">it(<span class="string">'イベント発行の例'</span>, <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  expect(wrapper.vm.count).toBe(<span class="number">0</span>)</span><br><span class="line">  <span class="keyword">const</span> button = wrapper.find(<span class="string">'button'</span>)</span><br><span class="line">  button.trigger(<span class="string">'click'</span>)</span><br><span class="line">  <span class="comment">// イベントの発行</span></span><br><span class="line">  expect(wrapper.emitted().foo).toBeTruthy()</span><br><span class="line">  <span class="comment">// イベントの数</span></span><br><span class="line">  expect(wrapper.emitted().foo.length).toBe(<span class="number">2</span>)</span><br><span class="line">  <span class="comment">// イベントに渡されたデータ</span></span><br><span class="line">  expect(wrapper.emitted().foo[<span class="number">1</span>]).toBe([<span class="number">123</span>])</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">it(<span class="string">'非同期なデータ取得の例'</span>, <span class="function">(<span class="params">done</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> wrapper = shallowMount(Foo)</span><br><span class="line">  wrapper.find(<span class="string">'button'</span>).trigger(<span class="string">'click'</span>)</span><br><span class="line">  wrapper.vm.$nextTick(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    expect(wrapper.vm.value).toBe(<span class="string">'value'</span>)</span><br><span class="line">    done()</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">describe(<span class="string">'Vuexの例'</span>, <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">let</span> actions</span><br><span class="line">  <span class="keyword">let</span> store</span><br><span class="line"></span><br><span class="line">  beforeEach(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    actions = &#123;</span><br><span class="line">      actionClick: jest.fn(),</span><br><span class="line">      actionInput: jest.fn()</span><br><span class="line">    &#125;</span><br><span class="line">    store = <span class="keyword">new</span> Vuex.Store(&#123;</span><br><span class="line">      state: &#123;&#125;,</span><br><span class="line">      actions</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  it(<span class="string">'actionのdispatchができること'</span>, <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> wrapper = shallowMount(Actions, &#123; store, localVue &#125;)</span><br><span class="line">    <span class="keyword">const</span> input = wrapper.find(<span class="string">'input'</span>)</span><br><span class="line">    input.element.value = <span class="string">'input'</span></span><br><span class="line">    input.trigger(<span class="string">'input'</span>)</span><br><span class="line">    expect(actions.actionInput).toHaveBeenCalled()</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>Storybookのアドオンでテストする方法もありますが、自動化を考えJestで実装しています。</p>
+<p>また、Jest、Vue Test Utilsを使えば、ある程度複雑なメソッドやロジックもテスト可能ですが、コンポーネントは可能な限り、データの描画と、イベントのコールバック発火のみを責務とさせ、ビジネスロジックと言える実装は、Vuex側やサービスに切り出すことを意識しています。こうすることで責務が自明となり、テスト自体省略できるケースも多いです。</p>
+<p>そして、ある程度機能がかたまってきた段階では、ブラウザで動作を結合させる、いわゆるE2Eテストも効果的かと思います。Nuxt.jsだと、<a href="https://nuxtjs.org/api/internals-nuxt" target="_blank" rel="noopener">Nuxt Class</a>を使用して<a href="https://nuxtjs.org/guide/development-tools#end-to-end-testing" target="_blank" rel="noopener">結合テストを行う</a>こともできますが、ブラウザを通すのであれば<a href="https://github.com/DevExpress/testcafe" target="_blank" rel="noopener">TestCafe</a>などが必要です。</p>
+<h3 id="dom構造のテスト"><a href="#DOM構造のテスト" class="headerlink" title="DOM構造のテスト"></a>DOM構造のテスト</h3><p>DOM構造に関するテストで、これはいわゆるsnapshotテストと言い換えても問題ないと思います。描画パターンの保護と、修正に対する影響範囲を把握するのが主な目的です。</p>
+<p>こちらはJestの<a href="https://jestjs.io/docs/en/snapshot-testing" target="_blank" rel="noopener">snapshotテスト</a>を使用しています。異常系も含めて、表示のテストはsnapshotの責務としています。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">describe(<span class="string">'components/users'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  it(<span class="string">'ユーザーの一覧を描画できる'</span>, <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> wrapper = shallowMount(C, &#123;</span><br><span class="line">      propsData: story.data(),</span><br><span class="line">    &#125;);</span><br><span class="line">    expect(wrapper.element).toMatchSnapshot();</span><br><span class="line">  &#125;);</span><br><span class="line">  it(<span class="string">'管理者ユーザーを太字で描画できる'</span>, <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> wrapper = shallowMount(C, &#123;</span><br><span class="line">      propsData: storyAdmin.data(),</span><br><span class="line">    &#125;);</span><br><span class="line">    expect(wrapper.element).toMatchSnapshot();</span><br><span class="line">  &#125;);</span><br><span class="line">  it(<span class="string">'エラーメッセージを描画できる'</span>, <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> wrapper = shallowMount(C, &#123;</span><br><span class="line">      propsData: storyError.data(),</span><br><span class="line">    &#125;);</span><br><span class="line">    expect(wrapper.element).toMatchSnapshot();</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="その他"><a href="#その他" class="headerlink" title="その他"></a>その他</h3><p>Storybookと同時にテストケースも確認できれば、小さいコンポーネントをTDD的に開発を行うことができるだろう、と思い、Specificationsというアドオンを使用していましたが、公式のJestアドオンがVue.js対応されてから導入したほうが線が良さそうだったため、使用をやめました。詳しくは<a href="https://gist.github.com/okmttdhr/49a7d458a20012243a99aa3261417932" target="_blank" rel="noopener">こちら</a>…。</p>
+<h2 id="typescriptについて"><a href="#TypeScriptについて" class="headerlink" title="TypeScriptについて"></a>TypeScriptについて</h2><p>テストとはまた別の話ですが、上記はTypeScriptで型付けしていることが前提となります。型があることで、保護テストを薄くしても、初期の仕様変更による影響範囲を拾いやすくなりますし、型を決めれば推論がされるので、何も考えずにコードを書くことができます。メリットはいうまでもないと思うのでここで詳しくは書きませんが、例えばVuexステートの実装は以下のようになります。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ユーザー一覧の例</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">interface</span> RequestState &#123;</span><br><span class="line">  errorMessage: <span class="built_in">string</span>;</span><br><span class="line">  isFetching: <span class="built_in">boolean</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">interface</span> PaginationState&lt;L, Q&gt; &#123;</span><br><span class="line">  list: <span class="built_in">Array</span>&lt;L&gt;;</span><br><span class="line">  query: Q;</span><br><span class="line">  currentPage: <span class="built_in">number</span>;</span><br><span class="line">  totalPage: <span class="built_in">number</span>;</span><br><span class="line">  totalCount: <span class="built_in">number</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">enum</span> UserRole &#123;</span><br><span class="line">  Admin,</span><br><span class="line">  Editor,</span><br><span class="line">  Subscriber,</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">interface</span> User &#123;</span><br><span class="line">  id: <span class="built_in">number</span>;</span><br><span class="line">  name: <span class="built_in">string</span>;</span><br><span class="line">  role: UserRole;</span><br><span class="line">  groups: <span class="built_in">Array</span>&lt;Group&gt;;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 検索用のクエリ</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">interface</span> UserQuery &#123;</span><br><span class="line">  name: <span class="built_in">string</span>;</span><br><span class="line">  role: UserRole;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ユーザー一覧のVuexステート</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">interface</span> UsersState <span class="keyword">extends</span> RequestState, PaginationState&lt;User, UserQuery&gt; &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ルートステート</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">interface</span> RootState &#123;</span><br><span class="line">  users: UsersState;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>型を作っておくことで、例えば<code>User</code>に新たに属性を付与する場合など、影響範囲が見えやすくなります。</p>
+<p>また、推論もよくできていて、<code>ActionHandler</code>のパラメーターには以下の<code>ActionContext</code>のinterfaceが割り当てられているので、</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">interface</span> ActionContext&lt;S, R&gt; &#123;</span><br><span class="line">  dispatch: Dispatch;</span><br><span class="line">  commit: Commit;</span><br><span class="line">  state: S;</span><br><span class="line">  getters: <span class="built_in">any</span>;</span><br><span class="line">  rootState: R;</span><br><span class="line">  rootGetters: <span class="built_in">any</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以下のように<code>ActionTree&lt;UsersState, RootState&gt;</code>を指定するだけで、あとは勘で書いていっても実装できます。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; ActionTree &#125; <span class="keyword">from</span> <span class="string">'vuex'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> actions: ActionTree&lt;UsersState, RootState&gt; = &#123;</span><br><span class="line">  <span class="keyword">async</span> getList(&#123; commit, state &#125;) &#123; <span class="comment">// ←ActionContext</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      commit(<span class="string">'request'</span>);</span><br><span class="line">      <span class="keyword">const</span> result = <span class="keyword">await</span> axios.get(ENDPOINT, &#123; params: state.query &#125;);</span><br><span class="line">      commit(<span class="string">'success'</span>, &#123;</span><br><span class="line">        currentPage: result.data.current_page,</span><br><span class="line">        totalPage: result.data.total_page,</span><br><span class="line">        totalCount: result.data.total_count,</span><br><span class="line">        list: result.data.users </span><br><span class="line">      &#125;);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">      commit(<span class="string">'failure'</span>, &#123; errorMessage: e.response.data.errorMessage &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>学習コストやコンパイル時間などはあるので、選定は必ずしも推奨するわけではありません。ただ、TypeScriptにせよFlowにせよ、<a href="https://blog.yux3.net/entry/2017/07/18/110000" target="_blank" rel="noopener">導入自体は直ぐにできる</a>、コンパイル後のコードには影響がない、(キレイではないけど)動的に書こうと思えば書ける、ということなどから、積極的に避ける理由はあまりないのかなと思います。<a href="https://medium.com/the-vue-point/plans-for-the-next-iteration-of-vue-js-777ffea6fabf" target="_blank" rel="noopener">Vue.js 3.xもコードベースはTypeScriptで開発されています</a>。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>以上、Nuxt.jsの新規プロジェクトでのテスト環境でした。お気づきかもしれませんが、あんまりNuxt.jsとかVueだとかは関係ありません。</p>
+<p>これが正解というわけではなく、目的によって、テストを厚くしたり薄くしたり、別のアプローチをとったりも考えられると思います。ただ、どんな場合でも、どう品質を保ってゆくか方針を決めておくことが大事だと考えます。参考になれば幸いです。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://medium.com/welldone-software/an-overview-of-javascript-testing-in-2018-f68950900bc3" target="_blank" rel="noopener">An Overview of JavaScript Testing in 2018 – Welldone Software – Medium</a></li>
+<li><a href="https://medium.com/powtoon-engineering/a-complete-guide-to-testing-javascript-in-2017-a217b4cd5a2a" target="_blank" rel="noopener">An Overview of JavaScript Testing in 2017 – powtoon-engineering – Medium</a></li>
+<li><a href="https://github.com/airbnb/enzyme/issues/237#issuecomment-193018545" target="_blank" rel="noopener">Use Enzyme for Integration Testing (end-to-end testing) · Issue #237 · airbnb/enzyme</a></li>
+<li><a href="https://blog.hichroma.com/visual-testing-the-pragmatic-way-to-test-uis-18c8da617ecf" target="_blank" rel="noopener">Visual Testing — the pragmatic way to test UIs – Chroma</a></li>
+<li><a href="https://blog.hichroma.com/visual-test-driven-development-aec1c98bed87" target="_blank" rel="noopener">Visual Test Driven Development – Chroma</a></li>
+<li><a href="https://blog.wadackel.me/2018/storybook-chrome-screenshot-with-reg-viz/" target="_blank" rel="noopener">Storybookとreg-suitで気軽にはじめるVisual Regression Testing - wadackel.me</a></li>
+<li><a href="https://engineering.linecorp.com/ja/blog/detail/316" target="_blank" rel="noopener">テスト自動化の理論と技術と戦略：LINE Developer Meetup Tokyo #39 - Testing &amp; Engineering : LINE Engineering Blog</a></li>
+<li><a href="http://notta55.hatenablog.com/entry/2015/05/03/161631" target="_blank" rel="noopener">アジャイルテストの4象限とテスト自動化のピラミッド - 野次馬エンジニア道</a></li>
+<li><a href="https://ubiteku.oinker.me/2015/07/27/why-most-unit-testing-is-waste/" target="_blank" rel="noopener">TDD再考 (2) – 何故、ほとんどのユニットテストは無駄なのか？ – ゆびてく</a></li>
+<li><a href="https://bufferings.hatenablog.com/entry/2017/09/10/220857" target="_blank" rel="noopener">TDDはあんまり使わなくなったけど心の中にある - Mitsuyuki.Shiiba</a></li>
+<li><a href="https://2017.stateofjs.com/2017/testing/results/" target="_blank" rel="noopener">The State of JavaScript 2017: Testing Tools – Results</a></li>
+<li><a href="https://qiita.com/okmttdhr/items/cc58e83c259aa0049538" target="_blank" rel="noopener">フロントエンドのテストに真面目に向き合う - Qiita</a></li>
+<li><a href="https://blog.mmmcorp.co.jp/blog/2017/10/04/storybook/">Karmaで行なっていたUIテストにStorybookを導入した</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2018/10/29/testing-nuxtjs/" data-text="Nuxt.jsの新規プロジェクトでいい感じのテスト環境をつくる@2018" data-counturl="https://blog.mmmcorp.co.jp/blog/2018/10/29/testing-nuxtjs/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2018/10/29/testing-nuxtjs/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2018/10/29/testing-nuxtjs/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2018/10/29/testing-nuxtjs/" class="hatena-bookmark-button" data-hatena-bookmark-title="Nuxt.jsの新規プロジェクトでいい感じのテスト環境をつくる@2018" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li></ul>
+
+
+      <p class="article-footer__author">by okp</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

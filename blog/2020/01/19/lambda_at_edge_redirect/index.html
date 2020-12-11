@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>サイトリニューアル時のURLリダイレクトをLambda@Edgeで実現する | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="弊社では昨年9月にコーポレートサイトをリニューアルしました。 リニューアルの経緯などについてはMMMのサイトリニューアルの経緯に書いてあるのですが、リニューアルに伴いコンテンツの構成が変更になるため、URLも変更する必要がありました。 URLの変更はコンテンツの変更を伴ったサイトリニューアル時にはしばしば発生します。 その際、検索エンジンにしばらく旧URLがインデックスされていたり、旧URLのブッ">
+<meta name="keywords" content="AWS,インフラ,サーバーレス">
+<meta property="og:type" content="article">
+<meta property="og:title" content="サイトリニューアル時のURLリダイレクトをLambda@Edgeで実現する">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/01/19/lambda_at_edge_redirect/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="弊社では昨年9月にコーポレートサイトをリニューアルしました。 リニューアルの経緯などについてはMMMのサイトリニューアルの経緯に書いてあるのですが、リニューアルに伴いコンテンツの構成が変更になるため、URLも変更する必要がありました。 URLの変更はコンテンツの変更を伴ったサイトリニューアル時にはしばしば発生します。 その際、検索エンジンにしばらく旧URLがインデックスされていたり、旧URLのブッ">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.162Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="サイトリニューアル時のURLリダイレクトをLambda@Edgeで実現する">
+<meta name="twitter:description" content="弊社では昨年9月にコーポレートサイトをリニューアルしました。 リニューアルの経緯などについてはMMMのサイトリニューアルの経緯に書いてあるのですが、リニューアルに伴いコンテンツの構成が変更になるため、URLも変更する必要がありました。 URLの変更はコンテンツの変更を伴ったサイトリニューアル時にはしばしば発生します。 その際、検索エンジンにしばらく旧URLがインデックスされていたり、旧URLのブッ">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-lambda-at-edge-redirect" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-01-19T01:00:00.000Z" itemprop="datePublished">2020-01-19</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/01/19/lambda_at_edge_redirect/">サイトリニューアル時のURLリダイレクトをLambda@Edgeで実現する</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/01/19/lambda_at_edge_redirect/" data-text="サイトリニューアル時のURLリダイレクトをLambda@Edgeで実現する" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/01/19/lambda_at_edge_redirect/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/01/19/lambda_at_edge_redirect/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/01/19/lambda_at_edge_redirect/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/01/19/lambda_at_edge_redirect/" class="hatena-bookmark-button" data-hatena-bookmark-title="サイトリニューアル時のURLリダイレクトをLambda@Edgeで実現する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>弊社では昨年9月にコーポレートサイトをリニューアルしました。</p>
+<p>リニューアルの経緯などについては<a href="https://blog.mmmcorp.co.jp/blog/2019/10/18/corporate-site-renewal/">MMMのサイトリニューアルの経緯</a>に書いてあるのですが、リニューアルに伴いコンテンツの構成が変更になるため、URLも変更する必要がありました。</p>
+<p>URLの変更はコンテンツの変更を伴ったサイトリニューアル時にはしばしば発生します。</p>
+<p>その際、検索エンジンにしばらく旧URLがインデックスされていたり、旧URLのブックマークから直接アクセスされたりすることがあるので、新URLへリダイレクトする設定をしておきたいです。</p>
+<p>今回は、サイトコンテンツのリニューアル時に関連するURLにリダイレクト (転送) する方法について書いてみたいと思います。</p>
+<p>まず、大前提として旧URLと新URLのマッピングが必要です。例えば</p>
+<p>旧サイトURL: <a href="https://mmmcorp.co.jp/solutions/aws_lambda/" target="_blank" rel="noopener">https://mmmcorp.co.jp/solutions/aws_lambda/</a><br>新サイトにおける類似コンテンツのURL: <a href="https://mmmcorp.co.jp/service/serverlessarchitecture/" target="_blank" rel="noopener">https://mmmcorp.co.jp/service/serverlessarchitecture/</a></p>
+<p>のようなマッピングをエクセルなどで整理しておきましょう。</p>
+<p>その上での技術的な話となりますが、リダイレクトの一般的な対応方法としてはWebサーバーでリダイレクトをかけることが多いかと思います。Webサーバーが例えばApacheであれば.htaccessファイルなどで設定します。</p>
+<p>しかし、新コーポレートサイトにおいてはAWSのS3およびCloudFrontを利用して静的なコンテンツ配信を実施しています。静的コンテンツ配信はサイトスピード向上・可用性向上・運用コスト削減などメリットが非常に大きいのですが、それだけではWebサーバーでの転送ができないという問題があります。そこで、本ケースにおいて有効なLambda@Edgeを利用した転送を実施することにしました。</p>
+<h1 id="lambdaedgeとは"><a href="#Lambda-Edgeとは" class="headerlink" title="Lambda@Edgeとは"></a>Lambda@Edgeとは</h1><p>Lambda@Edgeの読み方はラムダアットエッジだと思います。(ただ、私はラムダエッジと呼んでいます。)</p>
+<p>Lambda@EdgeとはAWSのCDNサービスであるAmazon CloudFrontの機能で、CloudFrontのエッジロケーションにおいてアクセスに対して任意のプログラム (AWS Lambda) を実行できる仕組みです。サーバーレスな仕組みであり、自前でサーバーを用意する必要はありません。</p>
+<p>CloudFrontは静的なコンテンツ配信のサービスであり、Webサーバーで実現できる動的な制御が難しいのですが、Lambda@Edgeはその問題を解決できます。</p>
+<p>今回のURLのリダイレクト以外にも非常に様々なことが実現できます。</p>
+<ul>
+<li>サイトにBasic認証をかける: これは以前の弊社ブログ<a href="https://blog.mmmcorp.co.jp/blog/2018/10/06/s3s3staticweb_cf_basic_auth/">S3静的ウェブホスティング+CloudFront+Lambda@EdgeでBasic認証をかける</a>でも紹介しています。</li>
+<li>デバイスや国に応じたコンテンツの変更: こちらも以前の弊社ブログ<a href="https://blog.mmmcorp.co.jp/blog/2019/06/08/redirect_to_country_specific_uri/">Lambda@Edgeでアクセス元の国を判別してリダイレクト</a>でも紹介しています。</li>
+<li>A/Bテスト: アクセスをバージョンA/Bにランダムに割り当てるようクッキーをセットし、ページを振り分けるといったことが可能です。</li>
+</ul>
+<h1 id="実際のプログラム例"><a href="#実際のプログラム例" class="headerlink" title="実際のプログラム例"></a>実際のプログラム例</h1><p>それでは実際のプログラム例をご紹介します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">&apos;use strict&apos;;</span><br><span class="line"></span><br><span class="line">const baseURL = &quot;https://mmmcorp.co.jp&quot;;</span><br><span class="line">const urlMap = &#123;</span><br><span class="line">    &quot;https://mmmcorp.co.jp/services/aws/&quot;: &quot;https://mmmcorp.co.jp/service/development/&quot;,</span><br><span class="line">    &quot;https://mmmcorp.co.jp/solutions/aws_lambda/&quot;: &quot;https://mmmcorp.co.jp/service/serverlessarchitecture/&quot;,</span><br><span class="line">    &quot;https://mmmcorp.co.jp/services/aws/migration/&quot;: &quot;https://mmmcorp.co.jp/service/migration/&quot;,</span><br><span class="line">    ... (ここにURLのマッピングを愚直に設定しています。)</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">exports.handler = (event, context, callback) =&gt; &#123;</span><br><span class="line">    const request = event.Records[0].cf.request;</span><br><span class="line">    let uri = request.uri;</span><br><span class="line"></span><br><span class="line">    if (request.uri.slice(-1) !== &apos;/&apos;) &#123;</span><br><span class="line">        uri += &apos;/&apos;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    const key = `$&#123;baseURL&#125;$&#123;uri&#125;`;</span><br><span class="line">    let val = urlMap[key];</span><br><span class="line">    if (val == null) &#123;</span><br><span class="line">        callback(null, request);</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    const response = &#123;</span><br><span class="line">        status: &apos;302&apos;,</span><br><span class="line">        statusDescription: &apos;Found&apos;,</span><br><span class="line">        headers: &#123;</span><br><span class="line">            location: [&#123;</span><br><span class="line">                key: &apos;Location&apos;,</span><br><span class="line">                value: val,</span><br><span class="line">            &#125;],</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    callback(null, response);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>サイトアクセス (CloudFrontへのアクセス) 時に上記プログラムを実行するようにしており、マッピングに合致するURLへのアクセスであればリダイレクト、合致しないURLであればそのままアクセスできるようにしています。</p>
+<h1 id="lambdaedgeでページをリダイレクトする際の注意事項"><a href="#Lambda-Edgeでページをリダイレクトする際の注意事項" class="headerlink" title="Lambda@Edgeでページをリダイレクトする際の注意事項"></a>Lambda@Edgeでページをリダイレクトする際の注意事項</h1><p>Lambda@Edgeはプログラムを書いて動作させることになりますので、当然バグを作り込んでしまう可能性があります。</p>
+<p>Lambda@Edgeはサイトアクセス時に必ず動作させるプログラムになりますので、サイトにアクセスできなくなってしまうというような重大バグを作り込んでしまう可能性も大いにあります。</p>
+<p>バグを作り込まないように以下のような対応が考えられます。実際弊社でも後者2つの対応を実施しています。</p>
+<ul>
+<li><p>テストコードを書く: これはかなり面倒で、今回は自社コーポレートサイトというサービスの事情も踏まえ、テストコードは書いていません。</p>
+</li>
+<li><p>ステージング環境でテストする: 本番と同様の環境を用意し、期待通りのリダイレクトが動いているかテストをしてから本番にリリースします。</p>
+</li>
+<li><p>本番サイトを監視する: 万が一、本番のLambda@Edgeプログラムを間違って書いて、サイトアクセスできない事態になってしまっても、それをすぐに検知できるように監視します。弊社ではDatadogを利用した監視を実施しています。</p>
+</li>
+</ul>
+<h1 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h1><p>今回、サイトリニューアル時にLambda@EdgeでURLのリダイレクトを実現する方法をご紹介いたしました。</p>
+<p>弊社でサイトリニューアルのお手伝いをする場合、サイトの高速化や可用性、メンテナンスコストの削減のため、要件を踏まえた上で可能な限りS3, CloudFrontを利用した静的なサイトホスティングをご提案させていただいております。</p>
+<p>これまで動的な部分が必要なためにS3, CloudFrontでの静的ホスティングが不可能だった案件においても、Lambda@Edgeを利用することで可能になるケースも増えてくると考えています。</p>
+<p>AWS Lambdaを使った最適なアーキテクチャや、メンテナンスコストを考慮したサイトリニューアルについて、以下のページでご案内しています。</p>
+<p>・<a href="https://mmmcorp.co.jp/service/serverlessarchitecture/" target="_blank" rel="noopener">サーバーレスアーキテクチャ（AWS Lambda）</a></p>
+<p>ご相談・ご質問も受けつけています。お気軽にお問い合わせください！</p>
+<p>・<a href="https://mmmcorp.co.jp/inquiry/" target="_blank" rel="noopener">お問い合わせ・ご相談</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/01/19/lambda_at_edge_redirect/" data-text="サイトリニューアル時のURLリダイレクトをLambda@Edgeで実現する" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/01/19/lambda_at_edge_redirect/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/01/19/lambda_at_edge_redirect/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/01/19/lambda_at_edge_redirect/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/01/19/lambda_at_edge_redirect/" class="hatena-bookmark-button" data-hatena-bookmark-title="サイトリニューアル時のURLリダイレクトをLambda@Edgeで実現する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/インフラ/">インフラ</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li></ul>
+
+
+      <p class="article-footer__author">by Masatsugu SHIMOJO</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

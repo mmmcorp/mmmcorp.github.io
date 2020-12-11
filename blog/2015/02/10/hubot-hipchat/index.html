@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>今さらな感じはするけど Hubot を導入してみた | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="社内の HipChat に Hubot を導入してみた弊社では社内のコミュニケーションツールとして、HipChat を使用している。仕様の確認とか業務上で必要なことやどうでもいい雑談など、頻繁に HipChat 上でやり取りがあり、Github とか Bitbucket とか PivotalTracker とかいろいろ連携をしていて、通知が飛んで来たりもするので、非常に重要なツールとなっている。そ">
+<meta name="keywords" content="インフラ,Hubot,HipChat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="今さらな感じはするけど Hubot を導入してみた">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2015/02/10/hubot-hipchat/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="社内の HipChat に Hubot を導入してみた弊社では社内のコミュニケーションツールとして、HipChat を使用している。仕様の確認とか業務上で必要なことやどうでもいい雑談など、頻繁に HipChat 上でやり取りがあり、Github とか Bitbucket とか PivotalTracker とかいろいろ連携をしていて、通知が飛んで来たりもするので、非常に重要なツールとなっている。そ">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/hubot_hipchat/hubot.jpg%20=300x300">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/hubot_hipchat/hubot_hipchat.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/hubot_hipchat/hubot_pug.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/hubot_hipchat/hubot_ramen.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/hubot_hipchat/hubot_youtube.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/hubot_hipchat/hubot_github.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/hubot_hipchat/hubot_unk.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/hubot_hipchat/hubot_janken.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/hubot_hipchat/hubot_hello.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/hubot_hipchat/hubot_stock.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.130Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="今さらな感じはするけど Hubot を導入してみた">
+<meta name="twitter:description" content="社内の HipChat に Hubot を導入してみた弊社では社内のコミュニケーションツールとして、HipChat を使用している。仕様の確認とか業務上で必要なことやどうでもいい雑談など、頻繁に HipChat 上でやり取りがあり、Github とか Bitbucket とか PivotalTracker とかいろいろ連携をしていて、通知が飛んで来たりもするので、非常に重要なツールとなっている。そ">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/hubot_hipchat/hubot.jpg%20=300x300">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-hubot-hipchat" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2015-02-10T21:54:25.000Z" itemprop="datePublished">2015-02-10</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2015/02/10/hubot-hipchat/">今さらな感じはするけど Hubot を導入してみた</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/02/10/hubot-hipchat/" data-text="今さらな感じはするけど Hubot を導入してみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/02/10/hubot-hipchat/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/02/10/hubot-hipchat/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/02/10/hubot-hipchat/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/02/10/hubot-hipchat/" class="hatena-bookmark-button" data-hatena-bookmark-title="今さらな感じはするけど Hubot を導入してみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="社内の-hipchat-に-hubot-を導入してみた"><a href="#社内の-HipChat-に-Hubot-を導入してみた" class="headerlink" title="社内の HipChat に Hubot を導入してみた"></a>社内の <a href="https://www.hipchat.com/" target="_blank" rel="noopener">HipChat</a> に <a href="https://hubot.github.com/" target="_blank" rel="noopener">Hubot</a> を導入してみた</h3><p>弊社では社内のコミュニケーションツールとして、HipChat を使用している。<br>仕様の確認とか業務上で必要なことやどうでもいい雑談など、頻繁に HipChat 上でやり取りがあり、Github とか Bitbucket とか PivotalTracker とかいろいろ連携をしていて、通知が飛んで来たりもするので、非常に重要なツールとなっている。<br>その HipChat からオペレーションが出来るといいなぁ、と思っていて、前から導入してみたかった Hubot を導入してみた。  </p>
+<h3 id="hubot-とは"><a href="#Hubot-とは" class="headerlink" title="Hubot とは"></a>Hubot とは</h3><p><img src="/images/hubot_hipchat/hubot.jpg =300x300" alt="hubot"><br>Hubot とは、Github 社が作っている、チャットのボットのフレームワーク。オープンソースで、Node.js と CoffeeScript が使われている。<br>Hubot を使うことで、チャットツールから様々なオペレーションが出来るようになる。ChatOps というやつである。<br>何となく響きがかっこいいね…。<br>今回は導入方法など、簡単ではあるがまとめてみた。</p>
+<hr>
+<h3 id="導入の方法"><a href="#導入の方法" class="headerlink" title="導入の方法"></a>導入の方法</h3><h5 id="今回の導入環境"><a href="#今回の導入環境" class="headerlink" title="今回の導入環境"></a>今回の導入環境</h5><ul>
+<li>Amazon Linux AMI release 2014.09</li>
+</ul>
+<h5 id="nodejs-をインストール"><a href="#Node-js-をインストール" class="headerlink" title="Node.js をインストール"></a>Node.js をインストール</h5><p>今回は、<a href="https://github.com/creationix/nvm" target="_blank" rel="noopener">nvm(node version manager)</a> を利用して、Node.js をインストールした。<br>インストール方法は、下記のとおり。nvm で Node.js の stable バージョンをインストール。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl https://raw.githubusercontent.com/creationix/nvm/v0.23.3/install.sh | bash</span><br><span class="line">$ nvm install stable</span><br></pre></td></tr></table></figure></p>
+<h5 id="redis-をインストール"><a href="#Redis-をインストール" class="headerlink" title="Redis をインストール"></a>Redis をインストール</h5><p>また、データの永続化に Redis を使用しているので、Redis もインストール。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># EPEL リポジトリを有効に</span></span><br><span class="line">$ sudo yum -y install redis --enablerepo=epel</span><br><span class="line"></span><br><span class="line"><span class="comment"># Redis 起動</span></span><br><span class="line">$ sudo service redis start</span><br><span class="line"></span><br><span class="line"><span class="comment"># Redis 自動起動設定</span></span><br><span class="line">$ sudo chkconfig redis on</span><br></pre></td></tr></table></figure></p>
+<h5 id="coffeescript-をインストール"><a href="#CoffeeScript-をインストール" class="headerlink" title="CoffeeScript をインストール"></a>CoffeeScript をインストール</h5><p>各種スクリプトなど CoffeeScript で書かれているので、CoffeeScript もインストールが必要。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install -g coffee-script</span><br></pre></td></tr></table></figure></p>
+<h5 id="yo-と-generator-hubot-インストール"><a href="#yo-と-generator-hubot-インストール" class="headerlink" title="yo と generator-hubot インストール"></a>yo と generator-hubot インストール</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install -g yo generator-hubot</span><br></pre></td></tr></table></figure>
+<h5 id="yo-hubot-で必要なファイルのひな形やディレクトリ等を作成する"><a href="#yo-hubot-で必要なファイルのひな形やディレクトリ等を作成する" class="headerlink" title="yo hubot で必要なファイルのひな形やディレクトリ等を作成する"></a><code>yo hubot</code> で必要なファイルのひな形やディレクトリ等を作成する</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir myhubot</span><br><span class="line">$ <span class="built_in">cd</span> myhubot</span><br><span class="line">$ yo hubot</span><br></pre></td></tr></table></figure>
+<h5 id="hipchat-連携に必要な環境変数を記述する"><a href="#HipChat-連携に必要な環境変数を記述する" class="headerlink" title="HipChat 連携に必要な環境変数を記述する"></a>HipChat 連携に必要な環境変数を記述する</h5><p>HUBOT_HIPCHAT_JID、HUBOT_HIPCHAT_PASSWORD、HUBOT_HIPCHAT_ROOMS、HUBOT_LOG_LEVEL などの環境変数を <code>bin/hubot</code> に下記のような感じで記述する。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi bin/hubot</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -e</span><br><span class="line"></span><br><span class="line">npm install</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="string">"node_modules/.bin:node_modules/hubot/node_modules/.bin:<span class="variable">$PATH</span>"</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> HUBOT_HIPCHAT_JID=<span class="string">"12345_6789@chat.hipchat.com"</span></span><br><span class="line"><span class="built_in">export</span> HUBOT_HIPCHAT_PASSWORD=<span class="string">"HipChatのパスワード"</span></span><br><span class="line"><span class="built_in">export</span> HUBOT_HIPCHAT_ROOMS=<span class="string">"12345_XXXプロジェクト@conf.hipchat.com"</span></span><br><span class="line"><span class="built_in">export</span> HUBOT_LOG_LEVEL=<span class="string">"debug"</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">exec</span> node_modules/.bin/hubot <span class="string">"<span class="variable">$@</span>"</span></span><br></pre></td></tr></table></figure>
+<p>HUBOT_HIPCHAT_JID は、下記画像のように<a href="https://www.hipchat.com/account/xmpp" target="_blank" rel="noopener">XMPP/Jabber account settings</a>の Jabber ID を、HUBOT_HIPCHAT_ROOMS には、ルーム JID を記述する。<br><img src="/images/hubot_hipchat/hubot_hipchat.png" alt="hubot_hipchat"></p>
+<h5 id="libicu-devel-インストール"><a href="#libicu-devel-インストール" class="headerlink" title="libicu-devel インストール"></a>libicu-devel インストール</h5><p>起動したらエラーが出たので(<code>no icu-config</code> ってエラーだったはず。メモするの忘れてしまった…)、<code>libicu-devel</code> をインストール。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo yum install -y libicu-devel</span><br></pre></td></tr></table></figure></p>
+<h5 id="hipchat-用のアダプタをインストール"><a href="#HipChat-用のアダプタをインストール" class="headerlink" title="HipChat 用のアダプタをインストール"></a>HipChat 用のアダプタをインストール</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save hubot-hipchat</span><br></pre></td></tr></table></figure>
+<h5 id="起動"><a href="#起動" class="headerlink" title="起動"></a>起動</h5><p>下記コマンドで起動する。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bin/hubot -a hipchat</span><br></pre></td></tr></table></figure></p>
+<p>ローカル環境で起動するには、<code>-a hipchat</code> なしで起動すればOK。動作確認は、<code>hubot ping</code> と打つ。すると、<code>PONG</code> と返してくれる。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bin/hubot</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Hubot&gt; hubot ping</span><br><span class="line">PONG</span><br></pre></td></tr></table></figure>
+<hr>
+<h5 id="ファイル-ディレクトリ構造について"><a href="#ファイル、ディレクトリ構造について" class="headerlink" title="ファイル、ディレクトリ構造について"></a>ファイル、ディレクトリ構造について</h5><p><code>yo hubot</code> を実行すると下記のようなファイル、ディレクトリが生成される。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ ls -l</span><br><span class="line">合計 36</span><br><span class="line">-rw-rw-r--  1 mmm mmm   35  2月  2 10:16 Procfile</span><br><span class="line">-rw-rw-r--  1 mmm mmm 5848  2月  2 10:16 README.md</span><br><span class="line">drwxrwxr-x  2 mmm mmm 4096  2月  4 07:38 bin</span><br><span class="line">-rw-rw-r--  1 mmm mmm  232  2月  2 10:16 external-scripts.json</span><br><span class="line">-rw-rw-r--  1 mmm mmm   25  2月  3 08:24 hubot-scripts.json</span><br><span class="line">drwxrwxr-x 18 mmm mmm 4096  2月  2 10:31 node_modules</span><br><span class="line">-rw-rw-r--  1 mmm mmm  641  2月  2 10:31 package.json</span><br><span class="line">drwxrwxr-x  2 mmm mmm 4096  2月  3 08:34 scripts</span><br></pre></td></tr></table></figure></p>
+<h6 id="scripts-ディレクトリ"><a href="#scripts-ディレクトリ" class="headerlink" title="scripts ディレクトリ"></a>scripts ディレクトリ</h6><p><code>scripts</code>ディレクトリ配下に、ファイルを置くとそれが実行できる。<code>example.coffee</code> があるので、それを参考に独自にスクリプトを書くとよい。  </p>
+<h6 id="hubot-scriptsjson"><a href="#hubot-scripts-json" class="headerlink" title="hubot-scripts.json"></a>hubot-scripts.json</h6><p><code>hubot-scripts.json</code> には、<code>node_modules/hubot-scripts/src/scripts/</code>配下のファイル名を記述すると、使えるようになる。詳細については、こちらのリポジトリを参考。<br><a href="https://github.com/github/hubot-scripts" target="_blank" rel="noopener">https://github.com/github/hubot-scripts</a>  </p>
+<p>例えば下記のように、<code>github-status.coffee</code>を書くと、github の status が確認できるコマンドが使えるようになる。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi hubot-scripts.json</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">"github-status.coffee"</span>]</span><br></pre></td></tr></table></figure>
+<h6 id="external-scriptsjson"><a href="#external-scripts-json" class="headerlink" title="external-scripts.json"></a>external-scripts.json</h6><p><code>external-scripts.json</code>も基本的には<code>hubot-scripts.json</code>と同じ。ここには、<code>package.json</code>に記述した、npm で公開されている外部のパッケージを記述する。そうすることで、npm パッケージのスクリプトも利用できるようになる。</p>
+<hr>
+<h3 id="デフォルトのスクリプトで使えそうなもの"><a href="#デフォルトのスクリプトで使えそうなもの" class="headerlink" title="デフォルトのスクリプトで使えそうなもの"></a>デフォルトのスクリプトで使えそうなもの</h3><h5 id="パグの画像を表示する"><a href="#パグの画像を表示する" class="headerlink" title="パグの画像を表示する"></a>パグの画像を表示する</h5><p>HipChat で、hubot へ下記のようにメンションを送ると、パグの画像をランダムで表示してくれる。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@bot pug me</span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/hubot_hipchat/hubot_pug.png" alt="hubot_pug"><br>仕事に疲れたときに癒される…かもしれない。</p>
+<h5 id="画像検索してランダムで表示する"><a href="#画像検索してランダムで表示する" class="headerlink" title="画像検索してランダムで表示する"></a>画像検索してランダムで表示する</h5><p>画像検索をして、結果をランダムで返してくれる。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@bot img &lt;検索するキーワード&gt;</span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/hubot_hipchat/hubot_ramen.png" alt="hubot_ramen"><br>日本語での検索もOK。(ラーメン食べたくなってきた…)</p>
+<h5 id="youtube検索"><a href="#YouTube検索" class="headerlink" title="YouTube検索"></a>YouTube検索</h5><p>YouTub から検索した結果を返してくれる。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@bot youtube &lt;曲名など検索ワード&gt;</span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/hubot_hipchat/hubot_youtube.png" alt="hubot_youtube">  </p>
+<ul>
+<li>上記の曲は、去年の夏の開発合宿の思い出の曲。</li>
+</ul>
+<h5 id="github-status"><a href="#Github-Status" class="headerlink" title="Github Status"></a>Github Status</h5><p>前述の <code>hubot-scripts.json</code> に、<code>[&quot;github-status.coffee&quot;]</code> を記述することで、Github の Status を確認できる。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@bot github status</span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/hubot_hipchat/hubot_github.png" alt="hubot_github"><br>「あれ？もしかして、Github 落ちてる？」っていうときに、サクッと確認できて便利。</p>
+<hr>
+<h3 id="カスタムスクリプトを書いてみた"><a href="#カスタムスクリプトを書いてみた" class="headerlink" title="カスタムスクリプトを書いてみた"></a>カスタムスクリプトを書いてみた</h3><p>せっかくなので、自分でスクリプトを書いてみようかと思う。  </p>
+<h5 id="ドキュメント"><a href="#ドキュメント" class="headerlink" title="ドキュメント"></a>ドキュメント</h5><p>こちらのドキュメントを参考にした。<br><a href="https://github.com/github/hubot/blob/master/docs/scripting.md" target="_blank" rel="noopener">https://github.com/github/hubot/blob/master/docs/scripting.md</a>  </p>
+<p>スクリプトの構造としては下記のとおり。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">module.exports = (robot) -&gt;</span><br><span class="line">  robot.hear /badger/i, (msg) -&gt;</span><br><span class="line">    # your code here</span><br><span class="line"></span><br><span class="line">  robot.respond /open the pod bay doors/i, (msg) -&gt;</span><br><span class="line">    # your code here</span><br></pre></td></tr></table></figure></p>
+<h5 id="hear-と-respond"><a href="#hear-と-respond" class="headerlink" title="hear と respond"></a><code>hear</code> と <code>respond</code></h5><p>Hubot のメソッドとして、<code>hear</code> と <code>respond</code> がある。<br>どちらも、正規表現で一致した場合にいろいろな動作をさせることができる。  </p>
+<h6 id="hear"><a href="#hear" class="headerlink" title="hear"></a>hear</h6><p><code>hear</code> はそのルーム内の発言を見て、その単語があれば反応するようにするもの。<br>上記の例で行くと、下記のようなメッセージに反応する。  </p>
+<ul>
+<li>Stop badgering the witness</li>
+<li>badger me</li>
+<li>what exactly is a badger anyways</li>
+</ul>
+<h6 id="respond"><a href="#respond" class="headerlink" title="respond"></a>respond</h6><p><code>respond</code> は hubot に対してメッセージを送信した場合に、反応するようにするもの。<br>上記の例で行くと、下記のようなメッセージに反応する。<br>(<code>HAL</code> が Hubot の名前。<code>/</code> が alias となっている場合)</p>
+<ul>
+<li>hal open the pod bay doors</li>
+<li>HAL: open the pod bay doors</li>
+<li>@HAL open the pod bay doors</li>
+<li>/open the pod bay doors</li>
+</ul>
+<h5 id="send-と-reply"><a href="#send-と-reply" class="headerlink" title="send と reply"></a><code>send</code> と <code>reply</code></h5><p>レスポンスとしては、何種類かあるが、その中でも <code>send</code> と <code>reply</code> の使用頻度が高そう。  </p>
+<h6 id="send"><a href="#send" class="headerlink" title="send"></a>send</h6><p><code>send</code> はルームで通常の発言をするもの。</p>
+<h6 id="reply"><a href="#reply" class="headerlink" title="reply"></a>reply</h6><p><code>reply</code> は、正規表現で一致する発言をした人に対して、メンションを付けて発言をするもの。</p>
+<h5 id="サンプルスクリプトを書いてみる"><a href="#サンプルスクリプトを書いてみる" class="headerlink" title="サンプルスクリプトを書いてみる"></a>サンプルスクリプトを書いてみる</h5><p>試しにまったく需要がないと思われるスクリプトを書いてみた。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">module.exports = (robot) -&gt;</span><br><span class="line">  robot.hear /unk/i, (msg) -&gt;</span><br><span class="line">    msg.reply <span class="string">"(poo)"</span></span><br></pre></td></tr></table></figure></p>
+<p>HipChat のルーム内で、<code>unk</code> という文字列があったら、発言した人に対して HipChat の絵文字の <code>(poo)</code> で返してくれるスクリプト。  </p>
+<p>試してみた。<br><img src="/images/hubot_hipchat/hubot_unk.png" alt="hubot_unk"><br>ちゃんと動いた！ ╭( ･ㅂ･)و ̑̑ ｸﾞｯ !  </p>
+<h6 id="random"><a href="#random" class="headerlink" title="random"></a>random</h6><p>ランダムでレスポンスを返したいときには、<code>msg.random</code> というメソッドもある。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ans = [<span class="string">'グー'</span>, <span class="string">'チョキ'</span>, <span class="string">'パー'</span>]</span><br><span class="line"></span><br><span class="line">module.exports = (robot) -&gt;</span><br><span class="line">  robot.respond /janken/i, (msg) -&gt;</span><br><span class="line">    msg.reply msg.random ans</span><br></pre></td></tr></table></figure></p>
+<p>janken という文字列を見て、グー、チョキ、パーをランダムで返してくれるスクリプト。じゃんけんの勝ち負けの判別までは入れてない。<br><img src="/images/hubot_hipchat/hubot_janken.png" alt="hubot_janken"><br>ま、負けた。やるな、Hubot。レスポンスに若干時間がかかるので、後出しっぽく見えるけど(笑)</p>
+<h6 id="環境変数"><a href="#環境変数" class="headerlink" title="環境変数"></a>環境変数</h6><p>環境変数を使いたい場合は、<code>process.env</code> を使う。prefix として、<code>HUBOT_</code> を使うのが慣習みたいだ。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hello = process.env.HUBOT_HELLO</span><br><span class="line"></span><br><span class="line">module.exports = (robot) -&gt;</span><br><span class="line">  robot.hear /hello/i, (msg) -&gt;</span><br><span class="line">    msg.send &quot;#&#123;hello&#125;, #&#123;msg.message.user.name&#125;&quot;</span><br></pre></td></tr></table></figure></p>
+<p><code>hello</code> という文字列をみて、環境変数 <code>HUBOT_HELLO</code> で設定した値を返してくれる。今回は、環境変数 <code>HUBOT_HELLO</code> に <code>Hey YO</code> を設定している。<br><img src="/images/hubot_hipchat/hubot_hello.png" alt="hubot_hello">  </p>
+<h5 id="もうちょっとだけ実用的なスクリプトを書いてみた"><a href="#もうちょっとだけ実用的なスクリプトを書いてみた" class="headerlink" title="もうちょっとだけ実用的なスクリプトを書いてみた"></a>もうちょっとだけ実用的なスクリプトを書いてみた</h5><p>もっとちょっとマシなスクリプトを書いてみないと、Hubot を導入するメリットとか分かりづらいので、<code>stock &lt;証券コード&gt;</code> で Hubot にメッセージを送ると、Yahoo!ファイナンスから株価を取得するスクリプトを書いてみた。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">request = <span class="built_in">require</span> <span class="string">'request'</span></span><br><span class="line">cheerio = <span class="built_in">require</span> <span class="string">'cheerio'</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = (robot) -&gt;</span><br><span class="line">  robot.respond /stock (.*)/i, (msg) -&gt;</span><br><span class="line">    code = msg.match[<span class="number">1</span>]</span><br><span class="line">    options =</span><br><span class="line">      url: <span class="string">'http://stocks.finance.yahoo.co.jp/stocks/detail/?code='</span> + code</span><br><span class="line">      timeout: <span class="number">2000</span></span><br><span class="line"></span><br><span class="line">    request options, (err, res, body) -&gt;</span><br><span class="line">      $ = cheerio.load body</span><br><span class="line">      company_name = $(<span class="string">'th.symbol h1'</span>).text()</span><br><span class="line">      current_price = $(<span class="string">'td.stoksPrice'</span>).eq(<span class="number">1</span>).text()</span><br><span class="line">      msg.send <span class="string">"#&#123;company_name&#125;: #&#123;current_price&#125;円"</span></span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/hubot_hipchat/hubot_stock.png" alt="hubot_stock"><br>ちゃんと取得できた。サクッと株価が確認できていい感じ。<br><a href="https://github.com/request/request" target="_blank" rel="noopener">request</a> と <a href="https://github.com/cheeriojs/cheerio" target="_blank" rel="noopener">cheerio</a> を使ってみた。(実際に動かす場合は、<code>request</code> と <code>cheerio</code> のインストールが必要なので注意)<br>今回はサンプルスクリプトなので、エラーハンドルとか実装はしていない。</p>
+<hr>
+<h3 id="今後の取り組みとして"><a href="#今後の取り組みとして" class="headerlink" title="今後の取り組みとして"></a>今後の取り組みとして</h3><p>Hubot を触ってみて、デフォルトでもいろいろなことが出来るが、独自でスクリプトも書いて使えるので、うまく利用できればかなり業務の効率もアップしそうな印象を受けた。<br>いちいちブラウザで確認しないといけない定形作業とか、HipChat 上でサッとできれば良さそう。<br>Hubot の使い方について、もっと調べて業務効率化を進めたい。<br>また、他の企業がどのような使い方をしているのか参考にさせていただいて、良さそうな使い方があればどんどん使っていきたいと思っている。  </p>
+<p>「うちはこんな風に使っている」「このスクリプトが便利」等の情報があれば、教えていただけると助かります。<br>情報お待ちしておりますm(_ _)m</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/02/10/hubot-hipchat/" data-text="今さらな感じはするけど Hubot を導入してみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/02/10/hubot-hipchat/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/02/10/hubot-hipchat/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/02/10/hubot-hipchat/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/02/10/hubot-hipchat/" class="hatena-bookmark-button" data-hatena-bookmark-title="今さらな感じはするけど Hubot を導入してみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HipChat/">HipChat</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hubot/">Hubot</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/インフラ/">インフラ</a></li></ul>
+
+
+      <p class="article-footer__author">by 佐々木 悠人</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

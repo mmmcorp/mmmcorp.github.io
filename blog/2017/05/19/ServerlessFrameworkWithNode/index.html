@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Serverless Framework+Node.jsで普通に設計する | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="最近はAWS Lambdaの関数をNode.jsで書いているので、その設計を紹介しようと思う。 目次  Serverless Frameworkで気をつけたこといくつか ローカルCLIを使用する Credentialsを容易に追加 yarnコマンドで統一する stageを切り分ける テスト   JavaScript側の設計 webpack+Babel AVA Flow Lint State管理">
+<meta name="keywords" content="フロントエンド,AWS,サーバーレス">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Serverless Framework+Node.jsで普通に設計する">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2017/05/19/ServerlessFrameworkWithNode/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="最近はAWS Lambdaの関数をNode.jsで書いているので、その設計を紹介しようと思う。 目次  Serverless Frameworkで気をつけたこといくつか ローカルCLIを使用する Credentialsを容易に追加 yarnコマンドで統一する stageを切り分ける テスト   JavaScript側の設計 webpack+Babel AVA Flow Lint State管理">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.146Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Serverless Framework+Node.jsで普通に設計する">
+<meta name="twitter:description" content="最近はAWS Lambdaの関数をNode.jsで書いているので、その設計を紹介しようと思う。 目次  Serverless Frameworkで気をつけたこといくつか ローカルCLIを使用する Credentialsを容易に追加 yarnコマンドで統一する stageを切り分ける テスト   JavaScript側の設計 webpack+Babel AVA Flow Lint State管理">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-ServerlessFrameworkWithNode" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2017-05-19T13:11:58.000Z" itemprop="datePublished">2017-05-19</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2017/05/19/ServerlessFrameworkWithNode/">Serverless Framework+Node.jsで普通に設計する</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/05/19/ServerlessFrameworkWithNode/" data-text="Serverless Framework+Node.jsで普通に設計する" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/05/19/ServerlessFrameworkWithNode/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/05/19/ServerlessFrameworkWithNode/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/05/19/ServerlessFrameworkWithNode/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/05/19/ServerlessFrameworkWithNode/" class="hatena-bookmark-button" data-hatena-bookmark-title="Serverless Framework+Node.jsで普通に設計する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近はAWS Lambdaの関数をNode.jsで書いているので、その設計を紹介しようと思う。</p>
+<h2 id="目次"><a href="#目次" class="headerlink" title="目次"></a>目次</h2><!-- toc -->
+<ul>
+<li><a href="#serverless-frameworkで気をつけたこといくつか">Serverless Frameworkで気をつけたこといくつか</a><ul>
+<li><a href="#ローカルcliを使用する">ローカルCLIを使用する</a></li>
+<li><a href="#credentialsを容易に追加">Credentialsを容易に追加</a></li>
+<li><a href="#yarnコマンドで統一する">yarnコマンドで統一する</a></li>
+<li><a href="#stageを切り分ける">stageを切り分ける</a></li>
+<li><a href="#テスト">テスト</a></li>
+</ul>
+</li>
+<li><a href="#javascript側の設計">JavaScript側の設計</a><ul>
+<li><a href="#webpackbabel">webpack+Babel</a></li>
+<li><a href="#ava">AVA</a></li>
+<li><a href="#flow">Flow</a></li>
+<li><a href="#lint">Lint</a></li>
+<li><a href="#state管理">State管理</a></li>
+</ul>
+</li>
+<li><a href="#まとめ">まとめ</a></li>
+<li><a href="#参考">参考</a></li>
+</ul>
+<!-- tocstop -->
+<h2 id="serverless-frameworkで気をつけたこといくつか"><a href="#Serverless-Frameworkで気をつけたこといくつか" class="headerlink" title="Serverless Frameworkで気をつけたこといくつか"></a>Serverless Frameworkで気をつけたこといくつか</h2><p>まずServerless Frameworkでアプリケーションを作成してゆく。基本的には<a href="https://serverless.com/framework/docs/providers/aws/guide/quick-start/" target="_blank" rel="noopener">ドキュメント</a>や<a href="## 参考">リンク</a>をみれば迷うことはないと思うので省略するが、少し気をつけた点を書いてみる。</p>
+<h3 id="ローカルcliを使用する"><a href="#ローカルCLIを使用する" class="headerlink" title="ローカルCLIを使用する"></a>ローカルCLIを使用する</h3><p>Serverless Frameworkでは、<a href="https://serverless.com/framework/docs/providers/aws/guide/services/#pinning-a-version" target="_blank" rel="noopener">CLIのバージョンをプロジェクトごとに固定することができる</a>が、複数のプロジェクトでServerless Frameworkをつかっていると、各自の環境でCLIのセットアップをするのが若干面倒になる。</p>
+<p>そこで、ローカルの<code>node_modules</code>からCLIを走らせることにした。これで、<code>yarn install</code>さえすれば各人の環境でCLIが使えるようになる。例えば、デプロイのコマンドは以下のような感じ。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(npm bin)/serverless deploy</span><br></pre></td></tr></table></figure>
+<h3 id="credentialsを容易に追加"><a href="#Credentialsを容易に追加" class="headerlink" title="Credentialsを容易に追加"></a>Credentialsを容易に追加</h3><p><a href="https://serverless.com/framework/docs/providers/aws/guide/credentials/#setup-with-serverless-config-credentials-command" target="_blank" rel="noopener">Credentialsコマンド</a>を使っているだけだが、デプロイに必要なユーザーcredentialsをコマンドを流すだけで設定できるようにした。これにより複数人開発のときでも簡単に環境構築ができる。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(npm bin)/serverless config credentials --provider aws --key KEY --secret SECRET --profile PROFILE</span><br></pre></td></tr></table></figure>
+<h3 id="yarnコマンドで統一する"><a href="#yarnコマンドで統一する" class="headerlink" title="yarnコマンドで統一する"></a>yarnコマンドで統一する</h3><p>Serverless FrameworkのCLIを、yarnコマンドで流せるようにした。Serverless Frameworkに限った話ではないが、これでインターフェイスを統一でき、スクリプトの予測が容易となる。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"scripts"</span>: &#123;</span><br><span class="line">    <span class="attr">"deploy"</span>: <span class="string">"$(npm bin)/serverless deploy"</span>,</span><br><span class="line">    <span class="attr">"deploy:list"</span>: <span class="string">"$(npm bin)/serverless deploy list"</span>,</span><br><span class="line">    <span class="attr">"invoke"</span>: <span class="string">"$(npm bin)/serverless webpack invoke --function"</span>,</span><br><span class="line">    <span class="attr">"serve"</span>: <span class="string">"$(npm bin)/serverless webpack serve"</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="stageを切り分ける"><a href="#stageを切り分ける" class="headerlink" title="stageを切り分ける"></a>stageを切り分ける</h3><p>Lambdaではstageというものが指定できて、例えば、ステージング環境やプロダクション環境などを作成して、各々の環境で関数をテストすることができる。stageの切り分けはServerless Frameworkでできるので、例えばデプロイのコマンドなどは以下のように設定した。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"scripts"</span>: &#123;</span><br><span class="line">    <span class="attr">"deploy"</span>: <span class="string">"$(npm bin)/serverless deploy --stage"</span>,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>実際に流す時は以下のように実行する。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ yarn deploy staging</span><br><span class="line">$ yarn deploy production</span><br></pre></td></tr></table></figure>
+<h3 id="テスト"><a href="#テスト" class="headerlink" title="テスト"></a>テスト</h3><p>後述するが、関数のテストは基本的にAVAを使って行うことができるので、Serverless Frameworkでテストするのは、関数を結合したときの挙動がメインとなる。</p>
+<p>クラウド環境では<a href="https://serverless.com/framework/docs/providers/aws/cli-reference/invoke/" target="_blank" rel="noopener">Invokeコマンド</a>、ローカル環境では<a href="https://serverless.com/framework/docs/providers/aws/cli-reference/invoke-local/" target="_blank" rel="noopener">Invoke Localコマンド</a>を使用することで、動作確認が可能となる。これをなにかしらのアサーションライブラリを使用して自動化すれば、インテグレーションテストをCI上でも流すことができる。</p>
+<h2 id="javascript側の設計"><a href="#JavaScript側の設計" class="headerlink" title="JavaScript側の設計"></a>JavaScript側の設計</h2><p>ここまではServerless Frameworkの設定だったが、ここから、<code>普段の開発を活かしつつ、Serverless Framework上でどうNode.jsを書いてゆくか</code>というところを書こうと思う。基本的には他プラットフォームで使用した設計をそのまま流用できると考えている。</p>
+<h3 id="webpackbabel"><a href="#webpack-Babel" class="headerlink" title="webpack+Babel"></a>webpack+Babel</h3><p>まずは、webpack+BabelでECMAScriptをビルドできるようにした。これは<a href="https://github.com/elastic-coders/serverless-webpack" target="_blank" rel="noopener">serverless-webpack</a>を使用するが、基本的に大差はない。詳細は、<a href="## 参考">リンク</a>を参考にして欲しい。</p>
+<h3 id="ava"><a href="#AVA" class="headerlink" title="AVA"></a>AVA</h3><p>AVAでユニットテストを実行できるようにした。とはいっても、いつも通りユニットテストを書いてゆくだけである。</p>
+<p>ひとつ気をつけた点は、責務をなるべく分離して、クラウド側に依存しないコードを書くことくらいだろうか(webpack+Babelを導入したことによって、小さなJSモジュールにわけて関数を書くことができる)。それに関しては、<a href="https://serverless.com/framework/docs/providers/aws/guide/testing/" target="_blank" rel="noopener">ドキュメント</a>にも例が出ているので、参考にするといいと思う。</p>
+<h3 id="flow"><a href="#Flow" class="headerlink" title="Flow"></a>Flow</h3><p>Flowによって静的型付けを導入した。</p>
+<h3 id="lint"><a href="#Lint" class="headerlink" title="Lint"></a>Lint</h3><p>eslintにより、Lintを行うようにした。Lintはあとから導入すると、ルールを直していく作業が必要になってしまうので、もし小さいプロジェクトであっても最初から導入したほうがいいかもしれない。</p>
+<h3 id="state管理"><a href="#State管理" class="headerlink" title="State管理"></a>State管理</h3><p>State管理に関しては、なんらかのObserver Pattern(Reduxなど)で書けばいいと思うが、Stateを持つということが現時点ではないので、必要になったらなにかを導入しようと考えている。Lambda関数の性質上あまり必要になる場面が思い浮かばないが、State管理というよりも、RxJSなどでイベントストリームを扱うことがでてくるかもなと思っている。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>以上、Serverless Framework+Node.jsを使用したLambdaの設計を書いてみた。特に普段と変わらずに設計できたので、あとは<code>クリーンコード</code>を書いてゆくだけですね。╭( ･ㅂ･)و</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="http://mgi.hatenablog.com/entry/2016/11/06/113304" target="_blank" rel="noopener">serverless + webpack + babel で AWS Lambda をナウく書く - scramble cadenza</a></li>
+<li><a href="http://qiita.com/hiroshik1985/items/6d979ff1afb56953b62e" target="_blank" rel="noopener">とことんサーバーレス①：Serverless Framework入門編 - Qiita</a></li>
+<li><a href="http://qiita.com/mikakane/items/bf992dc6cb6f50a70071" target="_blank" rel="noopener">Serverless Webpack の使い方まとめ - Qiita</a></li>
+<li><a href="http://qiita.com/okmttdhr/items/cc08a649ac4dc5e86e9c" target="_blank" rel="noopener">lambdaのソース管理をflcutからserverlessに切り替えて嬉しかったこと - Qiita</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/05/19/ServerlessFrameworkWithNode/" data-text="Serverless Framework+Node.jsで普通に設計する" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/05/19/ServerlessFrameworkWithNode/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/05/19/ServerlessFrameworkWithNode/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/05/19/ServerlessFrameworkWithNode/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/05/19/ServerlessFrameworkWithNode/" class="hatena-bookmark-button" data-hatena-bookmark-title="Serverless Framework+Node.jsで普通に設計する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li></ul>
+
+
+      <p class="article-footer__author">by okp</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

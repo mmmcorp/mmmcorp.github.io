@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Nightwatch.jsをE2Eテストフレームワークとして実プロジェクトに適用する時のtipsまとめ | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="小飼です。現在開発準備中のプロジェクトのE2EテストフレームワークとしてNightwatch.jsを採用しました。そこで本稿では、実際のプロジェクトにNightwatch.jsを導入してみるにあたって必要になった知識をまとめます。 Nightwatchとは? Nightwatch.js is an easy to use Node.js based End-to-End (E2E) testin">
+<meta name="keywords" content="フロントエンド,Node.js,ツール,JavaScript,E2Eテスト">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nightwatch.jsをE2Eテストフレームワークとして実プロジェクトに適用する時のtipsまとめ">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2015/09/24/use-nightwatch/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="小飼です。現在開発準備中のプロジェクトのE2EテストフレームワークとしてNightwatch.jsを採用しました。そこで本稿では、実際のプロジェクトにNightwatch.jsを導入してみるにあたって必要になった知識をまとめます。 Nightwatchとは? Nightwatch.js is an easy to use Node.js based End-to-End (E2E) testin">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/use-nightwatch/login_test_nightwatcher.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.134Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Nightwatch.jsをE2Eテストフレームワークとして実プロジェクトに適用する時のtipsまとめ">
+<meta name="twitter:description" content="小飼です。現在開発準備中のプロジェクトのE2EテストフレームワークとしてNightwatch.jsを採用しました。そこで本稿では、実際のプロジェクトにNightwatch.jsを導入してみるにあたって必要になった知識をまとめます。 Nightwatchとは? Nightwatch.js is an easy to use Node.js based End-to-End (E2E) testin">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/use-nightwatch/login_test_nightwatcher.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-use-nightwatch" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2015-09-24T12:00:00.000Z" itemprop="datePublished">2015-09-24</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2015/09/24/use-nightwatch/">Nightwatch.jsをE2Eテストフレームワークとして実プロジェクトに適用する時のtipsまとめ</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/09/24/use-nightwatch/" data-text="Nightwatch.jsをE2Eテストフレームワークとして実プロジェクトに適用する時のtipsまとめ" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/09/24/use-nightwatch/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/09/24/use-nightwatch/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/09/24/use-nightwatch/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/09/24/use-nightwatch/" class="hatena-bookmark-button" data-hatena-bookmark-title="Nightwatch.jsをE2Eテストフレームワークとして実プロジェクトに適用する時のtipsまとめ" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/use-nightwatch/login_test_nightwatcher.png" alt=""></p>
+<p>小飼です。<br>現在開発準備中のプロジェクトのE2Eテストフレームワークとして<a href="http://nightwatchjs.org/" target="_blank" rel="noopener">Nightwatch.js</a>を採用しました。<br>そこで本稿では、実際のプロジェクトに<code>Nightwatch.js</code>を導入してみるにあたって必要になった知識をまとめます。</p>
+<h2 id="nightwatchとは"><a href="#Nightwatchとは" class="headerlink" title="Nightwatchとは?"></a>Nightwatchとは?</h2><blockquote>
+<p>Nightwatch.js is an easy to use Node.js based End-to-End (E2E) testing solution for browser based apps and websites. It uses the powerful Selenium WebDriver API to perform commands and assertions on DOM elements.</p>
+</blockquote>
+<p><code>Nightwach.js</code>は<a href="https://nodejs.org/en/" target="_blank" rel="noopener">Node.js</a>ベースのE2E(End-to-End)テストフレームワークです。<br>テストブラウザを操作する仕組みである<code>Selenium WebDriver</code>のAPIを仲介して各種ブラウザ操作を行い、ブラウザの挙動が期待したものと合致しているかをテストするために用います。</p>
+<h2 id="なぜnightwatchなのか"><a href="#なぜNightwatchなのか" class="headerlink" title="なぜNightwatchなのか?"></a>なぜNightwatchなのか?</h2><p>E2Eテストフレームワークを選定するにあたって、以下の要求を満たすものを考慮しました。</p>
+<ul>
+<li>今後参画するプロジェクトでも、同じように使っていけること</li>
+<li>多機能であることよりも、シンプルな機能と安定したAPIの提供を重視していること</li>
+<li>必要に応じて機能の拡張ができること</li>
+<li>フロントエンドエンジニア以外にも学習コストが高くならないこと</li>
+</ul>
+<p>個人的な考えとして、テストフレームワークやテストランナー自体のAPIが複雑化したり、後方互換性のないアップデートをしたためにテスト自体のコストが上がってしまうのでは本末転倒だと思っています。</p>
+<p>そこで選定の基準として、なるべく安定したAPIを持ち、今後も安心して使っていけそうなフレームワークであることを重視しました。</p>
+<p>さて、本稿執筆時点でE2Eテストフレームワークと呼べる主なものには以下のものがあります。</p>
+<ul>
+<li><a href="https://theintern.github.io/" target="_blank" rel="noopener">Intern</a></li>
+<li><a href="https://angular.github.io/protractor/#/" target="_blank" rel="noopener">Protractor</a></li>
+<li><a href="http://webdriver.io/" target="_blank" rel="noopener">WebdriverIO</a></li>
+<li><a href="http://nightwatchjs.org/" target="_blank" rel="noopener">Nightwatch.js</a></li>
+</ul>
+<p>参考: 『<a href="https://www.google.co.jp/search?q=e2e+test+framework&amp;cad=cbv&amp;sei=BfT8VbufLcLT0ASfgKuABg" target="_blank" rel="noopener">E2E test framework</a>』での検索結果</p>
+<p>先に挙げた選考基準を鑑みて、E2Eテストのみを責務としてコストを抑えた導入が出来、今後のプロジェクトで採用するフロントエンドフレームワークの如何に関わらず変わらず活用していけそうな<code>Nightwatch.js</code>を選びました。</p>
+<h2 id="インストール"><a href="#インストール" class="headerlink" title="インストール"></a>インストール</h2><p>公式ドキュメントの<a href="http://nightwatchjs.org/guide" target="_blank" rel="noopener">Developer Guide</a>に従ってインストールします。<br>必要なステップは</p>
+<ol>
+<li><code>nightwatch</code>本体のインストール</li>
+<li><code>Selenium Server</code> のインストール</li>
+</ol>
+<p>なお、公式ドキュメントでは<code>Selenium Server</code>を<a href="http://selenium-release.storage.googleapis.com/index.html" target="_blank" rel="noopener">Selenium Download Page</a>よりダウンロードするよう促されています。<br>今回は<code>Selenium Server</code>のダウンロードを<code>npm</code>経由で行える、<a href="https://www.npmjs.com/package/webdriver-manager" target="_blank" rel="noopener">webdriver-manager</a>を使用しました。</p>
+<blockquote>
+<p>Protactor’s webdriver-manager as a standalone Node.js module.</p>
+</blockquote>
+<p>このモジュールは、本来<code>Protractor</code>が<code>Selenium Server</code>をインストールするために用いていたものを、<code>Protractor</code>以外のフレームワークでも活用出来るようにforkしたものです。</p>
+<p>上述のコマンドは以下のようになります。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># `nightwatch`本体のインストール</span></span><br><span class="line">npm install --save-dev nightwatch</span><br><span class="line"></span><br><span class="line"><span class="comment"># `Selenium Server` のインストール</span></span><br><span class="line">npm install --save-dev webdriver-manager</span><br><span class="line">./node_modules/.bin/webdriver-manager update</span><br><span class="line"></span><br><span class="line"><span class="comment"># インストールしたいブラウザをオプションとして指定出来る</span></span><br><span class="line">./node_modules/.bin/webdriver-manager update --chrome</span><br></pre></td></tr></table></figure>
+<h2 id="設定ファイルの作成"><a href="#設定ファイルの作成" class="headerlink" title="設定ファイルの作成"></a>設定ファイルの作成</h2><p><code>Nightwatch.js</code>はプロジェクトのルートに置いてある<code>nightwatch.json</code>を参照して起動されます。<br>公式ドキュメントにある<a href="http://nightwatchjs.org/guide#basic-settings" target="_blank" rel="noopener">詳細な解説</a>があるので、参考にしました。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="comment">// テスト環境全体の設定</span></span><br><span class="line">  <span class="string">"src_folders"</span> : [ <span class="string">"test"</span> ],</span><br><span class="line">  <span class="string">"output_folder"</span> : <span class="string">"test/reports/"</span>,</span><br><span class="line">  <span class="string">"custom_commands_path"</span> : <span class="string">""</span>,</span><br><span class="line">  <span class="string">"custom_assertions_path"</span> : <span class="string">""</span>,</span><br><span class="line">  <span class="string">"page_objects_path"</span> : <span class="string">""</span>,</span><br><span class="line">  <span class="string">"globals_path"</span> : <span class="string">"node_modules/babel/register"</span>, <span class="comment">// テストコードをES2015で書きたいのでBabel.jsを読み込むよ</span></span><br><span class="line"></span><br><span class="line">  <span class="string">"selenium"</span> : &#123;</span><br><span class="line">    <span class="string">"start_process"</span> : <span class="literal">true</span>,</span><br><span class="line">    <span class="string">"server_path"</span> : <span class="string">"node_modules/webdriver-manager/selenium/selenium-server-standalone-2.46.0.jar"</span>, <span class="comment">// webdriver-managerに格納されているSelenium Serverへのパスを記述</span></span><br><span class="line">    <span class="string">"log_path"</span> : <span class="string">"test/logs"</span>,</span><br><span class="line">    <span class="string">"host"</span> : <span class="string">"127.0.0.1"</span>,</span><br><span class="line">    <span class="string">"port"</span> : <span class="number">4444</span>,</span><br><span class="line">    <span class="string">"cli_args"</span> : &#123;</span><br><span class="line">      <span class="string">"webdriver.chrome.driver"</span> : <span class="string">"node_modules/webdriver-manager/selenium/chromedriver"</span>, <span class="comment">// webdriver-managerに格納されているchromedriverへのパスを記述</span></span><br><span class="line">      <span class="string">"webdriver.ie.driver"</span> : <span class="string">""</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  <span class="comment">// テストするブラウザ毎の設定</span></span><br><span class="line">  <span class="string">"test_settings"</span> : &#123;</span><br><span class="line">    <span class="comment">// 全てのブラウザに共通の設定</span></span><br><span class="line">    <span class="string">"default"</span> : &#123;</span><br><span class="line">      <span class="string">"launch_url"</span> : <span class="string">"http://localhost"</span>,</span><br><span class="line">      <span class="string">"selenium_port"</span>  : <span class="number">4444</span>,</span><br><span class="line">      <span class="string">"selenium_host"</span>  : <span class="string">"localhost"</span>,</span><br><span class="line">      <span class="string">"silent"</span>: <span class="literal">true</span>,</span><br><span class="line">      <span class="comment">// テストが失敗した時の検証用にスクリーンショットを撮影しておく</span></span><br><span class="line">      <span class="string">"screenshots"</span> : &#123;</span><br><span class="line">        <span class="string">"enabled"</span> : <span class="literal">true</span>,</span><br><span class="line">        <span class="string">"on_failure"</span> : <span class="literal">true</span>,</span><br><span class="line">        <span class="string">"on_error"</span> : <span class="literal">false</span>,</span><br><span class="line">        <span class="string">"path"</span> : <span class="string">"test/screenshots"</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="string">"desiredCapabilities"</span>: &#123;</span><br><span class="line">        <span class="string">"browserName"</span>: <span class="string">"firefox"</span>,</span><br><span class="line">        <span class="string">"javascriptEnabled"</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="string">"acceptSslCerts"</span>: <span class="literal">true</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="comment">// 各テストファイルから共通して呼び出したい変数を記述</span></span><br><span class="line">      <span class="comment">// `this.client.globals`から呼び出せる</span></span><br><span class="line">      <span class="string">"globals"</span>: &#123;</span><br><span class="line">        <span class="string">"baseUrl"</span>: <span class="string">"http://localhost:3000"</span>,</span><br><span class="line">        <span class="string">"waitTime"</span>: <span class="number">10000</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ブラウザ毎の設定</span></span><br><span class="line">    <span class="string">"chrome"</span> : &#123;</span><br><span class="line">      <span class="string">"desiredCapabilities"</span>: &#123;</span><br><span class="line">        <span class="string">"browserName"</span>: <span class="string">"chrome"</span>,</span><br><span class="line">        <span class="string">"javascriptEnabled"</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="string">"acceptSslCerts"</span>: <span class="literal">true</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="テストコード"><a href="#テストコード" class="headerlink" title="テストコード"></a>テストコード</h2><p>各テストはメソッドの形で記述します。<br>テストケース毎に渡される引数<code>browser</code>にメソッドチェーンの形でテストシナリオを記述していきます。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  DemoTestGoogle(browser)&#123;</span><br><span class="line">    browser</span><br><span class="line">      .url(<span class="string">'http://www.google.co.jp'</span>)</span><br><span class="line">      .waitForElementVisible(<span class="string">'body'</span>, waitTime)</span><br><span class="line">      .setValue(<span class="string">'input[type=text]'</span>, <span class="string">'nightwatch'</span>)</span><br><span class="line">      .waitForElementVisible(clickBtn, waitTime)</span><br><span class="line">      .click(clickBtn)</span><br><span class="line">      .pause(waitTime)</span><br><span class="line">      .assert.containsText(<span class="string">'#main'</span>, <span class="string">'Night Watch'</span>)</span><br><span class="line">      .end();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>テストファイル・テストケース毎の事前処理・事後処理もメソッドとして記述します</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  before(browser) &#123;</span><br><span class="line">  &#125;,</span><br><span class="line">  after(browser) &#123;</span><br><span class="line">  &#125;,</span><br><span class="line">  beforeEach(browser) &#123;</span><br><span class="line">  &#125;,</span><br><span class="line">  afterEach(browser) &#123;</span><br><span class="line">  &#125;,</span><br><span class="line">  DemoTestGoogle(browser) &#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="非同期なhttpリクエストを含むテスト"><a href="#非同期なhttpリクエストを含むテスト" class="headerlink" title="非同期なhttpリクエストを含むテスト"></a>非同期なhttpリクエストを含むテスト</h2><p>ブラウザからの非同期なhttpリクエストを含む機能のテストにおいて、実際に稼働しているサーバーへリクエストを投げて実行してしまうと<br>サーバーの状態によっては必ずしも同一のレスポンスが帰ってくるとは限りません。<br>また、フロントエンド側と並行して開発が進んでいる場合、サーバー側のレスポンスが実装されていないケースもあります。</p>
+<p><code>Angular.js</code>では<code>$httpBackend</code>サービスを用いて擬似的なレスポンスを返すことが出来ます。<br><code>Nightwatch.js</code>ではこのような仕組みを見つけることが出来ませんでしたので、自前のモックサーバーを用意して代替します。<br><code>nightwatch.json</code>にプロキシサーバーを経由した接続を設定する項目があるので、そちらを使用した方がスマートかも知れません。</p>
+<p>事前にリクエスト先のURLが記述されたファイルを用意しておき、<code>bundle</code>化する時に環境変数を参照してURLを切り替えます。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ブラウザのリクエスト</span></span><br><span class="line">imort request <span class="keyword">from</span> <span class="string">'superagent'</span>;</span><br><span class="line">imort config <span class="keyword">from</span> <span class="string">'./config.js'</span>;</span><br><span class="line"><span class="keyword">const</span> requestURL = config.requestURL;</span><br><span class="line"></span><br><span class="line">request.get(requestURL).end(<span class="function">(<span class="params">err, ret</span>)=&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(ret.body);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// config.js</span></span><br><span class="line"><span class="keyword">let</span> config = &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(process.env.NODE_ENV === <span class="string">'development'</span>)&#123;</span><br><span class="line">  config.requestURL = <span class="string">'http://localhost:3000'</span>;</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">  config.requestURL = <span class="string">'http://api.myserver.io'</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> config;</span><br></pre></td></tr></table></figure>
+<p>次にテスト環境用のモックサーバーを用意します。<br>今回は筆者が馴染みのある<code>Node.js</code>製サーバーにしましたが、立てやすいものなら何でも良いと思います。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> restify <span class="keyword">from</span> <span class="string">'restify'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> AppServerConfig = &#123;</span><br><span class="line">  name: <span class="string">'mock-api-server'</span>,</span><br><span class="line">  version: <span class="string">'1.0.0'</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> server = restify.createServer(AppServerConfig);</span><br><span class="line"></span><br><span class="line">server.use(restify.acceptParser(server.acceptable));</span><br><span class="line">server.use(restify.queryParser());</span><br><span class="line">server.use(restify.bodyParser());</span><br><span class="line">server.use(</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">crossOrigin</span>(<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    res.header(<span class="string">'Access-Control-Allow-Origin'</span>, <span class="string">'*'</span>);</span><br><span class="line">    res.header(<span class="string">'Access-Control-Allow-Headers'</span>, <span class="string">'X-Requested-With'</span>);</span><br><span class="line">    <span class="keyword">return</span> next();</span><br><span class="line">  &#125;</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">server.get(<span class="string">'/v1/mock'</span>, (req, res, next)=&gt; &#123;</span><br><span class="line">  res.status(<span class="number">200</span>);</span><br><span class="line">  res.send(<span class="string">'GET: mock server worked.'</span>);</span><br><span class="line">  <span class="keyword">return</span> next();</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">server.listen(process.env.PORT || <span class="number">3000</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'%s listening at %s'</span>, server.name, server.url);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="ビジュアルリグレッションテスト"><a href="#ビジュアルリグレッションテスト" class="headerlink" title="ビジュアルリグレッションテスト"></a>ビジュアルリグレッションテスト</h2><p>プロジェクトの運用フェーズでスタイルシートの変更があった際に、意図しない箇所に変更が起こっていないかを確認する必要があります。<br>人間の目視に頼った変更確認は不正確且つ高コストになりがちなので、自動化したいところです。</p>
+<p><a href="http://e-words.jp/w/%E3%83%AA%E3%82%B0%E3%83%AC%E3%83%83%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%86%E3%82%B9%E3%83%88.html" target="_blank" rel="noopener">リグレッション(回帰)テスト</a></p>
+<p>今回は<a href="https://gist.github.com/richard-flosi/8a5d2e10b6609ab9d06a" target="_blank" rel="noopener">Nightwatch.jsの拡張機能として実装</a>している方がいたので、<br>参考にさせて頂きました。<br>E2Eテストの実行中にスクリーンショットを撮影して、前回テスト時との差分を検出するカスタムアサーションになっています。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>以上、<code>Nightwatch.js</code>でのE2Eテストを導入するにあたって必要なことをまとめてみました。<br>導入の参考にして頂けたらうれしいです。</p>
+<p>今回ご紹介したエンドツーエンドテスト手法を取り入れ、<a href="https://mmmcorp.co.jp/services/entrusted_development/" target="_blank" rel="noopener">品質の見える化を実現したサービス開発</a>をご検討の企業様は、是非MMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/09/24/use-nightwatch/" data-text="Nightwatch.jsをE2Eテストフレームワークとして実プロジェクトに適用する時のtipsまとめ" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/09/24/use-nightwatch/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/09/24/use-nightwatch/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/09/24/use-nightwatch/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/09/24/use-nightwatch/" class="hatena-bookmark-button" data-hatena-bookmark-title="Nightwatch.jsをE2Eテストフレームワークとして実プロジェクトに適用する時のtipsまとめ" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/E2Eテスト/">E2Eテスト</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node-js/">Node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ツール/">ツール</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li></ul>
+
+
+      <p class="article-footer__author">by 小飼 慎一</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

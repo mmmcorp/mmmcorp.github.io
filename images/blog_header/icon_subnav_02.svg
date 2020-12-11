@@ -1,0 +1,8 @@
+<svg id="icon-subnav-02" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
+  <path id="Fill_1" data-name="Fill 1" d="M12.422,22.5V27h2.25V20.25H6.75a4.5,4.5,0,0,1-.9-8.91l.9-.181L6.75,10.125A7.871,7.871,0,0,1,21.637,6.554l.469.919.956-.388a4.5,4.5,0,0,1,6.1,5.074l-.287,1.392,1.42-.039c.063,0,.125-.009.084-.011a3.375,3.375,0,0,1,0,6.75h-9V27h2.25V22.5h6.75A5.625,5.625,0,0,0,31.5,11.364c0-.038,0-.076,0-.114A6.757,6.757,0,0,0,24.75,4.5a6.628,6.628,0,0,0-1.587.194A10.121,10.121,0,0,0,4.527,9.377,6.75,6.75,0,0,0,6.75,22.5Z" fill="#fff"/>
+  <path id="Fill_3" data-name="Fill 3" d="M20.25,19.2H6.75V16.942H0V14.683H6.75V12.424h5.625V0h2.25V12.424H20.25v2.259H27v2.259H20.25V19.2ZM9,14.683v2.259h9V14.683Z" transform="translate(4.8 16.8)" fill="#fff"/>
+  <path id="Fill_5" data-name="Fill 5" d="M0,2.4H2.4V0H0Z" transform="translate(0 31.2)" fill="#fff"/>
+  <path id="Fill_6" data-name="Fill 6" d="M0,2.4H2.4V0H0Z" transform="translate(33.6 31.2)" fill="#fff"/>
+  <path id="Fill_7" data-name="Fill 7" d="M0,2.4H2.4V0H0Z" transform="translate(16.8 7.8)" fill="#fff"/>
+  <path id="Fill_8" data-name="Fill 8" d="M0,2.4H2.4V0H0Z" transform="translate(16.8 12.6)" fill="#fff"/>
+</svg>

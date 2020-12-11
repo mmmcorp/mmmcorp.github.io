@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>さくらのVPSで動かしていた cron の処理を AWS Lambda で実行してみた | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="会社の忘年会で、卓球、ビリヤード、ダーツの3種目の総合得点でまさかの優勝をした（組んだペアに優勝させてもらった？）佐々木です。今回は、AWS Lambda について、気をつけるべき点のまとめです。    AWS Lambda で実行してみようと思ったポイント毎日株価をあるサイトからスクレイピングして取得してきて、自分で設けた基準を満たしているかどうかをチェックし、その結果をメールと Slack へ">
+<meta name="keywords" content="AWS,Lambda,サーバーレス">
+<meta property="og:type" content="article">
+<meta property="og:title" content="さくらのVPSで動かしていた cron の処理を AWS Lambda で実行してみた">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2015/12/12/aws_lambda/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="会社の忘年会で、卓球、ビリヤード、ダーツの3種目の総合得点でまさかの優勝をした（組んだペアに優勝させてもらった？）佐々木です。今回は、AWS Lambda について、気をつけるべき点のまとめです。    AWS Lambda で実行してみようと思ったポイント毎日株価をあるサイトからスクレイピングして取得してきて、自分で設けた基準を満たしているかどうかをチェックし、その結果をメールと Slack へ">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/aws_lambda/lambda3.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/aws_lambda/lambda10.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/aws_lambda/lambda4_m.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/aws_lambda/lambda4_t.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/aws_lambda/lambda5.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/aws_lambda/lambda6.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.134Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="さくらのVPSで動かしていた cron の処理を AWS Lambda で実行してみた">
+<meta name="twitter:description" content="会社の忘年会で、卓球、ビリヤード、ダーツの3種目の総合得点でまさかの優勝をした（組んだペアに優勝させてもらった？）佐々木です。今回は、AWS Lambda について、気をつけるべき点のまとめです。    AWS Lambda で実行してみようと思ったポイント毎日株価をあるサイトからスクレイピングして取得してきて、自分で設けた基準を満たしているかどうかをチェックし、その結果をメールと Slack へ">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/aws_lambda/lambda3.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-aws-lambda" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2015-12-12T11:27:43.000Z" itemprop="datePublished">2015-12-12</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2015/12/12/aws_lambda/">さくらのVPSで動かしていた cron の処理を AWS Lambda で実行してみた</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/12/12/aws_lambda/" data-text="さくらのVPSで動かしていた cron の処理を AWS Lambda で実行してみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/12/12/aws_lambda/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/12/12/aws_lambda/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/12/12/aws_lambda/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/12/12/aws_lambda/" class="hatena-bookmark-button" data-hatena-bookmark-title="さくらのVPSで動かしていた cron の処理を AWS Lambda で実行してみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>会社の忘年会で、卓球、ビリヤード、ダーツの3種目の総合得点でまさかの優勝をした（組んだペアに優勝させてもらった？）佐々木です。<br>今回は、AWS Lambda について、気をつけるべき点のまとめです。  </p>
+<hr>
+<h4 id="aws-lambda-で実行してみようと思ったポイント"><a href="#AWS-Lambda-で実行してみようと思ったポイント" class="headerlink" title="AWS Lambda で実行してみようと思ったポイント"></a>AWS Lambda で実行してみようと思ったポイント</h4><p>毎日株価をあるサイトからスクレイピングして取得してきて、自分で設けた基準を満たしているかどうかをチェックし、その結果をメールと Slack へ通知するスクリプトを作成して、個人的に使用しているさくらのVPSにて、cron で実行している。</p>
+<p>今、さくらのVPSではそのスクリプトぐらいしか動いていない。<br>元々別の用途で使っていたのだが、現状では cron でスクリプトを動かすためだけに年間1万円ちょっと支払っている。<br>そのスクリプトを AWS Lambda に移行してみた。<br>試しにそっちで動くかやってみて、うまく行ったら費用も削減できる！と思って試してみた次第である。  </p>
+<p>今回、移行しようと思ったポイントは下記の3点。  </p>
+<ul>
+<li>スクリプトを運良く、python で書いていた</li>
+<li>AWS Lambda でスケジュールイベントが設定できるようになった</li>
+<li>AWS Lambda が python をサポートしている</li>
+</ul>
+<p>AWS Lambda に移行した際に、気をつけないといけない点がいくつかあったのでまとめてみた。</p>
+<h4 id="pip-install-でインストールしたモジュール"><a href="#pip-install-でインストールしたモジュール" class="headerlink" title="pip install でインストールしたモジュール"></a><code>pip install</code> でインストールしたモジュール</h4><p><code>pip install</code> で各種のモジュールをインストールして使用したい場合は、事前に該当のスクリプト等が入っているディレクトリにインストールする必要がある。<br>下記は、 <code>requirements.txt</code> に記載されている pip モジュールをインストールしたい場合。<br><code>-t .</code> でカレントディレクトリにインストールしているところに注意。  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> test_script</span><br><span class="line">$ pip install -r requirements.txt -t .</span><br></pre></td></tr></table></figure>
+<h4 id="zip-で圧縮"><a href="#zip-で圧縮" class="headerlink" title="zip で圧縮"></a>zip で圧縮</h4><p>その上で、zip で固めてアップロードする。<br>ここでも注意が必要。カレントディレクトリ配下のファイルをそのまま圧縮すること。ディレクトリも含めてしまうとエラーになる。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> test_script</span><br><span class="line">$ zip -r /tmp/test_script.zip .</span><br></pre></td></tr></table></figure>
+<h4 id="handler-の設定"><a href="#Handler-の設定" class="headerlink" title="Handler の設定"></a>Handler の設定</h4><p>例えば、<code>test_script.py</code> が下記のようなものだとすると。</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></span><br><span class="line">    print(<span class="string">"Hey wat'z up yo!"</span>)</span><br></pre></td></tr></table></figure>
+<p>Handler の欄としては、<code>test_script.hello</code> のように、<code>&lt;ファイル名&gt;.&lt;メソッド名&gt;</code> を記入する。</p>
+<p><img src="/images/aws_lambda/lambda3.png" alt=""></p>
+<h4 id="引数"><a href="#引数" class="headerlink" title="引数"></a>引数</h4><p>また、AWS Lambda にて実行する際に、<code>event</code> と <code>context</code> の2つの引数を渡して実行するので、</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">(event, context)</span>:</span></span><br><span class="line">    print(<span class="string">"hey wat'z up yo!"</span>)</span><br></pre></td></tr></table></figure>
+<p>のように、引数を受け取れるように修正が必要。<br>その対応が抜けていると、下記のようなエラーになる。  </p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TypeError: hello() takes no arguments (<span class="number">2</span> given)</span><br></pre></td></tr></table></figure>
+<h4 id="role"><a href="#Role" class="headerlink" title="Role"></a>Role</h4><p>Lambda の実行権限を設定する。<br>AWS の他のリソースなど使わず単純に実行するだけであれば、<code>Basic execution role</code> を選べばよい。</p>
+<p><img src="/images/aws_lambda/lambda10.png" alt=""></p>
+<p>S3でのイベントをトリガーとする場合や、処理実行結果等をS3にアップロードする場合などは、S3を扱う権限がある Role の <code>S3 execution role</code> を選択する。<br>（Role がない場合は、ここで作成することが出来る）</p>
+<h4 id="メモリと-cpu-などのリソース"><a href="#メモリと-CPU-などのリソース" class="headerlink" title="メモリと CPU などのリソース"></a>メモリと CPU などのリソース</h4><p>割り当てるメモリとしては、最小で 128MB から、最大で 1536MB が選択できる。  </p>
+<p><img src="/images/aws_lambda/lambda4_m.png" alt=""></p>
+<p>FAQ にも記載されているが、メモリの量と比例した CPU などが割り当てられるので、実際に試してみて、最適なもの選択するのが良いかもしれない。</p>
+<p>【参考URL】<br><a href="https://aws.amazon.com/jp/lambda/faqs/" target="_blank" rel="noopener">よくある質問 - AWS Lambda | AWS</a></p>
+<blockquote>
+<p>Q: コンピューティングリソースはどのように AWS Lambda に割り当てられるのですか?</p>
+<p>AWS Lambda のリソースモデルでは、お客様が関数に必要なメモリ量を指定するとそれに比例した CPU パワーとその他のリソースが割り当てられます。たとえば、256 MB のメモリを指定すると約 2 倍の CPU パワーが Lambda 関数に割り当てられます。128 MB のメモリを指定した場合と比較すると CPU パワーは倍となり、512 MB のメモリを指定した場合と比較すると半分になります。メモリは 128 MB から 1.5 GB まで、64 MB ごとに増加できます。</p>
+</blockquote>
+<h4 id="タイムアウト時間設定"><a href="#タイムアウト時間設定" class="headerlink" title="タイムアウト時間設定"></a>タイムアウト時間設定</h4><p>AWS Lambda のタイムアウト設定は、最小1秒から、最大で5分の間（デフォルトは3秒）で設定が可能。<br>ここも、前述した割り当てるメモリによって、実行時間が変わってくると思うので、何度か実行してみて適切な値を設定する必要がある。  </p>
+<p><img src="/images/aws_lambda/lambda4_t.png" alt=""></p>
+<h4 id="イベントソースevent-sourcesの設定"><a href="#イベントソース-Event-sources-の設定" class="headerlink" title="イベントソース(Event sources)の設定"></a>イベントソース(Event sources)の設定</h4><p>cron で設定する時間は、UTC であることに注意。</p>
+<p><img src="/images/aws_lambda/lambda5.png" alt=""></p>
+<p>書き方としては、例えば下記のように書くことが出来る。  </p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">例</th>
+<th style="text-align:left">cron</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">毎日 10:00 (UTC)</td>
+<td style="text-align:left"><code>cron(0 10 * * ? *)</code></td>
+</tr>
+<tr>
+<td style="text-align:left">毎月曜～金曜の 18:00 (UTC)</td>
+<td style="text-align:left"><code>cron(0 18 ? * MON-FRI *)</code></td>
+</tr>
+<tr>
+<td style="text-align:left">月～金曜の 8:00 ～ 17:55 (UTC) の間 5分ごと</td>
+<td style="text-align:left"><code>cron(0/5 8-17 ? * MON-FRI *)</code></td>
+</tr>
+</tbody>
+</table>
+<p>【参考URL】<br><a href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/getting-started-scheduled-events.html" target="_blank" rel="noopener">ウォークスルー 5: Lambda 関数を使用したスケジュールイベントの処理 (Python) - AWS Lambda</a></p>
+<h4 id="ログ"><a href="#ログ" class="headerlink" title="ログ"></a>ログ</h4><p>ログは、サクッと終わるスクリプトなら下部に出る。<br>そうでなければ、Cloudwatch のログを確認する必要がある。</p>
+<p><img src="/images/aws_lambda/lambda6.png" alt=""></p>
+<p>実行時間や使用したメモリなども表示されるので、ここを見て割り当てるメモリをいくつにするか検討できる。</p>
+<h4 id="簡単にサーバーレス環境ができた"><a href="#簡単にサーバーレス環境ができた" class="headerlink" title="簡単にサーバーレス環境ができた"></a>簡単にサーバーレス環境ができた</h4><p>以上、簡単ではあるが AWS Lambda を使うにあたって気をつけるべき点をまとめてみた。<br>以前弊社の下條が、こちらの記事（<a href="http://blog.mmmcorp.co.jp/blog/2015/11/16/try-lambda-scheduled-event-job/">AWS LambdaのScheduled Eventを使ってバッチ実行してみた | MMMブログ</a>）でも述べていたが、非常にお手軽・簡単にサーバーレスな環境が出来てしまった。<br>サーバー構築など面倒なことをせずに、サクッとスクリプトを動かせる環境が出来てしまう点は素晴らしい。<br>今回、AWS Lambda で実行してみようと思ったのは、費用の削減がきっかけではあるが、それ以上に AWS Lambda のお手軽さが良いと感じた。  </p>
+<p>実行時間に5分という制限があるものの、例えば処理を分割して実行、実行結果をS3にアップロード、そのS3アップロードされたイベントをきっかけにして次の処理を動かす、などの工夫も出来るかと思う。<br>サーバーの構築、保守・運用などは、意外と手間や工数がかかったりすることもあるので、そういった工数を削減できるのであれば、状況に応じて業務でも積極的に使っていくべきかな、と今回 AWS Lambda を使ってみて感じた。</p>
+<p><a href="https://mmmcorp.co.jp/services/aws/" target="_blank" rel="noopener">Lambdaなどクラウドネイティブなアーキテクチャを活用したシステム構築やアプリケーション開発</a>をご検討の企業様は、是非MMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/12/12/aws_lambda/" data-text="さくらのVPSで動かしていた cron の処理を AWS Lambda で実行してみた" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/12/12/aws_lambda/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/12/12/aws_lambda/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/12/12/aws_lambda/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/12/12/aws_lambda/" class="hatena-bookmark-button" data-hatena-bookmark-title="さくらのVPSで動かしていた cron の処理を AWS Lambda で実行してみた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Lambda/">Lambda</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li></ul>
+
+
+      <p class="article-footer__author">by 佐々木 悠人</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

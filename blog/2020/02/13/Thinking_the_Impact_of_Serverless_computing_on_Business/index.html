@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>研究論文「Serverless Computing: Economic and Architectural Impact」によって検証されたサーバーレスの長所 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="最近、AWS Lambdaに関する学術論文「Serverless Computing: Economic and Architectural Impact」を読みました。この論文は、AWS Lambdaをテーマにした最初の学術的研究の1つであり、ロンドンのITコンサルタント会社パートナーのGojko Adzic氏と、インペリアル・カレッジ・ロンドンの主任研究員であるRobert Chatley氏">
+<meta name="keywords" content="ビジネス,AWS,サーバーレス,サーバーレスコンピューティング">
+<meta property="og:type" content="article">
+<meta property="og:title" content="研究論文「Serverless Computing: Economic and Architectural Impact」によって検証されたサーバーレスの長所">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/02/13/Thinking_the_Impact_of_Serverless_computing_on_Business/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="最近、AWS Lambdaに関する学術論文「Serverless Computing: Economic and Architectural Impact」を読みました。この論文は、AWS Lambdaをテーマにした最初の学術的研究の1つであり、ロンドンのITコンサルタント会社パートナーのGojko Adzic氏と、インペリアル・カレッジ・ロンドンの主任研究員であるRobert Chatley氏">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/Thinking_the_Impact_of_Serverless_computing_on_Business/Serverless.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.162Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="研究論文「Serverless Computing: Economic and Architectural Impact」によって検証されたサーバーレスの長所">
+<meta name="twitter:description" content="最近、AWS Lambdaに関する学術論文「Serverless Computing: Economic and Architectural Impact」を読みました。この論文は、AWS Lambdaをテーマにした最初の学術的研究の1つであり、ロンドンのITコンサルタント会社パートナーのGojko Adzic氏と、インペリアル・カレッジ・ロンドンの主任研究員であるRobert Chatley氏">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/Thinking_the_Impact_of_Serverless_computing_on_Business/Serverless.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-Thinking-the-Impact-of-Serverless-computing-on-Business" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-02-13T05:40:00.000Z" itemprop="datePublished">2020-02-13</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/02/13/Thinking_the_Impact_of_Serverless_computing_on_Business/">研究論文「Serverless Computing: Economic and Architectural Impact」によって検証されたサーバーレスの長所</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/02/13/Thinking_the_Impact_of_Serverless_computing_on_Business/" data-text="研究論文「Serverless Computing: Economic and Architectural Impact」によって検証されたサーバーレスの長所" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/02/13/Thinking_the_Impact_of_Serverless_computing_on_Business/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/02/13/Thinking_the_Impact_of_Serverless_computing_on_Business/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/02/13/Thinking_the_Impact_of_Serverless_computing_on_Business/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/02/13/Thinking_the_Impact_of_Serverless_computing_on_Business/" class="hatena-bookmark-button" data-hatena-bookmark-title="研究論文「Serverless Computing: Economic and Architectural Impact」によって検証されたサーバーレスの長所" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/Thinking_the_Impact_of_Serverless_computing_on_Business/Serverless.png" alt=""></p>
+<p>最近、AWS Lambdaに関する学術論文「Serverless Computing: Economic and Architectural Impact」を読みました。この論文は、AWS Lambdaをテーマにした最初の学術的研究の1つであり、ロンドンのITコンサルタント会社パートナーのGojko Adzic氏と、インペリアル・カレッジ・ロンドンの主任研究員であるRobert Chatley氏によって2017年に発表されたものです。</p>
+<p>この論文は、サーバーレス・コンピューティングの経済的な影響・効果に関して非常に示唆に富んでいるため、その重要なポイントを紹介していきます。現時点で論文の発表当時（2017年）と取り巻く技術や背景が変わっている部分はありますが、サーバーレスの効果に関する本質は変わっていません。</p>
+<p>なお、サーバーレスを基本からおさえたい方は、ぜひ以下のコラムをご一読ください。</p>
+<p>・<a href="https://mmmcorp.co.jp/column/serverless/" target="_blank" rel="noopener">なぜサーバーレスが注目されているのか？ゼロから学ぶサーバーレスアーキテクチャ（FaaS）入門</a></p>
+<p>論文では、Gojko Adzic氏が立ち上げたマインドマップサービス「MindMup」と、ソーシャル・ネットワークのYublの2つのサービスを対象に、AWS Lambdaベースのサーバーレス・アーキテクチャへの移行が、両社のビジネスにどのような影響を与えたかをまとめています。</p>
+<h2 id="サーバーレスによってホスティング費用の9989995を削減"><a href="#サーバーレスによってホスティング費用の99-8-〜99-95-を削減" class="headerlink" title="サーバーレスによってホスティング費用の99.8%〜99.95%を削減"></a>サーバーレスによってホスティング費用の99.8%〜99.95%を削減</h2><p>以下の通り、5分毎に200ミリ秒の処理を行った際のホスティング費用が、従来のクライアント・サーバモデルと、サーバーレスとでどう変わるかを比較しました。</p>
+<blockquote>
+<p>For example, if a service task takes 200 milliseconds to execute, but needs to run only every five minutes, a traditional client/server architecture would require dedicating a service instance to it, and ensuring that a fail-over service instance is available just in case the primary crashes. </p>
+</blockquote>
+<p>結果としては、512MBのメモリのEC2（仮想サーバー）のコストは、1時間あたり0.0059ドルでした。このマシンを2台実行すると、0.0118ドルかかりました。（プライマリおよびフェイルオーバー）</p>
+<p>一方で、512MBのLambdaインスタンス（サーバーレス）の1時間あたりのコストは0.000020016ドルで、99.8％以上のコスト削減になりました。</p>
+<p>Lambdaは低メモリインスタンスを提供するため、メモリが少なくて良い場合は仮想サーバーと比べてさらにコストが下がります。128MBのLambdaインスタンスの場合、コストは1時間あたり0.000004992ドルになり、99.95％以上のコスト削減になりました。</p>
+<p>なお、実サービスで求められるシステムの可用性を考慮して、仮想サーバーに関しては、フェイルオーバーのコストも含めていますが、サーバーレスではプラットフォーム自体が可用性を備えています。この点もコストの違いに繋がっています。</p>
+<h2 id="なぜサーバーレスでは大きなコスト削減が可能なのか"><a href="#なぜサーバーレスでは大きなコスト削減が可能なのか？" class="headerlink" title="なぜサーバーレスでは大きなコスト削減が可能なのか？"></a>なぜサーバーレスでは大きなコスト削減が可能なのか？</h2><p>サーバーレスでは、顧客毎ではなくプラットフォーム全体でコンピューター資源の最適化が実施されている点が、利用者のコスト削減にも大きな影響を与えていると考えられます。</p>
+<p>また、論文ではアクセスモデルの違いについても触れられています。</p>
+<p>サーバーレスの近年のプラットフォームでは、分散型の認証を行うことができるため、接続元のクライアントがストレージなどのバックエンドに対して直接アクセスを行います。従来のクライアント・サーバーモデルで見られるような、専用サーバーでアプリケーションとサービスを保護し、ブローカーとして機能するような「ゲートキーパー」は存在しません。</p>
+<p>そのため、従来のクライアント・サーバーモデルでは「処理」と「ストレージ」のコストが発生していたのに対し、サーバーレスでは「処理」が不要になり「ストレージ」のコストだけで済むことになります。この点が大きなコスト差の原因だと説明されています。</p>
+<p>なお、無数の接続デバイスから連続的にデータ送信を行う「Internet of things(IoT)」でサーバーレスが採用される理由の1つも、このような分散型認証モデルを用いたバックエンドシステムへの直接接続が、コスト優位性を持っているためではないかと考えられます。</p>
+<h2 id="mindmupとyublのケースでの実際の効果を検証"><a href="#MindMupとYublのケースでの実際の効果を検証" class="headerlink" title="MindMupとYublのケースでの実際の効果を検証"></a>MindMupとYublのケースでの実際の効果を検証</h2><p>MindMupとYublの2つのケースについて、サーバーレスを採用したことで実際にどのような課題を解決できたのかを見ていきます。</p>
+<h3 id="ケース1-mindmup社"><a href="#ケース1-MindMup社" class="headerlink" title="ケース1. MindMup社"></a>ケース1. MindMup社</h3><p>MindMupでは、2016年のHerokuからAWS Lambdaへの移行の際に、定型的なコードを大幅に削減しつつ、システムのコア機能であるマインドマップ図の変換処理も改善することができました。Herokuでは、ファイルの変換処理に関して、メッセージキュー接続、タスクの再試行処理、ロギングと監視などの処理をすべて独自に実装していたものの、AWS Lambdaに移行したことで、コアのファイル変換以外の処理を廃止することができました。アプリケーションの開発者がビジネスロジックに集中できるようになり、新機能の実装にかける時間の確保できるようになったとのことです。</p>
+<p>数値的な結果は、以下の説明の通りです。</p>
+<blockquote>
+<p>Comparing the usage loads between February 2016 (before the transition to Lambda) and February 2017 (after the transition was fully completed) [1], the number of active users of MindMup increased by slightly more than 50%, but the hosting costs dropped slightly less than 50%, resulting in savings of about 66%, despite a number of new services being added during that year.</p>
+</blockquote>
+<p>Lambdaへの移行中、アクティブユーザ数は50%以上増加したにも関わらず、ホスティングコストは50%弱減少し、新サービスを追加したものの最終的には66%のコスト節約を実現できました。</p>
+<h3 id="ケース2-yubl社"><a href="#ケース2-Yubl社" class="headerlink" title="ケース2. Yubl社"></a>ケース2. Yubl社</h3><p>ソーシャルネットワークのYublは、スマートフォンアプリのバックエンドを仮想サーバーに構築していました。可用性を考慮して、バックエンドは複数のデータセンター（アベイラビリティーゾーン）に配備されていました。</p>
+<p>一般的にSNSでは、インフルエンサーや広告主がキャンペーンを行うとトラフィックが急増することがあります。Yublは、この対策として常にシステムに余裕を持たせ、オートスケールも採用していましたが、スケールアップには平均15分の時間を要していたそうです。</p>
+<p>そこでYublは、コストを効率化・最小化しつつ、素早いデプロイを可能にするため、バックエンドをLambdaに移行しました。結果は以下の通り、非常にインパクトの大きいものでした。</p>
+<blockquote>
+<p>To provide continuity during the migration, the team had to continue to run the EC2 instances until everything was moved over to Lambda, but this $5000 per month bill was for much smaller instances than they had been running previously, so their estimate is that moving to Lambda gave an operational cost reduction of greater than 95% for a comparable amount of compute.<br>(中略)<br>Delegating responsibility for a lot of infrastructural concerns to the platform meant that they could spend more of their time developing new business features. Where previously deployments were risky and required careful planning, after moving to Lambda and working with smaller units they were fast and low effort, with the option to instantly roll back if things went wrong.</p>
+</blockquote>
+<p>Lambdaに移行して同じ計算量を処理した場合、月額5000ドルかかっていたEC2インスタンスのコストは、95%以上削減されると推測されました。</p>
+<p>また、インフラの多くの懸念をプラットフォーム側に委譲することで、より多くの時間をビジネスに必要な新機能の開発に費やすことができるようになりました。障害時の即座のロールバックや、安全で素早いデプロイもできるようになりました。</p>
+<h2 id="サーバーレスコンピューティングがもたらす機会"><a href="#サーバーレス・コンピューティングがもたらす機会" class="headerlink" title="サーバーレス・コンピューティングがもたらす機会"></a>サーバーレス・コンピューティングがもたらす機会</h2><p>論文は、サーバーレスによって以下の2つの機会がもたらされるとしています。</p>
+<h3 id="1-モジュールの分離独立化"><a href="#1-モジュールの分離・独立化" class="headerlink" title="1. モジュールの分離・独立化"></a>1. モジュールの分離・独立化</h3><p>仮想マシンやPaaS（Google App EngineやHeroku）では、実行するタスクを一つのアプリケーションに紐付けますが、コンピュータリソースを共有しているため、タスクが相互干渉してしまうデメリットが存在します。とはいえ、全てのタスクを個別のアプリケーションやサーバーで実行させると、コストの増加に直結してしまいます。</p>
+<p>サーバーレスでは、利用したリソース量とコストが比例するため、コスト削減のためにリソースを共有するという方向には進みません。また、プラットフォームがセキュリティや可用性を担保するため、各タスクが独自に処理を行う実装をすることで、他のタスクへの影響や依存を無くすことができます。</p>
+<p>論文では、以下の通り、サーバーレスが「より小さく、分離されたモジュールを開発する機会をもたらす」としています。</p>
+<blockquote>
+<p>Without strong economic and operational incentives for bundling, serverless platforms open up an opportunity for application developers to create smaller, better isolated modules, that can more easily be maintained and replaced.</p>
+</blockquote>
+<p>コンピューターリソース共用時に、利用料の観点や運用上のメリットが見出だせなければ、サーバーレス・プラットフォームは、開発者にとって、<strong>より保守しやすく、より疎結合で、交換が容易な、分離されたモジュール</strong>を作成する「良い機会」をもたらすと定義しています。</p>
+<h3 id="2-システムの安価なバージョンニングを可能に"><a href="#2-システムの安価なバージョンニングを可能に" class="headerlink" title="2. システムの安価なバージョンニングを可能に"></a>2. システムの安価なバージョンニングを可能に</h3><p>もう一つの機会は、Lambdaのバージョニング機能です。</p>
+<p>従来、アプリケーションの複数のバージョンが同時に存在すると、そのバージョンの数に比例して運用コストが増加しました。</p>
+<p>ところがLambdaでは、複数のバージョン管理に対して、追加コストは発生しません。1つのバージョンに10,000件のリクエストを行ったときのコストと、2つのバージョンに5,000件ずつリクエストしたときのコストは、同一になります。</p>
+<p>この特長によって、例えばA/Bテストや段階的な機能リリースなど、実験的なサービス提供をより安価に行うことができるようになります。</p>
+<h2 id="サーバーレスコンピューティングの制約"><a href="#サーバーレス・コンピューティングの制約" class="headerlink" title="サーバーレス・コンピューティングの制約"></a>サーバーレス・コンピューティングの制約</h2><p>検証を通じて、サーバーレスが持つ制約も明らかになりました。</p>
+<h3 id="処理の遅延の発生"><a href="#処理の遅延の発生" class="headerlink" title="処理の遅延の発生"></a>処理の遅延の発生</h3><p>AWS Lambdaは、有効なインスタンス数が自動的に増減されるため、リクエストを受け付けたタイミングで必要なインスタンスを新しく作成する場合があります。このプロセスは、開発者が制御できない仕様になっています。</p>
+<p>論文でも以下のように触れられています。</p>
+<blockquote>
+<p>This means that very infrequently used services might experience constant high latency.</p>
+</blockquote>
+<blockquote>
+<p>Even for frequently used services, clients might experience some additional latency during usage spikes when many new instances get created.</p>
+</blockquote>
+<p>記載の通り、使用頻度が低いサービスでは大きな遅延が発生する可能性があります。使用頻度が高いサービスであっても、新しいインスタンスが多数作成された場合は遅延が発生する可能性があるとしています。</p>
+<p>言語にもよりますが、インスタンスの作成には1秒〜10秒の時間を要することがあります。</p>
+<p>なお、AWSはこの問題を解決する努力をしてきており、2019年にリリースされたProvisioned Concurrency for Lambda Functionsという機能を利用すれば対処できるケースも出てきました。</p>
+<h3 id="ベンダーロックイン"><a href="#ベンダーロックイン" class="headerlink" title="ベンダーロックイン"></a>ベンダーロックイン</h3><p>サーバーレスでは、認証や構成管理から、バックエンドストレージやスケーリング、そして監視に至るまで、あらゆる機能をプラットフォームが提供しています。コード自体はプラットフォームに依存しないものの、そのコードを通じて実現するサービスはプラットフォームに大きく依存する形となります。</p>
+<p>この点について、本論文では以下のように触れています。</p>
+<blockquote>
+<p>Serverless architectures provide incentives to let client applications connect directly to storage resources and queues, so client code becomes more tightly coupled to other platform services. In practice, this means that moving a serverless application from one cloud provider to another would require a significant rewrite.</p>
+</blockquote>
+<p>この通り、コードがプラットフォームと密結合されるため、プラットフォームを乗り換える際には大幅のコードの書き換えが必要になります。</p>
+<h2 id="結論サーバーレスのビジネス価値とは"><a href="#結論：サーバーレスのビジネス価値とは？" class="headerlink" title="結論：サーバーレスのビジネス価値とは？"></a>結論：サーバーレスのビジネス価値とは？</h2><p>MindMupとYublの2つのケースを用いてサーバーレスの検証を行った結果、短時間で大量のリクエストを捌くような高スループットが求められる場合や、処理遅延（レイテンシー）がサービス提供上の大きな問題とならない場合に、サーバーレスを利用することで「ホスティング費用を大幅に削減し、新機能の提供に要する時間を短縮できる」という結論が得られました。</p>
+<p>サーバーレスでは、処理を実行していない時間は課金されないため「アイドルコストの削減」が可能となります。論文の最初の例で挙げられていたように、仮想サーバーと比較して99.8%〜99.95%という劇的なホスティング費用の削減についても、このアイドル時間の課金の有無が大きく影響しています。</p>
+<p>また、運用の効率化もコスト削減に寄与します。適切なスキルセットや経験のあるチームであれば、従来のオンプレミス環境や仮想サーバーと比較して、システム運用に必要な運用コストがはるかに小さくなります。</p>
+<p>加えて、目に見えるコスト削減以上に大きな価値をもたらすのが、ビジネス俊敏性の向上、つまり「製品や新機能を市場に投入するまでの時間が短い」という点です。俊敏性の向上は、企業にとって大きな競争優位性に繋がるはずです。</p>
+<h2 id="mmmのサーバーレスへの取り組み"><a href="#MMMのサーバーレスへの取り組み" class="headerlink" title="MMMのサーバーレスへの取り組み"></a>MMMのサーバーレスへの取り組み</h2><p>前述のようなサーバーレスの価値を発揮するためには、サーバーレス・プラットフォームの特性や制約を深く理解した上で、高度なスキルと経験を持つ開発チームが必要になります。</p>
+<p>MMMでは、多くのお客様に対して、ご紹介してきたサーバーレスの価値を届けることができるよう、AWS Lambdaを使ったサーバーレスアーキテクチャの構築・運用に関して実績を積み、ナレッジを深める努力を行ってきました。</p>
+<p>・<a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank" rel="noopener">サーバーレスアーキテクチャ（AWS Lambda）</a></p>
+<p>またMMMは、AWS Lambdaに関する専門性が評価され、日本で2社目となる AWS サービスデリバリープログラム（AWS Service Delivery Program）の「AWS Lambda」の認定も受けました。</p>
+<p>サーバーレスに関して相談をしたい方は、ぜひお気軽にお問い合わせください。</p>
+<p>・<a href="https://mmmcorp.co.jp/inquiry" target="_blank" rel="noopener">お問い合わせ</a></p>
+<p>参考文献：<a href="https://www.doc.ic.ac.uk/~rbc/papers/fse-serverless-17.pdf" target="_blank" rel="noopener">Gojko Adzic and Robert Chatley, Serverless Computing: Economic and Architectural Impact, Association for Computing Machinery, 2017.</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/02/13/Thinking_the_Impact_of_Serverless_computing_on_Business/" data-text="研究論文「Serverless Computing: Economic and Architectural Impact」によって検証されたサーバーレスの長所" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/02/13/Thinking_the_Impact_of_Serverless_computing_on_Business/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/02/13/Thinking_the_Impact_of_Serverless_computing_on_Business/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/02/13/Thinking_the_Impact_of_Serverless_computing_on_Business/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/02/13/Thinking_the_Impact_of_Serverless_computing_on_Business/" class="hatena-bookmark-button" data-hatena-bookmark-title="研究論文「Serverless Computing: Economic and Architectural Impact」によって検証されたサーバーレスの長所" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレスコンピューティング/">サーバーレスコンピューティング</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ビジネス/">ビジネス</a></li></ul>
+
+
+      <p class="article-footer__author">by 国本 廷宣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

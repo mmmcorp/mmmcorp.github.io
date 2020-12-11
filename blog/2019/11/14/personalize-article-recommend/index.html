@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Amazon Personalize を活用した記事推薦システムを MMM ブログに導入する話 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="はじめに最近の週末はゲームばかりやっています。内山です。 2019年6月に Amazon Personalize というサービスが一般提供開始となりました。今回は、このサービスを活用し、記事推薦システムを構築した話をしたいと思います。 目次  Amazon Personalize とは Amazon Personalize のワークフロー 1. 学習データセットをインポートする 2. ソリューショ">
+<meta name="keywords" content="AWS,サーバーレス,機械学習,Amazon Personalize">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Amazon Personalize を活用した記事推薦システムを MMM ブログに導入する話">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2019/11/14/personalize-article-recommend/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="はじめに最近の週末はゲームばかりやっています。内山です。 2019年6月に Amazon Personalize というサービスが一般提供開始となりました。今回は、このサービスを活用し、記事推薦システムを構築した話をしたいと思います。 目次  Amazon Personalize とは Amazon Personalize のワークフロー 1. 学習データセットをインポートする 2. ソリューショ">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/uchiko/personalize-article-recommend/dataset_list.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/uchiko/personalize-article-recommend/dataset_import_job.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/uchiko/personalize-article-recommend/create_solution.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/uchiko/personalize-article-recommend/create_campaign.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/uchiko/personalize-article-recommend/get_recommendations.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/uchiko/personalize-article-recommend/arch.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/uchiko/personalize-article-recommend/sm_import_dataset.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/uchiko/personalize-article-recommend/sm_all.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.162Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Amazon Personalize を活用した記事推薦システムを MMM ブログに導入する話">
+<meta name="twitter:description" content="はじめに最近の週末はゲームばかりやっています。内山です。 2019年6月に Amazon Personalize というサービスが一般提供開始となりました。今回は、このサービスを活用し、記事推薦システムを構築した話をしたいと思います。 目次  Amazon Personalize とは Amazon Personalize のワークフロー 1. 学習データセットをインポートする 2. ソリューショ">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/uchiko/personalize-article-recommend/dataset_list.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-personalize-article-recommend" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2019-11-14T11:49:52.000Z" itemprop="datePublished">2019-11-14</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2019/11/14/personalize-article-recommend/">Amazon Personalize を活用した記事推薦システムを MMM ブログに導入する話</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/11/14/personalize-article-recommend/" data-text="Amazon Personalize を活用した記事推薦システムを MMM ブログに導入する話" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/11/14/personalize-article-recommend/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/11/14/personalize-article-recommend/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/11/14/personalize-article-recommend/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/11/14/personalize-article-recommend/" class="hatena-bookmark-button" data-hatena-bookmark-title="Amazon Personalize を活用した記事推薦システムを MMM ブログに導入する話" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="はじめに"><a href="#はじめに" class="headerlink" title="はじめに"></a>はじめに</h2><p>最近の週末はゲームばかりやっています。内山です。</p>
+<p>2019年6月に Amazon Personalize というサービスが一般提供開始となりました。<br>今回は、このサービスを活用し、記事推薦システムを構築した話をしたいと思います。</p>
+<h2 id="目次"><a href="#目次" class="headerlink" title="目次"></a>目次</h2><!-- toc -->
+<ul>
+<li><a href="#amazon-personalize-とは">Amazon Personalize とは</a></li>
+<li><a href="#amazon-personalize-のワークフロー">Amazon Personalize のワークフロー</a><ul>
+<li><a href="#1-学習データセットをインポートする">1. 学習データセットをインポートする</a></li>
+<li><a href="#2-ソリューションバージョンを作成する">2. ソリューションバージョンを作成する</a></li>
+<li><a href="#3-キャンペーンを作成する">3. キャンペーンを作成する</a></li>
+<li><a href="#4-レコメンドリストを取得する">4. レコメンドリストを取得する</a></li>
+</ul>
+</li>
+<li><a href="#amazon-personalize-を活用した記事推薦システム">Amazon Personalize を活用した記事推薦システム</a><ul>
+<li><a href="#1-cloudfront-で出力される-mmm-ブログのアクセスログを-s3-に保存する">1. CloudFront で出力される MMM ブログのアクセスログを S3 に保存する</a></li>
+<li><a href="#2-athena-でアクセスログから学習用データセットを抽出する">2. Athena でアクセスログから学習用データセットを抽出する</a></li>
+<li><a href="#3-step-functions-で-personalize-のワークフローを実行">3. Step Functions で Personalize のワークフローを実行</a></li>
+<li><a href="#4-api-gateway-lambda-dynamodb-で-webapi-を実装">4. API Gateway + Lambda + DynamoDB で WebAPI を実装</a></li>
+</ul>
+</li>
+<li><a href="#今後の展開">今後の展開</a></li>
+<li><a href="#おわりに">おわりに</a></li>
+</ul>
+<!-- tocstop -->
+<h2 id="amazon-personalize-とは"><a href="#Amazon-Personalize-とは" class="headerlink" title="Amazon Personalize とは"></a>Amazon Personalize とは</h2><p>Amazon Personalize<br><a href="https://aws.amazon.com/jp/personalize/" target="_blank" rel="noopener">https://aws.amazon.com/jp/personalize/</a></p>
+<p>Amazon Personalize は、機械学習の知識がなくても、レコメンド機能を簡単に開発することができるサービスです。EC サイトである Amazon.com で実際に使われている技術を基にしていて、同サイトでよく見かける以下のようなレコメンド機能を開発することができます。</p>
+<ul>
+<li>パーソナライズされたレコメンド(「あなたにおすすめな商品はこちら」)</li>
+<li>類似商品レコメンド(「この商品を買った人はこんな商品も買っています」)</li>
+</ul>
+<p><strong>これらの機能を開発するために必要なことは、インタラクションデータ(CSVファイル)を用意することだけです。</strong>インタラクションとは、<code>ユーザー</code> が <code>商品</code> に対して行った行為(クリック/購入/いいね評価など)のことを指します。</p>
+<p>用意したインタラクションデータを Personalize にインポートすれば、学習させることができます。<strong>学習用アルゴリズムの実装や学習用パラメータの調整など、機械学習の知識が必要となってくるような部分に関しては Personalize が面倒をみてくれます。</strong>学習が終わると、レコメンド機能が使えるようになります。</p>
+<p>今回は、このサービスを活用して構築した<strong>記事推薦システム</strong>についてご紹介したいと思います。</p>
+<p>その前に、Personalize の用語やワークフローを簡単にご紹介します。</p>
+<h2 id="amazon-personalize-のワークフロー"><a href="#Amazon-Personalize-のワークフロー" class="headerlink" title="Amazon Personalize のワークフロー"></a>Amazon Personalize のワークフロー</h2><p>Personalize のワークフローは以下のようになります。</p>
+<ol>
+<li>学習データセットをインポートする</li>
+<li>ソリューションバージョンを作成する</li>
+<li>キャンペーンを作成する</li>
+<li>レコメンドリストを取得する</li>
+</ol>
+<h3 id="1-学習データセットをインポートする"><a href="#1-学習データセットをインポートする" class="headerlink" title="1. 学習データセットをインポートする"></a>1. 学習データセットをインポートする</h3><p>Personalize で使用する学習データセットは、以下の三種類あります。</p>
+<ul>
+<li>Interactions (ユーザーとアイテムのインタラクションデータ)</li>
+<li>Users (ユーザーのメタデータ)</li>
+<li>Items (アイテムのメタデータ)</li>
+</ul>
+<p><img src="/images/uchiko/personalize-article-recommend/dataset_list.png" alt=""></p>
+<p>それぞれ1つのCSVファイルとしてインポートします。</p>
+<p>Interactions のみが必須で、 Users や Items は次のステップで選択するレシピによっては必須になる場合があります。Interactions は、<code>ユーザー</code> と <code>アイテム</code> の間の過去のインタラクション(クリック/購入/評価など)を含んだCSVデータで、以下の3つのカラムを含みます。</p>
+<ul>
+<li><code>TIMESTAMP</code> </li>
+<li><code>USER_ID</code></li>
+<li><code>ITEM_ID</code></li>
+</ul>
+<p>CSVファイルはS3に配置し、Personalize に読み込ませてインポートします。</p>
+<p><img src="/images/uchiko/personalize-article-recommend/dataset_import_job.png" alt=""></p>
+<h3 id="2-ソリューションバージョンを作成する"><a href="#2-ソリューションバージョンを作成する" class="headerlink" title="2. ソリューションバージョンを作成する"></a>2. ソリューションバージョンを作成する</h3><p>ソリューションバージョンとは Personalize の用語で、学習モデルのことです。</p>
+<p>ソリューションバージョンを作成するためには、事前に用意されているレシピを選択します。レシピとは、Personalize の用語で、学習用アルゴリズムのことです。Personalize が自動でレシピを選択する設定もできます。前述したとおり、レシピによっては Users や Items のデータセットが必要となってきます。</p>
+<p><img src="/images/uchiko/personalize-article-recommend/create_solution.png" alt=""></p>
+<p>Personalize は、選択されたレシピに従って、インポートされたデータセットを学習し、ソリューションバージョンを作成します。</p>
+<h3 id="3-キャンペーンを作成する"><a href="#3-キャンペーンを作成する" class="headerlink" title="3. キャンペーンを作成する"></a>3. キャンペーンを作成する</h3><p>キャンペーンとは Personalize の用語で、デプロイされたソリューションバージョンのことです。</p>
+<p>レコメンドリストを取得する場合は、キャンペーンを通じて取得する流れになります。キャンペーンとしてデプロイされていないソリューションバージョンからは取得できません。</p>
+<p>Personalize は、選択されたソリューションバージョンを基に、キャンペーンを作成します。</p>
+<p><img src="/images/uchiko/personalize-article-recommend/create_campaign.png" alt=""></p>
+<p>デプロイした後は、使用するソリューションバージョンを変更することもできます。</p>
+<p><strong>注意が必要なのが、キャンペーンにかかる費用です。</strong><br>キャンペーンを動かし続けているだけで、月に最低1万円弱はかかります。<br>また、キャンペーンに短時間にリクエストを送った場合も、無視できない費用がかかります。<strong>テストで作成した複数のキャンペーンを放置したり、テストでリクエストを短時間で送ったりしないよう</strong>に注意する必要があります。</p>
+<h3 id="4-レコメンドリストを取得する"><a href="#4-レコメンドリストを取得する" class="headerlink" title="4. レコメンドリストを取得する"></a>4. レコメンドリストを取得する</h3><p>キャンペーンからレコメンドリストを取得するには、AWS コンソールや SDK を使います。取得する際に渡す引数は、レコメンドの種別によって異なります。</p>
+<p><img src="/images/uchiko/personalize-article-recommend/get_recommendations.png" alt=""></p>
+<p>以上で、 Personalize のワークフローを見てきました。</p>
+<p>次に、このサービスを活用して開発した記事推薦システムについてご紹介します。</p>
+<h2 id="amazon-personalize-を活用した記事推薦システム"><a href="#Amazon-Personalize-を活用した記事推薦システム" class="headerlink" title="Amazon Personalize を活用した記事推薦システム"></a>Amazon Personalize を活用した記事推薦システム</h2><p>Amazon Personalize を活用して、ブログ記事を推薦するシステムを開発しました。このシステムは、ブログの読者が現在読んでいる記事に関連する記事(<strong>「この記事を読んでいる人は、こんな記事も読んでいます」</strong>)を表示する機能を提供します。</p>
+<p>アーキテクチャは、<strong>Personalize/Lambda/Athena/StepFunctions などを用いたサーバレス構成</strong>となっています。</p>
+<p><img src="/images/uchiko/personalize-article-recommend/arch.png" alt=""></p>
+<p>このアーキテクチャにしたのは、以下のような目的があります。</p>
+<ul>
+<li>定期的に最新のデータセットで学習させて精度の高い記事推薦を行う</li>
+<li>Web API を用意することによって、記事推薦表示機能の導入を容易にする</li>
+<li>サーバレスで構築することによって、システムの運用コストを下げる</li>
+</ul>
+<p>これらを実現するために、以下のような実装を行っています。</p>
+<ol>
+<li><strong>CloudFront</strong> で出力される MMM ブログのアクセスログを <strong>S3</strong> に保存する</li>
+<li><strong>Athena</strong> でアクセスログから学習用データセットを抽出する</li>
+<li><strong>Step Functions</strong> で <strong>Personalize</strong> のワークフローを実行</li>
+<li><strong>API Gateway</strong> + <strong>Lambda</strong> + <strong>DynamoDB</strong> で WebAPI を実装</li>
+</ol>
+<p>各種実装について、解説していきたいと思います。</p>
+<h3 id="1-cloudfront-で出力される-mmm-ブログのアクセスログを-s3-に保存する"><a href="#1-CloudFront-で出力される-MMM-ブログのアクセスログを-S3-に保存する" class="headerlink" title="1. CloudFront で出力される MMM ブログのアクセスログを S3 に保存する"></a>1. CloudFront で出力される MMM ブログのアクセスログを S3 に保存する</h3><p>まずはじめに、学習用データセットの基となるアクセスログを取得できるようにします。MMM ブログは CloudFront 経由で配信されているため、 S3 にアクセスログを出力させるように設定します。設定方法や仕組みについては、以下のページをご参照ください。</p>
+<p>アクセスログの設定および使用<br><a href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/AccessLogs.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/AccessLogs.html</a></p>
+<h3 id="2-athena-でアクセスログから学習用データセットを抽出する"><a href="#2-Athena-でアクセスログから学習用データセットを抽出する" class="headerlink" title="2. Athena でアクセスログから学習用データセットを抽出する"></a>2. Athena でアクセスログから学習用データセットを抽出する</h3><p>Athena は、S3 に保存されているデータを SQL で取得可能にするサーバレスなサービスです。今回は CloudFront のアクセスログから 学習用データセットを抽出するために使用しています。</p>
+<p>まず、S3 バケットにある CSV ファイルに対応付けるテーブルを定義します。以下のクエリで、テーブルを作成しています。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">EXTERNAL</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> cf_logs (</span><br><span class="line">    request_date <span class="keyword">STRING</span>,</span><br><span class="line">    request_time <span class="keyword">STRING</span>,</span><br><span class="line">    x_edge_location <span class="keyword">STRING</span>,</span><br><span class="line">    sc_bytes <span class="built_in">INT</span>,</span><br><span class="line">    client_ip <span class="keyword">STRING</span>,</span><br><span class="line">    cs_method <span class="keyword">STRING</span>,</span><br><span class="line">    cs_host <span class="keyword">STRING</span>,</span><br><span class="line">    cs_uri_stem <span class="keyword">STRING</span>,</span><br><span class="line">    sc_status <span class="keyword">STRING</span>,</span><br><span class="line">    cs_referer <span class="keyword">STRING</span>,</span><br><span class="line">    user_agent <span class="keyword">STRING</span>,</span><br><span class="line">    uri_query <span class="keyword">STRING</span>,</span><br><span class="line">    cookie <span class="keyword">STRING</span>,</span><br><span class="line">    x_edge_result_type <span class="keyword">STRING</span>,</span><br><span class="line">    x_edge_request_id <span class="keyword">STRING</span>,</span><br><span class="line">    x_host_header <span class="keyword">STRING</span>,</span><br><span class="line">    cs_protocol <span class="keyword">STRING</span>,</span><br><span class="line">    cs_bytes <span class="built_in">INT</span>,</span><br><span class="line">    time_taken <span class="built_in">DECIMAL</span>(<span class="number">8</span>,<span class="number">3</span>),</span><br><span class="line">    x_forwarded_for <span class="keyword">STRING</span>,</span><br><span class="line">    ssl_protocol <span class="keyword">STRING</span>,</span><br><span class="line">    ssl_cipher <span class="keyword">STRING</span>,</span><br><span class="line">    x_edge_response_result_type <span class="keyword">STRING</span>,</span><br><span class="line">    cs_protocol_version <span class="keyword">STRING</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">ROW</span> <span class="keyword">FORMAT</span> SERDE <span class="string">'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'</span></span><br><span class="line"><span class="keyword">WITH</span> SERDEPROPERTIES (</span><br><span class="line">    <span class="string">'serialization.format'</span> = <span class="string">'\t'</span>,</span><br><span class="line">    <span class="string">'input.regex'</span> = <span class="string">'\t'</span></span><br><span class="line">)</span><br><span class="line">LOCATION <span class="string">'s3://bucket/blog'</span></span><br><span class="line">TBLPROPERTIES (<span class="string">'has_encrypted_data'</span>=<span class="string">'false'</span>);</span><br></pre></td></tr></table></figure>
+<p>SQL 内の <code>LOCATION</code> で、S3 バケットを指定しています。テーブルのカラムは、CSV のフォーマットに合わせて、名前付けを行っています。今回主に使うカラムは、以下のとおりです。</p>
+<table>
+<thead>
+<tr>
+<th>カラム名</th>
+<th>概要</th>
+<th>使用目的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>request_date</td>
+<td>アクセス日時</td>
+<td>TIMESTAMPとして使用</td>
+</tr>
+<tr>
+<td>request_time</td>
+<td>アクエス時刻</td>
+<td>TIMESTAMPとして使用</td>
+</tr>
+<tr>
+<td>client_ip</td>
+<td>アクセス元IPアドレス</td>
+<td>USER_ID として使用</td>
+</tr>
+<tr>
+<td>cs_uri_stem</td>
+<td>ブログ記事URI</td>
+<td>ITEM_ID として使用</td>
+</tr>
+</tbody>
+</table>
+<p>以下のように、抽出用クエリでは、これらのカラムを SELECT する形となっています。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">  <span class="keyword">CAST</span>(to_unixtime(date_parse(request_date || <span class="string">' '</span> || request_time, <span class="string">'%Y-%m-%d %H:%i:%s'</span>)) <span class="keyword">AS</span> <span class="built_in">INTEGER</span>) <span class="keyword">AS</span> <span class="keyword">TIMESTAMP</span>,</span><br><span class="line">  cs_uri_stem <span class="keyword">AS</span> ITEM_ID,</span><br><span class="line">  client_ip  <span class="keyword">AS</span> USER_ID</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  cf_logs</span><br><span class="line"><span class="keyword">WHERE</span></span><br><span class="line">  <span class="keyword">regexp_like</span>(cs_uri_stem, <span class="string">'^/blog/[0-9]&#123;4&#125;/[0-9]&#123;2&#125;/[0-9]&#123;2&#125;/[0-9a-zA-Z_-]+/$'</span>)</span><br><span class="line">  <span class="keyword">AND</span> request_date <span class="keyword">BETWEEN</span> <span class="string">'###start_date###'</span> <span class="keyword">AND</span> <span class="string">'###end_date###'</span></span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span></span><br><span class="line">  request_date, request_time, cs_uri_stem, client_ip</span><br></pre></td></tr></table></figure>
+<p>クエリ結果は、S3 に CSV ファイルとして保存します。内容の一部は以下のようになっています(xxx.xxx.xxx.xxxの部分は実際はIPアドレス)。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&quot;TIMESTAMP&quot;,&quot;ITEM_ID&quot;,&quot;USER_ID&quot;</span><br><span class="line">&quot;1569896114&quot;,&quot;/blog/2016/09/23/android_smartphone/&quot;,&quot;xxx.xxx.xxx.xxx&quot;</span><br><span class="line">&quot;1569909332&quot;,&quot;/blog/2018/11/16/markdown-to-pdf-document/&quot;,&quot;xxx.xxx.xxx.xxx&quot;</span><br><span class="line">&quot;1569886114&quot;,&quot;/blog/2015/07/18/aws-solution-architect/&quot;,&quot;xxx.xxx.xxx.xxx&quot;</span><br><span class="line">&quot;1569861564&quot;,&quot;/blog/2017/07/14/serverless-dev-flow/&quot;,&quot;xxx.xxx.xxx.xxx&quot;</span><br><span class="line">&quot;1569847637&quot;,&quot;/blog/2019/02/09/appsync-lambda-golang/&quot;,&quot;xxx.xxx.xxx.xxx&quot;</span><br><span class="line">&quot;1569839945&quot;,&quot;/blog/2018/11/16/markdown-to-pdf-document/&quot;,&quot;xxx.xxx.xxx.xxx&quot;</span><br><span class="line">&quot;1569880794&quot;,&quot;/blog/2019/01/27/about-setapp/&quot;,&quot;xxx.xxx.xxx.xxx&quot;</span><br><span class="line">&quot;1569894938&quot;,&quot;/blog/2016/02/05/css_arrow/&quot;,&quot;xxx.xxx.xxx.xxx&quot;</span><br><span class="line">&quot;1569847498&quot;,&quot;/blog/2016/02/05/css_arrow/&quot;,&quot;xxx.xxx.xxx.xxx&quot;</span><br><span class="line">&quot;1569821458&quot;,&quot;/blog/2015/07/18/aws-solution-architect/&quot;,&quot;xxx.xxx.xxx.xxx&quot;</span><br><span class="line">&quot;1569906304&quot;,&quot;/blog/2017/08/04/css_shapes/&quot;,&quot;xxx.xxx.xxx.xxx&quot;</span><br><span class="line">&quot;1569842664&quot;,&quot;/blog/2015/12/12/aws_lambda/&quot;,&quot;xxx.xxx.xxx.xxx&quot;</span><br><span class="line">&quot;1569899293&quot;,&quot;/blog/2018/03/22/sql_order_by/&quot;,&quot;xxx.xxx.xxx.xxx&quot;</span><br><span class="line">&quot;1569850602&quot;,&quot;/blog/2019/08/11/communication-stack/&quot;,&quot;xxx.xxx.xxx.xxx&quot;</span><br><span class="line">&quot;1569909527&quot;,&quot;/blog/2018/05/19/cloudwatch_custom_metrics/&quot;,&quot;xxx.xxx.xxx.xxx&quot;</span><br><span class="line">&quot;1569849534&quot;,&quot;/blog/2015/12/21/redux-test/&quot;,&quot;xxx.xxx.xxx.xxx&quot;</span><br></pre></td></tr></table></figure>
+<p>この CSV ファイルがそのまま Personalize の学習用データセットとしてインポートされます。</p>
+<h3 id="3-step-functions-で-personalize-のワークフローを実行"><a href="#3-Step-Functions-で-Personalize-のワークフローを実行" class="headerlink" title="3. Step Functions で Personalize のワークフローを実行"></a>3. Step Functions で Personalize のワークフローを実行</h3><p>Step Functions は、複数の Lambda を組み合わせて、バッチ処理を実装できるサービスです。</p>
+<p>Personalize ワークフロー(データセットインポート・学習・デプロイ)は Step Functions で実行するように実装しています。</p>
+<p>Athena によって作成される CSV ファイルが S3 に保存されたときにイベントが発火するように設定します。S3 のイベント設定から直接 Step Functions を実行することは現在できないため、Cloud Trail 経由で行うように設定します。</p>
+<p>Amazon S3​ イベント発生時にステートマシンの実行を開始する<br><a href="https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/tutorial-cloudwatch-events-s3.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/tutorial-cloudwatch-events-s3.html</a></p>
+<p>データインポート処理のために定義した Step Functions のステートマシンは、以下のような形になっています。</p>
+<p><img src="/images/uchiko/personalize-article-recommend/sm_import_dataset.png" alt=""></p>
+<p>処理の流れは以下のようになっています。</p>
+<ol>
+<li><code>ImportDataset</code> で、データセットインポートジョブを作成する Lambda 関数を実行する</li>
+<li><code>IsFinishImportDataset</code> で、データセットインポートジョブのステータスを確認して、終了しているかどうかのフラグを立てる Lambda 関数を実行する</li>
+<li><code>DataImportChoice</code> で、フラグを確認し、true であれば <code>DataImportChoiceDone</code>、false であれば、<code>DataImportWait</code> に処理を遷移させる</li>
+<li><code>DataImportWait</code> で、1分間処理を停止し、<code>IsFinishImportDataset</code> へ戻る</li>
+</ol>
+<p>学習やデプロイの処理も同じように実装していて、合計3つのステートマシンを作成しました。さらにこの3つをすべて実行するステートマシンも実装しています。</p>
+<p><img src="/images/uchiko/personalize-article-recommend/sm_all.png" alt=""></p>
+<p><code>ImportDataset</code> <code>CreateRecommendModel_sims_CreateRecommendModel</code> <code>CreateRecommendModel_sims_CreateRecommender</code> がそれぞれの処理を行うステートマシンです。</p>
+<p>このステートマシンが実行されると、Personalize にキャンペーンが作成されます。</p>
+<p>ちなみに、以下のように Go 言語で、ステートマシンの処理の流れを記述すると、</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ImportDataset データセットインポート処理</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ImportDataset</span><span class="params">(b *StateMachineBuilder)</span> *<span class="title">StepFunctionDefinition</span></span> &#123;</span><br><span class="line">        <span class="keyword">return</span> b.StepFunctionDef(</span><br><span class="line">                <span class="string">"DataImport"</span>,</span><br><span class="line">                &amp;mainlambda.ImportDatasetInput&#123;&#125;,</span><br><span class="line">                b.ItrStateMachineDef(</span><br><span class="line">                        b.TaskFuncWithCatcher(mainlambda.ImportDataset, <span class="string">"ImportDatasetCatch"</span>),</span><br><span class="line">                        b.TaskFuncWithCatcher(mainlambda.IsFinishImportDataset, <span class="string">"IsFinishImportDatasetCatch"</span>),</span><br><span class="line">                        <span class="string">"DataImportChoice"</span>,</span><br><span class="line">                        *b.StepFunctionWithStates(</span><br><span class="line">                                <span class="string">"DataImportWait"</span>,</span><br><span class="line">                                <span class="literal">nil</span>,</span><br><span class="line">                                b.Wait(<span class="string">"DataImportWait"</span>, FinishCheckIntervalSeconds),</span><br><span class="line">                        ),</span><br><span class="line">                        <span class="function"><span class="keyword">func</span><span class="params">(doneState *PassState)</span></span> &#123;</span><br><span class="line">                                doneState.OutputPath = <span class="string">"$.job_id"</span></span><br><span class="line">                        &#125;))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Lambda 関数エントリポイントになるハンドラーの自動生成</li>
+<li>Serverless Framework の Lambda 設定と StepFunctions 設定の自動生成</li>
+</ul>
+<p>が行われる仕組みを実装しています。<br>この部分については、また別の機会でご紹介します。</p>
+<h3 id="4-api-gateway-lambda-dynamodb-で-webapi-を実装"><a href="#4-API-Gateway-Lambda-DynamoDB-で-WebAPI-を実装" class="headerlink" title="4. API Gateway + Lambda + DynamoDB で WebAPI を実装"></a>4. API Gateway + Lambda + DynamoDB で WebAPI を実装</h3><p>API Gateway + Lambda + DynamoDB で、WebAPI を実装します。ブログページ上の JavaScript から Web API 経由で推薦記事を取得できる想定となっています。</p>
+<p>DynamoDB は、Personalize で取得したレコメンドリストのキャッシュを保存するために使用します。もし、何かの記事がバズったときに、短時間のうちにレコメンド取得リクエストが Personalize に行かないようにしています。<strong>短時間のうちにリクエストが行くと、莫大な料金がかかってしまう恐れがあるためです</strong>。</p>
+<p>Web API を curl コマンドで叩くと以下のような結果が返ってきます。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">$ curl https://xxxxxxxxxx.execute-api.ap-northeast-1.amazonaws.com/d/v1/similar_articles\?article_id\=/blog/2019/10/28/sc_exam/ | jq</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"articles"</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"url"</span>: <span class="string">"/blog/2017/05/01/study-first/"</span>,</span><br><span class="line">      <span class="string">"title"</span>: <span class="string">"新人プログラマの時に知っておきたかった1年目に本当に勉強すべきこと"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"url"</span>: <span class="string">"/blog/2017/04/24/problem-solving/"</span>,</span><br><span class="line">      <span class="string">"title"</span>: <span class="string">"新人プログラマの時に知っておきたかったハマったときのフローチャートと基本思考"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"url"</span>: <span class="string">"/blog/2018/11/16/markdown-to-pdf-document/"</span>,</span><br><span class="line">      <span class="string">"title"</span>: <span class="string">"Markdownを印刷しやすいPDFにする時に私がしていること"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"url"</span>: <span class="string">"/blog/2015/07/18/aws-solution-architect/"</span>,</span><br><span class="line">      <span class="string">"title"</span>: <span class="string">"新卒入社4ヶ月でAWS 認定ソリューションアーキテクトに合格した話"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"url"</span>: <span class="string">"/blog/2018/01/30/adobe-xd_archives-pdf/"</span>,</span><br><span class="line">      <span class="string">"title"</span>: <span class="string">"Adobe XDのプロトタイプをPDFで保存する"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"url"</span>: <span class="string">"/blog/2017/07/14/serverless-dev-flow/"</span>,</span><br><span class="line">      <span class="string">"title"</span>: <span class="string">"Serverless Framework+Node.jsをつかったLambda関数の開発フロー"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"url"</span>: <span class="string">"/blog/2014/10/30/active-resourrce-patch/"</span>,</span><br><span class="line">      <span class="string">"title"</span>: <span class="string">"ActiveResourceでGET送信時に配列で渡す"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"url"</span>: <span class="string">"/blog/2018/11/11/postman/"</span>,</span><br><span class="line">      <span class="string">"title"</span>: <span class="string">"Postmanを使ってProxy経由でAPIにアクセスする方法"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"url"</span>: <span class="string">"/blog/2017/01/20/far-sightedness/"</span>,</span><br><span class="line">      <span class="string">"title"</span>: <span class="string">"PC仕事と遠視について"</span></span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>この Web API は、実際に JavaScript などのコードから実行されることになります。</p>
+<p>以上が、実装の解説となります。</p>
+<h2 id="今後の展開"><a href="#今後の展開" class="headerlink" title="今後の展開"></a>今後の展開</h2><p>今回は、ブログ記事推薦システムを構築しましたが、Personalize は様々なユースケースに対応しているので、別のレコメンデーションシステムを構築することも可能です。<br>例えば、</p>
+<ul>
+<li>パーソナライズされたレコメンデーション、検索、通知システムを導入する</li>
+<li>商品の評価に応じた類似表品レコメンデーションシステムを導入する</li>
+<li>WordPress などの CMS で構築された Web ページにレコメンデーション機能を導入する</li>
+</ul>
+<p>といったケースです。今回構築したシステムでは、<strong>一部のコンポーネントを入れ替えるだけで、これらのケースに対応させることが可能となっています</strong>。</p>
+<p>また、実装解説には入れませんでしたが、Serverless Framework や Terraform を利用した Infrastructure as Code も行っているので、別の AWS 環境にデプロイしていくことも可能になっています。</p>
+<p>今後は、サーバレスを活用した機械学習システムの構築を、さらに容易に行えるようにしていきたいと考えています。</p>
+<h2 id="おわりに"><a href="#おわりに" class="headerlink" title="おわりに"></a>おわりに</h2><p>Amazon Personalize を活用した事例として、記事推薦システムの構築についてご紹介しました。</p>
+<p>MMM ブログは WordPress に移行予定で、そのタイミングで記事推薦システムが導入されます。近日中に推薦記事が表示されるようになりますので、ご期待ください。</p>
+<p>MMM では、Amazon Personalize やサーバレスシステムのご相談をお待ちしております。<br><a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank" rel="noopener">https://mmmcorp.co.jp/service/serverlessarchitecture</a></p>
+<p>また、機械学習やサーバレスを活用した開発をしたいエンジニアを募集しています。<br><a href="https://www.wantedly.com/projects/10749" target="_blank" rel="noopener">https://www.wantedly.com/projects/10749</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/11/14/personalize-article-recommend/" data-text="Amazon Personalize を活用した記事推薦システムを MMM ブログに導入する話" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/11/14/personalize-article-recommend/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/11/14/personalize-article-recommend/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/11/14/personalize-article-recommend/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/11/14/personalize-article-recommend/" class="hatena-bookmark-button" data-hatena-bookmark-title="Amazon Personalize を活用した記事推薦システムを MMM ブログに導入する話" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Amazon-Personalize/">Amazon Personalize</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/機械学習/">機械学習</a></li></ul>
+
+
+      <p class="article-footer__author">by 内山 浩佑</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

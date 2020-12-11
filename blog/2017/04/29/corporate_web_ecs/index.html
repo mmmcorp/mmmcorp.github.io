@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Amazon EC2 Container Service (ECS) と CircleCI を活用した Docker ベースなコーポレートサイト | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="コーポレートサイトを一部リニューアル今月のはじめに、弊社のコーポレートサイトを一部リニューアルしている。内容だけではなく、バックエンドのシステム側も AWS OpsWorks を使って構築した環境へデプロイしていたものから、 Amazon EC2 Container Service (ECS) を使った Docker ベースのものへと変更している。弊社では、これまで開発環境では Docker を使">
+<meta name="keywords" content="AWS,インフラ,Docker,サーバサイド,ECS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Amazon EC2 Container Service (ECS) と CircleCI を活用した Docker ベースなコーポレートサイト">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2017/04/29/corporate_web_ecs/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="コーポレートサイトを一部リニューアル今月のはじめに、弊社のコーポレートサイトを一部リニューアルしている。内容だけではなく、バックエンドのシステム側も AWS OpsWorks を使って構築した環境へデプロイしていたものから、 Amazon EC2 Container Service (ECS) を使った Docker ベースのものへと変更している。弊社では、これまで開発環境では Docker を使">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.146Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Amazon EC2 Container Service (ECS) と CircleCI を活用した Docker ベースなコーポレートサイト">
+<meta name="twitter:description" content="コーポレートサイトを一部リニューアル今月のはじめに、弊社のコーポレートサイトを一部リニューアルしている。内容だけではなく、バックエンドのシステム側も AWS OpsWorks を使って構築した環境へデプロイしていたものから、 Amazon EC2 Container Service (ECS) を使った Docker ベースのものへと変更している。弊社では、これまで開発環境では Docker を使">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-corporate-web-ecs" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2017-04-29T11:33:18.000Z" itemprop="datePublished">2017-04-29</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2017/04/29/corporate_web_ecs/">Amazon EC2 Container Service (ECS) と CircleCI を活用した Docker ベースなコーポレートサイト</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/04/29/corporate_web_ecs/" data-text="Amazon EC2 Container Service (ECS) と CircleCI を活用した Docker ベースなコーポレートサイト" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/04/29/corporate_web_ecs/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/04/29/corporate_web_ecs/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/04/29/corporate_web_ecs/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/04/29/corporate_web_ecs/" class="hatena-bookmark-button" data-hatena-bookmark-title="Amazon EC2 Container Service (ECS) と CircleCI を活用した Docker ベースなコーポレートサイト" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="コーポレートサイトを一部リニューアル"><a href="#コーポレートサイトを一部リニューアル" class="headerlink" title="コーポレートサイトを一部リニューアル"></a>コーポレートサイトを一部リニューアル</h2><p>今月のはじめに、弊社のコーポレートサイトを一部リニューアルしている。<br>内容だけではなく、バックエンドのシステム側も <a href="https://aws.amazon.com/jp/opsworks/" target="_blank" rel="noopener">AWS OpsWorks</a> を使って構築した環境へデプロイしていたものから、 <a href="https://aws.amazon.com/jp/ecs/" target="_blank" rel="noopener">Amazon EC2 Container Service (ECS)</a> を使った <code>Docker</code> ベースのものへと変更している。<br>弊社では、これまで開発環境では <code>Docker</code> を使っていたが、本番環境での <code>Docker</code> 運用はしていなかった。　　<br>そろそろ本番環境でも <code>Docker</code> を使った環境に移行したいと思い、 <code>ECS</code> 環境への移行を行った。<br>今回は、その移行の際のポイントをまとめてみたいと思う。</p>
+<h2 id="docker-hub"><a href="#Docker-Hub" class="headerlink" title="Docker Hub"></a>Docker Hub</h2><ul>
+<li>前述のとおり、開発では <code>Docker</code> を使っており、<a href="https://hub.docker.com/" target="_blank" rel="noopener">Docker Hub</a> を使っていたので、そのまま <code>ECS</code> でも <a href="https://hub.docker.com/" target="_blank" rel="noopener">Docker Hub</a> を使っている(今回は <a href="https://aws.amazon.com/jp/ecr/" target="_blank" rel="noopener">Amazon EC2 Container Registry (ECR)</a> は使わない)</li>
+<li><a href="https://hub.docker.com/" target="_blank" rel="noopener">Docker Hub</a> にはあらかじめ <code>Ruby on Rails</code> で稼働している弊社コーポレートサイトが一通り動作する、ビルド済みのベースとなるイメージを置く</li>
+<li>開発時や、 <code>CircleCI</code> でテストを実行する際は、そのベースイメージを <code>Pull</code> してアプリケーションのソースを追加、テストが通ったら、アセットファイル群をプリコンパイルして、デプロイ。そうすることで、0からビルドするよりは時間の短縮が出来る</li>
+<li><code>AWS ECR</code> ではなくて、<a href="https://hub.docker.com/" target="_blank" rel="noopener">Docker Hub</a> を使う場合、 <code>ECS</code> 対応 <code>AMI</code> の場合は下記のように <code>/etc/ecs/ecs.config</code> に追加する必要がある</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ECS_ENGINE_AUTH_TYPE=docker</span><br><span class="line">ECS_ENGINE_AUTH_DATA=&#123;<span class="string">"https://index.docker.io/v1/"</span>:&#123;<span class="string">"username"</span>:<span class="string">"ユーザー名"</span>,<span class="string">"password"</span>:<span class="string">"パスワード"</span>,<span class="string">"email"</span>:<span class="string">"メールアドレス"</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>【参考URL】<a href="http://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/private-auth.html" target="_blank" rel="noopener">プライベートレジストリの認証 - Amazon EC2 Container Service</a></p>
+</li>
+<li><p>これを、 <code>EC2</code> インスタンス起動時に追加できるように、 <code>EC2</code> のユーザーデータに設定</p>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"ECS_ENGINE_AUTH_TYPE=docker"</span> &gt;&gt; /etc/ecs/ecs.config</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'ECS_ENGINE_AUTH_DATA=&#123;"https://index.docker.io/v1/":&#123;"username":"ユーザー名","password":"パスワード","email":"メールアドレス"&#125;&#125;'</span> &gt;&gt; /etc/ecs/ecs.config</span><br></pre></td></tr></table></figure>
+<ul>
+<li>【参考URL】<a href="http://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/user-data.html" target="_blank" rel="noopener">Linux インスタンスでの起動時のコマンドの実行 - Amazon Elastic Compute Cloud</a></li>
+</ul>
+<h2 id="circleci"><a href="#CircleCI" class="headerlink" title="CircleCI"></a>CircleCI</h2><ul>
+<li><code>CircleCI</code> のバージョンは、ベータ中の <code>2.0</code> の検証がまだ出来ていないので、 <code>1.0</code> を使用</li>
+<li><code>2.0</code> では <code>docker-compose</code> が使えたり、かなり便利になっているようなので、検証が出来次第そちらに移行したいと考えている</li>
+<li>【参考URL】<a href="https://circleci.com/docs/2.0/docker-compose/" target="_blank" rel="noopener">Using docker-compose - CircleCI</a></li>
+</ul>
+<h4 id="docker-コンテナのビルド-キャッシュ"><a href="#Docker-コンテナのビルド、キャッシュ" class="headerlink" title="Docker コンテナのビルド、キャッシュ"></a>Docker コンテナのビルド、キャッシュ</h4><ul>
+<li>ビルドしたコンテナは、 <code>tar</code> ファイルとして保持しておく</li>
+<li>ビルド実行時に、 <code>tar</code> ファイルを読み込んで、ビルドを高速化</li>
+<li><code>tar</code> ファイルが配置されている <code>~/docker</code> ディレクトリはキャッシュする設定を追加</li>
+</ul>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">dependencies:</span></span><br><span class="line"><span class="attr">  cache_directories:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">"~/docker"</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  override:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">if</span> <span class="string">[[</span> <span class="bullet">-e</span> <span class="string">~/docker/image.tar</span> <span class="string">]];</span> <span class="string">then</span> <span class="string">docker</span> <span class="string">load</span> <span class="bullet">-i</span> <span class="string">~/docker/image.tar;</span> <span class="string">fi</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">docker</span> <span class="string">build</span> <span class="bullet">--rm=false</span> <span class="bullet">-t</span> <span class="string">app</span> <span class="string">.</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">mkdir</span> <span class="bullet">-p</span> <span class="string">~/docker;</span> <span class="string">docker</span> <span class="string">save</span> <span class="string">app</span> <span class="string">&gt; ~/docker/image.tar</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>【参考URL】<a href="https://circleci.com/docs/1.0/docker/" target="_blank" rel="noopener">Continuous Integration and Delivery with Docker - CircleCI</a></li>
+</ul>
+<h4 id="テストで使う-mysql-は-docker-コンテナを使わない"><a href="#テストで使う-MySQL-は-Docker-コンテナを使わない" class="headerlink" title="テストで使う MySQL は Docker コンテナを使わない"></a>テストで使う <code>MySQL</code> は <code>Docker</code> コンテナを使わない</h4><ul>
+<li><code>CircleCI</code> 環境でデフォルトで起動する <code>MySQL</code> を使って、テストを行う( <code>DB</code> のコンテナは作成しない)</li>
+<li>アプリケーションのコンテナから、ホスト側で稼働している <code>MySQL</code> に接続するため、接続用のユーザー作成を行う</li>
+</ul>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">database:</span></span><br><span class="line"><span class="attr">  override:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">mysql</span> <span class="bullet">-uroot</span> <span class="string">mysql</span> <span class="string">&lt;</span> <span class="string">scripts/create_rails_user.sql</span></span><br></pre></td></tr></table></figure>
+<p><code>scripts/create_rails_user.sql</code> は下記のような内容。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GRANT</span> ALL <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'rails'</span>@<span class="string">'%'</span> <span class="keyword">identified</span> <span class="keyword">by</span> <span class="string">"rails"</span>;</span><br><span class="line"><span class="keyword">FLUSH</span> <span class="keyword">PRIVILEGES</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>アプリケーションのコンテナから、ホスト側で稼働している <code>MySQL</code> に接続するため、外部接続設定(<code>bind-address</code> の行をコメントアウト)を変更</li>
+</ul>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">machine:</span></span><br><span class="line"><span class="attr">  pre:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">sudo</span> <span class="string">sed</span> <span class="bullet">-Ei</span> <span class="string">'s/^(bind-address|log)/#&amp;/'</span> <span class="string">/etc/mysql/mysql.conf.d/mysqld.cnf</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>テストは、 <code>docker run</code> で、下記のように実行</li>
+</ul>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">test:</span></span><br><span class="line"><span class="attr">  override:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">docker</span> <span class="string">run</span> <span class="bullet">--add-host</span> <span class="attr">db:$(ip</span> <span class="string">addr</span> <span class="string">show</span> <span class="string">docker0</span> <span class="string">| grep "inet\b" | awk '&#123;print $2&#125;' | cut -d/ -f1) -e RAILS_DATABASE_HOST=db app bundle exec rspec spec</span></span><br></pre></td></tr></table></figure>
+<h2 id="ecs"><a href="#ECS" class="headerlink" title="ECS"></a>ECS</h2><h4 id="ログは標準出力するように"><a href="#ログは標準出力するように" class="headerlink" title="ログは標準出力するように"></a>ログは標準出力するように</h4><ul>
+<li>ログの出力を標準出力に変更して、 <code>CloudWatch</code> で確認できるように</li>
+</ul>
+<p>例えば <code>unicorn</code> の設定ファイル <code>config/unicorn.rb</code> のログファイルの設定箇所をコメントアウトして、標準出力にすることで、 <code>ECS</code> で設定している <code>CloudWatch</code> のロググループにログストリームを送信できるようになる。</p>
+<figure class="highlight rb"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># log</span></span><br><span class="line"><span class="comment"># stderr_path File.expand_path('log/unicorn.log', ENV['RAILS_ROOT'])</span></span><br><span class="line"><span class="comment"># stdout_path File.expand_path('log/unicorn.log', ENV['RAILS_ROOT'])</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>【参考URL】<a href="http://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/using_awslogs.html" target="_blank" rel="noopener">awslogs ログドライバーを使用する - Amazon EC2 Container Service</a></li>
+</ul>
+<h4 id="silinternationalecs-deploy-を使ってデプロイ"><a href="#silinternational-ecs-deploy-を使ってデプロイ" class="headerlink" title="silinternational/ecs-deploy を使ってデプロイ"></a><a href="https://github.com/silinternational/ecs-deploy" target="_blank" rel="noopener">silinternational/ecs-deploy</a> を使ってデプロイ</h4><ul>
+<li><a href="https://github.com/silinternational/ecs-deploy" target="_blank" rel="noopener">silinternational/ecs-deploy</a> を使うと、簡単に <code>Blue Green Deployment</code> が出来てしまうのでこれを利用</li>
+<li><code>CircleCI</code> からは、下記のように実行している</li>
+</ul>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="string">$(aws</span> <span class="string">ecr</span> <span class="string">get-login</span> <span class="bullet">--region</span> <span class="string">ap-northeast-1)</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">docker</span> <span class="string">tag</span> <span class="string">app</span> <span class="string">mmmcorp/corporate_web:$CIRCLE_SHA1</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">docker</span> <span class="string">push</span> <span class="string">mmmcorp/corporate_web:$CIRCLE_SHA1</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">./scripts/ecs-deploy</span> <span class="bullet">--timeout</span> <span class="string">$ECS_TIMEOUT</span> <span class="bullet">-c</span> <span class="string">$PRD_ECS_CLUSTER</span> <span class="bullet">-n</span> <span class="string">$PRD_ECS_SERVICE</span> <span class="bullet">-i</span> <span class="string">mmmcorp/corporate_web:$CIRCLE_SHA1</span></span><br></pre></td></tr></table></figure>
+<h2 id="datadog"><a href="#Datadog" class="headerlink" title="Datadog"></a>Datadog</h2><ul>
+<li>監視には、 <code>Docker</code> の監視が出来る <code>Datadog</code> を使用</li>
+<li>【参考URL】<a href="http://docs.datadoghq.com/integrations/ecs/" target="_blank" rel="noopener">Datadog-AWS ECS Integration</a></li>
+</ul>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p><code>CircleCI</code> で <code>Docker</code> コンテナをビルド、テスト実行して、 <code>ECS</code> へデプロイする際のポイントをざっくりとまとめてみた。<br>同じような環境を構築しようとしている方に、何か少しでも役に立てれば幸いである。<br><code>CircleCI 2.0</code> を使うことになった際には、また設定等の変更が必要になるので、そのときにはまた改めてブログにまとめられるといいかな、と思っている。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2017/04/29/corporate_web_ecs/" data-text="Amazon EC2 Container Service (ECS) と CircleCI を活用した Docker ベースなコーポレートサイト" data-counturl="https://blog.mmmcorp.co.jp/blog/2017/04/29/corporate_web_ecs/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2017/04/29/corporate_web_ecs/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2017/04/29/corporate_web_ecs/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2017/04/29/corporate_web_ecs/" class="hatena-bookmark-button" data-hatena-bookmark-title="Amazon EC2 Container Service (ECS) と CircleCI を活用した Docker ベースなコーポレートサイト" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/">Docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ECS/">ECS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/インフラ/">インフラ</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバサイド/">サーバサイド</a></li></ul>
+
+
+      <p class="article-footer__author">by 佐々木 悠人</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

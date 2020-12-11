@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>TerraformでRDS+Lambdaの環境を作る | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="概要Terraformを使ってRDSとLambdaの環境を作ることがあったので書いてみます。 今回作るもの最終的に、以下のような環境を作る想定です。  VPC privateサブネット RDS LambdaとEC2からのみ接続を許可     publicサブネット Lambda EC2(踏み台用) 社内sshからのみ接続を許可        Subnetまずはサブネットから作っていきます。 RDS">
+<meta name="keywords" content="AWS,サーバーレス">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TerraformでRDS+Lambdaの環境を作る">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2018/08/06/terraform-rds-lambda/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="概要Terraformを使ってRDSとLambdaの環境を作ることがあったので書いてみます。 今回作るもの最終的に、以下のような環境を作る想定です。  VPC privateサブネット RDS LambdaとEC2からのみ接続を許可     publicサブネット Lambda EC2(踏み台用) 社内sshからのみ接続を許可        Subnetまずはサブネットから作っていきます。 RDS">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.154Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TerraformでRDS+Lambdaの環境を作る">
+<meta name="twitter:description" content="概要Terraformを使ってRDSとLambdaの環境を作ることがあったので書いてみます。 今回作るもの最終的に、以下のような環境を作る想定です。  VPC privateサブネット RDS LambdaとEC2からのみ接続を許可     publicサブネット Lambda EC2(踏み台用) 社内sshからのみ接続を許可        Subnetまずはサブネットから作っていきます。 RDS">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-terraform-rds-lambda" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2018-08-06T09:15:48.000Z" itemprop="datePublished">2018-08-06</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2018/08/06/terraform-rds-lambda/">TerraformでRDS+Lambdaの環境を作る</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2018/08/06/terraform-rds-lambda/" data-text="TerraformでRDS+Lambdaの環境を作る" data-counturl="https://blog.mmmcorp.co.jp/blog/2018/08/06/terraform-rds-lambda/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2018/08/06/terraform-rds-lambda/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2018/08/06/terraform-rds-lambda/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2018/08/06/terraform-rds-lambda/" class="hatena-bookmark-button" data-hatena-bookmark-title="TerraformでRDS+Lambdaの環境を作る" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>Terraformを使ってRDSとLambdaの環境を作ることがあったので書いてみます。</p>
+<h2 id="今回作るもの"><a href="#今回作るもの" class="headerlink" title="今回作るもの"></a>今回作るもの</h2><p>最終的に、以下のような環境を作る想定です。</p>
+<ul>
+<li>VPC<ul>
+<li>privateサブネット<ul>
+<li>RDS<ul>
+<li>LambdaとEC2からのみ接続を許可</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>publicサブネット<ul>
+<li>Lambda</li>
+<li>EC2(踏み台用)<ul>
+<li>社内sshからのみ接続を許可</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="subnet"><a href="#Subnet" class="headerlink" title="Subnet"></a>Subnet</h2><p>まずはサブネットから作っていきます。</p>
+<p>RDSのサブネットグループを作るのにprivateサブネットを2つ用意します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">resource &quot;aws_vpc&quot; &quot;default&quot; &#123;</span><br><span class="line">  cidr_block = &quot;10.0.0.0/16&quot;</span><br><span class="line">  enable_dns_hostnames = true</span><br><span class="line">  tags &#123;</span><br><span class="line">    Name = &quot;your_project&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_subnet&quot; &quot;private_a&quot; &#123;</span><br><span class="line">  vpc_id            = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line">  cidr_block        = &quot;10.0.1.0/24&quot;</span><br><span class="line">  availability_zone = &quot;ap-northeast-1a&quot;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name = &quot;your_project_private_a&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_subnet&quot; &quot;private_c&quot; &#123;</span><br><span class="line">  vpc_id            = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line">  cidr_block        = &quot;10.0.2.0/24&quot;</span><br><span class="line">  availability_zone = &quot;ap-northeast-1c&quot;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name = &quot;your_project_private_c&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>LambdaとEC2用にpublicサブネットも作ります(Lambdaはインターネット通信が必要な実装をする想定)。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">resource &quot;aws_subnet&quot; &quot;public_a&quot; &#123;</span><br><span class="line">  vpc_id            = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line">  cidr_block        = &quot;10.0.3.0/24&quot;</span><br><span class="line">  availability_zone = &quot;ap-northeast-1a&quot;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name = &quot;your_project_public_a&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_subnet&quot; &quot;public_c&quot; &#123;</span><br><span class="line">  vpc_id            = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line">  cidr_block        = &quot;10.0.4.0/24&quot;</span><br><span class="line">  availability_zone = &quot;ap-northeast-1c&quot;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name = &quot;your_project_public_c&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">resource &quot;aws_internet_gateway&quot; &quot;default&quot; &#123;</span><br><span class="line">  vpc_id = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name = &quot;your_project&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_route_table&quot; &quot;default&quot; &#123;</span><br><span class="line">  vpc_id = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line"></span><br><span class="line">  route &#123;</span><br><span class="line">    cidr_block = &quot;0.0.0.0/0&quot;</span><br><span class="line">    gateway_id = &quot;$&#123;aws_internet_gateway.default.id&#125;&quot;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name = &quot;your_project&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_route_table_association&quot; &quot;public_a&quot; &#123;</span><br><span class="line">  subnet_id = &quot;$&#123;aws_subnet.public_a.id&#125;&quot;</span><br><span class="line">  route_table_id = &quot;$&#123;aws_route_table.default.id&#125;&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_route_table_association&quot; &quot;public_c&quot; &#123;</span><br><span class="line">  subnet_id = &quot;$&#123;aws_subnet.public_c.id&#125;&quot;</span><br><span class="line">  route_table_id = &quot;$&#123;aws_route_table.default.id&#125;&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="security-group"><a href="#Security-Group" class="headerlink" title="Security Group"></a>Security Group</h2><p>次にセキュリティグループを作ります。EC2のセキュリティグループでは、ssh接続を許可しています。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">resource &quot;aws_security_group&quot; &quot;ec2&quot; &#123;</span><br><span class="line">  name = &quot;your_project_ec2&quot;</span><br><span class="line">  vpc_id = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line"></span><br><span class="line">  ingress &#123;</span><br><span class="line">    from_port = 22</span><br><span class="line">    to_port = 22</span><br><span class="line">    protocol = &quot;tcp&quot;</span><br><span class="line">    description = &quot;Permit access from your custom IP&quot;</span><br><span class="line">    cidr_blocks = [&quot;your_ip&quot;]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  egress &#123;</span><br><span class="line">    from_port = 0</span><br><span class="line">    to_port = 0</span><br><span class="line">    protocol = &quot;-1&quot;</span><br><span class="line">    cidr_blocks = [&quot;0.0.0.0/0&quot;]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name = &quot;your_project&quot;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  lifecycle &#123;</span><br><span class="line">    create_before_destroy = true</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_security_group&quot; &quot;lambda&quot; &#123;</span><br><span class="line">  name = &quot;your_project_lambda&quot;</span><br><span class="line">  vpc_id = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line"></span><br><span class="line">  egress &#123;</span><br><span class="line">    from_port = 0</span><br><span class="line">    to_port = 0</span><br><span class="line">    protocol = &quot;-1&quot;</span><br><span class="line">    cidr_blocks = [&quot;0.0.0.0/0&quot;]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name = &quot;your_project&quot;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  lifecycle &#123;</span><br><span class="line">    create_before_destroy = true</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RDSのセキュリティグループでは、ingressにLambdaとEC2のセキュリティグループを指定し、その接続のみを許可します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">resource &quot;aws_security_group&quot; &quot;rds&quot; &#123;</span><br><span class="line">  name = &quot;your_project_rds&quot;</span><br><span class="line">  vpc_id = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line"></span><br><span class="line">  ingress &#123;</span><br><span class="line">    from_port = 3306</span><br><span class="line">    to_port = 3306</span><br><span class="line">    protocol = &quot;tcp&quot;</span><br><span class="line">    description = &quot;Permit access from the security group of Lambda/EC2.&quot;</span><br><span class="line">    security_groups = [&quot;$&#123;aws_security_group.lambda.id&#125;&quot;, &quot;$&#123;aws_security_group.ec2.id&#125;&quot;]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  egress &#123;</span><br><span class="line">    from_port = 0</span><br><span class="line">    to_port = 0</span><br><span class="line">    protocol = &quot;-1&quot;</span><br><span class="line">    cidr_blocks = [&quot;0.0.0.0/0&quot;]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name = &quot;your_project&quot;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  lifecycle &#123;</span><br><span class="line">    create_before_destroy = true</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="rdsインスタンス"><a href="#RDSインスタンス" class="headerlink" title="RDSインスタンス"></a>RDSインスタンス</h2><p>次にRDSインスタンスを作成します。今回はマルチAZはなしで、バックアップのみ実施します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">resource &quot;aws_db_subnet_group&quot; &quot;default&quot; &#123;</span><br><span class="line">  name = &quot;your_project&quot;</span><br><span class="line">  subnet_ids = [&quot;$&#123;aws_subnet.private_a.id&#125;&quot;, &quot;$&#123;aws_subnet.private_c.id&#125;&quot;]</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name = &quot;your_project&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_db_instance&quot; &quot;default&quot; &#123;</span><br><span class="line">  name = &quot;your_project&quot;</span><br><span class="line">  identifier = &quot;your-identifier&quot;</span><br><span class="line">  allocated_storage = 100</span><br><span class="line">  engine = &quot;mysql&quot;</span><br><span class="line">  engine_version = &quot;5.7.21&quot;</span><br><span class="line">  instance_class = &quot;db.t2.micro&quot;</span><br><span class="line">  storage_type = &quot;gp2&quot;</span><br><span class="line">  username = &quot;root&quot;</span><br><span class="line">  password = &quot;your_password&quot;</span><br><span class="line">  maintenance_window = &quot;Mon:19:00-Mon:20:00&quot;</span><br><span class="line">  backup_window = &quot;17:00-18:00&quot;</span><br><span class="line">  backup_retention_period = &quot;7&quot;</span><br><span class="line">  vpc_security_group_ids = [&quot;$&#123;aws_security_group.rds.id&#125;&quot;]</span><br><span class="line">  db_subnet_group_name = &quot;$&#123;aws_db_subnet_group.default.id&#125;&quot;</span><br><span class="line">  publicly_accessible = true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="踏み台ec2"><a href="#踏み台EC2" class="headerlink" title="踏み台EC2"></a>踏み台EC2</h2><p>最後に、デバッグ時やRDSに直接接続したいときのために踏み再サーバーを用意します。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">resource &quot;aws_key_pair&quot; &quot;default&quot; &#123;</span><br><span class="line">  key_name   = &quot;your_key_name&quot;</span><br><span class="line">  public_key = &quot;$&#123;file(your_public_key_path)&#125;&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_instance&quot; &quot;default&quot; &#123;</span><br><span class="line"></span><br><span class="line">  ami = &quot;ami-e99f4896&quot; // Amazon Linux 2 AMI (HVM), SSD Volume Type</span><br><span class="line">  instance_type = &quot;t2.micro&quot;</span><br><span class="line">  associate_public_ip_address = &quot;true&quot;</span><br><span class="line">  key_name                    = &quot;$&#123;aws_key_pair.default.key_name&#125;&quot;</span><br><span class="line">  subnet_id                   = &quot;$&#123;aws_subnet.public_a.id&#125;&quot;</span><br><span class="line">  vpc_security_group_ids      = [&quot;$&#123;aws_security_group.ec2.id&#125;&quot;]</span><br><span class="line"></span><br><span class="line">  root_block_device &#123;</span><br><span class="line">    volume_type = &quot;standard&quot;</span><br><span class="line">    volume_size = &quot;50&quot;</span><br><span class="line">    delete_on_termination = &quot;false&quot;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    &quot;Name&quot;    = &quot;$&#123;var.name&#125;&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">data &quot;aws_eip&quot; &quot;default&quot; &#123;</span><br><span class="line">  id = &quot;your_eip_id&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_eip_association&quot; &quot;default&quot; &#123;</span><br><span class="line">  instance_id = &quot;$&#123;aws_instance.default.id&#125;&quot;</span><br><span class="line">  allocation_id = &quot;$&#123;data.aws_eip.default.id&#125;&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上で、今回作りたかったものをTerraformで生成することができます。</p>
+<p>値を変数にまとめてモジュール化した最終的なコードは<a href="https://github.com/okmttdhr/terraform-rds" target="_blank" rel="noopener">こちら</a>になりますが、<code>terraform plan</code>を実行すると、生成されるリソースを確認することができます。</p>
+<h2 id="infrastructure-as-codeiacの良いところ"><a href="#Infrastructure-as-Code-IaC-の良いところ" class="headerlink" title="Infrastructure as Code(IaC)の良いところ"></a>Infrastructure as Code(IaC)の良いところ</h2><p>インフラの状態をコードで持っておくことのメリットは</p>
+<ul>
+<li>GUIの操作が必要なくなる</li>
+<li>バージョン管理ができる</li>
+<li>コードを再利用できるので別のプロジェクトで時間を削減できる</li>
+<li>環境を作る前に正しい状態であるかをテストできる</li>
+</ul>
+<p>など(ソフトウェア開発では一般的な事柄)があると思います。</p>
+<p>個人的には、<code>環境を破棄・再生成できる</code>というのが、開発初期においてかなり嬉しいかなと感じました。開発初期は、まだ見えない部分もあり、ちょこちょこ変更もはいると思いますが、そんな中でリソース同士の関係を把握しながらGUIを操作してゆくのは<del>面倒くさい</del>注意が必要です。コードとして環境を保持しつつ、必要であれば作り直す、みたいなことが工数をかけずに可能となるので、お客様のご要望に柔軟に対応することができます。</p>
+<p>また、私はAWSに強いわけではないのですが、IaCではリソース同士の関係を正確に把握する必要があるため、曖昧な知識を明確にすることができます。むしろそれをコードで書いて腹落ちする必要があるので、GUIでやるより理解が早いと感じました。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>以上、参考になれば幸いです。</p>
+<p>なお、以下のぺージでMMMのAWS Lambdaへの取り組みをご紹介しています。ぜひ合わせてご覧ください。</p>
+<p>・<a href="https://mmmcorp.co.jp/service/serverlessarchitecture/" target="_blank" rel="noopener">サーバーレスアーキテクチャ（AWS Lambda）</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2018/08/06/terraform-rds-lambda/" data-text="TerraformでRDS+Lambdaの環境を作る" data-counturl="https://blog.mmmcorp.co.jp/blog/2018/08/06/terraform-rds-lambda/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2018/08/06/terraform-rds-lambda/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2018/08/06/terraform-rds-lambda/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2018/08/06/terraform-rds-lambda/" class="hatena-bookmark-button" data-hatena-bookmark-title="TerraformでRDS+Lambdaの環境を作る" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーレス/">サーバーレス</a></li></ul>
+
+
+      <p class="article-footer__author">by okp</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

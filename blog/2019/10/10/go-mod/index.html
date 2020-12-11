@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Go言語の依存モジュール管理ツール Modules の使い方 | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="最近は、PS4 でリメイクされた「バイオハザード2」をプレイしていて、グラフィックやシステムの進化に感動しています。エンジニアの内山です。 今回は Go言語の 1.11 から標準で使えるようになった依存モジュール管理ツール Modules の使い方をご紹介します。 目次  Modules の機能 Modules を使うには Modules を使う流れ 1. go mod init で、初期化する">
+<meta name="keywords" content="プログラミング,Golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go言語の依存モジュール管理ツール Modules の使い方">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2019/10/10/go-mod/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="最近は、PS4 でリメイクされた「バイオハザード2」をプレイしていて、グラフィックやシステムの進化に感動しています。エンジニアの内山です。 今回は Go言語の 1.11 から標準で使えるようになった依存モジュール管理ツール Modules の使い方をご紹介します。 目次  Modules の機能 Modules を使うには Modules を使う流れ 1. go mod init で、初期化する">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.162Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Go言語の依存モジュール管理ツール Modules の使い方">
+<meta name="twitter:description" content="最近は、PS4 でリメイクされた「バイオハザード2」をプレイしていて、グラフィックやシステムの進化に感動しています。エンジニアの内山です。 今回は Go言語の 1.11 から標準で使えるようになった依存モジュール管理ツール Modules の使い方をご紹介します。 目次  Modules の機能 Modules を使うには Modules を使う流れ 1. go mod init で、初期化する">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-go-mod" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2019-10-10T09:25:43.000Z" itemprop="datePublished">2019-10-10</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2019/10/10/go-mod/">Go言語の依存モジュール管理ツール Modules の使い方</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/10/10/go-mod/" data-text="Go言語の依存モジュール管理ツール Modules の使い方" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/10/10/go-mod/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/10/10/go-mod/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/10/10/go-mod/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/10/10/go-mod/" class="hatena-bookmark-button" data-hatena-bookmark-title="Go言語の依存モジュール管理ツール Modules の使い方" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近は、PS4 でリメイクされた「バイオハザード2」をプレイしていて、グラフィックやシステムの進化に感動しています。<br>エンジニアの内山です。</p>
+<p>今回は Go言語の 1.11 から標準で使えるようになった依存モジュール管理ツール Modules の使い方をご紹介します。</p>
+<h2 id="目次"><a href="#目次" class="headerlink" title="目次"></a>目次</h2><!-- toc -->
+<ul>
+<li><a href="#modules-の機能">Modules の機能</a></li>
+<li><a href="#modules-を使うには">Modules を使うには</a></li>
+<li><a href="#modules-を使う流れ">Modules を使う流れ</a><ul>
+<li><a href="#1-go-mod-init-で-初期化する">1. <code>go mod init</code> で、初期化する</a></li>
+<li><a href="#2-go-buildなどのビルドコマンドで-依存モジュールを自動インストールする">2. <code>go build</code>などのビルドコマンドで、依存モジュールを自動インストールする</a></li>
+<li><a href="#3-go-list-m-all-で-現在の依存モジュールを表示する">3. <code>go list -m all</code> で、現在の依存モジュールを表示する</a></li>
+<li><a href="#4-go-get-で-依存モジュールの追加やバージョンアップを行う">4. <code>go get</code> で、依存モジュールの追加やバージョンアップを行う</a></li>
+<li><a href="#5-go-mod-tidy-で-使われていない依存モジュールを削除する">5. <code>go mod tidy</code> で、使われていない依存モジュールを削除する</a></li>
+</ul>
+</li>
+<li><a href="#落穂拾い">落穂拾い</a><ul>
+<li><a href="#あらかじめすべての依存モジュールをインストールしたい場合">あらかじめすべての依存モジュールをインストールしたい場合</a></li>
+<li><a href="#環境変数-go111module-の設定">環境変数 GO111MODULE の設定</a></li>
+<li><a href="#dep-からの移行">dep からの移行</a></li>
+</ul>
+</li>
+<li><a href="#参考">参考</a></li>
+</ul>
+<!-- tocstop -->
+<h2 id="modules-の機能"><a href="#Modules-の機能" class="headerlink" title="Modules の機能"></a>Modules の機能</h2><p>Modules は、依存モジュール管理ツールです。<br>Go言語 1.11 から標準で使えるようになりました。<br>以下のような機能を持っています。</p>
+<ul>
+<li>依存モジュールの自動検知</li>
+<li>依存モジュールのバージョン固定、バージョンアップ検知</li>
+</ul>
+<p>依存モジュールの情報は <code>go.mod</code> と <code>go.sum</code> という名前のファイルに記載されます。<br>これらのファイルを git などでバージョン管理することによって、依存モジュールとそのバージョンを明確にすることができます。</p>
+<p>Ruby の Bundler や Node.js の npm のようなものですね。</p>
+<h2 id="modules-を使うには"><a href="#Modules-を使うには" class="headerlink" title="Modules を使うには"></a>Modules を使うには</h2><p>Modules は、Go言語 1.11 以上のバージョンである必要があります。<br>1.11 以上をインストールすると、<code>go mod</code> コマンドが使えるようになります。</p>
+<h2 id="modules-を使う流れ"><a href="#Modules-を使う流れ" class="headerlink" title="Modules を使う流れ"></a>Modules を使う流れ</h2><p>Modules を使う流れは以下のとおりです。</p>
+<ol>
+<li><code>go mod init</code> で、初期化する</li>
+<li><code>go build</code>などのビルドコマンドで、依存モジュールを自動インストールする</li>
+<li><code>go list -m all</code> で、現在の依存モジュールを表示する</li>
+<li><code>go get</code> で、依存モジュールの追加やバージョンアップを行う</li>
+<li><code>go mod tidy</code> で、使われていない依存モジュールを削除する</li>
+</ol>
+<p>実は <code>go mod</code> を直接実行することは少なく、他の go サブコマンドを実行したときに、自動的に処理が行われることが多いです。</p>
+<p>以降は、コマンド実行例をご紹介します。<br>本記事では、バージョン <code>1.12</code> で動作確認しています。</p>
+<h3 id="1-go-mod-init-で-初期化する"><a href="#1-go-mod-init-で、初期化する" class="headerlink" title="1. go mod init で、初期化する"></a>1. <code>go mod init</code> で、初期化する</h3><p>新規プロジェクトを作成して、 <code>go mod init</code> を実行します。<br>このコマンドには、引数としてモジュール名(<code>example.com/go-mod-test</code>)を指定します。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir go-mod-test</span><br><span class="line">$ <span class="built_in">cd</span> go-mod-test</span><br><span class="line">$ go mod init example.com/go-mod-test</span><br></pre></td></tr></table></figure>
+<p><code>go.mod</code> ファイルが作成されます。<br>以下のように、指定したモジュール名が記載されています。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ cat go.mod</span><br><span class="line">module example.com/go-mod-test</span><br><span class="line"></span><br><span class="line">go 1.12</span><br></pre></td></tr></table></figure>
+<h3 id="2-go-buildなどのビルドコマンドで-依存モジュールを自動インストールする"><a href="#2-go-buildなどのビルドコマンドで、依存モジュールを自動インストールする" class="headerlink" title="2. go buildなどのビルドコマンドで、依存モジュールを自動インストールする"></a>2. <code>go build</code>などのビルドコマンドで、依存モジュールを自動インストールする</h3><p>まずビルド対象となるプログラムを作成しておきます。<br>以下のプログラムを <code>main.go</code> という名前のファイルで保存します。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"github.com/aws/aws-lambda-go/events"</span></span><br><span class="line">	<span class="string">"github.com/aws/aws-lambda-go/lambda"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">handler</span><span class="params">(request events.APIGatewayProxyRequest)</span> <span class="params">(events.APIGatewayProxyResponse, error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> events.APIGatewayProxyResponse&#123;&#125;, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	lambda.Start(handler)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>このプログラムでは、AWS Lambda のハンドラを実装しているので、<code>aws/aws-lambda-go</code> モジュールに依存している状態です。<br>ビルドコマンドを以下のように実行してみます。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ go build</span><br><span class="line">go: finding github.com/aws/aws-lambda-go/lambda latest</span><br><span class="line">go: finding github.com/aws/aws-lambda-go/events latest</span><br></pre></td></tr></table></figure>
+<p>依存モジュールがインストールされている様子が出力されると思います。<br><code>go.mod</code> の内容を見ると、依存モジュールの情報が記載されていることが確認できます。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ cat go.mod</span><br><span class="line">module example.com/go-mod-test</span><br><span class="line"></span><br><span class="line">go 1.12</span><br><span class="line"></span><br><span class="line">require github.com/aws/aws-lambda-go v1.13.2</span><br></pre></td></tr></table></figure>
+<h3 id="3-go-list-m-all-で-現在の依存モジュールを表示する"><a href="#3-go-list-m-all-で、現在の依存モジュールを表示する" class="headerlink" title="3. go list -m all で、現在の依存モジュールを表示する"></a>3. <code>go list -m all</code> で、現在の依存モジュールを表示する</h3><p>以下のように、現在の依存モジュールを確認してみます。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ go list -m all</span><br><span class="line">example.com/go-mod-test</span><br><span class="line">github.com/BurntSushi/toml v0.3.1</span><br><span class="line">github.com/aws/aws-lambda-go v1.13.2</span><br><span class="line">github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d</span><br><span class="line">github.com/davecgh/go-spew v1.1.0</span><br><span class="line">github.com/pmezard/go-difflib v1.0.0</span><br><span class="line">github.com/russross/blackfriday/v2 v2.0.1</span><br><span class="line">github.com/shurcooL/sanitized_anchor_name v1.0.0</span><br><span class="line">github.com/stretchr/objx v0.1.0</span><br><span class="line">github.com/stretchr/testify v1.4.0</span><br><span class="line">github.com/urfave/cli v1.22.1</span><br><span class="line">gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405</span><br><span class="line">gopkg.in/yaml.v2 v2.2.2</span><br></pre></td></tr></table></figure>
+<p>本プロジェクトで直接依存しているモジュールだけでなく、依存モジュールが依存しているモジュールもすべて出力されています。</p>
+<h3 id="4-go-get-で-依存モジュールの追加やバージョンアップを行う"><a href="#4-go-get-で、依存モジュールの追加やバージョンアップを行う" class="headerlink" title="4. go get で、依存モジュールの追加やバージョンアップを行う"></a>4. <code>go get</code> で、依存モジュールの追加やバージョンアップを行う</h3><p>試しにログ出力のための <code>golang/glog</code> をインストールしてみます。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ go get github.com/golang/glog</span><br><span class="line">go: finding github.com/golang/glog latest</span><br></pre></td></tr></table></figure>
+<p>以下のように <code>go.mod</code> ファイルにインストールしたモジュールの情報が追記されています。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ cat go.mod</span><br><span class="line">module example.com/go-mod-test</span><br><span class="line"></span><br><span class="line">go 1.12</span><br><span class="line"></span><br><span class="line">require (</span><br><span class="line">        github.com/aws/aws-lambda-go v1.13.2</span><br><span class="line">        github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><code>// indirect</code> というコメントは、直接依存しているモジュールではないことを表しています。<br>先程作成したプログラムでは、まだ <code>golang/glog</code> を使用していないので、このようなコメントが追記されています。</p>
+<h3 id="5-go-mod-tidy-で-使われていない依存モジュールを削除する"><a href="#5-go-mod-tidy-で、使われていない依存モジュールを削除する" class="headerlink" title="5. go mod tidy で、使われていない依存モジュールを削除する"></a>5. <code>go mod tidy</code> で、使われていない依存モジュールを削除する</h3><p>以下のように、使われていない依存モジュールを削除してみます。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ go mod tidy</span><br><span class="line">go: downloading gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405</span><br><span class="line">go: extracting gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405</span><br></pre></td></tr></table></figure>
+<p><code>go.mod</code> の内容を確認してみます。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ cat go.mod</span><br><span class="line">module example.com/go-mod-test</span><br><span class="line"></span><br><span class="line">go 1.12</span><br><span class="line"></span><br><span class="line">require github.com/aws/aws-lambda-go v1.13.2</span><br></pre></td></tr></table></figure>
+<p>先程インストールした <code>golang/glog</code> が使われていないので、その情報が削除されている状態になっています。</p>
+<p>以上、Modules を使う流れでした。</p>
+<h2 id="落穂拾い"><a href="#落穂拾い" class="headerlink" title="落穂拾い"></a>落穂拾い</h2><h3 id="あらかじめすべての依存モジュールをインストールしたい場合"><a href="#あらかじめすべての依存モジュールをインストールしたい場合" class="headerlink" title="あらかじめすべての依存モジュールをインストールしたい場合"></a>あらかじめすべての依存モジュールをインストールしたい場合</h3><p>CI/CDのときに、最初に依存モジュールをすべてインストールしたい場合があります。<br>その場合は、以下のコマンドで行なえます。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ go get -u -t ./...</span><br></pre></td></tr></table></figure>
+<h3 id="環境変数-go111module-の設定"><a href="#環境変数-GO111MODULE-の設定" class="headerlink" title="環境変数 GO111MODULE の設定"></a>環境変数 GO111MODULE の設定</h3><p>既存のプロジェクトが $GOPATH 内に存在する場合は、Modules を使うには、 以下のように環境変数を設定する必要があります。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">export</span> GO111MODULE=on</span><br></pre></td></tr></table></figure>
+<p>この設定を行わないと、以下のようなエラーが出ます。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ go mod init</span><br><span class="line">go: modules disabled inside GOPATH/src by GO111MODULE=auto; see <span class="string">'go help modules'</span></span><br></pre></td></tr></table></figure>
+<h3 id="dep-からの移行"><a href="#dep-からの移行" class="headerlink" title="dep からの移行"></a>dep からの移行</h3><p>Modules 以前は、dep を使っている場合も多いと思います。<br><code>go mod init</code> コマンドは、Gopkg.lock を読み込んで、<code>go.mod</code> を作成することができます。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ GO111MODULE=on go mod init</span><br><span class="line">go: creating new go.mod: module hogehoge</span><br><span class="line">go: copying requirements from Gopkg.lock</span><br></pre></td></tr></table></figure>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>Modules<br><a href="https://github.com/golang/go/wiki/Modules" target="_blank" rel="noopener">https://github.com/golang/go/wiki/Modules</a></p>
+<p>Go &amp; Versioning<br><a href="https://research.swtch.com/vgo" target="_blank" rel="noopener">https://research.swtch.com/vgo</a></p>
+<p>Using Go Modules<br><a href="https://blog.golang.org/using-go-modules" target="_blank" rel="noopener">https://blog.golang.org/using-go-modules</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2019/10/10/go-mod/" data-text="Go言語の依存モジュール管理ツール Modules の使い方" data-counturl="https://blog.mmmcorp.co.jp/blog/2019/10/10/go-mod/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2019/10/10/go-mod/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2019/10/10/go-mod/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2019/10/10/go-mod/" class="hatena-bookmark-button" data-hatena-bookmark-title="Go言語の依存モジュール管理ツール Modules の使い方" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/">Golang</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/プログラミング/">プログラミング</a></li></ul>
+
+
+      <p class="article-footer__author">by 内山 浩佑</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

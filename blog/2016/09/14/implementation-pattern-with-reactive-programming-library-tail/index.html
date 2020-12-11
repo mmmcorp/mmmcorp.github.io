@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>RxJSを用いた実装パターンの実例まとめ(後編) | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="小飼です。前回に引き続き、RxJSのコード実例を紹介します。 ドラッグストリームの作成onmousedown・onmouseup・onmousemoveイベントから作ったストリームをより合わせて、 『マウスドラッグ』というストリームを作成します。こういった『既存のDOMイベントを混ぜ合わせて新しいストリームを作る』ようなことは、Rxの最も得意とする領域だと思います。 123456789101112">
+<meta name="keywords" content="フロントエンド,JavaScript,TypeScript,ractive-programming,rx">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RxJSを用いた実装パターンの実例まとめ(後編)">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2016/09/14/implementation-pattern-with-reactive-programming-library-tail/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="小飼です。前回に引き続き、RxJSのコード実例を紹介します。 ドラッグストリームの作成onmousedown・onmouseup・onmousemoveイベントから作ったストリームをより合わせて、 『マウスドラッグ』というストリームを作成します。こういった『既存のDOMイベントを混ぜ合わせて新しいストリームを作る』ようなことは、Rxの最も得意とする領域だと思います。 123456789101112">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.142Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RxJSを用いた実装パターンの実例まとめ(後編)">
+<meta name="twitter:description" content="小飼です。前回に引き続き、RxJSのコード実例を紹介します。 ドラッグストリームの作成onmousedown・onmouseup・onmousemoveイベントから作ったストリームをより合わせて、 『マウスドラッグ』というストリームを作成します。こういった『既存のDOMイベントを混ぜ合わせて新しいストリームを作る』ようなことは、Rxの最も得意とする領域だと思います。 123456789101112">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-implementation-pattern-with-reactive-programming-library-tail" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2016-09-14T15:41:20.000Z" itemprop="datePublished">2016-09-14</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2016/09/14/implementation-pattern-with-reactive-programming-library-tail/">RxJSを用いた実装パターンの実例まとめ(後編)</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/09/14/implementation-pattern-with-reactive-programming-library-tail/" data-text="RxJSを用いた実装パターンの実例まとめ(後編)" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/09/14/implementation-pattern-with-reactive-programming-library-tail/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/09/14/implementation-pattern-with-reactive-programming-library-tail/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/09/14/implementation-pattern-with-reactive-programming-library-tail/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/09/14/implementation-pattern-with-reactive-programming-library-tail/" class="hatena-bookmark-button" data-hatena-bookmark-title="RxJSを用いた実装パターンの実例まとめ(後編)" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>小飼です。<br><a href="/blog/2016/09/08/implementation-pattern-with-reactive-programming-library-head/">前回</a>に引き続き、RxJSのコード実例を紹介します。</p>
+<h2 id="ドラッグストリームの作成"><a href="#ドラッグストリームの作成" class="headerlink" title="ドラッグストリームの作成"></a>ドラッグストリームの作成</h2><p><code>onmousedown</code>・<code>onmouseup</code>・<code>onmousemove</code>イベントから作ったストリームをより合わせて、 『マウスドラッグ』というストリームを作成します。<br>こういった『既存のDOMイベントを混ぜ合わせて新しいストリームを作る』ようなことは、Rxの最も得意とする領域だと思います。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; merge, combineLatest &#125; = Observable;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ACTION_ON_MOUSE_DOWN = <span class="string">"ACTION_ON_MOUSE_DOWN"</span>;</span><br><span class="line"><span class="keyword">const</span> ACTION_ON_MOUSE_UP = <span class="string">"ACTION_ON_MOUSE_UP"</span>;</span><br><span class="line"><span class="keyword">const</span> ACTION_ON_MOUSE_MOVE = <span class="string">"ACTION_ON_MOUSE_MOVE"</span>;</span><br><span class="line"></span><br><span class="line">interface Point &#123;</span><br><span class="line">  x: number;</span><br><span class="line">  y: number;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface RootState &#123;</span><br><span class="line">  point: Point;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> subject = <span class="keyword">new</span> Subject&lt;Action&lt;any&gt;&gt;();</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> onMouseDown = (event: React.MouseEvent&lt;HTMLDivElement&gt;): <span class="function"><span class="params">void</span> =&gt;</span> subject.next(&#123;</span><br><span class="line">  type: ACTION_ON_MOUSE_DOWN,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> onMouseUp = (event: React.MouseEvent&lt;HTMLDivElement&gt;): <span class="function"><span class="params">void</span> =&gt;</span> subject.next(&#123;</span><br><span class="line">  type: ACTION_ON_MOUSE_UP,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> onMouseMove = (event: React.MouseEvent&lt;HTMLDivElement&gt;): <span class="function"><span class="params">void</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> nativeEvent = event.nativeEvent <span class="keyword">as</span> MouseEvent;</span><br><span class="line">  subject.next(&#123;</span><br><span class="line">    type: ACTION_ON_MOUSE_MOVE,</span><br><span class="line">    payload: &#123;</span><br><span class="line">      x: nativeEvent.offsetX,</span><br><span class="line">      y: nativeEvent.offsetY,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> root$ = (): Observable&lt;RootState&gt; =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> onMouseDown$ = subject.ofType&lt;<span class="keyword">void</span>&gt;(ACTION_ON_MOUSE_DOWN);</span><br><span class="line">  <span class="keyword">const</span> onMouseUp$ = subject.ofType&lt;<span class="keyword">void</span>&gt;(ACTION_ON_MOUSE_UP);</span><br><span class="line">  <span class="keyword">const</span> onMouseMove$ = subject.ofType&lt;Point&gt;(ACTION_ON_MOUSE_MOVE);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> isDragging$ = merge(onMouseDown$, onMouseUp$)</span><br><span class="line">    .scan&lt;boolean&gt;(<span class="function"><span class="params">isDragging</span> =&gt;</span> !isDragging, <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> drag$ = combineLatest(</span><br><span class="line">      isDragging$, onMouseMove$,</span><br><span class="line">      (isDragging, nextPoint) =&gt; (&#123; isDragging, nextPoint &#125;)</span><br><span class="line">    )</span><br><span class="line">    .filter(<span class="function">(<span class="params">&#123; isDragging &#125;</span>) =&gt;</span> isDragging)</span><br><span class="line">    .map(<span class="function">(<span class="params">&#123; nextPoint &#125;</span>) =&gt;</span> nextPoint);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> initialState = &#123; <span class="attr">point</span>: &#123; <span class="attr">x</span>: <span class="number">0</span>, <span class="attr">y</span>: <span class="number">0</span> &#125; &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> drag$</span><br><span class="line">    .map(<span class="function"><span class="params">point</span> =&gt;</span> (&#123; point &#125;))</span><br><span class="line">    .startWith(initialState)</span><br><span class="line">    ;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">SampleApp</span> <span class="keyword">extends</span> <span class="title">Component</span>&lt;<span class="title">void</span>, <span class="title">RootState</span>&gt; </span>&#123;</span><br><span class="line">  componentWillMount() &#123;</span><br><span class="line">    root$().subscribe(<span class="function"><span class="params">root</span> =&gt;</span> <span class="keyword">this</span>.setState(root));</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; point &#125; = <span class="keyword">this</span>.state;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        &lt;div</span><br><span class="line">          onMouseDown=&#123; onMouseDown &#125;</span><br><span class="line">          onMouseMove=&#123; onMouseMove &#125;</span><br><span class="line">          onMouseUp=&#123; onMouseUp &#125;</span><br><span class="line">        &gt;ドラッグできる要素&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">        &lt;span&gt;X: &#123; point.x &#125;&lt;/</span>span&gt;</span><br><span class="line">        &lt;span&gt;Y: &#123; point.y &#125;&lt;<span class="regexp">/span&gt;</span></span><br><span class="line"><span class="regexp">      &lt;/</span>div&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="同期的なイベントのフィルタ"><a href="#同期的なイベントのフィルタ" class="headerlink" title="同期的なイベントのフィルタ"></a>同期的なイベントのフィルタ</h2><p>複数のストリームを<code>combineLatest</code>などで合成した時、同期的に(同じフレームに)イベントが発行されてくるケースがあります。<br>例えばこのようなストリームの場合<code>--(abc)--(def)--|</code>、<code>c</code>と<code>f</code>を観測できれば充分なことも多いです。</p>
+<p>特にマーブル記法でテストを書いていると、同期的なイベント全てをテストしているとテストが冗長になって可読性が下がってきますので、できれば必要なイベントだけを発行するようにフィルタできるとうれしいです。<br>そんな時は、auditTimeオペレータに極小の時間を渡してあげることで、同期的なイベントだけをフィルタしたストリームが作れます。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; <span class="keyword">of</span>, merge &#125; = Observable;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> foo$ = <span class="keyword">of</span>(<span class="string">"foo"</span>);</span><br><span class="line"><span class="keyword">const</span> bar$ = <span class="keyword">of</span>(<span class="string">"bar"</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> combined$ = merge(foo$, bar$)</span><br><span class="line">  .auditTime(<span class="number">5</span>);</span><br></pre></td></tr></table></figure>
+<p>この時、テストのためにスケジューラを注入するために</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; TestCheduler &#125; <span class="keyword">from</span> <span class="string">"rxjs"</span></span><br><span class="line"><span class="keyword">const</span> createCombined$ = <span class="function">(<span class="params">shceduler: TestScheduler = <span class="literal">null</span></span>) =&gt;</span> merge(foo$, bar$)</span><br><span class="line">  .auditTime(<span class="number">5</span>, shceduler);</span><br></pre></td></tr></table></figure>
+<p>のように、<code>null</code>をデフォルト値に渡しているサンプルコードを見かける時があります。(<code>4.x</code>を使った時のコード)</p>
+<p><a href="https://pragprog.com/book/smreactjs/reactive-programming-with-rxjs" target="_blank" rel="noopener">Reactive Programming with RxJS</a>のテストの章にも同様の記述が載ってしまっているのですが、本来『デフォルト引数が与えられていない』ことを表現するためには<a href="http://tc39wiki.calculist.org/es6/default-parameter-values/" target="_blank" rel="noopener">nullでなくundefinedを使うこと</a>が期待されています。</p>
+<p>TypeScriptに移行した(ことでデフォルトパラメータの扱いがES標準に準拠した)RxJS 5.xでは、このような場合<code>undefined</code>を渡さないと例外を投げられることになりますので少しだけ注意が必要です。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; TestCheduler &#125; <span class="keyword">from</span> <span class="string">"rxjs"</span></span><br><span class="line"><span class="keyword">const</span> createCombined$ = <span class="function">(<span class="params">shceduler: TestScheduler = <span class="literal">undefined</span></span>) =&gt;</span> merge(foo$, bar$)</span><br><span class="line">  .auditTime(<span class="number">5</span>, shceduler);</span><br></pre></td></tr></table></figure>
+<h2 id="ストリームの配列を配列のストリームに変換する"><a href="#ストリームの配列を配列のストリームに変換する" class="headerlink" title="ストリームの配列を配列のストリームに変換する"></a>ストリームの配列を配列のストリームに変換する</h2><p>ちょっとややこしいですが、<code>Observable&lt;SomeType&gt;[]</code>を<code>Observable&lt;SomeType[]&gt;</code>にするような操作のことを指しています。<br>例えばラジオボタンのような、『複数のソースストリームがあるけど出力したいイベントは一つ』みたいなストリームを作る時に使います。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> input1$ = <span class="keyword">of</span>(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">const</span> input2$ = <span class="keyword">of</span>(<span class="number">2</span>);</span><br><span class="line"><span class="keyword">const</span> input3$ = <span class="keyword">of</span>(<span class="number">3</span>);</span><br><span class="line"><span class="keyword">const</span> input4$ = <span class="keyword">of</span>(<span class="number">4</span>);</span><br><span class="line"><span class="keyword">const</span> input5$ = <span class="keyword">of</span>(<span class="number">5</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> input$List: Observable&lt;number&gt;[] = [input1$, input2$, input3$, input4$, input5$];</span><br><span class="line"><span class="keyword">const</span> inputs$ = combineLatest(...input$List);</span><br><span class="line"></span><br><span class="line"><span class="comment">// input$Listに格納せずに</span></span><br><span class="line"><span class="comment">// const inputs$ = combineLatest(input1$, input2$, input3$, input4$, input5$);</span></span><br><span class="line"><span class="comment">// とも書ける</span></span><br></pre></td></tr></table></figure>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>以上、RxJSを状態管理に用いたアプリケーションで実際に遭遇したストリーム操作をまとめてみました。<br>参考になればうれしいです。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/09/14/implementation-pattern-with-reactive-programming-library-tail/" data-text="RxJSを用いた実装パターンの実例まとめ(後編)" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/09/14/implementation-pattern-with-reactive-programming-library-tail/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/09/14/implementation-pattern-with-reactive-programming-library-tail/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/09/14/implementation-pattern-with-reactive-programming-library-tail/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/09/14/implementation-pattern-with-reactive-programming-library-tail/" class="hatena-bookmark-button" data-hatena-bookmark-title="RxJSを用いた実装パターンの実例まとめ(後編)" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TypeScript/">TypeScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ractive-programming/">ractive-programming</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rx/">rx</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/フロントエンド/">フロントエンド</a></li></ul>
+
+
+      <p class="article-footer__author">by 小飼慎一</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

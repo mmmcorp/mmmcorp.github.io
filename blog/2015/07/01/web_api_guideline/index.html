@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Web API設計指針を考えた | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="こんにちは、下條です。 弊社ではWebサービスをSPA(シングルページアプリケーション)にすることが増えてきた。その場合にはサーバーサイドではWeb APIの提供が増えることになる。ただ、APIがサービスごとに違ったリクエスト・レスポンス形式になっているといろいろと勘違いが起きやすいので、ある程度設計指針を決めておくことにした。簡単にご紹介したい。 URL設計 リソースのCRUD操作については基本">
+<meta name="keywords" content="サーバーサイド,Ruby on Rails,API">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Web API設計指針を考えた">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2015/07/01/web_api_guideline/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="こんにちは、下條です。 弊社ではWebサービスをSPA(シングルページアプリケーション)にすることが増えてきた。その場合にはサーバーサイドではWeb APIの提供が増えることになる。ただ、APIがサービスごとに違ったリクエスト・レスポンス形式になっているといろいろと勘違いが起きやすいので、ある程度設計指針を決めておくことにした。簡単にご紹介したい。 URL設計 リソースのCRUD操作については基本">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.130Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Web API設計指針を考えた">
+<meta name="twitter:description" content="こんにちは、下條です。 弊社ではWebサービスをSPA(シングルページアプリケーション)にすることが増えてきた。その場合にはサーバーサイドではWeb APIの提供が増えることになる。ただ、APIがサービスごとに違ったリクエスト・レスポンス形式になっているといろいろと勘違いが起きやすいので、ある程度設計指針を決めておくことにした。簡単にご紹介したい。 URL設計 リソースのCRUD操作については基本">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-web-api-guideline" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2015-07-01T15:07:33.000Z" itemprop="datePublished">2015-07-01</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2015/07/01/web_api_guideline/">Web API設計指針を考えた</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/07/01/web_api_guideline/" data-text="Web API設計指針を考えた" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/07/01/web_api_guideline/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/07/01/web_api_guideline/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/07/01/web_api_guideline/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/07/01/web_api_guideline/" class="hatena-bookmark-button" data-hatena-bookmark-title="Web API設計指針を考えた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>こんにちは、下條です。</p>
+<p>弊社ではWebサービスをSPA(シングルページアプリケーション)にすることが増えてきた。その場合にはサーバーサイドではWeb APIの提供が増えることになる。ただ、APIがサービスごとに違ったリクエスト・レスポンス形式になっているといろいろと勘違いが起きやすいので、ある程度設計指針を決めておくことにした。簡単にご紹介したい。</p>
+<h2 id="url設計"><a href="#URL設計" class="headerlink" title="URL設計"></a>URL設計</h2><ul>
+<li>リソースのCRUD操作については基本的にはRESTfulな設計とする。<ul>
+<li>動詞ではなく名詞。</li>
+<li>リソースを名詞で表す。</li>
+<li>リソースの操作をHTTPメソッドで表す。</li>
+</ul>
+</li>
+</ul>
+<p>例：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">目的</th>
+<th style="text-align:right">エンドポイント</th>
+<th style="text-align:center">メソッド</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">ユーザ一覧取得</td>
+<td style="text-align:right"><a href="http://api.example.com/v1/users" target="_blank" rel="noopener">http://api.example.com/v1/users</a></td>
+<td style="text-align:center">GET</td>
+</tr>
+<tr>
+<td style="text-align:left">ユーザ新規登録</td>
+<td style="text-align:right"><a href="http://api.example.com/v1/users" target="_blank" rel="noopener">http://api.example.com/v1/users</a></td>
+<td style="text-align:center">POST</td>
+</tr>
+<tr>
+<td style="text-align:left">特定のユーザ情報取得</td>
+<td style="text-align:right"><a href="http://api.example.com/v1/users/:id" target="_blank" rel="noopener">http://api.example.com/v1/users/:id</a></td>
+<td style="text-align:center">GET</td>
+</tr>
+<tr>
+<td style="text-align:left">ユーザ情報更新</td>
+<td style="text-align:right"><a href="http://api.example.com/v1/users/:id" target="_blank" rel="noopener">http://api.example.com/v1/users/:id</a></td>
+<td style="text-align:center">PUT</td>
+</tr>
+<tr>
+<td style="text-align:left">ユーザ情報削除</td>
+<td style="text-align:right"><a href="http://api.example.com/v1/users/:id" target="_blank" rel="noopener">http://api.example.com/v1/users/:id</a></td>
+<td style="text-align:center">DELETE</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>小文字のみを使用する。</li>
+<li>単語をつなげる必要がある場合はダッシュを利用する。</li>
+<li>単数形よりも複数形をつかう。なお、実装がRailsの場合でテーブルの複数形が誤っている場合には、URLは正しい複数形としてRails側を修正する。（APIに実装を反映させるべきではない。）</li>
+<li>スペルミスをしない。</li>
+<li>URLの階層は浅く保ち、複雑さはクエリパラメーターに押しこむ。</li>
+<li>クエリパラメータ名は配列で複数渡すものについては複数形、一つだけ渡すものについては単数形とする。</li>
+<li>ページングにはper_page、pageというパラメータ名を使用する。</li>
+</ul>
+<p>と書いてきたが、ただし、RESTには必ずしもこだわらず、あくまで利用側の利便性を重要視した設計とする。<br>1つの作業を完結するために複数回のアクセスを必要とするようなAPIの設計は<code>Chatty API</code>と呼ばれる。これはネットワークのトラフィックを増加させ、クライアントの処理の手間を増やす。したがってAPIがどのように使われるかを想像し、少しでも利用しやすいAPI設計を心がけることが重要である。もちろん、想定外の使われ方をされることはあるのであるが。</p>
+<h4 id="restに適さないapiについて"><a href="#RESTに適さないAPIについて" class="headerlink" title="RESTに適さないAPIについて"></a>RESTに適さないAPIについて</h4><ul>
+<li><p>例えば検索といった、リソース操作でないAPIの場合、名詞でなく動詞を使う。<br>例： <code>/search?first_name=masatsugu&amp;last_name=shimojo</code></p>
+</li>
+<li><p>クエリが非常に複雑になってくると、GETメソッドではIEなどブラウザでのURL長制限に引っかかる可能性がある。したがって、そういった自体が予想される場合にはPOSTメソッドでの同じ機能のAPIも提供する。ブラウザからの確認をしやすくするためGETメソッドも残しておくとよいかもしれない。</p>
+</li>
+</ul>
+<blockquote>
+<p>Microsoft Internet Explorer では、URL (Uniform Resource Locator) に使用できる最大文字数は 2,083 文字です。また、Internet Explorer のパスに使用できる最大文字数は 2,048 文字です。この制限は、POST 要求と GET 要求両方の URL に適用されます。</p>
+</blockquote>
+<p>出典：<a href="http://support2.microsoft.com/?id=208427" target="_blank" rel="noopener">http://support2.microsoft.com/?id=208427</a></p>
+<h2 id="レスポンス"><a href="#レスポンス" class="headerlink" title="レスポンス"></a>レスポンス</h2><ul>
+<li>レスポンスデータフォーマットはJSONのみを原則とする。</li>
+<li>データ名の単数形/複数形に気をつける。</li>
+<li>単語の連結にはキャメルケース（userIdなど）を用いる。JSON がベースとしている JavaScript の命名規約において、キャメルケースの利用がルール付けされているケースが多いため。</li>
+<li>日付データの形式にはRFC 3339を用いる。また、時差対応しやすくするため、UTCで返すことを原則とする。</li>
+</ul>
+<p>例：2014-08-30T20:00:00Z</p>
+<h2 id="エラーの返し方"><a href="#エラーの返し方" class="headerlink" title="エラーの返し方"></a>エラーの返し方</h2><p>リソースが見つからない場合のレスポンス例（エラーではない場合と同じJSON形式にする。）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">   &quot;users&quot;: [],</span><br><span class="line">   &quot;status&quot;: 404,</span><br><span class="line">   &quot;message&quot;: &quot;not found&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>JSON内のstatusは基本的にはHTTPステータスコードに倣って以下とする。</p>
+<ul>
+<li>200番台：成功</li>
+<li>300番台：追加で処理が必要</li>
+<li>400番台：クライアントのリクエストに問題がある場合</li>
+<li>500番台：サーバに問題があった場合</li>
+</ul>
+<p>どのようにエラーを返すかという話については<a href="http://qiita.com/suin/items/f7ac4de914e9f3f35884" target="_blank" rel="noopener">WebAPIでエラーをどう表現すべき？15のサービスを調査してみた</a>に既存の有名サービスのAPIサンプルが載っているが、この記事に記載されていないものとして、HTTPのステータスコードをどうするかというポイントもある。<br>結論としては、ドメインレベルのエラーについては、HTTPステータスコードは200とした上でJSONレスポンスで表現する。</p>
+<p>HTTPステータスコードでエラーを表現するやり方も考えられるが、以下の理由により採用しないことにした。</p>
+<ul>
+<li>HTTPステータスコードで表現できないアプリ的なエラーがあること。</li>
+<li>サービスの運用する際にはHTTPのステータスコードを監視することがある。APIのエラーをHTTPステータスコードで表現した場合に運用者にとってのノイズになる可能性がある。要するにアプリケーションが正しくハンドリングしてレスポンスを返している場合は正常系としておいて本当に問題があった時だけ異常系のHTTPステータスコードにするという方針。</li>
+</ul>
+<blockquote>
+<p>わりとちゃんとしてるサービスの運用をしている人達は全ての HTTP status code を監視して 50x が多く出たら何かの障害がある? 40x が出たらリンク先が切れてておかしいんじゃね?みたいな格闘を日々しています。もし、あなたが書いた JSON API のエラーコードを HTTP status code で表現した場合に運用者にとってのノイズになるかもしれません。ようするにアプリケーションが正しくハンドリングしてレスポンスを返している場合は正常系としておいて本当に問題があった時だけ異常系の status code にする！とかですね。</p>
+</blockquote>
+<p><a href="http://blog.yappo.jp/yappo/archives/000829.html" target="_blank" rel="noopener">2014年に向けた JSON API の実装の方向性と X-JSON-Status 改め X-API-Status header のご提案</a>から引用。</p>
+<ul>
+<li>HTTPステータスコードでエラーを表現した方がRESTチックではあるが、HTTPベースのWebアプリでは、クライアント側からの入力データの不備などでもHTTPステータスコードは200を返した上でエラーの状態をHTMLの中に記載して返している。APIも同じ発想でもよいという考え方。</li>
+</ul>
+<h2 id="バージョニング"><a href="#バージョニング" class="headerlink" title="バージョニング"></a>バージョニング</h2><p>非互換問題は、SPAではあまり発生しない（サーバーサイドとクライアントサイドを同時に更新すればよい場合が多い）とはずだが、スマートフォンアプリなどの場合には大きな問題となり得る。</p>
+<ul>
+<li>APIにはバージョンをつける。</li>
+<li>vと整数のバージョン番号をURLにつける。</li>
+<li>バージョンは整数。マイナーバージョンは作らない。</li>
+</ul>
+<p>例） <code>http://api.example.com/v1/users</code></p>
+<h2 id="api実装について"><a href="#API実装について" class="headerlink" title="API実装について"></a>API実装について</h2><ul>
+<li><p>APIサーバでは、リクエストの型チェックを行う（特にJSONを受け取る場合）。これは誤った型でリクエストが渡ってきた場合に一見動いているように見えるという状況を防ぐためである。型チェックの方法については今度弊社前田がブログに掲載するかもしれない。</p>
+</li>
+<li><p>Railsの場合は、Rails APIを使用する。なお、メジャーなAPI用のgemとしてGrapeがあるが、RESTfulでないAPIを実装するとソースが汚くなりがちになるため使用しない。</p>
+</li>
+</ul>
+<h2 id="参考資料"><a href="#参考資料" class="headerlink" title="参考資料"></a>参考資料</h2><p>以下の書籍・サイトを参考にさせていただいた。</p>
+<ul>
+<li><a href="http://www.oreilly.co.jp/books/9784873116860/" target="_blank" rel="noopener">Web API: The Good Parts (書籍)</a></li>
+<li><a href="http://d.hatena.ne.jp/cou929_la/20130121/1358776754" target="_blank" rel="noopener">Web API 設計のベストプラクティス集 “Web API Design - Crafting Interfaces that Developers Love”</a></li>
+<li><a href="http://blog.yappo.jp/yappo/archives/000829.html" target="_blank" rel="noopener">2014年に向けた JSON API の実装の方向性と X-JSON-Status 改め X-API-Status header のご提案</a></li>
+</ul>
+<p>以上、参考になる部分があれば幸いです。</p>
+<p><a href="https://mmmcorp.co.jp/services/entrusted_development/" target="_blank" rel="noopener">Web-APIを活用したビジネスアプリケーションやサービス開発</a>をご検討の企業様は、是非MMMにご相談下さいませ！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2015/07/01/web_api_guideline/" data-text="Web API設計指針を考えた" data-counturl="https://blog.mmmcorp.co.jp/blog/2015/07/01/web_api_guideline/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2015/07/01/web_api_guideline/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2015/07/01/web_api_guideline/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2015/07/01/web_api_guideline/" class="hatena-bookmark-button" data-hatena-bookmark-title="Web API設計指針を考えた" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/API/">API</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby-on-Rails/">Ruby on Rails</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/サーバーサイド/">サーバーサイド</a></li></ul>
+
+
+      <p class="article-footer__author">by 下條 真嗣</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

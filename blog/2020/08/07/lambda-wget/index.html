@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Lambda上でwgetコマンドを実行できるか？ | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="エンジニアの内山です。今回は、Lambda上でwgetコマンドを入れるときに色々と手間取ったので、その知見を共有させていただきます。 LambdaにはwgetコマンドがないLambdaには、デフォルトでwgetコマンドはインストールされていません。そのため、Lambda上にwgetバイナリファイルをアップロードする必要があります。 しかし、どこかのサーバにインストールされているwgetバイナリファ">
+<meta name="keywords" content="AWS,Lambda">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lambda上でwgetコマンドを実行できるか？">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2020/08/07/lambda-wget/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="エンジニアの内山です。今回は、Lambda上でwgetコマンドを入れるときに色々と手間取ったので、その知見を共有させていただきます。 LambdaにはwgetコマンドがないLambdaには、デフォルトでwgetコマンドはインストールされていません。そのため、Lambda上にwgetバイナリファイルをアップロードする必要があります。 しかし、どこかのサーバにインストールされているwgetバイナリファ">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/uchiko/lambda-wget/layer.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/uchiko/lambda-wget/lambda.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Lambda上でwgetコマンドを実行できるか？">
+<meta name="twitter:description" content="エンジニアの内山です。今回は、Lambda上でwgetコマンドを入れるときに色々と手間取ったので、その知見を共有させていただきます。 LambdaにはwgetコマンドがないLambdaには、デフォルトでwgetコマンドはインストールされていません。そのため、Lambda上にwgetバイナリファイルをアップロードする必要があります。 しかし、どこかのサーバにインストールされているwgetバイナリファ">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/uchiko/lambda-wget/layer.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-lambda-wget" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2020-08-07T09:30:05.000Z" itemprop="datePublished">2020-08-07</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2020/08/07/lambda-wget/">Lambda上でwgetコマンドを実行できるか？</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/08/07/lambda-wget/" data-text="Lambda上でwgetコマンドを実行できるか？" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/08/07/lambda-wget/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/08/07/lambda-wget/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/08/07/lambda-wget/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/08/07/lambda-wget/" class="hatena-bookmark-button" data-hatena-bookmark-title="Lambda上でwgetコマンドを実行できるか？" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>エンジニアの内山です。今回は、Lambda上でwgetコマンドを入れるときに色々と手間取ったので、その知見を共有させていただきます。</p>
+<h2 id="lambdaにはwgetコマンドがない"><a href="#Lambdaにはwgetコマンドがない" class="headerlink" title="Lambdaにはwgetコマンドがない"></a>Lambdaにはwgetコマンドがない</h2><p>Lambdaには、デフォルトでwgetコマンドはインストールされていません。そのため、Lambda上にwgetバイナリファイルをアップロードする必要があります。</p>
+<p>しかし、どこかのサーバにインストールされているwgetバイナリファイルを、単純にアップロードして実行すると、以下のようなエラーが出てしまいます。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/var/task/handlers/bin/wget: </span><br><span class="line">error while loading shared libraries: </span><br><span class="line">libgnutls.so.28: cannot open shared object file:</span><br><span class="line"> No such file or directory</span><br></pre></td></tr></table></figure>
+<p>このエラーは、wgetが依存しているShared Objectが存在しないために起こります。そのため、関連するShared ObjectもLambdaにアップロードする必要があります。</p>
+<p>今回は、以下のような手順で、wgetコマンドをLambda上で、実行できるようにしました。</p>
+<ul>
+<li>Dockerコンテナ上でwgetをソースからビルド</li>
+<li>Dockerコンテナ上からwgetバイナリファイルをコピーして、Lambdaにアップロード</li>
+<li>Dockerコンテナ上からwgetが依存しているShared Objectをコピーして、Lambda Layerにアップロード</li>
+<li>Lambda関数にLambda Layerを関連付ける</li>
+</ul>
+<p>以下、それぞれの詳細を紹介していきます。</p>
+<h2 id="dockerコンテナ上でwgetをソースからビルド"><a href="#Dockerコンテナ上でwgetをソースからビルド" class="headerlink" title="Dockerコンテナ上でwgetをソースからビルド"></a>Dockerコンテナ上でwgetをソースからビルド</h2><p>以下のDockerfileを作り、wgetをDockerコンテナ上でビルドします。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> lambci/lambda:build-python3.<span class="number">8</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> VERSION wget-<span class="number">1.18</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> yum install -y tar gzip gcc make gnutls-devel pkgconfig</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">RUN curl -o <span class="variable">$&#123;VERSION&#125;</span>.tar.gz ftp.gnu.org/pub/gnu/wget/<span class="variable">$&#123;VERSION&#125;</span>.tar.gz &amp;&amp; \</span></span><br><span class="line"><span class="bash">    tar xzvf <span class="variable">$&#123;VERSION&#125;</span>.tar.gz &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">cd</span> <span class="variable">$&#123;VERSION&#125;</span> &amp;&amp; \</span></span><br><span class="line"><span class="bash">    ./configure --with-gnu-ld  --<span class="built_in">disable</span>-pcre --<span class="built_in">disable</span>-threads --<span class="built_in">disable</span>-ipv6 --<span class="built_in">disable</span>-ntlm &amp;&amp; \</span></span><br><span class="line"><span class="bash">    make &amp;&amp; \</span></span><br><span class="line"><span class="bash">    mv src/wget /</span></span><br></pre></td></tr></table></figure>
+<p>今回はPythonからwgetコマンドを実行する形にしているため、Dockerイメージはlambda:build-pythonを使用しています。</p>
+<p>wgetをソースからビルドしているのは、不要な機能はオフにして、依存するShared Objectを最小限にするためです。</p>
+<p>ビルドは、以下のように実行します。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker build -t wget:1 .</span><br></pre></td></tr></table></figure>
+<h2 id="dockerコンテナ上からwgetバイナリファイルをコピーして-lambdaにアップロード"><a href="#Dockerコンテナ上からwgetバイナリファイルをコピーして、Lambdaにアップロード" class="headerlink" title="Dockerコンテナ上からwgetバイナリファイルをコピーして、Lambdaにアップロード"></a>Dockerコンテナ上からwgetバイナリファイルをコピーして、Lambdaにアップロード</h2><p>ビルドが終了したら、以下のように、Lambdaに上げる用のディレクトリを作成し、ホスト側にwgetバイナリファイルをコピーしてきます。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir handlers/bin</span><br><span class="line">$ docker cp $(docker run -d  wget:1 bash):/wget handlers/bin</span><br></pre></td></tr></table></figure>
+<p>また、wgetコマンドを実行するPythonスクリプトを以下のように実装しました。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">import subprocess</span><br><span class="line">import tempfile</span><br><span class="line">import os</span><br><span class="line"></span><br><span class="line">basedir=os.path.dirname(__file__)</span><br><span class="line"></span><br><span class="line">def lambda_handler(event, context):</span><br><span class="line">    with tempfile.TemporaryDirectory() as dir_name:</span><br><span class="line">        wget(dir_name, &apos;https://example.com/&apos;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def wget(dir_name, url: str) -&gt; str:</span><br><span class="line">    cmd = &apos;&#123;&#125;/bin/wget -k  -r 1 -P &#123;&#125; &#123;&#125;&apos;.format(basedir, dir_name, url)</span><br><span class="line"></span><br><span class="line">    result = subprocess.run(</span><br><span class="line">        cmd.split(&quot; &quot;),</span><br><span class="line">        stdout=subprocess.PIPE,</span><br><span class="line">        stderr=subprocess.STDOUT</span><br><span class="line">    )</span><br><span class="line">    print(result.stdout.decode())</span><br><span class="line"></span><br><span class="line">    return dir_name</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ zip -r main.zip handlers</span><br></pre></td></tr></table></figure>
+<p>main.zipは、Lambdaにアップロードします。</p>
+<h2 id="dockerコンテナ上からwgetが依存しているshared-objectをコピーして-lambda-layerにアップロード"><a href="#Dockerコンテナ上からwgetが依存しているShared-Objectをコピーして、Lambda-Layerにアップロード" class="headerlink" title="Dockerコンテナ上からwgetが依存しているShared Objectをコピーして、Lambda Layerにアップロード"></a>Dockerコンテナ上からwgetが依存しているShared Objectをコピーして、Lambda Layerにアップロード</h2><p>今回は以下のShared Objectが必要でした。</p>
+<ul>
+<li>/lib64/libgnutls.so.28 </li>
+<li>/lib64/libnettle.so.4</li>
+<li>/lib64/libhogweed.so.2 </li>
+<li>/lib64/libgmp.so.10 </li>
+</ul>
+<p>これらすべてがシンボリックリンクなので注意してください。</p>
+<p>Lambda Layer用のディレクトリを作成し、必要なShared ObjectをDockerコンテナからコピーしてきます。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir lib</span><br><span class="line">$ docker cp $(docker run -d  wget:1 bash):/lib64/libgnutls.so.28.43.3 lib/libgnutls.so.28</span><br><span class="line">$ docker cp $(docker run -d  wget:1 bash):/lib64/libnettle.so.4.7 lib/libnettle.so.4</span><br><span class="line">$ docker cp $(docker run -d  wget:1 bash):/lib64/libhogweed.so.2.5 lib/libhogweed.so.2</span><br><span class="line">$ docker cp $(docker run -d  wget:1 bash):/lib64/libgmp.so.10.2.0 lib/libgmp.so.10</span><br></pre></td></tr></table></figure>
+<p>Lambdaの実行環境によっては、必要になってくるShared Objectが違うかもしれないので、適宜必要なものをコピーしてください。</p>
+<p>コピーしたものは、zipで固めます。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ zip layer.zip lib/*</span><br></pre></td></tr></table></figure>
+<p>layer.zipをレイヤーにアップロードします。今回は、Python3.8ランタイムで実行する想定です。</p>
+<p><img src="/images/uchiko/lambda-wget/layer.png" alt=""></p>
+<h2 id="lambda関数にlambda-layerを関連付ける"><a href="#Lambda関数にLambda-Layerを関連付ける" class="headerlink" title="Lambda関数にLambda Layerを関連付ける"></a>Lambda関数にLambda Layerを関連付ける</h2><p>以下の画面で、レイヤーをLambda関数に関連付けます。</p>
+<p><img src="/images/uchiko/lambda-wget/lambda.png" alt=""></p>
+<h2 id="lambdaを実行して-wgetコマンドが実行できていることを確認"><a href="#Lambdaを実行して、wgetコマンドが実行できていることを確認" class="headerlink" title="Lambdaを実行して、wgetコマンドが実行できていることを確認"></a>Lambdaを実行して、wgetコマンドが実行できていることを確認</h2><p>Lambdaを試しに実行すると、以下のようなメッセージが出力され、wgetコマンドを実行できていることを確認できると思います。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">--2020-08-07 04:56:56--  https://example.com/</span><br><span class="line">Resolving example.com... 93.184.216.34</span><br><span class="line">Connecting to example.com|93.184.216.34|:443... connected.</span><br><span class="line">HTTP request sent, awaiting response... 200 OK</span><br><span class="line">Length: 1256 (1.2K) [text/html]</span><br><span class="line">Saving to: ‘/tmp/tmpnpvavroa/example.com/index.html’</span><br><span class="line">     0K .                                                     100% 59.1M=0s</span><br></pre></td></tr></table></figure>
+<h2 id="おわりに"><a href="#おわりに" class="headerlink" title="おわりに"></a>おわりに</h2><p>色々と手間取りましたが、Lambda上でwgetコマンドを実行できるようになりました。<br>参考になれば幸いです。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2020/08/07/lambda-wget/" data-text="Lambda上でwgetコマンドを実行できるか？" data-counturl="https://blog.mmmcorp.co.jp/blog/2020/08/07/lambda-wget/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2020/08/07/lambda-wget/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2020/08/07/lambda-wget/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2020/08/07/lambda-wget/" class="hatena-bookmark-button" data-hatena-bookmark-title="Lambda上でwgetコマンドを実行できるか？" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Lambda/">Lambda</a></li></ul>
+
+
+      <p class="article-footer__author">by 内山 浩佑</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

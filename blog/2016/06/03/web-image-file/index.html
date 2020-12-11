@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Webで使う画像ファイルについて | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="先日、長女の運動会で日焼け止めを塗り忘れ、手の甲だけ日焼けしている池島です。 ブラウザが年々進化して、UIが向上したり、表示が速くなったりしていますが、進化した機能の中に、表示できる画像ファイルの形式が増えたことがあります。使える形式が増えたことで、どれを使うか迷うような場面も出てきました。 使える画像のファイル形式と、それぞれの利点、欠点などをまとめてみます。 GIF初期から使える形式で、安心し">
+<meta name="keywords" content="デザイン,image,web">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Webで使う画像ファイルについて">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2016/06/03/web-image-file/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="先日、長女の運動会で日焼け止めを塗り忘れ、手の甲だけ日焼けしている池島です。 ブラウザが年々進化して、UIが向上したり、表示が速くなったりしていますが、進化した機能の中に、表示できる画像ファイルの形式が増えたことがあります。使える形式が増えたことで、どれを使うか迷うような場面も出てきました。 使える画像のファイル形式と、それぞれの利点、欠点などをまとめてみます。 GIF初期から使える形式で、安心し">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.138Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Webで使う画像ファイルについて">
+<meta name="twitter:description" content="先日、長女の運動会で日焼け止めを塗り忘れ、手の甲だけ日焼けしている池島です。 ブラウザが年々進化して、UIが向上したり、表示が速くなったりしていますが、進化した機能の中に、表示できる画像ファイルの形式が増えたことがあります。使える形式が増えたことで、どれを使うか迷うような場面も出てきました。 使える画像のファイル形式と、それぞれの利点、欠点などをまとめてみます。 GIF初期から使える形式で、安心し">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-image-file" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2016-06-03T09:56:45.000Z" itemprop="datePublished">2016-06-03</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2016/06/03/web-image-file/">Webで使う画像ファイルについて</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/06/03/web-image-file/" data-text="Webで使う画像ファイルについて" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/06/03/web-image-file/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/06/03/web-image-file/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/06/03/web-image-file/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/06/03/web-image-file/" class="hatena-bookmark-button" data-hatena-bookmark-title="Webで使う画像ファイルについて" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>先日、長女の運動会で日焼け止めを塗り忘れ、手の甲だけ日焼けしている池島です。</p>
+<p>ブラウザが年々進化して、UIが向上したり、表示が速くなったりしていますが、進化した機能の中に、表示できる画像ファイルの形式が増えたことがあります。<br>使える形式が増えたことで、どれを使うか迷うような場面も出てきました。</p>
+<p>使える画像のファイル形式と、それぞれの利点、欠点などをまとめてみます。</p>
+<h2 id="gif"><a href="#GIF" class="headerlink" title="GIF"></a>GIF</h2><p>初期から使える形式で、安心して使えます。<br>近年はPNGの方がよく使われるようになり、出番は少なくなりましたが、アニメーテッドGIFにできるので、ローディング中のアニメーションアイコンに使われたりしています。</p>
+<p>○ 古いブラウザでも表示できる。<br>○ ちょっとしたアニメーションが作れる。<br>× 背景を透過させる場合は、指定したマットカラーが透明部分に適用され、背景色がマットカラーと違う場合はギザギザの縁が見えてしまう。<br>× 256色に限定される。<br>× 色数、ピクセル数が多いと、ファイルサイズが大きくなりがち。</p>
+<h2 id="jpeg"><a href="#JPEG" class="headerlink" title="JPEG"></a>JPEG</h2><p>写真などに使うフォーマットですね。<br>これも、古くから使われている安心感があります。<br>デジカメの標準保存フォーマットになっていることも多いので、撮影してそのまま使ったりもできます（基本的に、サイズ調整やレタッチをしますが。）</p>
+<p>○ 古いブラウザでも表示できる。<br>○ 写真で使うなら、ほぼこれしかない。<br>× 背景を透過できない。<br>× ファイルサイズを落としすぎると、ノイズが発生する。画質とファイルサイズが折り合うところを見極めないといけない。</p>
+<h2 id="png"><a href="#PNG" class="headerlink" title="PNG"></a>PNG</h2><p>過去、GIFのライセンス問題があった時期に、急速に普及したような気がします。<br>現在では、ほとんどの環境・ブラウザで利用できます。<br>アニメーションPNG（APNG）もありますが、対応ブラウザが少なく、まだ一般的ではありません。</p>
+<h4 id="png8"><a href="#PNG8" class="headerlink" title="PNG8"></a>PNG8</h4><p>ほぼ、GIFと同じ特徴を持っています。<br>現在は、GIFよりもPNGを使うことが多いですね。</p>
+<p>○ GIFより小さいファイルサイズで書き出せることが多い。<br>× アニメーションPNGに対応した環境が少ないため、静止画でしか利用できない。</p>
+<h4 id="png24"><a href="#PNG24" class="headerlink" title="PNG24"></a>PNG24</h4><p>○ フルカラー対応。<br>○ アルファチャンネルをサポートしている。<br>× 画質や色数を調整できないので、ファイルサイズが大きくなりやすい。</p>
+<h2 id="svg"><a href="#SVG" class="headerlink" title="SVG"></a>SVG</h2><p>最新のブラウザなら、全てサポートしている状況になりました。<br>アイコンやロゴなど、ベクトルで描いているものは、全部SVGにしてしまいたいところですが、なかなかそういうわけにもいきませんね。</p>
+<p>○ ベクトルデータをそのまま扱えるので、拡大・縮小したり高解像度ディスプレイでもきれいに表示できる。そのため、解像度別にファイルを用意する必要がない。<br>○ XMLデータとして、インラインに直接書き込める。<br>○ インラインで書いた場合、CSSやJavascriptで色を変えたりアニメーションさせたりできる。<br>○ フルカラー対応。<br>× インラインで書き込む場合のXMLが複雑で、解読し難い。<br>× 全ての機能がサポートされているブラウザが、まだ少ない。<br>× 写真のような画像は扱えない。</p>
+<h2 id="アイコンフォント"><a href="#アイコンフォント" class="headerlink" title="アイコンフォント"></a>アイコンフォント</h2><p>Webフォントアイコンと言ったりもします。<br>画像のファイル形式ではありませんが、アイコンなどの簡易な図柄を表示する手段として、併記します。</p>
+<p>SVGからアイコンフォントを生成できるジェネレーターのサイトもあり、GulpやGruntなどを使って自動で生成する方法もあります。<br>繰り返し使うアイコンや矢印、テキストと並べて利用する場合などに利用するといいと思います。</p>
+<p>○ サイズや色をCSSで設定でき、フォーカス時などの色・サイズ変更も簡単。<br>○ 拡大・縮小してもきれいに表示できる。<br>○ テキストとベースラインを揃えやすい。<br>× 単色のみ。<br>× SVGからフォントに変換したり、CSSでフォントの設定をしたりと、使うまでの手順が多い。</p>
+<h2 id="flash"><a href="#Flash" class="headerlink" title="Flash"></a>Flash</h2><p>HTML5 + CSS3の普及で、すっかり陰に潜んでしまいました。<br>どこもかしこもFlashが使われ、勢いのあった時代が懐かしいです。<br>Androidのブラウザも、標準対応しなくなってしまいました。</p>
+<p>○ アニメーションが自由自在で、動画の埋め込みも簡単にできる。<br>○ 複雑なスクリプトを組むことができ、データベースと連携させたり、動的なコンテンツ作成が可能。<br>× プラグインが必要。スマートフォンはほとんど対応していない。<br>× 保守にコストがかかり、再利用しにくい。<br>× 作成ツールやActionScriptを使えるようになるまでの学習コストがかかる。</p>
+<h2 id="どのファイル形式にしようか迷うとき"><a href="#どのファイル形式にしようか迷うとき" class="headerlink" title="どのファイル形式にしようか迷うとき"></a>どのファイル形式にしようか迷うとき</h2><p>Web制作に携わっているとき、どのファイル形式にしようか迷うことが多々あります。<br>いろいろな考え方があり、プロジェクトごとの違いもあると思いますが、個人的な見解を書いておきます。</p>
+<h5 id="gif-or-png8"><a href="#GIF-or-PNG8" class="headerlink" title="GIF or PNG8"></a>GIF or PNG8</h5><p>今時は、PNGを使うのが一般的。<br>ファイルサイズの制限が厳しい場合を除き、PNG24で書き出した方が良さそう。</p>
+<h5 id="png8-or-png24"><a href="#PNG8-or-PNG24" class="headerlink" title="PNG8 or PNG24"></a>PNG8 or PNG24</h5><p>背景色が固定で変化しない、可能な限りファイルサイズを落としたい、などの理由がない限りはPNG24にしておいた方が、汎用性が高く無難。</p>
+<h5 id="jpeg-or-png24"><a href="#JPEG-or-PNG24" class="headerlink" title="JPEG or PNG24"></a>JPEG or PNG24</h5><p>写真の背景を透過させたり、一部を透明にしたいなど、アルファチャンネルが必要ならPNG24。そうでないならJPEG。</p>
+<h5 id="png-or-svg"><a href="#PNG-or-SVG" class="headerlink" title="PNG or SVG"></a>PNG or SVG</h5><p>ベクトルデータが元になっているなら、ぜひSVGを使いたい。<br>古いブラウザもターゲットになっているなら、PNGを解像度別に用意する。</p>
+<h5 id="svg-or-アイコンフォント"><a href="#SVG-or-アイコンフォント" class="headerlink" title="SVG or アイコンフォント"></a>SVG or アイコンフォント</h5><p>繰り返し使うアイコンや、テキストと混在させて使うような場合はアイコンフォント。挿し絵や図表のような使い方ならSVG。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>Webブラウザでできることが増えて、嬉しい反面、置いて行かれまいと必死について行っています。<br>昔は、できないことが多くていろんな裏技を使ったりもしたけれど、あまり難しいこともなくてよかったなあ・・・などと思ってはいけませんね。</p>
+<p>SVGはできることが多く、可能性が広がります。その機能を使いこなして、ステキなWebページ制作に活かしていきたいです。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2016/06/03/web-image-file/" data-text="Webで使う画像ファイルについて" data-counturl="https://blog.mmmcorp.co.jp/blog/2016/06/03/web-image-file/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2016/06/03/web-image-file/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2016/06/03/web-image-file/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2016/06/03/web-image-file/" class="hatena-bookmark-button" data-hatena-bookmark-title="Webで使う画像ファイルについて" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/image/">image</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/デザイン/">デザイン</a></li></ul>
+
+
+      <p class="article-footer__author">by 池島 彩佳</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>

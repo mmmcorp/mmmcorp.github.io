@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>S3+CloudFrontで静的サイトホスティングする際に既存の証明書を導入する | MMMブログ</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="西藤です。入社してからあっという間に2ヶ月が経とうとしています。身につけるべきことは山積みですが、非常に濃い経験ができている気がします。引き続き技術習得して行くべく、努力して行きたいと思います。 さて今回は、AWS の S3 と CloudFront を組み合わせた静的サイトホスティングにおける既存の証明書の導入方法をご案内しようと思います。 想定シナリオ今回の記事におい">
+<meta name="keywords" content="AWS,CloudFront">
+<meta property="og:type" content="article">
+<meta property="og:title" content="S3+CloudFrontで静的サイトホスティングする際に既存の証明書を導入する">
+<meta property="og:url" content="https://blog.mmmcorp.co.jp/blog/2018/10/19/importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/index.html">
+<meta property="og:site_name" content="MMMブログ">
+<meta property="og:description" content="西藤です。入社してからあっという間に2ヶ月が経とうとしています。身につけるべきことは山積みですが、非常に濃い経験ができている気がします。引き続き技術習得して行くべく、努力して行きたいと思います。 さて今回は、AWS の S3 と CloudFront を組み合わせた静的サイトホスティングにおける既存の証明書の導入方法をご案内しようと思います。 想定シナリオ今回の記事におい">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/01.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/02.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/03.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/04.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/05.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/06.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/07.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/08.png">
+<meta property="og:image" content="https://blog.mmmcorp.co.jp/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/09.png">
+<meta property="og:updated_time" content="2020-12-11T04:55:28.154Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="S3+CloudFrontで静的サイトホスティングする際に既存の証明書を導入する">
+<meta name="twitter:description" content="西藤です。入社してからあっという間に2ヶ月が経とうとしています。身につけるべきことは山積みですが、非常に濃い経験ができている気がします。引き続き技術習得して行くべく、努力して行きたいと思います。 さて今回は、AWS の S3 と CloudFront を組み合わせた静的サイトホスティングにおける既存の証明書の導入方法をご案内しようと思います。 想定シナリオ今回の記事におい">
+<meta name="twitter:image" content="https://blog.mmmcorp.co.jp/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/01.png">
+<meta property="fb:admins" content="100001166311018">
+<meta property="fb:app_id" content="1645901202297427">
+  
+  <link rel="alternative" href="http://feeds.feedburner.com/xxxxxly" title="MMMブログ" type="application/atom+xml">
+  
+  
+  <link rel="icon" href="favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-mnmlpress.css">
+  
+
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49503279-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+</head>
+<body>
+<header id="top" class="Header">
+  <div class="Header__content Column__container">
+    <h1 class="Header__content--logo">
+      <a href="https://blog.mmmcorp.co.jp/">
+        <img src="/images/blog_header/logo_blog.svg" alt="MMMブログ" />
+      </a>
+    </h1>
+    <ul class="Header__content--link">
+      <li>
+        <a href="https://mmmcorp.co.jp/column" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_wakaba.svg" alt="" />
+          コラム記事
+        </a>
+      </li>
+      <li>
+        <a href="https://mmmcorp.co.jp/document" class="Header__content--button" target="_blank">
+          <img src="/images/blog_header/icon_dl.svg" alt="" />
+          会社案内ダウンロード
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="Nav__container">
+  <nav class="Nav">
+    <ul class="Nav__list">
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <img class="Nav__list--logo" src="/images/blog_header/logo_sp_nav.svg" alt=" 株式会社MMM" />
+      </li>
+      <li class="Nav__list--item home">
+        <a href="https://mmmcorp.co.jp/" target="_blank">
+          ホーム
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/features" target="_blank">
+          MMMの特長
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a class="Nav__dropdown--parent-link" href="https://mmmcorp.co.jp/service" target="_blank">サービス</a>
+        <ul class="Nav__list--child">
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_01.svg" alt="" />
+              クラウド活用
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト(TCO)最適化
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_02.svg" alt="" />
+              クラウド導入
+            </span>
+            <ul>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="Nav__list--child-item-head">
+            <span class="Nav__list--child-item-img">
+              <img src="/images/blog_header/icon_subnav_03.svg" alt="" />
+              クラウド運用
+            </span>
+            <ul>
+              <li class=" Nav__list--child-item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/case/" target="_blank">
+          事例紹介
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/company" target="_blank">
+          会社情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+          採用情報
+        </a>
+      </li>
+      <li class="Nav__list--item">
+        <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+          お問い合わせ
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/column" target="_blank">
+          コラム記事
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://mmmcorp.co.jp/document" target="_blank">
+          会社案内ダウンロード
+        </a>
+      </li>
+      <li class="Nav__list--item Nav__list--item-mobile">
+        <a href="https://blog.mmmcorp.co.jp/">
+          MMMブログ
+          <img class="Header__content--button-icon" src="/images/blog_header/icon_window_sp.svg" alt="" width="13"
+            height="11" />
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div id="content" class="inner">
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="googleSearch">
+    <script>
+      (function() {
+        var cx = '002806455306162937628:ypdsysf6xoa';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+
+  <main id="article-list">
+    <article id="post-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <time datetime="2018-10-19T20:00:00.000Z" itemprop="datePublished">2018-10-19</time>
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+    <h3 itemprop="name">
+      <a class="article-title" href="/blog/2018/10/19/importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/">S3+CloudFrontで静的サイトホスティングする際に既存の証明書を導入する</a>
+    </h3>
+  
+        <div><!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2018/10/19/importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/" data-text="S3+CloudFrontで静的サイトホスティングする際に既存の証明書を導入する" data-counturl="https://blog.mmmcorp.co.jp/blog/2018/10/19/importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2018/10/19/importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2018/10/19/importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2018/10/19/importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/" class="hatena-bookmark-button" data-hatena-bookmark-title="S3+CloudFrontで静的サイトホスティングする際に既存の証明書を導入する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+</div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>西藤です。入社してからあっという間に2ヶ月が経とうとしています。身につけるべきことは山積みですが、非常に濃い経験ができている気がします。引き続き技術習得して行くべく、努力して行きたいと思います。</p>
+<p>さて今回は、AWS の S3 と CloudFront を組み合わせた静的サイトホスティングにおける既存の証明書の導入方法をご案内しようと思います。</p>
+<h2 id="想定シナリオ"><a href="#想定シナリオ" class="headerlink" title="想定シナリオ"></a>想定シナリオ</h2><p>今回の記事において想定するシナリオは以下のようになります。</p>
+<ol>
+<li>現存するサービスサイトをAWSの新環境においてS3 + CloudFrontの構成にて静的サイトホスティングで公開したい。そして、S3 + CloudFront　で静的サイトホスティングをするときに、その現行の証明書を利用したい。</li>
+<li>現行の環境においては証明書を「企業認証」で取得している。</li>
+<li>ACM上での新規発行では「ドメイン認証」のレベルになってしまうので、「企業認証」となっている現行の証明書を継続して利用したい。</li>
+</ol>
+<p>まず、1についてですが、今回はすでに運用されているサービスサイトを新しいAWS環境において S3 を使った静的サイトホスティング、そして CloudFrontのキャッシュ機構を導入することで安定的な稼働を目指すものです。<br>なお、S3 + CloudFrontの組み合わせで構築するサイトに使う証明書に既存のものを導入する際には注意点があるので、以下で言及します。</p>
+<p>次に2と3についてですが、ウェブサイトをhttps通信にて表示させるために使われるSSLサーバー証明書には種類があり、「ドメイン認証」「企業認証」「EV認証」というものがあります。<br>サイトの運用体制に合わせてこの中から選択することになるのですが、AWS Certificate Manager(ACM)の中の操作で新規発行することができる証明書は「ドメイン認証」のレベルとなってしまいます。そのため「ドメイン認証」ではサイトの運用体制と合致しない場合は現行の環境で使用している「企業認証」で取得されている証明書を継続して利用できるように、新環境に導入する必要があります。</p>
+<p>では、今回はACM上で証明書の新規発行はせず、既存の証明書を導入し、CloudFrontで使用する方法を順を追って見て行きたいと思います。</p>
+<h2 id="aws-certificate-manageracmへの登録するための情報取得"><a href="#AWS-Certificate-Manager-ACM-への登録するための情報取得" class="headerlink" title="AWS Certificate Manager(ACM)への登録するための情報取得"></a>AWS Certificate Manager(ACM)への登録するための情報取得</h2><p>まず、現状のサービスにおいて使われている証明情報を把握する必要があります。</p>
+<p>ACMへ登録するために必要となる情報は以下の3つあります。</p>
+<ul>
+<li>SSLCertificateFile</li>
+<li>SSLCertificateKeyFile</li>
+<li>SSLCertificateChainFile</li>
+</ul>
+<p>例えば、現行のサービスが置かれているサーバー内の httpd-ssl.conf の中にある記述などを参照して、上記3つの内容を現行のサーバーの中から確認して、どこに格納されているのかを把握し、あとで使えるようにその場所を控えておきます。</p>
+<h2 id="acmへのインポート"><a href="#ACMへのインポート" class="headerlink" title="ACMへのインポート"></a>ACMへのインポート</h2><h3 id="acmにインポートするする際の注意点"><a href="#ACMにインポートするする際の注意点" class="headerlink" title="ACMにインポートするする際の注意点"></a>ACMにインポートするする際の注意点</h3><p>次に上記で把握した内容をAWS Certificate Managerにてインポートを行い、AWSのサービス内で使えるようにするのですが、ここで冒頭で述べたような注意点があります。</p>
+<blockquote>
+<p>Amazon CloudFront で ACM 証明書を使用するには、米国東部（バージニア北部） リージョンで証明書をリクエストまたはインポートする必要があります。<br><a href="https://docs.aws.amazon.com/ja_jp/acm/latest/userguide/acm-regions.html" target="_blank" rel="noopener">サポートされているリージョン - AWS Certificate Manager</a></p>
+</blockquote>
+<p>とあることから、ACMにインポートした証明書をCloudFrontで使いたい今回のような場合には、インポート作業を行う前にリージョンの設定が <code>米国東部（バージニア北部） リージョン</code> にしてあるように注意が必要です。(2018/10/19 時点の情報となります)</p>
+<h3 id="証明書のインポートの手順"><a href="#証明書のインポートの手順" class="headerlink" title="証明書のインポートの手順"></a>証明書のインポートの手順</h3><h4 id="管理画面のメニュー位置"><a href="#管理画面のメニュー位置" class="headerlink" title="管理画面のメニュー位置"></a>管理画面のメニュー位置</h4><p><img src="/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/01.png" alt=""></p>
+<p>AWS Certificate Managerの管理画面に入ったらリージョンが <code>米国東部（バージニア北部）</code>となっていることを確認した上で、今回は既存の証明書を登録して使いたいので <code>「証明書のインポート」</code> をクリックします。</p>
+<h4 id="必要事項の入力"><a href="#必要事項の入力" class="headerlink" title="必要事項の入力"></a>必要事項の入力</h4><p><img src="/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/02.png" alt=""></p>
+<p>冒頭で確認した証明書の各情報を入力して行きます。</p>
+<table>
+<thead>
+<tr>
+<th>項目名</th>
+<th>入力する内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>証明書本文</td>
+<td>SSLCertificateFileとして指定されているファイル (.crt)</td>
+</tr>
+<tr>
+<td>証明書のプライベートキー</td>
+<td>SSLCertificateKeyFileとして指定されているファイル (.key)</td>
+</tr>
+<tr>
+<td>証明書チェーン</td>
+<td>SSLCertificateChainFileとして指定されているファイル (.ca-bundle)</td>
+</tr>
+</tbody>
+</table>
+<p>各ファイルの内容を参照して、</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-----BEGIN PRIVATE KEY-----</span><br></pre></td></tr></table></figure>
+<p>というような内容から始まる各ファイルの内容をコピーして、入力欄にペーストして行きます。</p>
+<p><img src="/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/03.png" alt=""></p>
+<h4 id="登録する内容の確認"><a href="#登録する内容の確認" class="headerlink" title="登録する内容の確認"></a>登録する内容の確認</h4><p>入力を終えたら[レビューとインポート]をクリックします。<br><img src="/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/04.png" alt=""></p>
+<p>各ファイルの内容に基づき、対象となるドメイン、証明書の有効期限などの情報が表示されるので問題なければ[インポート]をクリックします。</p>
+<h4 id="インポートの完了"><a href="#インポートの完了" class="headerlink" title="インポートの完了"></a>インポートの完了</h4><p><img src="/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/05.png" alt=""></p>
+<p>インポートに成功するとACMの管理画面の一覧に表示されるようになるので、ACMへの登録は完了。</p>
+<h2 id="cloudfrontからacmにインポートした証明書を選択"><a href="#CloudFrontからACMにインポートした証明書を選択" class="headerlink" title="CloudFrontからACMにインポートした証明書を選択"></a>CloudFrontからACMにインポートした証明書を選択</h2><p>上記の手順で、 <code>米国東部（バージニア北部）</code>  リージョンで証明書を登録できたので、ACMにインポートした証明書をCloudFrontのディストリビューションを作成する際に選択できるようになります。</p>
+<p><img src="/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/06.png" alt=""></p>
+<h2 id="証明書の導入ができているかの確認"><a href="#証明書の導入ができているかの確認" class="headerlink" title="証明書の導入ができているかの確認"></a>証明書の導入ができているかの確認</h2><p>ドメインをAWS新環境に移行していないうちは、証明書の対象となるサイトのドメインにアクセスしても現環境の内容しか確認できません。<br>そのため、ローカルの設定を編集することで強制的にDNSのアクセス先の指定をAWS新環境に変えることで、サイトのドメインにアクセスしてもAWS新環境での動作確認をすることができます。<br>以下にはその動作確認の手順を紹介します。</p>
+<h3 id="cloudfrontのdomainのipアドレスを調べる"><a href="#CloudFrontのDomainのIPアドレスを調べる" class="headerlink" title="CloudFrontのDomainのIPアドレスを調べる"></a>CloudFrontのDomainのIPアドレスを調べる</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dig [CloudFrontのドメインネーム] +short</span><br></pre></td></tr></table></figure>
+<p>のコマンドでCloudFrontのIPアドレスが表示されます。</p>
+<p><img src="/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/07.png" alt=""></p>
+<p>ぼかしが多くて見づらくなっておりますが、対象となるドメインの静的サイトを表示するディストリビューションのIPアドレスをこのようにして調べて、控えておきます。</p>
+<h3 id="etchosts-を編集してdns偽装する"><a href="#etc-hosts-を編集してDNS偽装する" class="headerlink" title="/etc/hosts　を編集してDNS偽装する"></a>/etc/hosts　を編集してDNS偽装する</h3><p><img src="/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/08.png" alt=""></p>
+<p>/etc/hosts　を編集。<br>これにより、グローバルには変更されていないが <strong>「自PCにおいてのみ」</strong> ドメインとIPアドレスの名前解決の組み合わせがされるという体制になります。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[CloudFrontのIPアドレス]　[対象となる証明書と同じドメイン]</span><br></pre></td></tr></table></figure>
+<p>の形で編集します。<br>（左にはIPアドレスを入れてください。CloudFrontのドメイン名をそのまま入れても効かないので注意が必要です。）</p>
+<h3 id="ウェブブラウザで該当のドメインにアクセスする"><a href="#ウェブブラウザで該当のドメインにアクセスする" class="headerlink" title="ウェブブラウザで該当のドメインにアクセスする"></a>ウェブブラウザで該当のドメインにアクセスする</h3><p>/etc/hosts を編集したことで、対象となる証明書と同じドメインにアクセスすると、アドレスバーの表示はそのサイトのドメインを示していますが <strong>「自PCにおいてのみ」</strong> 、CloudFrontのIPアドレスに接続されます。</p>
+<p>検証ツールを見ると、CloudFrontを通じて、Amazon S3上の情報が表示されているのがわかります。</p>
+<p><img src="/images/2018-10-19-importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/09.png" alt=""><br>CloudFrontのドメイン名にアクセスするだけでは、Amazon発行のCloudFront用の証明書になっていたのが、 /etc/hostsを編集してブラウザを使ってアクセスすることで、このように対象ドメイン用に登録した証明書が機能していることがわかるようになります。</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>以上の手順により、S3 + CloudFront での静的サイトホスティングにおいて、既存環境で使用している証明書の利用継続が実現します。<br>同様の構成で、既存環境で使用している証明書を継続して利用したい際にご参考になれば幸いです。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      <!-- twitter -->
+<style media="screen">
+  .twitter-share-button {
+    width: 95px !important;
+    margin-right: -50px;
+  }
+</style>
+<a href="http://twitter.com/share" class="twitter-share-button" data-url="https://blog.mmmcorp.co.jp/blog/2018/10/19/importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/" data-text="S3+CloudFrontで静的サイトホスティングする際に既存の証明書を導入する" data-counturl="https://blog.mmmcorp.co.jp/blog/2018/10/19/importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/">Tweet</a>
+<script>
+window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));
+</script>
+
+<!-- facebook -->
+<div style="top: -1px; margin-right: -20px" class="fb-like" data-href="https://blog.mmmcorp.co.jp/blog/2018/10/19/importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false""></div>
+<div style="top: -9px;" class="fb-share-button" data-href="https://blog.mmmcorp.co.jp/blog/2018/10/19/importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/" data-layout="button_count"></div>
+
+<!-- hatebu -->
+<a href="http://b.hatena.ne.jp/entry/https://blog.mmmcorp.co.jp/blog/2018/10/19/importing-existing-certificates-for-s3static-site-hosting-with-cloudfront/" class="hatena-bookmark-button" data-hatena-bookmark-title="S3+CloudFrontで静的サイトホスティングする際に既存の証明書を導入する" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="en" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWS/">AWS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CloudFront/">CloudFront</a></li></ul>
+
+
+      <p class="article-footer__author">by 西藤翔太朗</p>
+    </footer>
+  </div>
+</article>
+
+
+
+  </main>
+
+  <aside id="sidebar">
+    <h2>カテゴリ</h2>
+
+    <ul>
+      <li><a href="/tags/AWS/">AWS</a></li>
+      <li><a href="/tags/サーバーレス/">サーバーレス</a></li>
+      <li><a href="/tags/テレワーク/">テレワーク</a></li>
+      <li><a href="/tags/インフラ/">インフラ</a></li>
+      <li><a href="/tags/サーバーサイド/">サーバーサイド</a></li>
+      <li><a href="/tags/フロントエンド/">フロントエンド</a></li>
+      <li><a href="/tags/デザイン/">デザイン</a></li>
+      <li><a href="/tags/ビジネス/">ビジネス</a></li>
+      <li><a href="/tags/プライベート/">プライベート</a></li>
+      <li><a href="/tags/書評/">書評</a></li>
+      <li><a href="/tags/プログラミング/">プログラミング</a></li>
+      <li><a href="/tags/社内制度/">社内制度</a></li>
+      <li><a href="/tags/運用・監視/">運用・監視</a></li>
+      <li><a href="/tags/プロジェクト管理/">プロジェクト管理</a></li>
+      <li><a href="/tags/採用/">採用</a></li>
+      <li><a href="/tags/メンバー紹介/">メンバー紹介</a></li>
+      <li><a href="/tags/リモートワーク/">リモートワーク</a></li>
+      <li><a href="/tags/健康管理/">健康管理</a></li>
+      <li><a href="/tags/ソリューション・サービス/">ソリューション・サービス</a></li>
+      </li>
+    </ul>
+  </aside>
+</div>
+<section class="Main__contact">
+  <div class="Column__container">
+    <h2 class="Main__contact--heading">
+      お問い合わせ
+    </h2>
+    <p class="Main__contact--lead">
+      見積もり依頼や詳しいご相談など、クラウド・AWSに関する困りごとをお気軽にご相談ください。
+      <br />
+      以下のお問い合わせ先から受け付けています。
+    </p>
+    <a href="https://mmmcorp.co.jp/inquiry" class="Button__secondary" target="_blank">
+      <i class="fas fa-envelope"></i>
+      お問合わせはこちら
+    </a>
+    <p class="Main__contact--note">
+      ※通常1営業日内にご回答いたします。
+    </p>
+  </div>
+</section>
+
+<footer class="Footer">
+
+  <div class="Footer__top">
+    <a href="#top" class="Footer__top--button" aria-label="ページの先頭へ戻る">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+
+      <div class="Column__block--6 Column__block-md--2 Column__replace-md--1">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/" target="_blank">
+              ホーム
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/features" target="_blank">
+              MMMの特長
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/cloudintroduction" target="_blank">
+              クラウド入門
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/column/serverless" target="_blank">
+              ゼロから学ぶサーバーレス
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--6 Column__block-md--2  Column__replace-md--4">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/company" target="_blank">
+              会社情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/recruit" target="_blank">
+              採用情報
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/inquiry" target="_blank">
+              お問い合わせ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/document" target="_blank">
+              会社案内ダウンロード
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://blog.mmmcorp.co.jp/">
+              MMMブログ
+            </a>
+          </li>
+          <li class="Footer__link--item-category">
+            <a href="https://mmmcorp.co.jp/privacypolicy" target="_blank">
+              個人情報保護方針
+            </a>
+          </li>
+        </ul>
+
+        <ul class="Footer__social">
+          <li class="Footer__social--list">
+            <a class="Footer__social--twitter" href="https://twitter.com/mmm_corp" target="_blank" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li class="Footer__social--list">
+            <a class="Footer__social--facebook" href="https://www.facebook.com/mmmcorp.co.jp" target="_blank"
+              title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="Column__block--12 Column__block-md--6 Column__replace-md--2">
+
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/service" target="_blank">
+              サービス
+            </a>
+          </li>
+        </ul>
+
+        <div class="Column__row">
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド活用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/consulting" target="_blank">
+                  クラウドコンサルティング
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/newbusiness" target="_blank">
+                  新規事業立ち上げ支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/tcooptimization" target="_blank">
+                  システム総保有コスト（TCO）最適化
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/legacysystem" target="_blank">
+                  レガシーシステムのリプレイス
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド導入
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/development" target="_blank">
+                  AWS設計・導入支援
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/migration" target="_blank">
+                  AWSマイグレーション(移行)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/serverlessarchitecture" target="_blank">
+                  サーバーレスアーキテクチャ(Lambda)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/virtualdesktopinfrastructure" target="_blank">
+                  Amazon WorkSpaces(仮想デスクトップ)
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/dockercontainer" target="_blank">
+                  Dockerコンテナ基盤(ECS/Fargate)
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="Column__block--6 Column__block-md--4">
+            <ul class="Footer__link">
+              <li class="Footer__link--item-category">
+                <a href="https://mmmcorp.co.jp/service" target="_blank">
+                  クラウド運用
+                </a>
+              </li>
+              <li class="Footer__link--item">
+                <a href="https://mmmcorp.co.jp/service/operationmonitoring" target="_blank">
+                  クラウド運用監視
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="Column__block--12 Column__block-md--2 Column__replace-md--3">
+        <ul class="Footer__link">
+          <li class="Footer__link--item-head">
+            <a href="https://mmmcorp.co.jp/case" target="_blank">
+              事例紹介
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/idom" target="_blank">
+              IDOM
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/colorsmagazine" target="_blank">
+              カラーズマガジン
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/transtructure" target="_blank">
+              トランストラクチャ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/kabaya" target="_blank">
+              日本カバヤ・オハヨーホールディングス
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/dive" target="_blank">
+              ダイブ
+            </a>
+          </li>
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/unifinity" target="_blank">
+              ユニフィニティー
+            </a>
+          </li>
+
+          <li class="Footer__link--item">
+            <a href="https://mmmcorp.co.jp/case/mikuru" target="_blank">
+              美来
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Column__container">
+    <div class="Column__row">
+      <div class="Column__block-12">
+        <img class="Footer__logo" src="/images/blog_header/logo_vertical.svg" alt="" />
+        <p class="Footer__information">
+          株式会社MMM 〒170-0013 東京都豊島区東池袋1–42-15-310 TEL：03-6386-1792
+        </p>
+        <p class="Footer__copyright">
+          Copyright &copy; 2020 MMM Co., Ltd. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+</body>
+</html>
